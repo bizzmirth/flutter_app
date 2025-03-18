@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/admin_dashboard.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LoginController()),
+        ChangeNotifierProvider(create: (_) => EmployeeController()),
       ],
       child: MaterialApp(
         title: 'UniqBizz',
