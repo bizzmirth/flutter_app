@@ -1,0 +1,85 @@
+---------------------------------------------------------------------------------------------------------------------------------
+
+							CURRENT EXISTING API'S
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+	Get user type API-
+	GET https://testca.uniqbizz.com/api/user_type 
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+	Login API-
+	POST https://testca.uniqbizz.com/api/login.php (body:raw)
+	{
+    		"user_type_id" : "10",
+    		"username" : "Ibrahim@gmail.com",
+    		"password" : "^K%EvxX4"
+	}
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+	Check Pending & Registered Employees-
+	GET https://testca.uniqbizz.com/api/employee.php    ?action=pending_employees   ||    ?action=registered_employees
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+	Delete Employee API-
+	POST https://testca.uniqbizz.com/api/delete_employee.php (body:x-www-form-urlencoding)
+	{
+		Key:Value
+		id:2
+		action:deactivate
+		reid:BH250001
+		userType:25
+	}
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+	Add Employee API-
+	POST https://testca.uniqbizz.com/api/add_employee_data.php (body:raw)
+	{
+  		"name": "John Doe",
+  		"birth_date": "1990-05-15",
+  		"country_cd": "+91",
+  		"contact": "1234567890",
+  		"email": "johndoe@example.com",
+  		"address": "123 Main St, New York, USA",
+  		"gender": "Male",
+  		"joining_date": "2024-03-10",
+  		"department": "1",
+  		"designation": "2",
+ 		"zone": "2",
+ 		"branch": "2",
+  		"reporting_manager": "Jane Smith",
+  		"profile_pic": "base64_encoded_image_string",
+  		"id_proof": "base64_encoded_id_proof",
+  		"bank_details": "encrypted_bank_details_here"
+	}
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+	Edit Employee API-
+	POST https://testca.uniqbizz.com/api/edit_employee_data.php (body:raw)
+	{
+  		"editfor": "registered", 
+  		"id": "BH250002",
+  		"name": "Shubham Devulkarrr",
+  		"birth_date": "1990-02-06",
+  		"country_cd": "+91",
+  		"contact": "8745263522",
+  		"email": "naikpandurang48@gmail.com",
+  		"address": "Margao Goa",
+  		"gender": "Male",
+  		"joining_date": "2024-03-10",
+  		"department": "1",
+  		"designation": "2",
+  		"zone": "2",
+  		"branch": "2",
+  		"reporting_manager": "BH250001",
+  		"profile_pic": "profile_pic/1424130240.jpg",
+  		"id_proof": "id_proof/1230112523.jpg",
+  		"bank_details": "passbook/1415130812.jpg"
+	}
+
+---------------------------------------------------------------------------------------------------------------------------------
