@@ -1,12 +1,11 @@
-
 import 'package:isar/isar.dart';
 
 part 'registered_employee_model.g.dart';
 
 @collection
-class RegisteredEmployeeModel{
-
+class RegisteredEmployeeModel {
   Id? id = Isar.autoIncrement;
+  String? regId;
   String? name;
   String? mobileNumber;
   String? email;

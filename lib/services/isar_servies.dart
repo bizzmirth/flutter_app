@@ -111,6 +111,21 @@ class IsarService {
     }
   }
 
+  Future<void> clearAll<T>() async {
+    try {
+      final isar = await db;
+
+      await isar.writeTxn(() async {
+        await isar.collection<T>().clear();
+      });
+
+      Logger.success('Successfully cleared all ${T.toString()} records');
+    } catch (e) {
+      Logger.error('Error clearing ${T.toString()} records: $e');
+      // throw Exception('Failed to clear ${T.toString()} records');
+    }
+  }
+
   Future<Isar> getDatabase() async {
     return await db;
   }

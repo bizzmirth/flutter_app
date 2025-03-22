@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/add_employees.dart';
@@ -15,18 +16,18 @@ class EmployeeDataSource extends DataTableSource {
   EmployeeDataSource(this.context, this.pendingEmployees);
 
   final IsarService isarService = IsarService();
+  final EmployeeController employeeController = EmployeeController();
 
   Future<void> deleteEmployee(idToDelete, {bool showToast = true}) async {
     try {
-      Logger.warning("Delete process started $idToDelete ------");
       // await isarService.delete<PendingEmployeeModel>(idToDelete);
       await isarService.updateStatus<PendingEmployeeModel>(idToDelete, 0);
+      employeeController.deletePendingEmployee(idToDelete);
       Navigator.pop(context);
       if (showToast) {
         ToastHelper.showSuccessToast(
             context: context, title: "Pending Employee Deleted.");
       }
-      Logger.warning("Delete process completed");
     } catch (e) {
       Logger.error("Failed to delete employee: $e");
     }
@@ -111,6 +112,7 @@ class EmployeeDataSource extends DataTableSource {
                   leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
                   title: Text("View"),
                   onTap: () {
+                    Logger.error('${employee.profilePicture}');
                     Navigator.pop(context);
                     Navigator.push(
                       context,
@@ -150,6 +152,7 @@ class EmployeeDataSource extends DataTableSource {
                 onTap: () {
                   Logger.warning(
                       "------------ Delete ${employee.name}------------");
+
                   deleteEmployee(employee.id, showToast: true);
                 },
               ),
@@ -159,7 +162,7 @@ class EmployeeDataSource extends DataTableSource {
               child: ListTile(
                 leading: Icon(Icons.app_registration,
                     color: const Color.fromARGB(255, 0, 238, 127)),
-                title: Text("Register"),
+                title: Text("Complete"),
                 onTap: () {
                   Logger.warning(
                       "------------ Register ${employee.name}------------");
@@ -198,16 +201,63 @@ class EmployeeDataSource extends DataTableSource {
 
   void getStatus() {}
 
-  ImageProvider _getProfileImage(String? profilePath) {
-    if (profilePath != null && profilePath.isNotEmpty) {
-      // Check if the file exists before using it
-      File profileFile = File(profilePath);
-      if (profileFile.existsSync()) {
-        return FileImage(profileFile);
-      }
+  String extractPathSegment(String fullPath, String folderPrefix) {
+    int index = fullPath.lastIndexOf(folderPrefix);
+    if (index != -1) {
+      return fullPath.substring(index);
     }
-    // Return default image if profile picture is null, empty, or file doesn't exist
-    return AssetImage("assets/default_profile.png");
+    return fullPath;
+  }
+
+  Widget getProfileImage(String? profilePicture) {
+    if (profilePicture == null || profilePicture.isEmpty) {
+      return Center(
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Image.asset(
+            "assets/default_profile.png",
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    }
+
+    final String imageUrl;
+    if (profilePicture.contains('https://testca.uniqbizz.com/uploading/')) {
+      imageUrl = profilePicture;
+    } else {
+      final newpath = extractPathSegment(profilePicture, 'profile_pic/');
+      imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+    }
+
+    Logger.success("Final image URL: $imageUrl");
+
+    return Center(
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Logger.error("Failed to load image: $error");S
+            return Image.asset(
+              "assets/default_profile.png",
+              fit: BoxFit.cover,
+            );
+          },
+        ),
+      ),
+    );
   }
 
   String _getStatusText(dynamic status) {
@@ -231,7 +281,6 @@ class EmployeeDataSource extends DataTableSource {
       }
     }
 
-    // Default fallback
     return status.toString();
   }
 
@@ -271,7 +320,7 @@ class EmployeeDataSource extends DataTableSource {
         Center(
           child: CircleAvatar(
             radius: 20,
-            backgroundImage: _getProfileImage(pendingEmployee.profilePicture),
+            child: getProfileImage(pendingEmployee.profilePicture),
           ),
         ),
       ),

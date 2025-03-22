@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
+import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/all_employees_page.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
@@ -28,11 +30,12 @@ class AddEmployeePage extends StatefulWidget {
 }
 
 class _AddEmployeePageState extends State<AddEmployeePage> {
-  Map<String, File?> selectedFiles = {
+  Map<String, dynamic> selectedFiles = {
     "Profile Picture": null,
     "ID Proof": null,
     "Bank Details": null,
   };
+  var savedImagePath = "";
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
@@ -41,7 +44,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _dojController = TextEditingController();
-
+  String? dobForApi;
+  String? dojForApi;
   String _selectedGender = "---- Select Gender * ----";
   String _selectedDepartment = "---- Select Department * ----";
   String _selectedDesignation = "---- Select Designation * ----";
@@ -49,15 +53,15 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   String _selectedBranch = "---- Select Branch * ----";
   String _selectedManager = "---- Select Reporting Manager * ----";
   final IsarService _isarService = IsarService();
+  final EmployeeController employeeController = EmployeeController();
 
-  // Define GlobalKeys for each form field
   final GlobalKey<FormFieldState> _firstNameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _lastNameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _mobileKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _emailKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _addressKey = GlobalKey<FormFieldState>();
 
-  String _selectedCountryCode = '+91'; // Default country code
+  String _selectedCountryCode = '+91';
 
   void _populatePendingEmployeeForm(PendingEmployeeModel employee) {
     _firstController.text = employee.name?.split(" ").first ?? '';
@@ -73,16 +77,34 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     _selectedZone = employee.zone!;
     _selectedBranch = employee.branch!;
     _selectedManager = employee.reportingManager!;
+    // dobForApi = employee.dateOfBirth!;
+    // dojForApi = employee.dateOfJoining!;
 
-    // Set the file paths for images in selectedFiles
+    try {
+      // Convert from display format to API format
+      DateTime dobDate = DateFormat('dd-MM-yyyy').parse(employee.dateOfBirth!);
+      DateTime dojDate =
+          DateFormat('dd-MM-yyyy').parse(employee.dateOfJoining!);
+
+      dobForApi = DateFormat('yyyy-MM-dd').format(dobDate);
+      dojForApi = DateFormat('yyyy-MM-dd').format(dojDate);
+    } catch (e) {
+      print("Error parsing dates during form population: $e");
+      dobForApi = employee.dateOfBirth;
+      dojForApi = employee.dateOfJoining;
+    }
+
     if (employee.profilePicture != null) {
-      selectedFiles["Profile Picture"] = File(employee.profilePicture!);
+      selectedFiles["Profile Picture"] =
+          "https://testca.uniqbizz.com/uploading/${employee.profilePicture!}";
     }
     if (employee.idProof != null) {
-      selectedFiles["ID Proof"] = File(employee.idProof!);
+      selectedFiles["ID Proof"] =
+          "https://testca.uniqbizz.com/uploading/${employee.idProof!}";
     }
     if (employee.bankDetails != null) {
-      selectedFiles["Bank Details"] = File(employee.bankDetails!);
+      selectedFiles["Bank Details"] =
+          "https://testca.uniqbizz.com/uploading/${employee.bankDetails!}";
     }
   }
 
@@ -101,15 +123,33 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     _selectedBranch = employee.branch!;
     _selectedManager = employee.reportingManager!;
 
+    try {
+      // Convert from display format to API format
+      DateTime dobDate = DateFormat('dd-MM-yyyy').parse(employee.dateOfBirth!);
+      DateTime dojDate =
+          DateFormat('dd-MM-yyyy').parse(employee.dateOfJoining!);
+
+      dobForApi = DateFormat('yyyy-MM-dd').format(dobDate);
+      dojForApi = DateFormat('yyyy-MM-dd').format(dojDate);
+    } catch (e) {
+      print("Error parsing dates during form population: $e");
+      // Fallback to original values if parsing fails
+      dobForApi = employee.dateOfBirth;
+      dojForApi = employee.dateOfJoining;
+    }
+
     // Set the file paths for images in selectedFiles
     if (employee.profilePicture != null) {
-      selectedFiles["Profile Picture"] = File(employee.profilePicture!);
+      selectedFiles["Profile Picture"] =
+          "https://testca.uniqbizz.com/uploading/${employee.profilePicture!}";
     }
     if (employee.idProof != null) {
-      selectedFiles["ID Proof"] = File(employee.idProof!);
+      selectedFiles["ID Proof"] =
+          "https://testca.uniqbizz.com/uploading/${employee.idProof!}";
     }
     if (employee.bankDetails != null) {
-      selectedFiles["Bank Details"] = File(employee.bankDetails!);
+      selectedFiles["Bank Details"] =
+          "https://testca.uniqbizz.com/uploading/${employee.bankDetails!}";
     }
   }
 
@@ -118,17 +158,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     super.initState();
     if (widget.pendingEmployee != null) {
       _populatePendingEmployeeForm(widget.pendingEmployee!);
-    }
-
-    if (widget.registerEmployee != null) {
+    } else if (widget.registerEmployee != null) {
       _populateRegisteredEmployeeForm(widget.registerEmployee!);
+    } else {
+      // We're adding a new employee, ensure selectedFiles are all null
+      selectedFiles = {
+        "Profile Picture": null,
+        "ID Proof": null,
+        "Bank Details": null,
+      };
     }
   }
 
   void updatePendingEmployee() async {
     try {
       if (_formKey.currentState!.validate()) {
-        // int employeeId =
         int? id = widget.pendingEmployee!.id;
         PendingEmployeeModel updatePendingEmployee = PendingEmployeeModel()
           ..id = id
@@ -137,21 +181,24 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           ..email = _emailController.text
           ..address = _addressController.text
           ..gender = _selectedGender
-          ..dateOfBirth = _dobController.text
-          ..dateOfJoining = _dojController.text
+          ..dateOfBirth = dobForApi
+          ..dateOfJoining = dojForApi
           ..status = 2
           ..department = _selectedDepartment
           ..designation = _selectedDesignation
           ..zone = _selectedZone
           ..branch = _selectedBranch
           ..reportingManager = _selectedManager
-          ..profilePicture = selectedFiles["Profile Picture"]?.path
-          ..idProof = selectedFiles["ID Proof"]?.path
-          ..bankDetails = selectedFiles["Bank Details"]?.path;
+          ..profilePicture = selectedFiles["Profile Picture"]
+          ..idProof = selectedFiles["ID Proof"]
+          ..bankDetails = selectedFiles["Bank Details"];
 
         final updated = await _isarService.update<PendingEmployeeModel>(
             updatePendingEmployee, id!);
         if (updated) {
+          final apiUpdate = await employeeController
+              .updatePendingEmployees(updatePendingEmployee);
+          Logger.success("Api update status : $apiUpdate");
           ToastHelper.showSuccessToast(
               context: context, title: "Updated Employee Successfully");
 
@@ -167,31 +214,37 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     try {
       if (_formKey.currentState!.validate()) {
         int? id = widget.registerEmployee!.id;
+        Logger.success(
+            "Date of joining and date of birth $dobForApi $dojForApi");
         RegisteredEmployeeModel updateRegisteredEmployee =
             RegisteredEmployeeModel()
               ..id = id
+              ..regId = widget.registerEmployee?.regId
               ..name = '${_firstController.text} ${_lastnameController.text}'
               ..mobileNumber = _mobileController.text
               ..email = _emailController.text
               ..address = _addressController.text
               ..gender = _selectedGender
-              ..dateOfBirth = _dobController.text
-              ..dateOfJoining = _dojController.text
+              ..dateOfBirth = dobForApi
+              ..dateOfJoining = dojForApi
               ..status = 1
               ..department = _selectedDepartment
               ..designation = _selectedDesignation
               ..zone = _selectedZone
               ..branch = _selectedBranch
               ..reportingManager = _selectedManager
-              ..profilePicture = selectedFiles["Profile Picture"]?.path
-              ..idProof = selectedFiles["ID Proof"]?.path
-              ..bankDetails = selectedFiles["Bank Details"]?.path;
+              ..profilePicture = selectedFiles["Profile Picture"]
+              ..idProof = selectedFiles["ID Proof"]
+              ..bankDetails = selectedFiles["Bank Details"];
 
         final updated = await _isarService.update<RegisteredEmployeeModel>(
             updateRegisteredEmployee, id!);
 
         Logger.warning(":::::$updated");
         if (updated) {
+          final apiUpdate = await employeeController
+              .updateRegisterEmployee(updateRegisteredEmployee);
+          Logger.success("Api update status : $apiUpdate");
           ToastHelper.showSuccessToast(
               context: context, title: "Updated Employee Successfully");
 
@@ -210,25 +263,67 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       );
       if (result == null) return;
 
-      String path = result.files.single.path!;
+      String originalPath = result.files.single.path!;
 
       final appDir = await getApplicationDocumentsDirectory();
-      final fileName =
-          '${fileType.replaceAll(" ", "_").toLowerCase()}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final savedImagePath = '${appDir.path}/$fileName';
+      final bizmirthDir = Directory('${appDir.path}/bizmirth');
 
-      await File(path).copy(savedImagePath);
+      if (!await bizmirthDir.exists()) {
+        await bizmirthDir.create();
+      }
+
+      String subFolderName;
+      switch (fileType) {
+        case "Profile Picture":
+          subFolderName = "profile_pic";
+          break;
+        case "ID Proof":
+          subFolderName = "id_proof";
+          break;
+        case "Bank Details":
+          subFolderName = "passbook";
+          break;
+        default:
+          subFolderName = "other_documents";
+      }
+
+      // Create the specific subfolder
+      final typeDir = Directory('${bizmirthDir.path}/$subFolderName');
+      if (!await typeDir.exists()) {
+        await typeDir.create();
+      }
+
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+      savedImagePath = '${typeDir.path}/$fileName';
+
+      await File(originalPath).copy(savedImagePath);
+
+      Logger.success('File saved to: $savedImagePath');
 
       setState(() {
-        if (fileType == "Profile Picture") {}
-
-        // Store the file object
         selectedFiles[fileType] = File(savedImagePath);
       });
     } catch (e) {
       Logger.error("Error picking file: $e");
     }
   }
+  // void _pickFile(String fileType) async {
+  //   try {
+  //     FilePickerResult? result = await FilePicker.platform.pickFiles();
+  //     if (result != null && result.files.isNotEmpty) {
+  //       PlatformFile file = result.files.first;
+
+  //       setState(() {
+  //         selectedFiles[fileType] =
+  //             file.name as File?; // 🔥 Save selected file name
+  //       });
+
+  //       Logger.success("Picked file for $fileType: ${file.name}");
+  //     }
+  //   } catch (e) {
+  //     print("Error picking file: $e");
+  //   }
+  // }
 
   void _scrollToFirstError() {
     final Map<String, GlobalKey<FormFieldState>> fieldKeys = {
@@ -257,66 +352,83 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   }
 
   void _submitForm() async {
-    String? profilePicturePath = selectedFiles["Profile Picture"]?.path;
-    String? idProofPath = selectedFiles["ID Proof"]?.path;
-    String? bankDetailsPath = selectedFiles["Bank Details"]?.path;
-
-    // Now you can use these variables in your API call
-    Logger.info(
-        'entered username ${_firstController.text} ${_lastnameController.text}');
-    Logger.info('entered mobile ${_mobileController.text}');
-    Logger.info('entered email ${_emailController.text}');
-    Logger.info('entered address ${_addressController.text}');
-    Logger.info('entered dob ${_dobController.text}');
-    Logger.info('entered doj ${_dojController.text}');
-
-    Logger.info('selected gender: $_selectedGender');
-    Logger.info('selected department: $_selectedDepartment');
-    Logger.info('selected designation: $_selectedDesignation');
-    Logger.info('selected zone: $_selectedZone');
-    Logger.info('selected branch: $_selectedBranch');
-    Logger.info('selected manager: $_selectedManager');
-
-    Logger.info("Profile Picture Path: $profilePicturePath");
-    Logger.info("ID Proof Path: $idProofPath");
-    Logger.info("Bank Details Path: $bankDetailsPath");
-
     try {
       final formState = _formKey.currentState;
 
       if (formState == null || !formState.validate()) {
-        // Find the first field with an error and scroll to it
         _scrollToFirstError();
         ToastHelper.showErrorToast(
             context: context, title: "Please Fill all the required fields");
         return; // Stop the submission process
       }
       if (_formKey.currentState!.validate()) {
+        // if (true) {
+        String? profilePicturePath;
+        String? idProofPath;
+        String? bankDetailsPath;
+
+        // Upload Profile Picture if selected
+        if (selectedFiles["Profile Picture"] != null) {
+          await employeeController.uploadImage(
+              context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+          profilePicturePath = selectedFiles["Profile Picture"]!.path;
+        }
+
+        // Upload ID Proof if selected
+        if (selectedFiles["ID Proof"] != null) {
+          await employeeController.uploadImage(
+              context, 'id_proof', selectedFiles["ID Proof"]!.path);
+          idProofPath = selectedFiles["ID Proof"]!.path;
+        }
+
+        // Upload Bank Details if selected
+        if (selectedFiles["Bank Details"] != null) {
+          await employeeController.uploadImage(
+              context, 'passbook', selectedFiles["Bank Details"]!.path);
+          bankDetailsPath = selectedFiles["Bank Details"]!.path;
+        }
+
         final newEmployee = PendingEmployeeModel()
           ..name = '${_firstController.text} ${_lastnameController.text}'
           ..mobileNumber = _mobileController.text
           ..email = _emailController.text
           ..address = _addressController.text
           ..gender = _selectedGender
-          ..dateOfBirth = _dobController.text
-          ..dateOfJoining = _dojController.text
+          ..dateOfBirth = dobForApi
+          ..dateOfJoining = dojForApi
           ..status = 2
           ..department = _selectedDepartment
           ..designation = _selectedDesignation
           ..zone = _selectedZone
           ..branch = _selectedBranch
           ..reportingManager = _selectedManager
-          ..profilePicture = selectedFiles["Profile Picture"]?.path
-          ..idProof = selectedFiles["ID Proof"]?.path
-          ..bankDetails = selectedFiles["Bank Details"]?.path;
+          ..profilePicture = profilePicturePath
+          ..idProof = idProofPath
+          ..bankDetails = bankDetailsPath;
 
-        await _isarService.save<PendingEmployeeModel>(newEmployee);
-        Logger.success("data saved successfully");
-        Navigator.pop(context);
-        ToastHelper.showSuccessToast(
-            context: context, title: "Employee Saved Successfully");
+        final bool apiSuccess =
+            await employeeController.addEmployee(newEmployee);
 
-        _clearFormFields();
+        if (apiSuccess) {
+          Logger.success(
+              "Data going in DB is Profile picture $profilePicturePath ID Proof: $idProofPath bank Details : $bankDetailsPath");
+          await _isarService.save<PendingEmployeeModel>(newEmployee);
+          Logger.success(
+              "Employee saved to API and local database successfully");
+          Navigator.pop(context);
+          ToastHelper.showSuccessToast(
+              context: context, title: "Employee Added Successfully");
+          _clearFormFields();
+        } else {
+          await _isarService.save<PendingEmployeeModel>(newEmployee);
+          Logger.warning("Employee saved locally but API submission failed");
+          Navigator.pop(context);
+          ToastHelper.showWarningToast(
+              context: context,
+              title:
+                  "Employee saved locally but couldn't be uploaded to server");
+          _clearFormFields();
+        }
       } else {
         ToastHelper.showErrorToast(
             context: context,
@@ -393,6 +505,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     String? Function(String?)? validator, // Add this parameter
   }) {
     String defaultOption = "---- Select $label ----"; // Default placeholder
+    if (!items.contains(selectedValue) && selectedValue != defaultOption) {
+      selectedValue = defaultOption;
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -583,10 +698,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter an email';
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                        .hasMatch(value)) {
-                      return 'Please enter a valid email';
-                    }
+                    // if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                    //     .hasMatch(value)) {
+                    //   return 'Please enter a valid email';
+                    // }
                     return null;
                   }, fieldKey: _emailKey),
                   SizedBox(height: 15),
@@ -616,8 +731,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         // }
                         return null;
                       },
-                      readOnly: true, // Makes the TextFormField non-editable
-                      enabled: !widget.isViewMode, // Disable field in view mode
+                      readOnly: true,
+                      enabled: !widget.isViewMode,
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Date of Birth *',
@@ -644,7 +759,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                             : null, // Only show cancel button if date is selected and not in view mode
                       ),
                       onTap: widget.isViewMode
-                          ? null // Disable date picker in view mode
+                          ? null
                           : () async {
                               DateTime? pickedDate = await showDatePicker(
                                 context: context,
@@ -657,8 +772,22 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                               );
                               if (pickedDate != null) {
                                 setState(() {
-                                  _dobController.text = DateFormat('dd-MM-yyyy')
+                                  String displayFormat =
+                                      DateFormat('dd-MM-yyyy')
+                                          .format(pickedDate);
+
+                                  // Format for logging (yyyy-MM-dd)
+                                  dobForApi = DateFormat('yyyy-MM-dd')
                                       .format(pickedDate);
+
+                                  // Log the date in yyyy-MM-dd format
+                                  print(
+                                      "Selected DOB (for API/logging): $dobForApi");
+
+                                  // Set the display format in the text field
+                                  setState(() {
+                                    _dobController.text = displayFormat;
+                                  });
                                 });
                               }
                             },
@@ -713,26 +842,52 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       onTap: widget.isViewMode
                           ? null // Disable date picker in view mode
                           : () async {
+                              // Initialize with a safe default date
+                              DateTime initialDate = DateTime.now();
+
+                              // Only try to parse if text is not empty
+                              if (_dojController.text.isNotEmpty) {
+                                try {
+                                  // Try to parse the existing date
+                                  initialDate = DateFormat('dd-MM-yyyy')
+                                      .parse(_dojController.text);
+
+                                  // Safety check - if the year is before 1900, use current date
+                                  if (initialDate.year < 1900) {
+                                    initialDate = DateTime.now();
+                                  }
+                                } catch (e) {
+                                  // If parsing fails, use current date
+                                  print("Error parsing date: $e");
+                                  initialDate = DateTime.now();
+                                }
+                              }
+
+                              // Now use the safe initialDate
                               DateTime? pickedDate = await showDatePicker(
                                 context: context,
-                                initialDate: _dojController.text.isNotEmpty
-                                    ? DateFormat('dd-MM-yyyy')
-                                        .parse(_dojController.text)
-                                    : DateTime.now(),
+                                initialDate: initialDate,
                                 firstDate: DateTime(1900),
                                 lastDate: DateTime(2100),
                               );
+
                               if (pickedDate != null) {
+                                String displayFormat =
+                                    DateFormat('dd-MM-yyyy').format(pickedDate);
+                                dojForApi =
+                                    DateFormat('yyyy-MM-dd').format(pickedDate);
+                                print(
+                                    "Selected DOJ (for API/logging): $dojForApi");
+
                                 setState(() {
-                                  _dojController.text = DateFormat('dd-MM-yyyy')
-                                      .format(pickedDate);
+                                  _dojController.text = displayFormat;
                                 });
                               }
                             },
                     ),
                   ),
                   SizedBox(height: 10),
-                  _buildDropdown('Department *', ['HR', 'Engineering', 'Sales'],
+                  _buildDropdown('Department *', ['1', '2', '3', '4', '5', '7'],
                       _selectedDepartment, validator: (value) {
                     if (value == null ||
                         value == "---- Select Department * ----") {
@@ -743,7 +898,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                   SizedBox(height: 10),
                   _buildDropdown(
                       'Designation *',
-                      ['Manager', 'Executive', 'Intern'],
+                      ['1', '2', '3', '4', '5', '7'],
                       _selectedDesignation, validator: (value) {
                     if (value == null ||
                         value == "---- Select Designation * ----") {
@@ -752,15 +907,16 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     return null;
                   }, (value) => setState(() => _selectedDesignation = value!)),
                   SizedBox(height: 10),
-                  _buildDropdown('Zone *', ['North', 'South', 'East', 'West'],
-                      _selectedZone, validator: (value) {
+                  _buildDropdown(
+                      'Zone *', ['1', '2', '3', '4', '5', '7'], _selectedZone,
+                      validator: (value) {
                     if (value == null || value == "---- Select Zone * ----") {
                       return 'Please select a zone';
                     }
                     return null;
                   }, (value) => setState(() => _selectedZone = value!)),
                   SizedBox(height: 10),
-                  _buildDropdown('Branch *', ['Mumbai', 'Delhi', 'Bangalore'],
+                  _buildDropdown('Branch *', ['1', '2', '3', '4', '5', '7'],
                       _selectedBranch, validator: (value) {
                     if (value == null || value == "---- Select Branch * ----") {
                       return 'Please select a branch';
@@ -798,6 +954,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         onPressed: () {
                           if (widget.pendingEmployee != null) {
                             updatePendingEmployee();
+                            // employeeController.updatePendingEmployees(pending);
                           } else if (widget.registerEmployee != null) {
                             updateRegisteredEmployee();
                           }
@@ -851,7 +1008,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         children: [
-          // Only show the upload button if NOT in view mode
           if (!widget.isViewMode)
             ElevatedButton.icon(
               onPressed: () => _pickFile(fileType),
@@ -866,9 +1022,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               ),
             ),
           SizedBox(height: 8),
-
           if (selectedFiles[fileType] != null)
-            // Show image with or without the remove button based on view mode
             Stack(
               children: [
                 Container(
@@ -880,13 +1034,30 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.file(
-                      selectedFiles[fileType]!,
-                      fit: BoxFit.cover,
-                    ),
+                    child: selectedFiles[fileType] is File
+                        ? Image.file(
+                            selectedFiles[fileType]!,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.network(
+                            selectedFiles[fileType],
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.broken_image,
+                                      color: Colors.white,
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                   ),
                 ),
-                // Only show the remove button if NOT in view mode
                 if (!widget.isViewMode)
                   Positioned(
                     top: 5,
@@ -911,25 +1082,27 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
             )
           else
             Container(
-                height: 100,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 1,
-                  ),
+              height: 100,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1,
                 ),
-                child: Center(
-                    child: Text(
+              ),
+              child: Center(
+                child: Text(
                   widget.isViewMode
                       ? "No $fileType available"
                       : "No $fileType uploaded",
                   style: TextStyle(
                     color: Colors.white70,
                   ),
-                )))
+                ),
+              ),
+            ),
         ],
       ),
     );

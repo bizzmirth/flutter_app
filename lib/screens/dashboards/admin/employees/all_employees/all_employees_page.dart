@@ -58,6 +58,7 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
     try {
       // First fetch from API and populate local DB
       await employeeController.fetchAndSavePendingEmployees();
+      await employeeController.fetchAndSaveRegisterEmployees();
 
       // Then get from local DB
       await getEmployee();
@@ -215,7 +216,7 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
                             DataColumn(label: Text("Status")),
                             DataColumn(label: Text("Action"))
                           ],
-                          source: PendingEmployeeDataSource(
+                          source: RegisteredEmployeeDataSource(
                               context, registeredEmployee),
                           rowsPerPage: _rowsPerPage1,
                           availableRowsPerPage: [5, 10, 15, 20, 25],

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/add_employees.dart';
@@ -8,11 +6,11 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 
-class PendingEmployeeDataSource extends DataTableSource {
+class RegisteredEmployeeDataSource extends DataTableSource {
   final BuildContext context;
   List<RegisteredEmployeeModel> registeredEmployees;
 
-  PendingEmployeeDataSource(this.context, this.registeredEmployees);
+  RegisteredEmployeeDataSource(this.context, this.registeredEmployees);
   final IsarService isarService = IsarService();
 
   Future<void> deleteEmployee(idToDelete, {bool showToast = true}) async {
@@ -104,6 +102,7 @@ class PendingEmployeeDataSource extends DataTableSource {
                 title: Text("View"),
                 onTap: () {
                   Logger.info("Viewing..... ${employee.name} ${employee.id}");
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -125,6 +124,7 @@ class PendingEmployeeDataSource extends DataTableSource {
                 title: Text("Edit"),
                 onTap: () {
                   Navigator.pop(context);
+                  Logger.success('employee id is :: ${employee.regId}');
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -147,18 +147,18 @@ class PendingEmployeeDataSource extends DataTableSource {
                 },
               ),
             ),
-            PopupMenuItem(
-              value: "unregister",
-              child: ListTile(
-                  leading: Icon(Icons.app_registration,
-                      color: const Color.fromARGB(255, 0, 238, 127)),
-                  title: Text("Un-Register"),
-                  onTap: () {
-                    Logger.error(
-                        "Un-Registering..... ${employee.name} ${employee.id}");
-                    unRegisterEmployee(employee);
-                  }),
-            ),
+            // PopupMenuItem(
+            //   value: "unregister",
+            //   child: ListTile(
+            //       leading: Icon(Icons.app_registration,
+            //           color: const Color.fromARGB(255, 0, 238, 127)),
+            //       title: Text("Un-Register"),
+            //       onTap: () {
+            //         Logger.error(
+            //             "Un-Registering..... ${employee.name} ${employee.id}");
+            //         unRegisterEmployee(employee);
+            //       }),
+            // ),
           ];
         } else if (employee.status == 3) {
           menuItems = [
@@ -209,16 +209,46 @@ class PendingEmployeeDataSource extends DataTableSource {
     return status.toString();
   }
 
-  ImageProvider _getProfileImage(String? profilePath) {
-    if (profilePath != null && profilePath.isNotEmpty) {
-      // Check if the file exists before using it
-      File profileFile = File(profilePath);
-      if (profileFile.existsSync()) {
-        return FileImage(profileFile);
-      }
+  String extractPathSegment(String fullPath, String folderPrefix) {
+    // Find the index of the folder name in the full path
+    int index = fullPath.lastIndexOf(folderPrefix);
+    if (index != -1) {
+      // Return the folder prefix plus the filename
+      return fullPath.substring(index);
     }
-    // Return default image if profile picture is null, empty, or file doesn't exist
-    return AssetImage("assets/default_profile.png");
+    // If the path doesn't contain the expected folder structure, return the original
+    return fullPath;
+  }
+
+  Widget getProfileImage(String? profilePicture) {
+    Logger.success("Image link in register:: $profilePicture");
+    final newPath = extractPathSegment(profilePicture!, 'profile_pic/');
+    return Center(
+      child: Container(
+        width: 40, // twice the radius
+        height: 40, // twice the radius
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: profilePicture.isNotEmpty
+            ? Image.network(
+                "https://testca.uniqbizz.com/uploading/$newPath",
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // Fallback to default image on network error
+                  return Image.asset(
+                    "assets/default_profile.png",
+                    fit: BoxFit.cover,
+                  );
+                },
+              )
+            : Image.asset(
+                "assets/default_profile.png",
+                fit: BoxFit.cover,
+              ),
+      ),
+    );
   }
 
   Color _getStatusColor(String status) {
@@ -260,8 +290,7 @@ class PendingEmployeeDataSource extends DataTableSource {
         Center(
           child: CircleAvatar(
             radius: 20,
-            backgroundImage:
-                _getProfileImage(registeredEmployee.profilePicture),
+            child: getProfileImage(registeredEmployee.profilePicture!),
           ),
         ),
       ),

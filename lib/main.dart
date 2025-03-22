@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/admin_dashboard.dart';
+import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/all_employees_page.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
           textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
         ),
-        home: AdminDashboard(),
+        home: AllEmployeesPage(),
         debugShowCheckedModeBanner: false,
       ),
     );
