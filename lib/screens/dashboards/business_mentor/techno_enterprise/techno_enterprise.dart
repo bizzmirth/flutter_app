@@ -1,5 +1,10 @@
+import 'dart:async';
+
+import 'package:bizzmirth_app/data_source/pending_techno_enterprise_data_source.dart';
+import 'package:bizzmirth_app/entities/pending_techno_enterprise/pending_techno_enterprise_model.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_mentor/techno_enterprise/add_techno_enterprise.dart';
+import 'package:bizzmirth_app/services/isar_servies.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,6 +22,33 @@ class _ViewTEPageState extends State<ViewTEPage> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+  final IsarService isarService = IsarService();
+  List<PendingTechnoEnterpriseModel> technoEnterprise = [];
+  late StreamSubscription<void> _pendingTechnoEnterprise;
+
+  @override
+  void initState() {
+    super.initState();
+    _pendingTechnoEnterprise =
+        isarService.watchCollection<PendingTechnoEnterpriseModel>().listen((_) {
+      getTechnoEnterprise();
+    });
+    getTechnoEnterprise();
+  }
+
+  @override
+  void dispose() {
+    _pendingTechnoEnterprise.cancel();
+    super.dispose();
+  }
+
+  Future<void> getTechnoEnterprise() async {
+    final getTechnoEnterprise =
+        await isarService.getAll<PendingTechnoEnterpriseModel>();
+    setState(() {
+      technoEnterprise = getTechnoEnterprise;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +98,7 @@ class _ViewTEPageState extends State<ViewTEPage> {
                     columnSpacing: 40,
                     dataRowMinHeight: 40,
                     columns: [
-                      DataColumn(label: Text("           ")),
+                      DataColumn(label: Text("Image")),
                       DataColumn(label: Text("ID")),
                       DataColumn(label: Text("Full Name")),
                       DataColumn(label: Text("Ref. ID")),
@@ -77,7 +109,8 @@ class _ViewTEPageState extends State<ViewTEPage> {
                       DataColumn(label: Text("Status")),
                       DataColumn(label: Text("Action")),
                     ],
-                    source: MyViewTechnoPendingDataSource(orderstechno),
+                    source: MyViewTechnoPendingDataSource(
+                        context, technoEnterprise),
                     rowsPerPage: _rowsPerPage,
                     availableRowsPerPage: [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
@@ -118,7 +151,7 @@ class _ViewTEPageState extends State<ViewTEPage> {
                     columnSpacing: 40,
                     dataRowMinHeight: 40,
                     columns: [
-                      DataColumn(label: Text("           ")),
+                      DataColumn(label: Text("Image")),
                       DataColumn(label: Text("ID")),
                       DataColumn(label: Text("Full Name")),
                       DataColumn(label: Text("Ref. ID")),

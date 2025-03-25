@@ -69,8 +69,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     _mobileController.text = employee.mobileNumber!;
     _emailController.text = employee.email!;
     _addressController.text = employee.address!;
-    _dobController.text = employee.dateOfBirth!;
-    _dojController.text = employee.dateOfJoining!;
     _selectedGender = employee.gender!;
     _selectedDepartment = employee.department!;
     _selectedDesignation = employee.designation!;
@@ -81,17 +79,47 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     // dojForApi = employee.dateOfJoining!;
 
     try {
-      // Convert from display format to API format
-      DateTime dobDate = DateFormat('dd-MM-yyyy').parse(employee.dateOfBirth!);
-      DateTime dojDate =
-          DateFormat('dd-MM-yyyy').parse(employee.dateOfJoining!);
+      // Check if DOB is already in API format (yyyy-MM-dd)
+      if (employee.dateOfBirth != null &&
+          employee.dateOfBirth!.contains('-') &&
+          employee.dateOfBirth!.split('-').length == 3 &&
+          employee.dateOfBirth!.split('-')[0].length == 4) {
+        // Date is already in yyyy-MM-dd format
+        dobForApi = employee.dateOfBirth;
+        _dobController.text = DateFormat('dd-MM-yyyy')
+            .format(DateFormat('yyyy-MM-dd').parse(employee.dateOfBirth!));
+      } else {
+        // Date is in display format (dd-MM-yyyy), convert to API format
+        DateTime dobDate =
+            DateFormat('dd-MM-yyyy').parse(employee.dateOfBirth!);
+        dobForApi = DateFormat('yyyy-MM-dd').format(dobDate);
+        _dobController.text = DateFormat('dd-MM-yyyy').format(dobDate);
+      }
 
-      dobForApi = DateFormat('yyyy-MM-dd').format(dobDate);
-      dojForApi = DateFormat('yyyy-MM-dd').format(dojDate);
+      // Check if DOJ is already in API format (yyyy-MM-dd)
+      if (employee.dateOfJoining != null &&
+          employee.dateOfJoining!.contains('-') &&
+          employee.dateOfJoining!.split('-').length == 3 &&
+          employee.dateOfJoining!.split('-')[0].length == 4) {
+        // Date is already in yyyy-MM-dd format
+        dojForApi = employee.dateOfJoining;
+        _dojController.text = DateFormat('dd-MM-yyyy')
+            .format(DateFormat('yyyy-MM-dd').parse(employee.dateOfJoining!));
+      } else {
+        // Date is in display format, convert to API format
+        DateTime dojDate =
+            DateFormat('dd-MM-yyyy').parse(employee.dateOfJoining!);
+        dojForApi = DateFormat('yyyy-MM-dd').format(dojDate);
+        _dojController.text = DateFormat('dd-MM-yyyy').format(dojDate);
+      }
     } catch (e) {
       print("Error parsing dates during form population: $e");
+      // Fallback to original values if parsing fails
       dobForApi = employee.dateOfBirth;
       dojForApi = employee.dateOfJoining;
+      // Still attempt to display in the right format
+      _dobController.text = employee.dateOfBirth ?? '';
+      _dojController.text = employee.dateOfJoining ?? '';
     }
 
     if (employee.profilePicture != null) {
