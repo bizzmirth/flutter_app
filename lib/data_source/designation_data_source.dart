@@ -1,4 +1,3 @@
-import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
 import 'package:bizzmirth_app/models/designation_model.dart';
 import 'package:bizzmirth_app/utils/department_dropdown.dart';
 import 'package:bizzmirth_app/utils/logger.dart';

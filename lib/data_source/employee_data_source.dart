@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';

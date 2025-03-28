@@ -9,6 +9,16 @@ import 'package:provider/provider.dart';
 class MyDepartDataSource extends DataTableSource {
   final List<Department> _departments;
   MyDepartDataSource(this._departments);
+  final DesignationDepartmentController controller =
+      DesignationDepartmentController();
+
+  Future<void> deleteDepartment(Department department) async {
+    try {
+      await controller.apiDeleteDepartment(department);
+    } catch (e) {
+      Logger.success('Error deleting department: $e');
+    }
+  }
 
   @override
   DataRow? getRow(int index) {
@@ -149,41 +159,72 @@ class MyDepartDataSource extends DataTableSource {
   Widget _buildActionMenu(Department department) {
     return PopupMenuButton<String>(
       onSelected: (value) {
-        // Handle menu actions
+        // Handle menu actions here if needed
+        Logger.success(
+            "Selected action: $value for department ${department.id}");
       },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-            onTap: () {
-              Logger.success("View Departments ${department.id}");
-              Navigator.pop(context);
-              Adddepartment(context, department: department, isViewMode: true);
-            },
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text("Edit"),
-            onTap: () {
-              Logger.success("Editing ${department.id}");
-              Navigator.pop(context);
-              Adddepartment(context, department: department, isEditMode: true);
-            },
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-      ],
+      itemBuilder: (BuildContext context) {
+        List<PopupMenuEntry<String>> menuItems = [];
+
+        if (int.tryParse(department.status) == 1) {
+          menuItems = [
+            PopupMenuItem(
+              value: "view",
+              child: ListTile(
+                leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
+                title: Text("View"),
+              ),
+              onTap: () {
+                Logger.success("View Departments ${department.id}");
+                Adddepartment(context,
+                    department: department, isViewMode: true);
+              },
+            ),
+            PopupMenuItem(
+              value: "edit",
+              child: ListTile(
+                leading: Icon(Icons.edit, color: Colors.blueAccent),
+                title: Text("Edit"),
+              ),
+              onTap: () {
+                Logger.success("Editing ${department.id}");
+                Adddepartment(context,
+                    department: department, isEditMode: true);
+              },
+            ),
+            PopupMenuItem(
+              value: "delete",
+              child: ListTile(
+                leading: Icon(Icons.delete, color: Colors.red),
+                title: Text("Delete"),
+                onTap: () {
+                  deleteDepartment(department);
+                },
+              ),
+              onTap: () {
+                Logger.success("Deleting ${department.id}");
+                // Add delete logic here
+              },
+            ),
+          ];
+        } else if (int.tryParse(department.status) == 2) {
+          menuItems = [
+            PopupMenuItem(
+              value: "restore",
+              child: ListTile(
+                leading: Icon(Icons.restore, color: Colors.green),
+                title: Text("Restore"),
+              ),
+              onTap: () {
+                Logger.success("Restoring ${department.id}");
+                Navigator.pop(context);
+                // Add restore logic here
+              },
+            ),
+          ];
+        }
+        return menuItems;
+      },
       icon: Icon(Icons.more_vert, color: Colors.black54),
     );
   }

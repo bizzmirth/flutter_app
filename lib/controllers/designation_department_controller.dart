@@ -171,4 +171,38 @@ class DesignationDepartmentController extends ChangeNotifier {
       Logger.error("Error uploading designation : $e");
     }
   }
+
+  Future<void> apiDeleteDepartment(Department department) async {
+    _isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+    try {
+      final fullUrl = '$baseUrl/department/delete_department_data.php';
+      final Map<String, dynamic> data = {
+        "id": department.id,
+        "message": "edit",
+        "name": department.deptName,
+        "status": department.status
+      };
+      final encodeBody = json.encode(data);
+      final response = await http.post(
+        Uri.parse(fullUrl),
+        body: encodeBody,
+      );
+      Logger.success("API response: ${response.body}");
+      Logger.warning("Status Code ${response.statusCode}");
+      Logger.success(fullUrl);
+      if (response.statusCode == 200) {
+        Logger.success("Department deleted successfully");
+        await fetchDepartments();
+        notifyListeners();
+      } else {
+        _errorMessage = 'Failed to delete department';
+        Logger.error("Error deleting department: ${response.body}");
+        notifyListeners();
+      }
+    } catch (e) {
+      Logger.error('API Error: $e');
+    }
+  }
 }
