@@ -1,15 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
-import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
-import 'package:bizzmirth_app/entities/pending_techno_enterprise/pending_techno_enterprise_model.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/admin_dashboard.dart';
-import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/all_employees_page.dart';
-import 'package:bizzmirth_app/screens/dashboards/business_mentor/business_mentor.dart';
-import 'package:bizzmirth_app/screens/dashboards/business_mentor/techno_enterprise/techno_enterprise.dart';
-import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +27,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => LoginController()),
         ChangeNotifierProvider(create: (_) => EmployeeController()),
+        ChangeNotifierProvider(
+            create: (_) => DesignationDepartmentController()),
       ],
       child: MaterialApp(
         title: 'UniqBizz',
@@ -40,7 +37,7 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
           textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
         ),
-        home: BMDashboardPage(),
+        home: AdminDashboard(),
         debugShowCheckedModeBanner: false,
       ),
     );
@@ -2784,233 +2781,6 @@ class MyBMCustRegDataSource extends DataTableSource {
           child: ListTile(
             leading: Icon(Icons.delete, color: Colors.red),
             title: Text("Delete"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
-class MyDepartDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyDepartDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
-class MyDesigDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyDesigDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["designation"]?.toString() ?? "N/A")),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
-class MyBMDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyBMDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(
-          Center(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(order["profilePicture"]),
-            ),
-          ),
-        ),
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["phone"]?.toString() ?? "N/A")),
-        DataCell(Text(order["phone1"]?.toString() ?? "N/A")),
-        DataCell(Text(order["jd"]?.toString() ?? "N/A")),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order["status"]?.toString() ?? ""),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order["status"]?.toString() ?? "Unknown",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "pending":
-        return Colors.orange;
-      case "completed":
-        return Colors.green;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading:
-                Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "register",
-          child: ListTile(
-            leading: Icon(Icons.app_registration,
-                color: const Color.fromARGB(255, 43, 29, 240)),
-            title: Text("Register"),
           ),
         ),
       ],

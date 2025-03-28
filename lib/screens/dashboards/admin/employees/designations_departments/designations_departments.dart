@@ -1,6 +1,13 @@
-import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
+import 'package:bizzmirth_app/data_source/department_data_source.dart';
+import 'package:bizzmirth_app/data_source/designation_data_source.dart';
+import 'package:bizzmirth_app/models/department_model.dart';
+import 'package:bizzmirth_app/utils/department_dropdown.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class DesignationsPage extends StatefulWidget {
   const DesignationsPage({super.key});
@@ -15,15 +22,30 @@ class _DesignationsPageState extends State<DesignationsPage> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+  final DesignationDepartmentController controller =
+      DesignationDepartmentController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller =
+          Provider.of<DesignationDepartmentController>(context, listen: false);
+      Future.wait(
+          [controller.fetchDepartments(), controller.fetchDesignations()]);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<DesignationDepartmentController>(context);
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Departments/Designations',
           style: GoogleFonts.poppins(
-            fontSize: 22,
+            fontSize: screenWidth * 0.03,
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
@@ -79,30 +101,33 @@ class _DesignationsPageState extends State<DesignationsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: SizedBox(
-                  height: (_rowsPerPage * dataRowHeight) +
-                      headerHeight +
-                      paginationHeight,
-                  child: PaginatedDataTable(
-                    columnSpacing: 255,
-                    dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("#")),
-                      DataColumn(label: Text("Department Name")),
-                      DataColumn(label: Text("Action"))
-                    ],
-                    source: MyDepartDataSource(desig),
-                    rowsPerPage: _rowsPerPage,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
-                    onRowsPerPageChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _rowsPerPage = value;
-                        });
-                      }
-                    },
-                    arrowHeadColor: Colors.blue,
-                  ),
-                ),
+                    height: (_rowsPerPage * dataRowHeight) +
+                        headerHeight +
+                        paginationHeight,
+                    child: Consumer<DesignationDepartmentController>(
+                      builder: (context, value, child) {
+                        return PaginatedDataTable(
+                          columnSpacing: 255,
+                          dataRowMinHeight: 40,
+                          columns: [
+                            DataColumn(label: Text("ID")),
+                            DataColumn(label: Text("Department Name")),
+                            DataColumn(label: Text("Action"))
+                          ],
+                          source: MyDepartDataSource(controller.departments),
+                          rowsPerPage: _rowsPerPage,
+                          availableRowsPerPage: [5, 10, 15, 20, 25],
+                          onRowsPerPageChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _rowsPerPage = value;
+                              });
+                            }
+                          },
+                          arrowHeadColor: Colors.blue,
+                        );
+                      },
+                    )),
               ),
 
               SizedBox(height: 50),
@@ -126,8 +151,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
                       decoration: InputDecoration(
                         hintText: "Search...",
                         border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(10), // Rounded corners
+                          borderRadius: BorderRadius.circular(10),
                           // No border line
                         ),
                         filled: true,
@@ -154,12 +178,12 @@ class _DesignationsPageState extends State<DesignationsPage> {
                     columnSpacing: 127,
                     dataRowMinHeight: 40,
                     columns: [
-                      DataColumn(label: Text("#")),
+                      DataColumn(label: Text("ID")),
                       DataColumn(label: Text("Designation")),
                       DataColumn(label: Text("Department")),
                       DataColumn(label: Text("Action"))
                     ],
-                    source: MyDesigDataSource(depart),
+                    source: MyDesigDataSource(controller.designation),
                     rowsPerPage: _rowsPerPage1,
                     availableRowsPerPage: [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
@@ -268,7 +292,9 @@ class _DesignationsPageState extends State<DesignationsPage> {
     );
   }
 
-  void Adddepartment(BuildContext context) {
+  void Adddepartment(BuildContext context,
+      {Department? department, bool isViewMode = false}) {
+    final TextEditingController nameController = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -279,7 +305,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
             mainAxisSize: MainAxisSize.max,
             children: [
               Text(
-                'Add Department',
+                isViewMode ? 'Department Details' : 'Add Department',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                     fontSize: 18, fontWeight: FontWeight.w600),
@@ -294,51 +320,76 @@ class _DesignationsPageState extends State<DesignationsPage> {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
-              SizedBox(height: 10), // 🔥 Add spacing
+              SizedBox(height: 10),
               SizedBox(
-                height: 50, // 🔥 Increase TextBox height
+                height: 50,
                 child: TextField(
-                  controller: null,
+                  controller: nameController,
+                  readOnly: isViewMode,
                   decoration: InputDecoration(
                     hintText: "Enter department name...",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 15), // 🔥 Adjust padding
+                    fillColor: isViewMode ? Colors.grey[200] : Colors.white,
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                   ),
                 ),
               ),
             ],
           ),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[400],
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
+          actions: isViewMode
+              ? [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Close',
+                        style: GoogleFonts.poppins(color: Colors.red)),
+                  )
+                ]
+              : [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.apiAddDepartment(nameController.text);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            final controller =
+                                Provider.of<DesignationDepartmentController>(
+                                    context,
+                                    listen: false);
+                            Future.wait([
+                              controller.fetchDepartments(),
+                            ]);
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[400],
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                        ),
+                        child: Text(
+                          'Submit',
+                          style: GoogleFonts.poppins(
+                              fontSize: 14, color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    'Submit',
-                    style:
-                        GoogleFonts.poppins(fontSize: 14, color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ],
+                ],
         );
       },
     );
   }
 
   void Adddesignation(BuildContext context) {
+    final TextEditingController nameController = TextEditingController();
+    String? selectedDepartment = "";
+    String? selectedDepartmentId = "";
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -368,7 +419,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
               SizedBox(
                 height: 50, // 🔥 Increase TextBox height
                 child: TextField(
-                  controller: null,
+                  controller: nameController,
                   decoration: InputDecoration(
                     hintText: "Enter designation name...",
                     border: OutlineInputBorder(
@@ -381,12 +432,13 @@ class _DesignationsPageState extends State<DesignationsPage> {
                   ),
                 ),
               ),
-              _buildDropdown('Department *', [
-                'Channel Management',
-                'Trainee Department',
-                'Operations Department',
-                'Others'
-              ]),
+              DepartmentDropdown(
+                onDepartmentSelected: (selectedDept) {
+                  // selectedDept is now a Map with 'id' and 'name'
+                  selectedDepartmentId = selectedDept?['id'];
+                  selectedDepartment = selectedDept?['name'];
+                },
+              ),
             ],
           ),
           actions: [
@@ -394,7 +446,23 @@ class _DesignationsPageState extends State<DesignationsPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    controller.apiAddDesignation(
+                        nameController.text, selectedDepartmentId);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      final controller =
+                          Provider.of<DesignationDepartmentController>(context,
+                              listen: false);
+                      Future.wait([
+                        controller.fetchDesignations(),
+                      ]);
+                    });
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    ToastHelper.showSuccessToast(
+                        context: context,
+                        title: "Designation added successfully!.");
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[400],
                     shape: RoundedRectangleBorder(
@@ -411,34 +479,6 @@ class _DesignationsPageState extends State<DesignationsPage> {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildDropdown(String label, List<String> items) {
-    String defaultOption = "  Select $label    "; // Default placeholder
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: DropdownButtonFormField<String>(
-        value: defaultOption, // Set default selection
-        items: [
-          DropdownMenuItem(
-            value: defaultOption, // Placeholder value
-            child: Text(defaultOption,
-                style: TextStyle(color: const Color.fromARGB(166, 29, 29, 29))),
-          ),
-          ...items.map((e) => DropdownMenuItem(value: e, child: Text(e))),
-        ],
-        onChanged: (value) {
-          // Handle selection
-        },
-        decoration: InputDecoration(
-          hintText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          filled: true,
-          fillColor: const Color.fromARGB(255, 255, 255, 255),
-        ),
-      ),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -11,7 +12,8 @@ import 'package:http/http.dart' as http;
 
 class EmployeeController extends ChangeNotifier {
   final IsarService _isarService = IsarService();
-  final String baseUrl = 'https://testca.uniqbizz.com/api/employees';
+  final String baseUrl =
+      'https://testca.uniqbizz.com/api/employees/all_employees';
 
   bool isLoading = false;
   List<PendingEmployeeModel> _employees = [];
@@ -205,17 +207,6 @@ class EmployeeController extends ChangeNotifier {
     }
   }
 
-  String extractPathSegment(String fullPath, String folderPrefix) {
-    // Find the index of the folder name in the full path
-    int index = fullPath.lastIndexOf(folderPrefix);
-    if (index != -1) {
-      // Return the folder prefix plus the filename
-      return fullPath.substring(index);
-    }
-    // If the path doesn't contain the expected folder structure, return the original
-    return fullPath;
-  }
-
   Future<bool> addEmployee(PendingEmployeeModel employee) async {
     try {
       final fullUrl = '$baseUrl/add_employee_data.php';
@@ -288,7 +279,7 @@ class EmployeeController extends ChangeNotifier {
   Future<void> uploadImage(
       context, String folder, String savedImagePath) async {
     try {
-      final fullUrl = 'https://testca.uniqbizz.com/uploading/upload_mobile.php';
+      final fullUrl = 'http://testca.uniqbizz.com/api/upload_mobile.php';
       var request = http.MultipartRequest('POST', Uri.parse(fullUrl));
       request.files
           .add(await http.MultipartFile.fromPath('file', savedImagePath));
@@ -297,7 +288,8 @@ class EmployeeController extends ChangeNotifier {
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
       Logger.warning('Raw API response body: $responseBody');
-      Logger.info('this is reuest ${request}');
+      Logger.success("Upload Api FULL URL: $fullUrl");
+      Logger.info('this is reuest $request');
 
       if (responseBody == '1') {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -488,15 +480,10 @@ class EmployeeController extends ChangeNotifier {
     }
   }
 
-  String capitalize(String input) {
-    if (input.isEmpty) return '';
-    return input[0].toUpperCase() + input.substring(1).toLowerCase();
-  }
-
   PendingEmployeeModel _pendingEmployeeFromJson(Map<String, dynamic> json) {
     try {
       final employee = PendingEmployeeModel()
-        ..id = _parseIntSafely(json['id']) // Use auto-increment for local ID
+        ..id = parseIntSafely(json['id']) // Use auto-increment for local ID
         ..name = json['name'] ?? ''
         ..mobileNumber = json['contact'] ?? ''
         ..email = json['email'] ?? ''
@@ -504,11 +491,11 @@ class EmployeeController extends ChangeNotifier {
         ..gender = capitalize(json['gender'] ?? '')
         ..dateOfBirth = json['date_of_birth'] ?? ''
         ..dateOfJoining = json['date_of_joining'] ?? ''
-        ..status = _parseIntSafely(json['status']) ?? 1
-        ..department = _parseIntSafely(json['department']).toString()
-        ..designation = _parseIntSafely(json['designation']).toString()
-        ..zone = _parseIntSafely(json['zone']).toString()
-        ..branch = _parseIntSafely(json['branch']).toString()
+        ..status = parseIntSafely(json['status']) ?? 1
+        ..department = parseIntSafely(json['department']).toString()
+        ..designation = parseIntSafely(json['designation']).toString()
+        ..zone = parseIntSafely(json['zone']).toString()
+        ..branch = parseIntSafely(json['branch']).toString()
         ..reportingManager = json['reporting_manager'] ?? ''
         ..profilePicture = json['profile_pic'] ?? ''
         ..idProof = json['id_proof'] ?? ''
@@ -525,7 +512,7 @@ class EmployeeController extends ChangeNotifier {
       Map<String, dynamic> json) {
     try {
       final employee = RegisteredEmployeeModel()
-        ..id = _parseIntSafely(json['id']) // Use auto-increment for local ID
+        ..id = parseIntSafely(json['id']) // Use auto-increment for local ID
         ..regId = json['employee_id']
         ..name = json['name'] ?? ''
         ..mobileNumber = json['contact'] ?? ''
@@ -534,11 +521,11 @@ class EmployeeController extends ChangeNotifier {
         ..gender = capitalize(json['gender'] ?? '')
         ..dateOfBirth = json['date_of_birth'] ?? ''
         ..dateOfJoining = json['date_of_joining'] ?? ''
-        ..status = _parseIntSafely(json['status']) ?? 1
-        ..department = _parseIntSafely(json['department']).toString()
-        ..designation = _parseIntSafely(json['designation']).toString()
-        ..zone = _parseIntSafely(json['zone']).toString()
-        ..branch = _parseIntSafely(json['branch']).toString()
+        ..status = parseIntSafely(json['status']) ?? 1
+        ..department = parseIntSafely(json['department']).toString()
+        ..designation = parseIntSafely(json['designation']).toString()
+        ..zone = parseIntSafely(json['zone']).toString()
+        ..branch = parseIntSafely(json['branch']).toString()
         ..reportingManager = json['reporting_manager'] ?? ''
         ..profilePicture = json['profile_pic'] ?? ''
         ..idProof = json['id_proof'] ?? ''
@@ -549,19 +536,5 @@ class EmployeeController extends ChangeNotifier {
       Logger.error("Error parsing registered employee: $e for data: $json");
       throw Exception("Error parsing registered employee: $e");
     }
-  }
-
-// Helper method to safely parse integers
-  int? _parseIntSafely(dynamic value) {
-    if (value == null) return null;
-    if (value is int) return value;
-    if (value is String) {
-      try {
-        return int.parse(value);
-      } catch (_) {
-        return null;
-      }
-    }
-    return null;
   }
 }

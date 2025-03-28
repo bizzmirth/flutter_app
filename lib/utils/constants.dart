@@ -644,6 +644,34 @@ void showBookingPopup(BuildContext context) {
   );
 }
 
+String extractPathSegment(String fullPath, String folderPrefix) {
+  int index = fullPath.lastIndexOf(folderPrefix);
+  if (index != -1) {
+    return fullPath.substring(index);
+  }
+  // If the path doesn't contain the expected folder structure, return the original
+  return fullPath;
+}
+
+// Helper method to safely parse integers
+int? parseIntSafely(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is String) {
+    try {
+      return int.parse(value);
+    } catch (_) {
+      return null;
+    }
+  }
+  return null;
+}
+
+String capitalize(String input) {
+  if (input.isEmpty) return '';
+  return input[0].toUpperCase() + input.substring(1).toLowerCase();
+}
+
 // filter bar
 class FilterBar extends StatefulWidget {
   const FilterBar({super.key});
