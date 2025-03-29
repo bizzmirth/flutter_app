@@ -36,6 +36,7 @@ class EmployeeDataSource extends DataTableSource {
       Logger.warning("Registering the employee ${empRegister.name}");
       final registerEmployee = RegisteredEmployeeModel()
         ..id = empRegister.id
+        ..regId = empRegister.regId
         ..name = empRegister.name
         ..mobileNumber = empRegister.mobileNumber
         ..email = empRegister.email
@@ -49,6 +50,7 @@ class EmployeeDataSource extends DataTableSource {
         ..zone = empRegister.zone
         ..branch = empRegister.branch
         ..reportingManager = empRegister.reportingManager
+        ..reportingManagerName = empRegister.reportingManagerName
         ..profilePicture = empRegister.profilePicture
         ..idProof = empRegister.idProof
         ..bankDetails = empRegister.bankDetails;
@@ -322,10 +324,12 @@ class EmployeeDataSource extends DataTableSource {
           ),
         ),
       ),
-      DataCell(Text(pendingEmployee.id.toString())),
+      DataCell(Text(pendingEmployee.regId != ""
+          ? pendingEmployee.regId.toString()
+          : pendingEmployee.id.toString())),
       DataCell(Text(pendingEmployee.name ?? "N/A")),
-      DataCell(Text(pendingEmployee.mobileNumber ?? "N/A")),
-      DataCell(Text(pendingEmployee.mobileNumber ?? "n/A")),
+      DataCell(Text(pendingEmployee.reportingManager ?? "N/A")),
+      DataCell(Text(pendingEmployee.reportingManagerName ?? "N/A")),
       DataCell(Text(pendingEmployee.designation ?? "N/A")),
       DataCell(Text(pendingEmployee.dateOfJoining ?? "N/A")),
       DataCell(

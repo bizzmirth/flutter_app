@@ -93,13 +93,18 @@ const RegisteredEmployeeModelSchema = CollectionSchema(
       name: r'reportingManager',
       type: IsarType.string,
     ),
-    r'status': PropertySchema(
+    r'reportingManagerName': PropertySchema(
       id: 15,
+      name: r'reportingManagerName',
+      type: IsarType.string,
+    ),
+    r'status': PropertySchema(
+      id: 16,
       name: r'status',
       type: IsarType.long,
     ),
     r'zone': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'zone',
       type: IsarType.string,
     )
@@ -215,6 +220,12 @@ int _registeredEmployeeModelEstimateSize(
     }
   }
   {
+    final value = object.reportingManagerName;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.zone;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -244,8 +255,9 @@ void _registeredEmployeeModelSerialize(
   writer.writeString(offsets[12], object.profilePicture);
   writer.writeString(offsets[13], object.regId);
   writer.writeString(offsets[14], object.reportingManager);
-  writer.writeLong(offsets[15], object.status);
-  writer.writeString(offsets[16], object.zone);
+  writer.writeString(offsets[15], object.reportingManagerName);
+  writer.writeLong(offsets[16], object.status);
+  writer.writeString(offsets[17], object.zone);
 }
 
 RegisteredEmployeeModel _registeredEmployeeModelDeserialize(
@@ -271,8 +283,9 @@ RegisteredEmployeeModel _registeredEmployeeModelDeserialize(
   object.profilePicture = reader.readStringOrNull(offsets[12]);
   object.regId = reader.readStringOrNull(offsets[13]);
   object.reportingManager = reader.readStringOrNull(offsets[14]);
-  object.status = reader.readLongOrNull(offsets[15]);
-  object.zone = reader.readStringOrNull(offsets[16]);
+  object.reportingManagerName = reader.readStringOrNull(offsets[15]);
+  object.status = reader.readLongOrNull(offsets[16]);
+  object.zone = reader.readStringOrNull(offsets[17]);
   return object;
 }
 
@@ -314,8 +327,10 @@ P _registeredEmployeeModelDeserializeProp<P>(
     case 14:
       return (reader.readStringOrNull(offset)) as P;
     case 15:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 16:
+      return (reader.readLongOrNull(offset)) as P;
+    case 17:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2834,6 +2849,162 @@ extension RegisteredEmployeeModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> reportingManagerNameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'reportingManagerName',
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> reportingManagerNameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'reportingManagerName',
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> reportingManagerNameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'reportingManagerName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> reportingManagerNameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'reportingManagerName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> reportingManagerNameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'reportingManagerName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> reportingManagerNameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'reportingManagerName',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> reportingManagerNameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'reportingManagerName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> reportingManagerNameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'reportingManagerName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+          QAfterFilterCondition>
+      reportingManagerNameContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'reportingManagerName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+          QAfterFilterCondition>
+      reportingManagerNameMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'reportingManagerName',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> reportingManagerNameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'reportingManagerName',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> reportingManagerNameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'reportingManagerName',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
       QAfterFilterCondition> statusIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -3283,6 +3454,20 @@ extension RegisteredEmployeeModelQuerySortBy
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      sortByReportingManagerName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'reportingManagerName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      sortByReportingManagerNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'reportingManagerName', Sort.desc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
       sortByStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'status', Sort.asc);
@@ -3538,6 +3723,20 @@ extension RegisteredEmployeeModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      thenByReportingManagerName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'reportingManagerName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      thenByReportingManagerNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'reportingManagerName', Sort.desc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
       thenByStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'status', Sort.asc);
@@ -3677,6 +3876,14 @@ extension RegisteredEmployeeModelQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QDistinct>
+      distinctByReportingManagerName({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'reportingManagerName',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QDistinct>
       distinctByStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'status');
@@ -3801,6 +4008,13 @@ extension RegisteredEmployeeModelQueryProperty on QueryBuilder<
       reportingManagerProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'reportingManager');
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, String?, QQueryOperations>
+      reportingManagerNameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'reportingManagerName');
     });
   }
 

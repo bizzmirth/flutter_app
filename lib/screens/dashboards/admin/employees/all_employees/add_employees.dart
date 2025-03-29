@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddEmployeePage extends StatefulWidget {
   final PendingEmployeeModel? pendingEmployee;
@@ -61,16 +63,70 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   final GlobalKey<FormFieldState> _emailKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _addressKey = GlobalKey<FormFieldState>();
 
+  String? selectedDepartmentId = "";
+  List<Map<String, dynamic>> departments = [];
+
   String _selectedCountryCode = '+91';
 
-  void _populatePendingEmployeeForm(PendingEmployeeModel employee) {
+  Future<String?> _getDepartmentNameById(String departmentId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final departmentDataString = prefs.getString('departmentData');
+
+      if (departmentDataString != null) {
+        final List<dynamic> departmentData = json.decode(departmentDataString);
+        final departmentInfo = departmentData.firstWhere(
+          (dept) => dept['id'].toString() == departmentId,
+          orElse: () => {'id': departmentId, 'dept_name': null},
+        );
+
+        return departmentInfo['dept_name']?.toString();
+      }
+    } catch (e) {
+      print('Error looking up department name: $e');
+    }
+    return null;
+  }
+
+  Future<void> _loadDepartments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final departmentDataString = prefs.getString('departmentData');
+
+      if (departmentDataString != null) {
+        final List<dynamic> departmentData = json.decode(departmentDataString);
+
+        setState(() {
+          departments = departmentData
+              .map<Map<String, dynamic>>((dept) => {
+                    'id': dept['id'].toString(),
+                    'dept_name': dept['dept_name'].toString()
+                  })
+              .toList();
+          Logger.success("departmetss :: $departments");
+        });
+      } else {}
+    } catch (e) {
+      print('Error loading departments: $e');
+    }
+  }
+
+  void _populatePendingEmployeeForm(PendingEmployeeModel employee) async {
     _firstController.text = employee.name?.split(" ").first ?? '';
     _lastnameController.text = employee.name?.split(" ").last ?? '';
     _mobileController.text = employee.mobileNumber!;
     _emailController.text = employee.email!;
     _addressController.text = employee.address!;
     _selectedGender = employee.gender!;
-    _selectedDepartment = employee.department!;
+
+    if (employee.department != null) {
+      _selectedDepartment =
+          (await _getDepartmentNameById(employee.department!)) ??
+              "---- Select Department * ----";
+      selectedDepartmentId = employee.department!;
+    }
+    selectedDepartmentId = employee.department;
+    // _selectedDepartment = employee.department!;
     _selectedDesignation = employee.designation!;
     _selectedZone = employee.zone!;
     _selectedBranch = employee.branch!;
@@ -196,6 +252,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         "Bank Details": null,
       };
     }
+    _loadDepartments();
   }
 
   void updatePendingEmployee() async {
@@ -425,7 +482,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           ..dateOfBirth = dobForApi
           ..dateOfJoining = dojForApi
           ..status = 2
-          ..department = _selectedDepartment
+          ..department = selectedDepartmentId
           ..designation = _selectedDesignation
           ..zone = _selectedZone
           ..branch = _selectedBranch
@@ -915,14 +972,37 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  _buildDropdown('Department *', ['1', '2', '3', '4', '5', '7'],
-                      _selectedDepartment, validator: (value) {
-                    if (value == null ||
-                        value == "---- Select Department * ----") {
-                      return 'Please select a department';
-                    }
-                    return null;
-                  }, (value) => setState(() => _selectedDepartment = value!)),
+                  _buildDropdown(
+                    'Department *',
+                    departments
+                        .map<String>((dept) => dept['dept_name'])
+                        .toList(),
+                    _selectedDepartment ?? "---- Select Department * ----",
+                    validator: (value) {
+                      if (value == null ||
+                          value == "---- Select Department * ----") {
+                        return 'Please select a department';
+                      }
+                      return null;
+                    },
+                    (value) {
+                      setState(() {
+                        _selectedDepartment = value!;
+                        final selectedDept = departments.firstWhere(
+                          (dept) => dept['dept_name'] == value,
+                          orElse: () => {'id': '', 'dept_name': ''},
+                        );
+                        selectedDepartmentId = selectedDept['id'];
+                        if (selectedDept['id'] != '') {
+                          selectedDepartmentId = selectedDept['id'];
+                          print(
+                              'Selected Department ID: $selectedDepartmentId');
+                        } else {
+                          print('Error: Department ID not found for $value');
+                        }
+                      });
+                    },
+                  ),
                   SizedBox(height: 10),
                   _buildDropdown(
                       'Designation *',

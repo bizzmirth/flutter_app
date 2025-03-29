@@ -1167,3 +1167,13 @@ class _FilterBar2State extends State<FilterBar2> {
     );
   }
 }
+
+String formatDate(String? date) {
+  if (date == null || date.isEmpty) return "N/A";
+  try {
+    final parsedDate = DateTime.parse(date);
+    return DateFormat('dd-MM-yyyy').format(parsedDate);
+  } catch (e) {
+    return "Invalid Date";
+  }
+}

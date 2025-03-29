@@ -2,6 +2,7 @@ import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.d
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/add_employees.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
@@ -294,12 +295,12 @@ class RegisteredEmployeeDataSource extends DataTableSource {
           ),
         ),
       ),
-      DataCell(Text(registeredEmployee.id.toString())),
+      DataCell(Text(registeredEmployee.regId.toString())),
       DataCell(Text(registeredEmployee.name ?? "N/A")),
-      DataCell(Text(registeredEmployee.mobileNumber ?? "N/A")),
-      DataCell(Text(registeredEmployee.mobileNumber ?? "n/A")),
+      DataCell(Text(registeredEmployee.reportingManager ?? "N/A")),
+      DataCell(Text(registeredEmployee.reportingManagerName ?? "n/A")),
       DataCell(Text(registeredEmployee.designation ?? "N/A")),
-      DataCell(Text(registeredEmployee.dateOfJoining ?? "N/A")),
+      DataCell(Text(formatDate(registeredEmployee.dateOfJoining))),
       DataCell(
         Container(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),

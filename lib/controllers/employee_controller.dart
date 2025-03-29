@@ -484,19 +484,21 @@ class EmployeeController extends ChangeNotifier {
     try {
       final employee = PendingEmployeeModel()
         ..id = parseIntSafely(json['id']) // Use auto-increment for local ID
+        ..regId = json['employee_id'] ?? ''
         ..name = json['name'] ?? ''
         ..mobileNumber = json['contact'] ?? ''
         ..email = json['email'] ?? ''
         ..address = json['address'] ?? ''
         ..gender = capitalize(json['gender'] ?? '')
         ..dateOfBirth = json['date_of_birth'] ?? ''
-        ..dateOfJoining = json['date_of_joining'] ?? ''
+        ..dateOfJoining = json['added_on'] ?? ''
         ..status = parseIntSafely(json['status']) ?? 1
         ..department = parseIntSafely(json['department']).toString()
         ..designation = parseIntSafely(json['designation']).toString()
         ..zone = parseIntSafely(json['zone']).toString()
         ..branch = parseIntSafely(json['branch']).toString()
         ..reportingManager = json['reporting_manager'] ?? ''
+        ..reportingManagerName = json['reporting_manager_name'] ?? ''
         ..profilePicture = json['profile_pic'] ?? ''
         ..idProof = json['id_proof'] ?? ''
         ..bankDetails = json['bank_details'] ?? '';
@@ -527,6 +529,7 @@ class EmployeeController extends ChangeNotifier {
         ..zone = parseIntSafely(json['zone']).toString()
         ..branch = parseIntSafely(json['branch']).toString()
         ..reportingManager = json['reporting_manager'] ?? ''
+        ..reportingManagerName = json['reporting_manager_name'] ?? ''
         ..profilePicture = json['profile_pic'] ?? ''
         ..idProof = json['id_proof'] ?? ''
         ..bankDetails = json['bank_details'] ?? '';
