@@ -8,15 +8,41 @@ import 'package:provider/provider.dart';
 
 class MyDepartDataSource extends DataTableSource {
   final List<Department> _departments;
-  MyDepartDataSource(this._departments);
-  final DesignationDepartmentController controller =
-      DesignationDepartmentController();
+  final BuildContext context;
+  MyDepartDataSource(this._departments, this.context);
+  // final DesignationDepartmentController controller =
+  //     DesignationDepartmentController();
+
+  bool isLoading = false;
 
   Future<void> deleteDepartment(Department department) async {
     try {
+      isLoading = true;
+      final controller =
+          Provider.of<DesignationDepartmentController>(context, listen: false);
       await controller.apiDeleteDepartment(department);
+      await controller.fetchDepartments();
+      notifyListeners();
+      isLoading = false;
+      ToastHelper.showSuccessToast(
+          context: context, title: "Department deleted successfully!");
     } catch (e) {
       Logger.success('Error deleting department: $e');
+      isLoading = false;
+    }
+  }
+
+  Future<void> restoreDepartment(Department department) async {
+    try {
+      final controller =
+          Provider.of<DesignationDepartmentController>(context, listen: false);
+      await controller.apiRestoreDepartment(department);
+      await controller.fetchDepartments();
+      notifyListeners();
+      ToastHelper.showSuccessToast(
+          context: context, title: "Department restored successfully!");
+    } catch (e) {
+      Logger.success('Error restoring department: $e');
     }
   }
 
@@ -199,12 +225,9 @@ class MyDepartDataSource extends DataTableSource {
                 title: Text("Delete"),
                 onTap: () {
                   deleteDepartment(department);
+                  Navigator.pop(context);
                 },
               ),
-              onTap: () {
-                Logger.success("Deleting ${department.id}");
-                // Add delete logic here
-              },
             ),
           ];
         } else if (int.tryParse(department.status) == 2) {
@@ -217,8 +240,7 @@ class MyDepartDataSource extends DataTableSource {
               ),
               onTap: () {
                 Logger.success("Restoring ${department.id}");
-                Navigator.pop(context);
-                // Add restore logic here
+                restoreDepartment(department);
               },
             ),
           ];

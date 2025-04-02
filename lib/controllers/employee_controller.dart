@@ -9,13 +9,15 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EmployeeController extends ChangeNotifier {
   final IsarService _isarService = IsarService();
   final String baseUrl =
       'https://testca.uniqbizz.com/api/employees/all_employees';
 
-  bool isLoading = false;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
   List<PendingEmployeeModel> _employees = [];
   List<PendingEmployeeModel> get employees => _employees;
 
@@ -29,14 +31,14 @@ class EmployeeController extends ChangeNotifier {
 
   Future<void> fetchAndSavePendingEmployees() async {
     try {
-      isLoading = true;
+      _isLoading = true;
       notifyListeners();
 
       final hasNetwork = await _hasNetwork();
       if (!hasNetwork) {
         Logger.warning('No network connection, using local data');
         _employees = await _isarService.getAll<PendingEmployeeModel>();
-        isLoading = false;
+        _isLoading = false;
         notifyListeners();
         return;
       }
@@ -52,10 +54,10 @@ class EmployeeController extends ChangeNotifier {
 
       // Update state
       _employees = apiEmployees;
-      isLoading = false;
+      _isLoading = false;
       notifyListeners();
     } catch (e) {
-      isLoading = false;
+      _isLoading = false;
       notifyListeners();
       Logger.error("Error in fetchAndSavePendingEmployees: $e");
       throw Exception('Failed to fetch and save employees');
@@ -106,7 +108,7 @@ class EmployeeController extends ChangeNotifier {
 
   Future<void> fetchAndSaveRegisterEmployees() async {
     try {
-      isLoading = true;
+      _isLoading = true;
       notifyListeners();
 
       final hasNetwork = await _hasNetwork();
@@ -114,8 +116,8 @@ class EmployeeController extends ChangeNotifier {
         Logger.warning('No network connection, using local data');
         _registerEmployee =
             await _isarService.getAll<RegisteredEmployeeModel>();
-        isLoading = false;
-        notifyListeners();
+        // _isLoading = false;
+        // notifyListeners();
         return;
       }
 
@@ -124,9 +126,14 @@ class EmployeeController extends ChangeNotifier {
       await _isarService.clearAll<RegisteredEmployeeModel>();
       for (var employee in apiEmployees) {
         await _isarService.save<RegisteredEmployeeModel>(employee);
+        _isLoading = false;
+        notifyListeners();
+      }
+      if (_isLoading) {
+        CircularProgressIndicator();
       }
     } catch (e) {
-      isLoading = false;
+      _isLoading = false;
       notifyListeners();
       Logger.error("Error in fetchAndSaveRegisterEmployees: $e");
       throw Exception('Failed to fetch and save register employees');
@@ -146,7 +153,7 @@ class EmployeeController extends ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        Logger.warning("API response $jsonResponse");
+        Logger.success("API response from register $jsonResponse");
         Logger.success('Full URL: $fullUrl');
 
         if (jsonResponse.containsKey('status') &&
@@ -480,6 +487,96 @@ class EmployeeController extends ChangeNotifier {
     }
   }
 
+  Future<bool> apiUpdateEmployeeStatus(id, email) async {
+    try {
+      final fullUrl = '$baseUrl/confirm_employee.php';
+      final Map<String, dynamic> requestBody = {
+        'id': id.toString(),
+        'uname': email,
+      };
+      final encodeBody = jsonEncode(requestBody);
+      final response = await http.post(Uri.parse(fullUrl),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: encodeBody);
+      Logger.success("Api Request body : $requestBody");
+      Logger.success("Api Response body : ${response.body}");
+      Logger.info('Api response status code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        await fetchAndSaveRegisterEmployees();
+        notifyListeners();
+        return true;
+      } else {
+        Logger.error(
+            'Failed to update employee status: ${response.statusCode}');
+        Logger.error("Failed to update employee status: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      Logger.error("Error updating employee status: $e");
+      return false;
+    }
+  }
+
+  Future<void> apiGetZone() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final fullUrl = '$baseUrl/add_employees_zone.php';
+      final response = await http.get(Uri.parse(fullUrl));
+      Logger.success(
+          "Response Code: ${response.statusCode} Api Response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        final jsonData = json.decode(response.body);
+
+        if (jsonData['status'] == 'success') {
+          // Convert the zones array to a string for storage
+          final zonesData = json.encode(jsonData['zones']);
+
+          // Save zones data to SharedPreferences
+          await prefs.setString('zones', zonesData);
+          Logger.success("Zones data saved to SharedPreferences");
+        } else {
+          Logger.error(
+              "API returned success code but status was not 'success'");
+        }
+      }
+    } catch (e) {
+      Logger.error("Error getting zones: $e");
+    }
+  }
+
+  Future<void> apiGetBranchs(String zoneId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final fullUrl = "$baseUrl/add_employees_branch.php";
+      final requestBody = {'zone_id': zoneId};
+      final encodeBody = json.encode(requestBody);
+      final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
+      Logger.success(
+          "Response Code: ${response.statusCode} Api Response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+
+        if (jsonData['status'] == 'success') {
+          // Store branches data specific to this zone
+          final branchesData = json.encode(jsonData['branches']);
+          await prefs.setString('branches_$zoneId', branchesData);
+          Logger.success(
+              "Branches data saved to SharedPreferences for zone $zoneId");
+        } else {
+          Logger.error(
+              "API returned success code but status was not 'success'");
+        }
+      }
+    } catch (e) {
+      Logger.error("Error getting branches: $e");
+    }
+  }
+
   PendingEmployeeModel _pendingEmployeeFromJson(Map<String, dynamic> json) {
     try {
       final employee = PendingEmployeeModel()
@@ -532,7 +629,8 @@ class EmployeeController extends ChangeNotifier {
         ..reportingManagerName = json['reporting_manager_name'] ?? ''
         ..profilePicture = json['profile_pic'] ?? ''
         ..idProof = json['id_proof'] ?? ''
-        ..bankDetails = json['bank_details'] ?? '';
+        ..bankDetails = json['bank_details'] ?? ''
+        ..userType = json['user_type'];
 
       return employee;
     } catch (e) {

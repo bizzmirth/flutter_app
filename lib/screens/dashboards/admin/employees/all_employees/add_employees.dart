@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
-import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/all_employees_page.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
@@ -64,29 +64,19 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   final GlobalKey<FormFieldState> _addressKey = GlobalKey<FormFieldState>();
 
   String? selectedDepartmentId = "";
+  String? selectedDesignationId = "";
+  String selectedManagerRegId = "";
+  String? selectedZoneId = "";
+  String? selectedBranchId = "";
   List<Map<String, dynamic>> departments = [];
+  List<Map<String, dynamic>> designations = [];
+  List<Map<String, dynamic>> zones = [];
+  List<Map<String, dynamic>> branches = [];
+  List<RegisteredEmployeeModel> reportingManager = [];
+  List<String> reportingManagerNames = [];
+  Map<String, String> managerNameToRegIdMap = {};
 
   String _selectedCountryCode = '+91';
-
-  Future<String?> _getDepartmentNameById(String departmentId) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final departmentDataString = prefs.getString('departmentData');
-
-      if (departmentDataString != null) {
-        final List<dynamic> departmentData = json.decode(departmentDataString);
-        final departmentInfo = departmentData.firstWhere(
-          (dept) => dept['id'].toString() == departmentId,
-          orElse: () => {'id': departmentId, 'dept_name': null},
-        );
-
-        return departmentInfo['dept_name']?.toString();
-      }
-    } catch (e) {
-      print('Error looking up department name: $e');
-    }
-    return null;
-  }
 
   Future<void> _loadDepartments() async {
     try {
@@ -111,6 +101,120 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     }
   }
 
+  Future<void> _loadDesignations() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final designationDataString = prefs.getString('designationData');
+
+      if (designationDataString != null) {
+        final List<dynamic> designationData = json.decode(
+          designationDataString,
+        );
+
+        setState(() {
+          designations = designationData
+              .map<Map<String, dynamic>>(
+                (desg) => {
+                  'id': desg['id'].toString(),
+                  'designation_name':
+                      desg['designation_name'].toString(), // match the key name
+                },
+              )
+              .toList();
+          Logger.success("designationss :: $designations");
+        });
+      }
+    } catch (e) {
+      print('Error loading designations: $e');
+    }
+  }
+
+  Future<void> _loadReportingManager() async {
+    try {
+      reportingManager = await _isarService.getAll<RegisteredEmployeeModel>();
+
+      reportingManager = reportingManager
+          .where((employee) => employee.userType == "24")
+          .toList();
+
+      reportingManagerNames = [];
+      managerNameToRegIdMap = {};
+
+      for (var rm in reportingManager) {
+        Logger.success("reporting manager ${rm.name} userType: ${rm.userType}");
+        reportingManagerNames.add(rm.name!);
+        managerNameToRegIdMap[rm.name!] = rm.regId!;
+      }
+
+      setState(() {}); // Refresh UI after loading data
+    } catch (e) {
+      Logger.error("Error fetching Reporting Manager: $e");
+    }
+  }
+
+  Future<void> _getZones() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await employeeController.apiGetZone();
+      final zoneDataString = prefs.getString('zones');
+
+      if (zoneDataString != null) {
+        final List<dynamic> zoneData = json.decode(zoneDataString);
+        setState(() {
+          zones = zoneData
+              .map<Map<String, dynamic>>((zone) => {
+                    'id': zone['id'].toString(),
+                    'zone_name': zone['zone_name'].toString()
+                  })
+              .toList();
+        });
+        Logger.success("zones :: $zones");
+      } else {
+        Logger.error("No Zone data found");
+      }
+    } catch (e) {
+      Logger.error('Error fetching Zone: $e');
+    }
+  }
+
+  Future<void> _getBranches(String zoneId) async {
+    try {
+      setState(() {
+        // Clear previous branches when a new zone is selected
+        branches = [];
+        _selectedBranch = "---- Select Branch * ----"; // Reset selected branch
+      });
+
+      await employeeController.apiGetBranchs(zoneId);
+
+      // We need to update the apiGetBranchs function to store the response data
+      // and return it or store it in SharedPreferences like you did with zones
+      final prefs = await SharedPreferences.getInstance();
+      final branchDataString = prefs.getString('branches_$zoneId');
+
+      if (branchDataString != "---- Select Branch * ----") {
+        final List<dynamic> branchData = json.decode(branchDataString!);
+        setState(() {
+          branches = branchData
+              .map<Map<String, dynamic>>((branch) => {
+                    'id': branch['id'].toString(),
+                    'branch_name': branch['branch_name'].toString()
+                  })
+              .toList();
+          if (branches != null) {
+            _selectedBranch = branches[0]['branch_name'];
+            selectedBranchId = branches[0]['id'];
+          }
+        });
+        Logger.success("branches :: $branches");
+      } else {
+        Logger.warning("No branches found for the selected zone");
+      }
+    } catch (e) {
+      Logger.error('Error fetching branches: $e');
+    }
+  }
+
   void _populatePendingEmployeeForm(PendingEmployeeModel employee) async {
     _firstController.text = employee.name?.split(" ").first ?? '';
     _lastnameController.text = employee.name?.split(" ").last ?? '';
@@ -121,21 +225,62 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
     if (employee.department != null) {
       _selectedDepartment =
-          (await _getDepartmentNameById(employee.department!)) ??
+          (await getDepartmentNameById(employee.department!)) ??
               "---- Select Department * ----";
       selectedDepartmentId = employee.department!;
     }
     selectedDepartmentId = employee.department;
     // _selectedDepartment = employee.department!;
-    _selectedDesignation = employee.designation!;
-    _selectedZone = employee.zone!;
-    _selectedBranch = employee.branch!;
-    _selectedManager = employee.reportingManager!;
+    if (employee.designation != null) {
+      _selectedDesignation =
+          (await getDesignationById(employee.designation!)) ??
+              "---- Select Department * ----";
+      selectedDesignationId = employee.designation!;
+    }
+    // if (employee.zone != null) {
+    //   _selectedZone =
+    //       (await getZoneById(employee.zone!)) ?? "---- Select Zone * ----";
+    //   selectedZoneId = employee.zone!;
+    // }
+    if (employee.reportingManager != null) {
+      _selectedManager =
+          (await getReportingManagerNameById(employee.reportingManager!)) ??
+              "---- Select Reporting Manager * ----";
+      selectedManagerRegId = employee.reportingManager!;
+    }
+    if (employee.zone != null) {
+      // First get the zone name
+      _selectedZone =
+          (await getZoneById(employee.zone!)) ?? "---- Select Zone * ----";
+      selectedZoneId = employee.zone!;
+
+      // Now fetch branches for this zone
+      if (selectedZoneId!.isNotEmpty) {
+        await _getBranches(selectedZoneId!);
+
+        if (employee.branch != null) {
+          if (employee.branch!.contains(RegExp(r'^\d+$'))) {
+          } else {
+            _selectedBranch = employee.branch!;
+          }
+
+          bool branchExists = branches
+              .any((branch) => branch['branch_name'] == _selectedBranch);
+
+          if (!branchExists) {
+            _selectedBranch = "---- Select Branch * ----";
+            Logger.warning(
+                "Branch '${employee.branch}' not found in loaded branches for zone '${employee.zone}'");
+          }
+        } else {
+          _selectedBranch = "---- Select Branch * ----";
+        }
+      }
+    }
     // dobForApi = employee.dateOfBirth!;
     // dojForApi = employee.dateOfJoining!;
 
     try {
-      // Check if DOB is already in API format (yyyy-MM-dd)
       if (employee.dateOfBirth != null &&
           employee.dateOfBirth!.contains('-') &&
           employee.dateOfBirth!.split('-').length == 3 &&
@@ -173,7 +318,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       // Fallback to original values if parsing fails
       dobForApi = employee.dateOfBirth;
       dojForApi = employee.dateOfJoining;
-      // Still attempt to display in the right format
       _dobController.text = employee.dateOfBirth ?? '';
       _dojController.text = employee.dateOfJoining ?? '';
     }
@@ -216,7 +360,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       dobForApi = DateFormat('yyyy-MM-dd').format(dobDate);
       dojForApi = DateFormat('yyyy-MM-dd').format(dojDate);
     } catch (e) {
-      print("Error parsing dates during form population: $e");
+      Logger.error("Error parsing dates during form population: $e");
       // Fallback to original values if parsing fails
       dobForApi = employee.dateOfBirth;
       dojForApi = employee.dateOfJoining;
@@ -253,6 +397,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       };
     }
     _loadDepartments();
+    _loadDesignations();
+    _loadReportingManager();
+    _getZones();
   }
 
   void updatePendingEmployee() async {
@@ -269,8 +416,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           ..dateOfBirth = dobForApi
           ..dateOfJoining = dojForApi
           ..status = 2
-          ..department = _selectedDepartment
-          ..designation = _selectedDesignation
+          ..department = selectedDepartmentId
+          ..designation = selectedDesignationId
           ..zone = _selectedZone
           ..branch = _selectedBranch
           ..reportingManager = _selectedManager
@@ -483,10 +630,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           ..dateOfJoining = dojForApi
           ..status = 2
           ..department = selectedDepartmentId
-          ..designation = _selectedDesignation
-          ..zone = _selectedZone
-          ..branch = _selectedBranch
-          ..reportingManager = _selectedManager
+          ..designation = selectedDesignationId
+          ..zone = selectedZoneId
+          ..branch = selectedBranchId
+          ..reportingManager = selectedManagerRegId
           ..profilePicture = profilePicturePath
           ..idProof = idProofPath
           ..bankDetails = bankDetailsPath;
@@ -587,9 +734,38 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     List<String> items,
     String selectedValue,
     Function(String?) onValueChanged, {
-    String? Function(String?)? validator, // Add this parameter
+    String? Function(String?)? validator,
+    String? emptyMessage, // Add this parameter for empty message
   }) {
     String defaultOption = "---- Select $label ----"; // Default placeholder
+
+    // Handle empty items list with emptyMessage
+    if (items.isEmpty && emptyMessage != null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: TextStyle(
+                    color: const Color.fromARGB(255, 255, 255, 255)
+                        .withOpacity(0.8))),
+            Container(
+              padding: EdgeInsets.all(12),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child:
+                  Text(emptyMessage, style: TextStyle(color: Colors.red[300])),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Original implementation for non-empty lists
     if (!items.contains(selectedValue) && selectedValue != defaultOption) {
       selectedValue = defaultOption;
     }
@@ -783,10 +959,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter an email';
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                        .hasMatch(value)) {
-                      return 'Please enter a valid email';
-                    }
+                    // if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                    //     .hasMatch(value)) {
+                    //   return 'Please enter a valid email';
+                    // }
                     return null;
                   }, fieldKey: _emailKey),
                   SizedBox(height: 15),
@@ -977,7 +1153,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     departments
                         .map<String>((dept) => dept['dept_name'])
                         .toList(),
-                    _selectedDepartment ?? "---- Select Department * ----",
+                    _selectedDepartment,
                     validator: (value) {
                       if (value == null ||
                           value == "---- Select Department * ----") {
@@ -995,10 +1171,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         selectedDepartmentId = selectedDept['id'];
                         if (selectedDept['id'] != '') {
                           selectedDepartmentId = selectedDept['id'];
-                          print(
+                          Logger.success(
                               'Selected Department ID: $selectedDepartmentId');
                         } else {
-                          print('Error: Department ID not found for $value');
+                          Logger.success(
+                              'Error: Department ID not found for $value');
                         }
                       });
                     },
@@ -1006,42 +1183,102 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                   SizedBox(height: 10),
                   _buildDropdown(
                       'Designation *',
-                      ['1', '2', '3', '4', '5', '7'],
+                      designations
+                          .map<String>((desg) => desg['designation_name'])
+                          .toList(),
                       _selectedDesignation, validator: (value) {
                     if (value == null ||
                         value == "---- Select Designation * ----") {
                       return 'Please select a designation';
                     }
                     return null;
-                  }, (value) => setState(() => _selectedDesignation = value!)),
+                  },
+                      (value) => setState(() {
+                            _selectedDesignation = value!;
+                            final selectedDesg = designations.firstWhere(
+                              (desg) => desg['designation_name'] == value,
+                              orElse: () => {'id': '', 'designation_name': ''},
+                            );
+                            selectedDesignationId = selectedDesg['id'];
+                            if (selectedDesg['id'] != '') {
+                              selectedDepartmentId = selectedDesg['id'];
+                              Logger.success(
+                                  'Selected Designation ID: $selectedDesignationId');
+                            } else {
+                              Logger.success(
+                                  'Error: Designation ID not found for $value');
+                            }
+                          })),
                   SizedBox(height: 10),
                   _buildDropdown(
-                      'Zone *', ['1', '2', '3', '4', '5', '7'], _selectedZone,
-                      validator: (value) {
+                      'Zone *',
+                      zones.map<String>((zone) => zone['zone_name']).toList(),
+                      _selectedZone, validator: (value) {
                     if (value == null || value == "---- Select Zone * ----") {
                       return 'Please select a zone';
                     }
                     return null;
-                  }, (value) => setState(() => _selectedZone = value!)),
+                  },
+                      (value) => setState(() {
+                            _selectedZone = value!;
+                            final selectedZone = zones.firstWhere(
+                              (zone) => zone['zone_name'] == value,
+                              orElse: () => {'id': '', 'zone_name': ''},
+                            );
+                            selectedZoneId = selectedZone['id'];
+                            Logger.warning(
+                                'Selected Zone : $_selectedZone and selected zone ID : $selectedZoneId');
+                            if (selectedZoneId != null) {
+                              _getBranches(selectedZoneId!);
+                            }
+                          })),
                   SizedBox(height: 10),
-                  _buildDropdown('Branch *', ['1', '2', '3', '4', '5', '7'],
+                  _buildDropdown(
+                      'Branch *',
+                      branches.isEmpty
+                          ? []
+                          : branches
+                              .map<String>((branch) => branch['branch_name'])
+                              .toList(),
                       _selectedBranch, validator: (value) {
+                    if (branches.isEmpty) {
+                      return null; // Don't validate if no branches are available
+                    }
                     if (value == null || value == "---- Select Branch * ----") {
                       return 'Please select a branch';
                     }
                     return null;
-                  }, (value) => setState(() => _selectedBranch = value!)),
+                  },
+                      (value) => setState(() {
+                            _selectedBranch = value!;
+                            final selectedBranch = branches.firstWhere(
+                              (branch) => branch['branch_name'] == value,
+                              orElse: () => {'id': '', 'branch_name': ''},
+                            );
+                            selectedBranchId = selectedBranch['id'];
+                          }),
+                      emptyMessage:
+                          "No branches available for the selected zone"),
                   SizedBox(height: 10),
                   _buildDropdown(
                       'Reporting Manager *',
-                      ['John Doe', 'Jane Smith', 'Alice Brown'],
+                      reportingManagerNames, // Use the filtered list of manager names
                       _selectedManager, validator: (value) {
                     if (value == null ||
                         value == "---- Select Reporting Manager * ----") {
                       return 'Please select a reporting manager';
                     }
                     return null;
-                  }, (value) => setState(() => _selectedManager = value!)),
+                  },
+                      (value) => setState(() {
+                            _selectedManager = value!;
+                            selectedManagerRegId =
+                                managerNameToRegIdMap[_selectedManager] ?? "";
+
+                            // Now you can use selectedManagerRegId for saving or other purposes
+                            Logger.success(
+                                "Selected manager: $_selectedManager, ID: $selectedManagerRegId");
+                          })),
                   SizedBox(height: 20),
                   Text(
                     "Attachments",

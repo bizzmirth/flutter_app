@@ -1,14 +1,20 @@
 // Widget for Contact Info
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/book_now_page/book_now_page.dart';
+import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+final IsarService _isarService = IsarService();
 //contact info
 Widget contactInfo(IconData icon, String text) {
   return ListTile(
@@ -678,6 +684,84 @@ class FilterBar extends StatefulWidget {
 
   @override
   _FilterBarState createState() => _FilterBarState();
+}
+
+Future<String?> getDepartmentNameById(String departmentId) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final departmentDataString = prefs.getString('departmentData');
+
+    if (departmentDataString != null) {
+      final List<dynamic> departmentData = json.decode(departmentDataString);
+      final departmentInfo = departmentData.firstWhere(
+        (dept) => dept['id'].toString() == departmentId,
+        orElse: () => {'id': departmentId, 'dept_name': null},
+      );
+
+      return departmentInfo['dept_name']?.toString();
+    }
+  } catch (e) {
+    Logger.error('Error looking up department name: $e');
+  }
+  return null;
+}
+
+Future<String?> getDesignationById(String designationId) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final designationDataString = prefs.getString('designationData');
+
+    if (designationDataString != null) {
+      final List<dynamic> designationData = json.decode(designationDataString);
+      final designationInfo = designationData.firstWhere(
+        (desg) => desg['id'].toString() == designationId,
+        orElse: () => {'id': designationId, 'desg_name': null},
+      );
+      return designationInfo['designation_name']?.toString();
+    }
+  } catch (e) {
+    Logger.error("Error looking up designation name: $e");
+  }
+  return null;
+}
+
+Future<String?> getReportingManagerNameById(String reportingManagerId) async {
+  try {
+    final reportingManagerDataList =
+        await _isarService.getAll<RegisteredEmployeeModel>();
+
+    // Find the employee with the matching regId
+    for (var employee in reportingManagerDataList) {
+      if (employee.regId == reportingManagerId) {
+        return employee.name;
+      }
+    }
+
+    // If no match is found, return a default value
+    return "N/A";
+  } catch (e) {
+    Logger.error("Error fetching reporting manager data: $e");
+    return null;
+  }
+}
+
+Future<String?> getZoneById(String zoneId) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final zoneDataString = prefs.getString('zones');
+
+    if (zoneDataString != null) {
+      final List<dynamic> zoneData = json.decode(zoneDataString);
+      final zoneInfo = zoneData.firstWhere(
+        (zone) => zone['id'].toString() == zoneId,
+        orElse: () => {'id': zoneId, 'zone_name': null},
+      );
+      return zoneInfo['zone_name']?.toString();
+    }
+  } catch (e) {
+    Logger.error("Error looking up zone name : $e");
+  }
+  return null;
 }
 
 class _FilterBarState extends State<FilterBar> {

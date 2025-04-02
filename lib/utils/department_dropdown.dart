@@ -6,12 +6,14 @@ class DepartmentDropdown extends StatefulWidget {
   final ValueChanged<Map<String, String>?>? onDepartmentSelected;
   final bool isViewMode;
   final String? initialDepartment;
+  final String? initialDepartmentId;
 
   const DepartmentDropdown({
     Key? key,
     this.onDepartmentSelected,
     this.isViewMode = false,
     this.initialDepartment,
+    this.initialDepartmentId,
   }) : super(key: key);
 
   @override
@@ -51,8 +53,8 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
 
           print('Processed Departments: $departments'); // Debug print
 
-          // If in view mode and initial department is provided, set it as selected
-          if (widget.isViewMode && widget.initialDepartment != null) {
+          // Set selected department for both view AND edit mode
+          if (widget.initialDepartment != null) {
             selectedDepartment = widget.initialDepartment;
             print(
                 'Initial Department: ${widget.initialDepartment}'); // Debug print

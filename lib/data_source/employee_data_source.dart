@@ -15,6 +15,7 @@ class EmployeeDataSource extends DataTableSource {
 
   final IsarService isarService = IsarService();
   final EmployeeController employeeController = EmployeeController();
+  var isLoading = false;
 
   Future<void> deleteEmployee(idToDelete, {bool showToast = true}) async {
     try {
@@ -31,8 +32,29 @@ class EmployeeDataSource extends DataTableSource {
     }
   }
 
+  void showLoadingDialog(BuildContext context,
+      {String message = "Processing..."}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text(message),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> registerEmployee(PendingEmployeeModel empRegister) async {
+    showLoadingDialog(context, message: "Registering employee...");
     try {
+      isLoading = true;
       Logger.warning("Registering the employee ${empRegister.name}");
       final registerEmployee = RegisteredEmployeeModel()
         ..id = empRegister.id
@@ -56,13 +78,19 @@ class EmployeeDataSource extends DataTableSource {
         ..bankDetails = empRegister.bankDetails;
 
       await isarService.save<RegisteredEmployeeModel>(registerEmployee);
-      removeEmployeeFromTable(empRegister.id, showToast: false);
+
+      await removeEmployeeFromTable(empRegister.id, showToast: false);
+      await employeeController.apiUpdateEmployeeStatus(
+          empRegister.id, empRegister.email);
+
       ToastHelper.showSuccessToast(
           context: context, title: "Employee Registered.");
-      // Navigator.pop(context);
+      isLoading = false;
+      // Navigator.of(context, rootNavigator: true).pop();
       Logger.success("----------- Employee Regisered ${empRegister.name}");
     } catch (e) {
       Logger.error("Failed to register the employee:: $e");
+      isLoading = false;
     }
   }
 
@@ -154,11 +182,12 @@ class EmployeeDataSource extends DataTableSource {
                       "------------ Delete ${employee.name}------------");
 
                   deleteEmployee(employee.id, showToast: true);
+                  Navigator.pop(context);
                 },
               ),
             ),
             PopupMenuItem(
-              value: "register",
+              value: "complete",
               child: ListTile(
                 leading: Icon(Icons.app_registration,
                     color: const Color.fromARGB(255, 0, 238, 127)),
@@ -167,6 +196,7 @@ class EmployeeDataSource extends DataTableSource {
                   Logger.warning(
                       "------------ Register ${employee.name}------------");
                   registerEmployee(employee);
+                  // Navigator.pop(context);
                 },
               ),
             ),
@@ -324,9 +354,8 @@ class EmployeeDataSource extends DataTableSource {
           ),
         ),
       ),
-      DataCell(Text(pendingEmployee.regId != ""
-          ? pendingEmployee.regId.toString()
-          : pendingEmployee.id.toString())),
+      DataCell(Text(pendingEmployee.id
+          .toString())), //changed this for time being because it was showing null
       DataCell(Text(pendingEmployee.name ?? "N/A")),
       DataCell(Text(pendingEmployee.reportingManager ?? "N/A")),
       DataCell(Text(pendingEmployee.reportingManagerName ?? "N/A")),

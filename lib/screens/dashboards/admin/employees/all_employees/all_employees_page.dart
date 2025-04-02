@@ -10,6 +10,7 @@ import 'package:bizzmirth_app/services/isar_servies.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class AllEmployeesPage extends StatefulWidget {
   const AllEmployeesPage({super.key});
@@ -56,7 +57,6 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
     });
 
     try {
-      // First fetch from API and populate local DB
       await employeeController.fetchAndSavePendingEmployees();
       await employeeController.fetchAndSaveRegisterEmployees();
 
@@ -101,6 +101,7 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<EmployeeController>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -115,7 +116,7 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
         backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
-      body: isLoading
+      body: isLoading || controller.isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Padding(
@@ -198,38 +199,40 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: SizedBox(
-                        height: (_rowsPerPage1 * dataRowHeight) +
-                            headerHeight +
-                            paginationHeight,
-                        child: PaginatedDataTable(
-                          columnSpacing: 36,
-                          dataRowMinHeight: 40,
-                          columns: [
-                            DataColumn(label: Text("Image")),
-                            DataColumn(label: Text("ID")),
-                            DataColumn(label: Text("Full Name")),
-                            DataColumn(label: Text("Ref. ID")),
-                            DataColumn(label: Text("Ref. Name")),
-                            DataColumn(label: Text("Designation")),
-                            DataColumn(label: Text("Joining Date")),
-                            DataColumn(label: Text("Status")),
-                            DataColumn(label: Text("Action"))
-                          ],
-                          source: RegisteredEmployeeDataSource(
-                              context, registeredEmployee),
-                          rowsPerPage: _rowsPerPage1,
-                          availableRowsPerPage: [5, 10, 15, 20, 25],
-                          onRowsPerPageChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _rowsPerPage1 = value;
-                              });
-                            }
-                          },
-                          arrowHeadColor: Colors.blue,
-                        ),
-                      ),
+                      child: employeeController.isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : SizedBox(
+                              height: (_rowsPerPage1 * dataRowHeight) +
+                                  headerHeight +
+                                  paginationHeight,
+                              child: PaginatedDataTable(
+                                columnSpacing: 36,
+                                dataRowMinHeight: 40,
+                                columns: [
+                                  DataColumn(label: Text("Image")),
+                                  DataColumn(label: Text("ID")),
+                                  DataColumn(label: Text("Full Name")),
+                                  DataColumn(label: Text("Ref. ID")),
+                                  DataColumn(label: Text("Ref. Name")),
+                                  DataColumn(label: Text("Designation")),
+                                  DataColumn(label: Text("Joining Date")),
+                                  DataColumn(label: Text("Status")),
+                                  DataColumn(label: Text("Action"))
+                                ],
+                                source: RegisteredEmployeeDataSource(
+                                    context, registeredEmployee),
+                                rowsPerPage: _rowsPerPage1,
+                                availableRowsPerPage: [5, 10, 15, 20, 25],
+                                onRowsPerPageChanged: (value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      _rowsPerPage1 = value;
+                                    });
+                                  }
+                                },
+                                arrowHeadColor: Colors.blue,
+                              ),
+                            ),
                     ),
                   ],
                 ),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Designation {
   final String id;
   final String desgName;
@@ -24,5 +26,16 @@ class Designation {
       createdDate: json['created_date'] ?? '',
       status: json['status'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'designation_name': desgName,
+      'dept_id': deptId,
+      'dept_name': deptName,
+      'created_date': createdDate,
+      'status': status,
+    };
   }
 }

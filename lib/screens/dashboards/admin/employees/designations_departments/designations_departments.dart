@@ -24,6 +24,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
   static const double paginationHeight = 60.0;
   final DesignationDepartmentController controller =
       DesignationDepartmentController();
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -34,6 +35,29 @@ class _DesignationsPageState extends State<DesignationsPage> {
       Future.wait(
           [controller.fetchDepartments(), controller.fetchDesignations()]);
     });
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await controller.fetchDepartments();
+      await controller.fetchDesignations();
+      setState(() {
+        isLoading = false;
+      });
+      setState(() {
+        isLoading = true;
+      });
+    } catch (e) {
+      Logger.success(e.toString());
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -54,154 +78,160 @@ class _DesignationsPageState extends State<DesignationsPage> {
         backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Divider(thickness: 1, color: Colors.black26),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    "Departments:",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              Divider(thickness: 1, color: Colors.black26),
-              Row(
-                children: [
-                  SizedBox(width: 530),
-                  Expanded(
-                    flex: 2,
-                    child: TextField(
-                      controller: null,
-                      decoration: InputDecoration(
-                        hintText: "Search...",
-                        border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(10), // Rounded corners
-                          // No border line
+      body: isLoading || controller.isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Divider(thickness: 1, color: Colors.black26),
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          "Departments:",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 20),
-                ],
-              ),
+                    Divider(thickness: 1, color: Colors.black26),
+                    Row(
+                      children: [
+                        SizedBox(width: 530),
+                        Expanded(
+                          flex: 2,
+                          child: TextField(
+                            controller: null,
+                            decoration: InputDecoration(
+                              hintText: "Search...",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    10), // Rounded corners
+                                // No border line
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                      ],
+                    ),
 
-              Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SizedBox(
-                    height: (_rowsPerPage * dataRowHeight) +
-                        headerHeight +
-                        paginationHeight,
-                    child: Consumer<DesignationDepartmentController>(
-                      builder: (context, value, child) {
-                        return PaginatedDataTable(
-                          columnSpacing: 255,
+                    Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: SizedBox(
+                          height: (_rowsPerPage * dataRowHeight) +
+                              headerHeight +
+                              paginationHeight,
+                          child: Consumer<DesignationDepartmentController>(
+                            builder: (context, value, child) {
+                              return PaginatedDataTable(
+                                columnSpacing: 255,
+                                dataRowMinHeight: 40,
+                                columns: [
+                                  DataColumn(label: Text("ID")),
+                                  DataColumn(label: Text("Department Name")),
+                                  DataColumn(label: Text("Action"))
+                                ],
+                                source: MyDepartDataSource(
+                                    controller.departments, context),
+                                rowsPerPage: _rowsPerPage,
+                                availableRowsPerPage: [5, 10, 15, 20, 25],
+                                onRowsPerPageChanged: (value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      _rowsPerPage = value;
+                                    });
+                                  }
+                                },
+                                arrowHeadColor: Colors.blue,
+                              );
+                            },
+                          )),
+                    ),
+
+                    SizedBox(height: 50),
+                    Divider(thickness: 1, color: Colors.black26),
+                    // Upcoming Events Section
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        "Designations:",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Divider(thickness: 1, color: Colors.black26),
+                    Row(
+                      children: [
+                        SizedBox(width: 530),
+                        Expanded(
+                          flex: 2,
+                          child: TextField(
+                            controller: null,
+                            decoration: InputDecoration(
+                              hintText: "Search...",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                // No border line
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                      ],
+                    ),
+
+                    Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: SizedBox(
+                        height: (_rowsPerPage1 * dataRowHeight) +
+                            headerHeight +
+                            paginationHeight,
+                        child: PaginatedDataTable(
+                          columnSpacing: 127,
                           dataRowMinHeight: 40,
                           columns: [
                             DataColumn(label: Text("ID")),
-                            DataColumn(label: Text("Department Name")),
+                            DataColumn(label: Text("Designation")),
+                            DataColumn(label: Text("Department")),
                             DataColumn(label: Text("Action"))
                           ],
-                          source: MyDepartDataSource(controller.departments),
-                          rowsPerPage: _rowsPerPage,
+                          source: MyDesigDataSource(
+                              controller.designation, context),
+                          rowsPerPage: _rowsPerPage1,
                           availableRowsPerPage: [5, 10, 15, 20, 25],
                           onRowsPerPageChanged: (value) {
                             if (value != null) {
                               setState(() {
-                                _rowsPerPage = value;
+                                _rowsPerPage1 = value;
                               });
                             }
                           },
                           arrowHeadColor: Colors.blue,
-                        );
-                      },
-                    )),
-              ),
-
-              SizedBox(height: 50),
-              Divider(thickness: 1, color: Colors.black26),
-              // Upcoming Events Section
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  "Designations:",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Divider(thickness: 1, color: Colors.black26),
-              Row(
-                children: [
-                  SizedBox(width: 530),
-                  Expanded(
-                    flex: 2,
-                    child: TextField(
-                      controller: null,
-                      decoration: InputDecoration(
-                        hintText: "Search...",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          // No border line
                         ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 20),
-                ],
-              ),
-
-              Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SizedBox(
-                  height: (_rowsPerPage1 * dataRowHeight) +
-                      headerHeight +
-                      paginationHeight,
-                  child: PaginatedDataTable(
-                    columnSpacing: 127,
-                    dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Designation")),
-                      DataColumn(label: Text("Department")),
-                      DataColumn(label: Text("Action"))
-                    ],
-                    source: MyDesigDataSource(controller.designation),
-                    rowsPerPage: _rowsPerPage1,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
-                    onRowsPerPageChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _rowsPerPage1 = value;
-                        });
-                      }
-                    },
-                    arrowHeadColor: Colors.blue,
-                  ),
+                    SizedBox(height: 50),
+                  ],
                 ),
               ),
-              SizedBox(height: 50),
-            ],
-          ),
-        ),
-      ),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Adddesdialog(context);

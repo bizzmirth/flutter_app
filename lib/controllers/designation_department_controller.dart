@@ -62,6 +62,7 @@ class DesignationDepartmentController extends ChangeNotifier {
     _errorMessage = '';
     notifyListeners();
     try {
+      final prefs = await SharedPreferences.getInstance();
       final response =
           await http.get(Uri.parse('$baseUrl/designation/designation.php'));
       Logger.success("Designation API response: ${response.body}");
@@ -72,6 +73,12 @@ class DesignationDepartmentController extends ChangeNotifier {
           _designation = (responseData['data'] as List)
               .map((designationJson) => Designation.fromJson(designationJson))
               .toList();
+
+          final designationJson =
+              _designation.map((desg) => desg.toJson()).toList();
+          final isSaved = await prefs.setString(
+              'designationData', json.encode(designationJson));
+          Logger.success("Designations saved in SharedPreferences $isSaved");
         } else {
           _errorMessage = 'Failed to load departments';
         }
@@ -145,6 +152,41 @@ class DesignationDepartmentController extends ChangeNotifier {
     }
   }
 
+  Future<void> apiEditDesignation(id, name, deptID, status) async {
+    _isLoading = true;
+    _errorMessage = "";
+    notifyListeners();
+
+    try {
+      var fullUrl = '$baseUrl/designation/edit_designation_data.php';
+      final Map<String, dynamic> data = {
+        "id": id,
+        "name": name,
+        "dept_id": deptID,
+        "message": "edit",
+        "status": status
+      };
+      final encodeBody = json.encode(data);
+      final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
+      Logger.success("request body $encodeBody");
+      Logger.success("API response: ${response.body}");
+      Logger.success("API status code : ${response.statusCode}");
+      Logger.success(fullUrl);
+      if (response.statusCode == 200) {
+        Logger.success("Update Successfull");
+        await fetchDesignations();
+        notifyListeners();
+      } else {
+        _errorMessage = 'Failed to update designation';
+        Logger.error("Error updating designation: ${response.body}");
+        notifyListeners();
+      }
+    } catch (e) {
+      _errorMessage = 'An error occurred: ${e.toString()}';
+      Logger.error('API Error: $e');
+    }
+  }
+
   Future<void> apiAddDesignation(desgname, id) async {
     _isLoading = true;
     _errorMessage = '';
@@ -182,7 +224,7 @@ class DesignationDepartmentController extends ChangeNotifier {
         "id": department.id,
         "message": "edit",
         "name": department.deptName,
-        "status": department.status
+        "status": 2
       };
       final encodeBody = json.encode(data);
       final response = await http.post(
@@ -203,6 +245,102 @@ class DesignationDepartmentController extends ChangeNotifier {
       }
     } catch (e) {
       Logger.error('API Error: $e');
+    }
+  }
+
+  Future<void> apiRestoreDepartment(Department department) async {
+    _isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+    try {
+      final fullUrl = '$baseUrl/department/delete_department_data.php';
+      final Map<String, dynamic> data = {
+        "id": department.id,
+        "message": "edit",
+        "name": department.deptName,
+        "status": 1
+      };
+      final encodeBody = json.encode(data);
+      final response = await http.post(
+        Uri.parse(fullUrl),
+        body: encodeBody,
+      );
+      Logger.success("API response: ${response.body}");
+      Logger.warning("Status Code ${response.statusCode}");
+      Logger.success(fullUrl);
+      if (response.statusCode == 200) {
+        Logger.success("Department restored successfully");
+        await fetchDepartments();
+        notifyListeners();
+      } else {
+        _errorMessage = 'Failed to restore department';
+        Logger.error("Error restoring department: ${response.body}");
+        notifyListeners();
+      }
+    } catch (e) {
+      Logger.error('Error restoring department: $e');
+    }
+  }
+
+  Future<void> apiDeleteDesignation(Designation designation) async {
+    _isLoading = true;
+    _errorMessage = "";
+    notifyListeners();
+    try {
+      final fullUrl = '$baseUrl/designation/delete_designation_data.php';
+      final data = {
+        "id": designation.id,
+        "message": "edit",
+        "name": designation.desgName,
+        "status": 2
+      };
+      final encodeBody = json.encode(data);
+      final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
+      Logger.success("API response: ${response.body}");
+      Logger.warning("Status Code: ${response.statusCode}");
+      Logger.success(fullUrl);
+      if (response.statusCode == 200) {
+        Logger.success("Designation deleted ");
+        await fetchDesignations();
+        notifyListeners();
+      } else {
+        _errorMessage = 'Failed to delete department';
+        Logger.error("Error deleting designation: ${response.body}");
+        notifyListeners();
+      }
+    } catch (e) {
+      Logger.error('API Error : $e');
+    }
+  }
+
+  Future<void> apiRestoreDesignation(Designation designation) async {
+    _isLoading = true;
+    _errorMessage = "";
+    notifyListeners();
+    try {
+      final fullUrl = '$baseUrl/designation/delete_designation_data.php';
+      final data = {
+        "id": designation.id,
+        "message": "edit",
+        "name": designation.desgName,
+        "status": 1
+      };
+      final encodeBody = json.encode(data);
+      final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
+      Logger.success("API response: ${response.body}");
+      Logger.warning("Status Code: ${response.statusCode}");
+      Logger.success(fullUrl);
+      if (response.statusCode == 200) {
+        Logger.success("Designation deleted ");
+        await fetchDesignations();
+        notifyListeners();
+      } else {
+        _errorMessage = 'Failed to delete department';
+        Logger.error("Error deleting designation: ${response.body}");
+        notifyListeners();
+      }
+    } catch (e) {
+      Logger.error('API Error : $e');
     }
   }
 }

@@ -24,4 +24,6 @@ class RegisteredEmployeeModel {
   String? profilePicture;
   String? idProof;
   String? bankDetails;
+
+  String? userType;
 }

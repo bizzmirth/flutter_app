@@ -103,8 +103,13 @@ const RegisteredEmployeeModelSchema = CollectionSchema(
       name: r'status',
       type: IsarType.long,
     ),
-    r'zone': PropertySchema(
+    r'userType': PropertySchema(
       id: 17,
+      name: r'userType',
+      type: IsarType.string,
+    ),
+    r'zone': PropertySchema(
+      id: 18,
       name: r'zone',
       type: IsarType.string,
     )
@@ -226,6 +231,12 @@ int _registeredEmployeeModelEstimateSize(
     }
   }
   {
+    final value = object.userType;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.zone;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -257,7 +268,8 @@ void _registeredEmployeeModelSerialize(
   writer.writeString(offsets[14], object.reportingManager);
   writer.writeString(offsets[15], object.reportingManagerName);
   writer.writeLong(offsets[16], object.status);
-  writer.writeString(offsets[17], object.zone);
+  writer.writeString(offsets[17], object.userType);
+  writer.writeString(offsets[18], object.zone);
 }
 
 RegisteredEmployeeModel _registeredEmployeeModelDeserialize(
@@ -285,7 +297,8 @@ RegisteredEmployeeModel _registeredEmployeeModelDeserialize(
   object.reportingManager = reader.readStringOrNull(offsets[14]);
   object.reportingManagerName = reader.readStringOrNull(offsets[15]);
   object.status = reader.readLongOrNull(offsets[16]);
-  object.zone = reader.readStringOrNull(offsets[17]);
+  object.userType = reader.readStringOrNull(offsets[17]);
+  object.zone = reader.readStringOrNull(offsets[18]);
   return object;
 }
 
@@ -331,6 +344,8 @@ P _registeredEmployeeModelDeserializeProp<P>(
     case 16:
       return (reader.readLongOrNull(offset)) as P;
     case 17:
+      return (reader.readStringOrNull(offset)) as P;
+    case 18:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -3079,6 +3094,162 @@ extension RegisteredEmployeeModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> userTypeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'userType',
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> userTypeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'userType',
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> userTypeEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userType',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> userTypeGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'userType',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> userTypeLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'userType',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> userTypeBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'userType',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> userTypeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'userType',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> userTypeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'userType',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+          QAfterFilterCondition>
+      userTypeContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'userType',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+          QAfterFilterCondition>
+      userTypeMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'userType',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> userTypeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userType',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> userTypeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'userType',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
       QAfterFilterCondition> zoneIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -3482,6 +3653,20 @@ extension RegisteredEmployeeModelQuerySortBy
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      sortByUserType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userType', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      sortByUserTypeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userType', Sort.desc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
       sortByZone() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'zone', Sort.asc);
@@ -3751,6 +3936,20 @@ extension RegisteredEmployeeModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      thenByUserType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userType', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      thenByUserTypeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userType', Sort.desc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
       thenByZone() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'zone', Sort.asc);
@@ -3891,6 +4090,13 @@ extension RegisteredEmployeeModelQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QDistinct>
+      distinctByUserType({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'userType', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QDistinct>
       distinctByZone({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'zone', caseSensitive: caseSensitive);
@@ -4022,6 +4228,13 @@ extension RegisteredEmployeeModelQueryProperty on QueryBuilder<
       statusProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'status');
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, String?, QQueryOperations>
+      userTypeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userType');
     });
   }
 
