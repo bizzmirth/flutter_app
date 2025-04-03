@@ -201,10 +201,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     'branch_name': branch['branch_name'].toString()
                   })
               .toList();
-          if (branches != null) {
-            _selectedBranch = branches[0]['branch_name'];
-            selectedBranchId = branches[0]['id'];
-          }
+          _selectedBranch = branches[0]['branch_name'];
+          selectedBranchId = branches[0]['id'];
         });
         Logger.success("branches :: $branches");
       } else {
@@ -336,7 +334,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     }
   }
 
-  void _populateRegisteredEmployeeForm(RegisteredEmployeeModel employee) {
+  void _populateRegisteredEmployeeForm(RegisteredEmployeeModel employee) async {
     _firstController.text = employee.name?.split(" ").first ?? '';
     _lastnameController.text = employee.name?.split(" ").last ?? '';
     _mobileController.text = employee.mobileNumber!;
@@ -345,11 +343,53 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     _dobController.text = employee.dateOfBirth!;
     _dojController.text = employee.dateOfJoining!;
     _selectedGender = employee.gender!;
-    _selectedDepartment = employee.department!;
-    _selectedDesignation = employee.designation!;
-    _selectedZone = employee.zone!;
-    _selectedBranch = employee.branch!;
-    _selectedManager = employee.reportingManager!;
+    if (employee.department != null) {
+      _selectedDepartment =
+          (await getDepartmentNameById(employee.department!)) ??
+              "---- Select Department * ----";
+      selectedDepartmentId = employee.department!;
+    }
+    if (employee.designation != null) {
+      _selectedDesignation =
+          (await getDesignationById(employee.designation!)) ??
+              "---- Select Department * ----";
+      selectedDesignationId = employee.designation!;
+    }
+    if (employee.zone != null) {
+      // First get the zone name
+      _selectedZone =
+          (await getZoneById(employee.zone!)) ?? "---- Select Zone * ----";
+      selectedZoneId = employee.zone!;
+
+      // Now fetch branches for this zone
+      if (selectedZoneId!.isNotEmpty) {
+        await _getBranches(selectedZoneId!);
+
+        if (employee.branch != null) {
+          if (employee.branch!.contains(RegExp(r'^\d+$'))) {
+          } else {
+            _selectedBranch = employee.branch!;
+          }
+
+          bool branchExists = branches
+              .any((branch) => branch['branch_name'] == _selectedBranch);
+
+          if (!branchExists) {
+            _selectedBranch = "---- Select Branch * ----";
+            Logger.warning(
+                "Branch '${employee.branch}' not found in loaded branches for zone '${employee.zone}'");
+          }
+        } else {
+          _selectedBranch = "---- Select Branch * ----";
+        }
+      }
+    }
+    if (employee.reportingManager != null) {
+      _selectedManager =
+          (await getReportingManagerNameById(employee.reportingManager!)) ??
+              "---- Select Reporting Manager * ----";
+      selectedManagerRegId = employee.reportingManager!;
+    }
 
     try {
       // Convert from display format to API format
@@ -420,7 +460,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           ..designation = selectedDesignationId
           ..zone = _selectedZone
           ..branch = _selectedBranch
-          ..reportingManager = _selectedManager
+          ..reportingManager = selectedManagerRegId
           ..profilePicture = selectedFiles["Profile Picture"]
           ..idProof = selectedFiles["ID Proof"]
           ..bankDetails = selectedFiles["Bank Details"];
@@ -464,7 +504,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               ..designation = _selectedDesignation
               ..zone = _selectedZone
               ..branch = _selectedBranch
-              ..reportingManager = _selectedManager
+              ..reportingManager = selectedManagerRegId
               ..profilePicture = selectedFiles["Profile Picture"]
               ..idProof = selectedFiles["ID Proof"]
               ..bankDetails = selectedFiles["Bank Details"];
