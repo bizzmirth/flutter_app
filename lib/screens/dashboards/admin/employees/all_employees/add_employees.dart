@@ -235,11 +235,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               "---- Select Department * ----";
       selectedDesignationId = employee.designation!;
     }
-    // if (employee.zone != null) {
-    //   _selectedZone =
-    //       (await getZoneById(employee.zone!)) ?? "---- Select Zone * ----";
-    //   selectedZoneId = employee.zone!;
-    // }
     if (employee.reportingManager != null) {
       _selectedManager =
           (await getReportingManagerNameById(employee.reportingManager!)) ??
@@ -321,16 +316,38 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     }
 
     if (employee.profilePicture != null) {
-      selectedFiles["Profile Picture"] =
-          "https://testca.uniqbizz.com/uploading/${employee.profilePicture!}";
+      // Check if it already starts with the base URL
+      if (employee.profilePicture!
+          .startsWith("https://testca.uniqbizz.com/uploading/")) {
+        selectedFiles["Profile Picture"] = employee.profilePicture!;
+      } else {
+        selectedFiles["Profile Picture"] =
+            "https://testca.uniqbizz.com/uploading/${employee.profilePicture!}";
+      }
+      Logger.success(selectedFiles["Profile Picture"]);
     }
+
     if (employee.idProof != null) {
-      selectedFiles["ID Proof"] =
-          "https://testca.uniqbizz.com/uploading/${employee.idProof!}";
+      // Check if it already starts with the base URL
+      if (employee.idProof!
+          .startsWith("https://testca.uniqbizz.com/uploading/")) {
+        selectedFiles["ID Proof"] = employee.idProof!;
+      } else {
+        selectedFiles["ID Proof"] =
+            "https://testca.uniqbizz.com/uploading/${employee.idProof!}";
+      }
+      Logger.success(selectedFiles["ID Proof"]);
     }
+
     if (employee.bankDetails != null) {
-      selectedFiles["Bank Details"] =
-          "https://testca.uniqbizz.com/uploading/${employee.bankDetails!}";
+      if (employee.bankDetails!
+          .startsWith("https://testca.uniqbizz.com/uploading/")) {
+        selectedFiles["Bank Details"] = employee.bankDetails!;
+      } else {
+        selectedFiles["Bank Details"] =
+            "https://testca.uniqbizz.com/uploading/${employee.bankDetails!}";
+      }
+      Logger.success(selectedFiles["Bank Details"]);
     }
   }
 
@@ -445,6 +462,50 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   void updatePendingEmployee() async {
     try {
       if (_formKey.currentState!.validate()) {
+        String? profilePicturePath;
+        String? idProofPath;
+        String? bankDetailsPath;
+
+        if (selectedFiles["Profile Picture"] != null) {
+          if (selectedFiles["Profile Picture"] is File) {
+            File fileObj = selectedFiles["Profile Picture"] as File;
+            await employeeController.uploadImage(
+                context, 'profile_pic', fileObj.path);
+            profilePicturePath =
+                extractPathSegment(fileObj.path, 'profile_pic/');
+          } else {
+            profilePicturePath = extractPathSegment(
+                selectedFiles["Profile Picture"], 'profile_pic/');
+          }
+        }
+
+        if (selectedFiles["ID Proof"] != null) {
+          if (selectedFiles["ID Proof"] is File) {
+            File fileObj = selectedFiles["ID Proof"] as File;
+            await employeeController.uploadImage(
+                context, 'id_proof', fileObj.path);
+            idProofPath = extractPathSegment(fileObj.path, 'id_proof');
+          } else {
+            idProofPath =
+                extractPathSegment(selectedFiles["ID Proof"], 'id_proof');
+          }
+        }
+
+        if (selectedFiles["Bank Details"] != null) {
+          if (selectedFiles["Bank Details"] is File) {
+            File fileObj = selectedFiles["Bank Details"] as File;
+            await employeeController.uploadImage(
+                context, 'passbook', fileObj.path);
+            bankDetailsPath = extractPathSegment(fileObj.path, 'passbook/');
+          } else {
+            bankDetailsPath =
+                extractPathSegment(selectedFiles["Bank Details"], 'passbook/');
+          }
+        }
+
+        Logger.success(
+            "Images Path: $profilePicturePath :: $idProofPath :: $bankDetailsPath");
+
         int? id = widget.pendingEmployee!.id;
         PendingEmployeeModel updatePendingEmployee = PendingEmployeeModel()
           ..id = id
@@ -458,12 +519,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           ..status = 2
           ..department = selectedDepartmentId
           ..designation = selectedDesignationId
-          ..zone = _selectedZone
-          ..branch = _selectedBranch
+          ..zone = selectedZoneId
+          ..branch = selectedBranchId
           ..reportingManager = selectedManagerRegId
-          ..profilePicture = selectedFiles["Profile Picture"]
-          ..idProof = selectedFiles["ID Proof"]
-          ..bankDetails = selectedFiles["Bank Details"];
+          ..profilePicture = profilePicturePath
+          ..idProof = idProofPath
+          ..bankDetails = bankDetailsPath;
 
         final updated = await _isarService.update<PendingEmployeeModel>(
             updatePendingEmployee, id!);
@@ -485,6 +546,29 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   void updateRegisteredEmployee() async {
     try {
       if (_formKey.currentState!.validate()) {
+        String? profilePicturePath;
+        String? idProofPath;
+        String? bankDetailsPath;
+
+        if (selectedFiles["Profile Picture"] != null) {
+          await employeeController.uploadImage(
+              context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+          profilePicturePath = selectedFiles["Profile Picture"]!.path;
+        }
+
+        // Upload ID Proof if selected
+        if (selectedFiles["ID Proof"] != null) {
+          await employeeController.uploadImage(
+              context, 'id_proof', selectedFiles["ID Proof"]!.path);
+          idProofPath = selectedFiles["ID Proof"]!.path;
+        }
+
+        // Upload Bank Details if selected
+        if (selectedFiles["Bank Details"] != null) {
+          await employeeController.uploadImage(
+              context, 'passbook', selectedFiles["Bank Details"]!.path);
+          bankDetailsPath = selectedFiles["Bank Details"]!.path;
+        }
         int? id = widget.registerEmployee!.id;
         Logger.success(
             "Date of joining and date of birth $dobForApi $dojForApi");
@@ -500,14 +584,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               ..dateOfBirth = dobForApi
               ..dateOfJoining = dojForApi
               ..status = 1
-              ..department = _selectedDepartment
-              ..designation = _selectedDesignation
-              ..zone = _selectedZone
-              ..branch = _selectedBranch
+              ..department = selectedDepartmentId
+              ..designation = selectedDesignationId
+              ..zone = selectedZoneId
+              ..branch = selectedBranchId
               ..reportingManager = selectedManagerRegId
-              ..profilePicture = selectedFiles["Profile Picture"]
-              ..idProof = selectedFiles["ID Proof"]
-              ..bankDetails = selectedFiles["Bank Details"];
+              ..profilePicture = profilePicturePath
+              ..idProof = idProofPath
+              ..bankDetails = bankDetailsPath;
 
         final updated = await _isarService.update<RegisteredEmployeeModel>(
             updateRegisteredEmployee, id!);

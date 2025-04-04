@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/add_employees.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EmployeeDataSource extends DataTableSource {
   final BuildContext context;
@@ -16,6 +20,10 @@ class EmployeeDataSource extends DataTableSource {
   final IsarService isarService = IsarService();
   final EmployeeController employeeController = EmployeeController();
   var isLoading = false;
+  String name = "";
+  final Map<String, String?> _departmentNameCache = {};
+
+  void getRefNameByID(String refId) {}
 
   Future<void> deleteEmployee(idToDelete, {bool showToast = true}) async {
     try {
@@ -51,8 +59,9 @@ class EmployeeDataSource extends DataTableSource {
     );
   }
 
-  Future<void> registerEmployee(PendingEmployeeModel empRegister) async {
-    showLoadingDialog(context, message: "Registering employee...");
+  Future<void> registerEmployee(
+      context, PendingEmployeeModel empRegister) async {
+    // showLoadingDialog(context, message: "Registering employee...");
     try {
       isLoading = true;
       Logger.warning("Registering the employee ${empRegister.name}");
@@ -81,7 +90,7 @@ class EmployeeDataSource extends DataTableSource {
 
       await removeEmployeeFromTable(empRegister.id, showToast: false);
       await employeeController.apiUpdateEmployeeStatus(
-          empRegister.id, empRegister.email);
+          context, empRegister.id, empRegister.email);
 
       ToastHelper.showSuccessToast(
           context: context, title: "Employee Registered.");
@@ -123,7 +132,7 @@ class EmployeeDataSource extends DataTableSource {
     }
   }
 
-  Widget _buildActionMenu(PendingEmployeeModel employee) {
+  Widget _buildActionMenu(context, PendingEmployeeModel employee) {
     return PopupMenuButton<String>(
       onSelected: (value) {
         // Handle menu actions
@@ -131,7 +140,6 @@ class EmployeeDataSource extends DataTableSource {
       itemBuilder: (BuildContext context) {
         List<PopupMenuEntry<String>> menuItems = [];
 
-        // If status is 1 (Completed), show all options
         if (employee.status == 2) {
           menuItems = [
             PopupMenuItem(
@@ -195,7 +203,7 @@ class EmployeeDataSource extends DataTableSource {
                 onTap: () {
                   Logger.warning(
                       "------------ Register ${employee.name}------------");
-                  registerEmployee(employee);
+                  registerEmployee(context, employee);
                   // Navigator.pop(context);
                 },
               ),
@@ -290,6 +298,24 @@ class EmployeeDataSource extends DataTableSource {
     );
   }
 
+  Future<String> getReportingManagerName(String? managerId) async {
+    if (managerId == null || managerId.isEmpty) {
+      return "N/A";
+    }
+
+    // Check if we already have this department name cached
+    if (_departmentNameCache.containsKey(managerId)) {
+      return _departmentNameCache[managerId] ?? "N/A";
+    }
+
+    // If not cached, fetch it
+    final deptName = await getDepartmentNameById(managerId);
+    // Store in cache for future use
+    _departmentNameCache[managerId] = deptName;
+
+    return deptName ?? "N/A";
+  }
+
   String _getStatusText(dynamic status) {
     if (status == null) return "Unknown";
 
@@ -332,6 +358,26 @@ class EmployeeDataSource extends DataTableSource {
     }
   }
 
+  Future<String> getDepartmentNameById(String departmentId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final departmentDataString = prefs.getString('departmentData');
+
+      if (departmentDataString != null) {
+        final List<dynamic> departmentData = json.decode(departmentDataString);
+        final departmentInfo = departmentData.firstWhere(
+          (dept) => dept['id'].toString() == departmentId,
+          orElse: () => {'id': departmentId, 'dept_name': null},
+        );
+
+        return departmentInfo['dept_name']?.toString() ?? "N/A";
+      }
+    } catch (e) {
+      Logger.error('Error looking up department name: $e');
+    }
+    return "N/A";
+  }
+
   @override
   DataRow? getRow(int index) {
     if (index >= pendingEmployees.length) return null;
@@ -358,7 +404,18 @@ class EmployeeDataSource extends DataTableSource {
           .toString())), //changed this for time being because it was showing null
       DataCell(Text(pendingEmployee.name ?? "N/A")),
       DataCell(Text(pendingEmployee.reportingManager ?? "N/A")),
-      DataCell(Text(pendingEmployee.reportingManagerName ?? "N/A")),
+      DataCell(FutureBuilder<String?>(
+        future: getReportingManagerNameById(pendingEmployee.reportingManager!),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text("Loading...");
+          } else if (snapshot.hasError) {
+            return Text("Error");
+          } else {
+            return Text(snapshot.data ?? "N/A");
+          }
+        },
+      )),
       DataCell(Text(pendingEmployee.designation ?? "N/A")),
       DataCell(Text(pendingEmployee.dateOfJoining ?? "N/A")),
       DataCell(
@@ -374,7 +431,7 @@ class EmployeeDataSource extends DataTableSource {
           ),
         ),
       ),
-      DataCell(_buildActionMenu(pendingEmployee)),
+      DataCell(_buildActionMenu(context, pendingEmployee)),
     ]);
   }
 

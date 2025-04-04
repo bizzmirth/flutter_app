@@ -9,6 +9,7 @@ import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/a
 import 'package:bizzmirth_app/services/isar_servies.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -35,9 +36,13 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _loadData();
+
+    // Schedule data loading to avoid UI jank
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+
     _pendingEmployeeWatcher =
         isarService.watchCollection<PendingEmployeeModel>().listen((_) {
       getEmployee();
@@ -47,34 +52,26 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
         isarService.watchCollection<RegisteredEmployeeModel>().listen((_) {
       getPendingEmployees();
     });
-    getEmployee();
-    getPendingEmployees();
   }
 
   Future<void> _loadData() async {
-    setState(() {
-      isLoading = true;
-    });
+    setState(() => isLoading = true);
 
     try {
-      await employeeController.fetchAndSavePendingEmployees();
-      await employeeController.fetchAndSaveRegisterEmployees();
+      // Fetch data in the background
+      await Future.wait([
+        employeeController.fetchAndSavePendingEmployees(),
+        employeeController.fetchAndSaveRegisterEmployees(),
+      ]);
 
-      // Then get from local DB
       await getEmployee();
       await getPendingEmployees();
-      setState(() {
-        isLoading = true;
-      });
     } catch (e) {
-      // Handle errors
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading data: $e')),
       );
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) setState(() => isLoading = false);
     }
   }
 
@@ -87,16 +84,16 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
 
   Future<void> getEmployee() async {
     final getEmployee = await isarService.getAll<PendingEmployeeModel>();
-    setState(() {
-      employee = getEmployee;
-    });
+    if (mounted) {
+      setState(() => employee = getEmployee);
+    }
   }
 
   Future<void> getPendingEmployees() async {
     final getEmployee = await isarService.getAll<RegisteredEmployeeModel>();
-    setState(() {
-      registeredEmployee = getEmployee;
-    });
+    if (mounted) {
+      setState(() => registeredEmployee = getEmployee);
+    }
   }
 
   @override
@@ -195,11 +192,12 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
 
                     // Paginated Table for Pending List
                     Card(
+                      margin: EdgeInsets.only(bottom: 80.0),
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: employeeController.isLoading
+                      child: controller.isLoading
                           ? Center(child: CircularProgressIndicator())
                           : SizedBox(
                               height: (_rowsPerPage1 * dataRowHeight) +

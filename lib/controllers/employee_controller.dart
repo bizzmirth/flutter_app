@@ -116,8 +116,8 @@ class EmployeeController extends ChangeNotifier {
         Logger.warning('No network connection, using local data');
         _registerEmployee =
             await _isarService.getAll<RegisteredEmployeeModel>();
-        // _isLoading = false;
-        // notifyListeners();
+        _isLoading = false;
+        notifyListeners();
         return;
       }
 
@@ -128,9 +128,6 @@ class EmployeeController extends ChangeNotifier {
         await _isarService.save<RegisteredEmployeeModel>(employee);
         _isLoading = false;
         notifyListeners();
-      }
-      if (_isLoading) {
-        CircularProgressIndicator();
       }
     } catch (e) {
       _isLoading = false;
@@ -220,11 +217,15 @@ class EmployeeController extends ChangeNotifier {
       formatDateForApi(employee.dateOfBirth!);
       formatDateForApi(employee.dateOfJoining!);
 
-      final profilePicPath =
-          extractPathSegment(employee.profilePicture!, 'profile_pic/');
-      final idProofPath = extractPathSegment(employee.idProof!, 'id_proof/');
-      final bankDetailsPath =
-          extractPathSegment(employee.bankDetails!, 'passbook/');
+      final profilePicPath = employee.profilePicture != null
+          ? extractPathSegment(employee.profilePicture!, 'profile_pic/')
+          : '';
+      final idProofPath = employee.idProof != null
+          ? extractPathSegment(employee.idProof!, 'id_proof/')
+          : '';
+      final bankDetailsPath = employee.bankDetails != null
+          ? extractPathSegment(employee.bankDetails!, 'passbook/')
+          : '';
 
       Logger.success("Trimmed profile path : $profilePicPath");
       Logger.success("Trimmed ID Proof : $idProofPath");
@@ -233,7 +234,7 @@ class EmployeeController extends ChangeNotifier {
       final Map<String, dynamic> requestBody = {
         "name": employee.name,
         "birth_date": employee.dateOfBirth,
-        "country_cd": "+91", // Hard-coded as per your example
+        "country_cd": "91", // Hard-coded as per your example
         "contact": employee.mobileNumber,
         "email": employee.email,
         "address": employee.address,
@@ -383,6 +384,7 @@ class EmployeeController extends ChangeNotifier {
       final idProofPath = extractPathSegment(employee.idProof!, 'id_proof/');
       final bankDetailsPath =
           extractPathSegment(employee.bankDetails!, 'passbook/');
+      Logger.success("Trimmed profile path : ${employee.profilePicture!}");
 
       final Map<String, dynamic> requestBody = {
         "editfor": "pending",
@@ -487,23 +489,28 @@ class EmployeeController extends ChangeNotifier {
     }
   }
 
-  Future<bool> apiUpdateEmployeeStatus(id, email) async {
+  Future<bool> apiUpdateEmployeeStatus(context, id, email) async {
     try {
       final fullUrl = '$baseUrl/confirm_employee.php';
       final Map<String, dynamic> requestBody = {
         'id': id.toString(),
         'uname': email,
       };
+
       final encodeBody = jsonEncode(requestBody);
+
       final response = await http.post(Uri.parse(fullUrl),
           headers: {
             'Content-Type': 'application/json',
           },
           body: encodeBody);
+
       Logger.success("Api Request body : $requestBody");
       Logger.success("Api Response body : ${response.body}");
       Logger.info('Api response status code: ${response.statusCode}');
+
       if (response.statusCode == 200) {
+        // Wait for the fetch to complete
         await fetchAndSaveRegisterEmployees();
         notifyListeners();
         return true;
