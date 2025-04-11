@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart';
 import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
@@ -15,6 +16,7 @@ import 'package:intl/intl.dart';
 
 void main() {
   bypassSSLVerification();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -27,16 +29,18 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => LoginController()),
         ChangeNotifierProvider(create: (_) => EmployeeController()),
+        ChangeNotifierProvider(create: (_) => AdminBusniessMentorController()),
         ChangeNotifierProvider(
             create: (_) => DesignationDepartmentController()),
       ],
       child: MaterialApp(
         title: 'UniqBizz',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
-        ),
+            primarySwatch: Colors.blue,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            textTheme: GoogleFonts.robotoTextTheme(
+              Theme.of(context).textTheme,
+            )),
         home: AdminDashboard(),
         debugShowCheckedModeBanner: false,
       ),

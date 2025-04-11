@@ -569,7 +569,6 @@ class EmployeeController extends ChangeNotifier {
         final jsonData = json.decode(response.body);
 
         if (jsonData['status'] == 'success') {
-          // Store branches data specific to this zone
           final branchesData = json.encode(jsonData['branches']);
           await prefs.setString('branches_$zoneId', branchesData);
           Logger.success(

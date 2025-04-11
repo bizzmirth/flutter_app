@@ -22,22 +22,28 @@ class PendingBusinessMentorModel {
   String? city;
   String? pincode;
   String? address;
+  String? zone;
+  String? branch;
+  String? paymentMode;
 
   String? profilePicture;
   String? adharCard;
   String? panCard;
   String? bankPassbook;
   String? votingCard;
+  String? paymentProof;
 
   // New fields added from the API response
   int? businessMentorId;
   String? firstName;
   String? lastName;
   int? age;
-  int? zone;
-  int? branch;
   String? gstNo;
   String? kyc;
+  String? chequeNo;
+  String? chequeDate;
+  String? bankName;
+  String? transactionNo;
   String? registrant;
   String? referenceNo;
   int? registerBy;

@@ -1,12 +1,17 @@
+import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart';
 import 'package:bizzmirth_app/entities/pending_business_mentor/pending_business_mentor_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/business_mentor/add_business_mentor.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class MyBMDataSource extends DataTableSource {
+  final BuildContext context;
   final List<PendingBusinessMentorModel> data;
-  MyBMDataSource(this.data);
+  MyBMDataSource(this.context, this.data);
+  final AdminBusniessMentorController controller =
+      AdminBusniessMentorController();
 
   Widget getProfileImage(String? profilePicture) {
     if (profilePicture == null || profilePicture.isEmpty) {
@@ -106,9 +111,9 @@ class MyBMDataSource extends DataTableSource {
         ),
         DataCell(Text(businessMentor.id.toString())),
         DataCell(Text(businessMentor.name ?? "N/A")),
-        DataCell(Text(businessMentor.phoneNumber ?? "N/A")),
-        DataCell(Text(businessMentor.refName ?? "N/A")),
-        DataCell(Text(formatDate(businessMentor.dob))),
+        DataCell(Text(businessMentor.referenceNo ?? "N/A")),
+        DataCell(Text(businessMentor.registrant ?? "N/A")),
+        DataCell(Text(businessMentor.dob!)),
         DataCell(
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -216,6 +221,13 @@ class MyBMDataSource extends DataTableSource {
             leading: Icon(Icons.app_registration,
                 color: const Color.fromARGB(255, 43, 29, 240)),
             title: Text("Register"),
+            onTap: () {
+              final controller = Provider.of<AdminBusniessMentorController>(
+                  context,
+                  listen: false);
+              controller.apiRegisterEmployee(context);
+              Navigator.pop(context);
+            },
           ),
         ),
       ],

@@ -650,16 +650,21 @@ void showBookingPopup(BuildContext context) {
   );
 }
 
+String extractUserId(String fullUserId) {
+  if (fullUserId.contains(" - ")) {
+    return fullUserId.split(" - ")[0].trim();
+  }
+  return fullUserId;
+}
+
 String extractPathSegment(String fullPath, String folderPrefix) {
   int index = fullPath.lastIndexOf(folderPrefix);
   if (index != -1) {
     return fullPath.substring(index);
   }
-  // If the path doesn't contain the expected folder structure, return the original
   return fullPath;
 }
 
-// Helper method to safely parse integers
 int? parseIntSafely(dynamic value) {
   if (value == null) return null;
   if (value is int) return value;
@@ -678,7 +683,6 @@ String capitalize(String input) {
   return input[0].toUpperCase() + input.substring(1).toLowerCase();
 }
 
-// filter bar
 class FilterBar extends StatefulWidget {
   const FilterBar({super.key});
 
@@ -741,6 +745,26 @@ Future<String?> getReportingManagerNameById(String reportingManagerId) async {
     return "N/A";
   } catch (e) {
     Logger.error("Error fetching reporting manager data: $e");
+    return null;
+  }
+}
+
+Future<String?> getNameByReferenceNo(String referenceNo) async {
+  try {
+    final userList = await _isarService.getAll<RegisteredEmployeeModel>();
+
+    // Find the user with the matching referenceNo
+    for (var user in userList) {
+      if (user.regId == referenceNo) {
+        Logger.success("Fetched Name is : ${user.name}");
+        return user.name;
+      }
+    }
+
+    // If no match is found, return a default value
+    return "N/A";
+  } catch (e) {
+    Logger.error("Error fetching user data: $e");
     return null;
   }
 }

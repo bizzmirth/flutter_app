@@ -187,8 +187,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
       await employeeController.apiGetBranchs(zoneId);
 
-      // We need to update the apiGetBranchs function to store the response data
-      // and return it or store it in SharedPreferences like you did with zones
       final prefs = await SharedPreferences.getInstance();
       final branchDataString = prefs.getString('branches_$zoneId');
 
@@ -688,21 +686,18 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       'mobile': _mobileKey,
       'email': _emailKey,
       'address': _addressKey,
-      // Add all your other fields here
     };
 
-    // Check each field for validation errors
     for (final entry in fieldKeys.entries) {
       final fieldState = entry.value.currentState;
       if (fieldState != null && fieldState.hasError) {
-        // Found an error, scroll to this field
         Scrollable.ensureVisible(
           entry.value.currentContext!,
           duration: Duration(milliseconds: 500),
           curve: Curves.easeInOut,
-          alignment: 0.0, // Adjust this value to position the field in the view
+          alignment: 0.0,
         );
-        break; // Stop after finding the first error
+        break;
       }
     }
   }
@@ -813,7 +808,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
     selectedFiles.clear();
 
-    // Refresh UI if needed
     setState(() {});
   }
 

@@ -1,13 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart';
 import 'package:bizzmirth_app/entities/pending_business_mentor/pending_business_mentor_model.dart';
+import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddbmPage extends StatefulWidget {
   final PendingBusinessMentorModel? pendingBusinessMentor;
@@ -31,10 +37,12 @@ class _AddbmState extends State<AddbmPage> {
     "Pan Card": null,
     "Bank Passbook": null,
     "Voting Card": null,
+    "Payment Proof": null,
   };
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _refNameController = TextEditingController();
+  final TextEditingController _refNoController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -43,17 +51,57 @@ class _AddbmState extends State<AddbmPage> {
   final TextEditingController _nomineeNameController = TextEditingController();
   final TextEditingController _nomineeRelationController =
       TextEditingController();
+  final TextEditingController _chequeNoController = TextEditingController();
+  final TextEditingController _chequeDateController = TextEditingController();
+  final TextEditingController _bankNameController = TextEditingController();
+  final TextEditingController _transactionIDController =
+      TextEditingController();
+  String? selectedDesignationId = "";
+  String? selectedCountryCode = "";
   String selectedGender = "---- Select Gender ----";
   String selectedCountry = "---- Select Country ----";
   String selectedState = "---- Select State ----";
   String selectedCity = "---- Select City ----";
-  String selectedDesignation = "---- Select Designation ----";
+  String _selectedDesignation = "---- Select Designation * ----";
+  String _selectedZone = "---- Select Zone * ----";
+  String _selectedBranch = "---- Select Branch * ----";
+  String _selectedPaymentMode = "Cash";
+
+  String? _selectedCountryId;
+  List<dynamic> _countries = [];
+  List<String> _countryNames = [];
+
+  String? _selectedZoneId;
+  List<dynamic> _zones = [];
+  List<String> _zoneNames = [];
+
+  String? _selectedBranchId;
+  List<dynamic> _branches = [];
+  List<String> _branchesNames = [];
+
+  String? _selectedStateId;
+  List<dynamic> _states = [];
+  List<String> _stateNames = [];
+
+  String? _selectedCityId;
+  List<dynamic> _cities = [];
+  List<String> _cityNames = [];
+
   String selectedUserId = "---- User Id & Name * ----";
   var savedImagePath = "";
+  List<Map<String, dynamic>> _employeesByDesignation = [];
   final IsarService _isarService = IsarService();
+
+  List<Map<String, dynamic>> designations = [];
 
   final TextEditingController _pincodeController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  String selectedRegId = "";
+  String selectedRefName = "";
+  String chequeNo = "";
+  String chequeDate = "";
+  String bankDate = "";
+  String transactionId = "";
 
   String _selectedCountryCode = '+91'; // Default country code
 
@@ -62,6 +110,173 @@ class _AddbmState extends State<AddbmPage> {
     super.initState();
     if (widget.pendingBusinessMentor != null) {
       _populateBusniessMentor(widget.pendingBusinessMentor!);
+    }
+    _loadDesignations();
+    _loadZones();
+    _loadCountry();
+  }
+
+  Future<void> _loadDesignations() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final designationDataString = prefs.getString('designationData');
+
+      if (designationDataString != null) {
+        final List<dynamic> designationData = json.decode(
+          designationDataString,
+        );
+
+        setState(() {
+          designations = designationData
+              .map<Map<String, dynamic>>(
+                (desg) => {
+                  'id': desg['id'].toString(),
+                  'desg_name': desg['designation_name'].toString(),
+                },
+              )
+              .toList();
+          Logger.success("designationss :: $designations");
+        });
+      }
+    } catch (e) {
+      print('Error loading designations: $e');
+    }
+  }
+
+  Future<void> _loadCountry() async {
+    try {
+      final controller =
+          Provider.of<AdminBusniessMentorController>(context, listen: false);
+      List<dynamic> countries = await controller.apiGetCountry();
+
+      _countries = countries;
+
+      List<String> countryNames = countries
+          .map<String>(
+              (country) => country['country_name'] ?? "No Country Available")
+          .toList();
+      setState(() {
+        _countryNames = countryNames;
+      });
+    } catch (e) {
+      Logger.error("error fetching countries $e");
+    }
+  }
+
+  Future<void> _loadStates(selectedCountryId) async {
+    try {
+      final controller =
+          Provider.of<AdminBusniessMentorController>(context, listen: false);
+      List<dynamic> states = await controller.apiGetStates(selectedCountryId);
+      _states = states;
+
+      List<String> stateNames = states
+          .map<String>((state) => state['state_name'] ?? "No State Available")
+          .toList();
+
+      setState(() {
+        _stateNames = stateNames;
+      });
+      Logger.success("Fetched states from the api $states");
+    } catch (e) {
+      Logger.success("Error fetching states $e");
+    }
+  }
+
+  Future<void> _loadCities(selectedStateId) async {
+    try {
+      final controller =
+          Provider.of<AdminBusniessMentorController>(context, listen: false);
+      List<dynamic> cities = await controller.apiGetCity(selectedStateId);
+      _cities = cities;
+
+      List<String> citiesNames = cities
+          .map<String>((city) => city['city_name'] ?? "No cities available")
+          .toList();
+
+      setState(() {
+        _cityNames = citiesNames;
+      });
+      Logger.success("Fetched cities from the api $cities");
+    } catch (e) {
+      Logger.error("Error fetching states $e");
+    }
+  }
+
+  Future<void> _loadZones() async {
+    try {
+      final controller =
+          Provider.of<AdminBusniessMentorController>(context, listen: false);
+
+      List<dynamic> zones = await controller.apiGetZone();
+
+      _zones = zones;
+
+      List<String> zoneNames = zones
+          .map<String>((zone) => zone['zone_name'] ?? "Unknown Zone")
+          .toList();
+
+      setState(() {
+        _zoneNames = zoneNames;
+      });
+    } catch (e) {
+      Logger.error("Error loading zones: $e");
+    }
+  }
+
+  Future<void> _getBranches(String zoneId) async {
+    final controller =
+        Provider.of<AdminBusniessMentorController>(context, listen: false);
+    final branches = await controller.apiGetBranchs(zoneId);
+    _branches = branches;
+
+    List<String> branchNames = branches
+        .map<String>((branch) => branch['branch_name'] ?? "No Branches")
+        .toList();
+    setState(() {
+      _branchesNames = branchNames;
+    });
+    Logger.success("new branches based on zone $branches");
+  }
+
+  Future<List<Map<String, dynamic>>> getUserByDesignationID(
+      String selectedDesignationId) async {
+    try {
+      // Get all registered employees from the database
+      final List<RegisteredEmployeeModel> allEmployees =
+          await _isarService.getAll<RegisteredEmployeeModel>();
+
+      // Filter employees by designation ID and status
+      final filteredEmployees = allEmployees
+          .where((employee) =>
+              employee.designation == selectedDesignationId &&
+              employee.status == 1)
+          .map((employee) => {
+                'regId': employee.regId,
+                'name': employee.name,
+              })
+          .toList();
+
+      Logger.success(
+          "Found ${filteredEmployees.length} employees with designation $selectedDesignationId");
+      return filteredEmployees;
+    } catch (e) {
+      Logger.error("Error getting user by designation: $e");
+      return [];
+    }
+  }
+
+  Future<void> getPincode(selectedCity) async {
+    try {
+      final controller =
+          Provider.of<AdminBusniessMentorController>(context, listen: false);
+      final pincode = await controller.apiGetPincode(selectedCity);
+      setState(() {
+        _pincodeController.text = pincode;
+      });
+      Logger.success("Pincode fetched from the $pincode");
+    } catch (e) {
+      Logger.error("Error fetching pincode $e");
     }
   }
 
@@ -89,9 +304,10 @@ class _AddbmState extends State<AddbmPage> {
         case "ID Proof":
           subFolderName = "id_proof";
           break;
-        case "Bank Details":
+        case "Bank Passbook":
           subFolderName = "passbook";
           break;
+
         case "Aadhar Card":
           subFolderName = "aadhar_card";
           break;
@@ -131,14 +347,16 @@ class _AddbmState extends State<AddbmPage> {
 
   void _removeFile(String fileType) {
     setState(() {
-      selectedFiles[fileType] = null; // 🔥 Remove selected file
+      selectedFiles[fileType] = null;
     });
   }
 
   Widget _buildTextField(String label, TextEditingController controller,
-      {int maxLines = 1, String? Function(String?)? validator}) {
+      {int maxLines = 1,
+      String? Function(String?)? validator,
+      bool? forceReadOnly}) {
     return TextFormField(
-      readOnly: widget.isViewMode,
+      readOnly: forceReadOnly ?? widget.isViewMode,
       maxLines: maxLines,
       validator: validator,
       controller: controller,
@@ -163,9 +381,38 @@ class _AddbmState extends State<AddbmPage> {
     List<String> items,
     String selectedValue,
     Function(String?) onValueChanged, {
-    String? Function(String?)? validator, // Add this parameter
+    String? Function(String?)? validator,
+    String? emptyMessage,
   }) {
     String defaultOption = "---- Select $label ----"; // Default placeholder
+
+    // Handle empty items list with emptyMessage
+    if (items.isEmpty && emptyMessage != null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: TextStyle(
+                    color: const Color.fromARGB(255, 255, 255, 255)
+                        .withOpacity(0.8))),
+            Container(
+              padding: EdgeInsets.all(12),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child:
+                  Text(emptyMessage, style: TextStyle(color: Colors.red[300])),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Original implementation for non-empty lists
     if (!items.contains(selectedValue) && selectedValue != defaultOption) {
       selectedValue = defaultOption;
     }
@@ -205,29 +452,27 @@ class _AddbmState extends State<AddbmPage> {
     );
   }
 
-  Future<void> submitForm() async {
-    final designation = selectedDesignation;
+  Future<void> submitForm(context) async {
+    final controller =
+        Provider.of<AdminBusniessMentorController>(context, listen: false);
+    final designation = _selectedDesignation;
     final String userId = selectedUserId;
-    final String refName = _refNameController.text;
+    final String refName = selectedRefName;
     final String name =
         '${_firstNameController.text} ${_lastNameController.text}';
     final String nomineeName = _nomineeNameController.text;
     final String nomineeRelation = _nomineeRelationController.text;
+    final String selectedCountrycode = _selectedCountryCode;
     final String phoneNumber = _phoneController.text;
     final String email = _emailController.text;
     final String gender = selectedGender;
-    final String dob = _dateController.text;
-    final String country = selectedCountry;
-    final String state = selectedState;
-    final String city = selectedCity;
     final String pincode = _pincodeController.text;
     final String address = _addressController.text;
+    final String paymentMode = _selectedPaymentMode;
     final String formattedDate = DateFormat("yyyy-MM-dd").format(
       DateFormat("dd-MM-yyyy").parse(_dateController.text),
     );
 
-    Logger.success(
-        "selectedDesignation: $designation, selecteduserId: $userId refName: $refName, name:$name, nomineeName: $nomineeName, nomineeRelation: $nomineeRelation, phoneNumber: $phoneNumber, email: $email, gender: $gender dob: $dob, country: $country, state: $state, city:$city, pincode: $pincode, address: $address");
     try {
       Map<String, String> documentPaths = {};
       selectedFiles.forEach((key, value) {
@@ -250,56 +495,99 @@ class _AddbmState extends State<AddbmPage> {
             case "Voting Card":
               documentPaths['votingCard'] = filePath;
               break;
+            case "Payment Proof":
+              documentPaths['paymentProof'] = filePath;
           }
         }
       });
+      if (selectedFiles["Profile Picture"] != null) {
+        await controller.uploadImage(
+            context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+      }
+      if (_selectedPaymentMode == "Cheque") {
+        chequeNo = _chequeNoController.text;
+        chequeDate = _chequeDateController.text;
+        bankDate = _bankNameController.text;
+      } else if (_selectedPaymentMode == "UPI/NEFT") {
+        transactionId = _transactionIDController.text;
+      }
 
       final newBusinessMentor = PendingBusinessMentorModel()
         ..designation = designation
         ..userId = userId
         ..refName = refName
         ..name = name
+        ..firstName = _firstNameController.text
+        ..lastName = _lastNameController.text
         ..nomineeName = nomineeName
         ..nomineeRelation = nomineeRelation
-        ..countryCd = "91"
+        ..countryCd = selectedCountrycode.replaceAll('+', '')
         ..phoneNumber = phoneNumber
         ..email = email
         ..gender = gender
         ..dob = formattedDate
         ..status = 2
-        ..country = country
-        ..state = state
-        ..city = city
+        ..country = _selectedCountryId
+        ..state = _selectedStateId
+        ..city = _selectedCityId
         ..pincode = pincode
         ..address = address
+        ..zone = _selectedZoneId
+        ..branch = _selectedBranchId
+        ..paymentMode = paymentMode
+        ..chequeNo = chequeNo
+        ..chequeDate = chequeDate
+        ..bankName = bankDate
+        ..transactionNo = transactionId
         ..profilePicture = documentPaths["profilePicture"]
         ..adharCard = documentPaths["adharCard"]
         ..panCard = documentPaths["panCard"]
         ..bankPassbook = documentPaths["bankPassbook"]
-        ..votingCard = documentPaths["votingCard"];
+        ..votingCard = documentPaths["votingCard"]
+        ..paymentProof = documentPaths['paymentProof'];
 
       await _isarService.save<PendingBusinessMentorModel>(newBusinessMentor);
-      //  Logger.success("Updating the techno enterprise was : $updated");
+      await controller.apiAddBusinessMentor(newBusinessMentor);
+      clearFormFields();
+      Navigator.pop(context);
     } catch (e) {
       Logger.error("Error submitting form: $e");
     }
   }
 
-  void _populateBusniessMentor(PendingBusinessMentorModel busniessMentor) {
-    DateTime? originalDate = DateTime.tryParse(busniessMentor.dob!);
+  void clearFormFields() {
+    _refNameController.clear();
+    _refNoController.clear();
+    _firstNameController.clear();
+    _lastNameController.clear();
+    _emailController.clear();
+    _phoneController.clear();
+    _addressController.clear();
+    _nomineeNameController.clear();
+    _nomineeRelationController.clear();
+    _chequeNoController.clear();
+    _chequeDateController.clear();
+    _bankNameController.clear();
+    _transactionIDController.clear();
+    _pincodeController.clear();
+    _dateController.clear();
+  }
 
-    // populate the fields from here
-    selectedDesignation = busniessMentor.designation!;
-    selectedUserId = busniessMentor.userId!;
-    _refNameController.text = busniessMentor.refName!;
-    _firstNameController.text = busniessMentor.name!.split(' ')[0];
-    _lastNameController.text = busniessMentor.name!.split(' ')[1];
+  void _populateBusniessMentor(
+      PendingBusinessMentorModel busniessMentor) async {
+    Logger.success("Populated Gender is ${busniessMentor.gender}");
+    // DateTime? originalDate = DateTime.tryParse(busniessMentor.dob!);
+    _refNoController.text = busniessMentor.referenceNo!;
+    String? refname = await getNameByReferenceNo(busniessMentor.referenceNo!);
+    _refNameController.text = refname!;
+    _firstNameController.text = busniessMentor.firstName!;
+    _lastNameController.text = busniessMentor.lastName!;
     _nomineeNameController.text = busniessMentor.nomineeName!;
     _nomineeRelationController.text = busniessMentor.nomineeRelation!;
     _phoneController.text = busniessMentor.phoneNumber!;
     _emailController.text = busniessMentor.email!;
     selectedGender = busniessMentor.gender!;
-    _dateController.text = originalDate?.toString() ?? "";
+    _dateController.text = busniessMentor.dob!;
     selectedCountry = busniessMentor.country!;
     selectedState = busniessMentor.state!;
     selectedCity = busniessMentor.city!;
@@ -346,23 +634,77 @@ class _AddbmState extends State<AddbmPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDropdown(
-                      'Designation *',
-                      ['Goa', 'Delhi', 'Other'],
-                      selectedDesignation,
-                      (value) => setState(() {
-                            selectedDesignation = value!;
-                          })),
                   SizedBox(height: 10),
-                  _buildDropdown(
-                      'User Id & Name *',
-                      ['Margao', 'Panjim', 'Other'],
-                      selectedUserId,
-                      (value) => setState(() {
-                            selectedUserId = value!;
-                          })),
+                  widget.isViewMode || widget.isEditMode
+                      ? _buildTextField('Reference ID *', _refNoController,
+                          forceReadOnly: true)
+                      : Column(
+                          children: [
+                            _buildDropdown(
+                                'Designation *',
+                                designations
+                                    .map<String>(
+                                      (desg) => desg['desg_name'] ?? "nothing",
+                                    )
+                                    .toList(),
+                                _selectedDesignation,
+                                (value) => setState(() {
+                                      _selectedDesignation = value!;
+                                      final selectedDesg =
+                                          designations.firstWhere(
+                                        (desg) => desg['desg_name'] == value,
+                                        orElse: () =>
+                                            {'id': '', 'desg_name': ''},
+                                      );
+                                      selectedDesignationId =
+                                          selectedDesg['id'];
+
+                                      if (selectedDesignationId != '') {
+                                        getUserByDesignationID(
+                                                selectedDesignationId!)
+                                            .then((employees) {
+                                          setState(() {
+                                            _employeesByDesignation = employees;
+                                            selectedUserId =
+                                                "---- Select User Id & Name * ----";
+                                          });
+                                        });
+                                      }
+
+                                      Logger.success(
+                                          "Selected Designation $_selectedDesignation and $selectedDesignationId");
+                                    })),
+                            SizedBox(height: 10),
+                            _buildDropdown(
+                                'User Id & Name *',
+                                _employeesByDesignation.isEmpty
+                                    ? [] // Empty list if no employees found
+                                    : _employeesByDesignation
+                                        .map<String>(
+                                          (emp) =>
+                                              "${emp['regId']} - ${emp['name']}",
+                                        )
+                                        .toList(),
+                                selectedUserId,
+                                (value) => setState(() {
+                                      selectedUserId = value!;
+
+                                      if (value !=
+                                          "---- Select User Id & Name * ----") {
+                                        // The regId is before the first " - "
+                                        selectedRegId = value.split(" - ")[0];
+                                        selectedRefName = value.split(" - ")[1];
+                                        Logger.success(
+                                            "Selected User RegID: $selectedRegId and Name: $selectedRefName");
+                                        _refNameController.text =
+                                            selectedRefName;
+                                      }
+                                    })),
+                          ],
+                        ),
                   SizedBox(height: 15),
-                  _buildTextField('Reference Name *', _refNameController),
+                  _buildTextField('Reference Name *', _refNameController,
+                      forceReadOnly: true),
                   SizedBox(height: 15),
                   _buildTextField('First Name*', _firstNameController),
                   SizedBox(height: 15),
@@ -390,6 +732,8 @@ class _AddbmState extends State<AddbmPage> {
                             onChanged: (String? newValue) {
                               setState(() {
                                 _selectedCountryCode = newValue!;
+                                Logger.success(
+                                    "selectedCountryCode : $_selectedCountryCode");
                               });
                             },
                             items: ["+91", "+1", "+44", "+61", "+971"]
@@ -506,32 +850,174 @@ class _AddbmState extends State<AddbmPage> {
                   SizedBox(height: 10),
                   _buildDropdown(
                       'Country *',
-                      ['India', 'Pakistan', 'Other'],
+                      _countryNames,
                       selectedCountry,
                       (value) => setState(() {
                             selectedCountry = value!;
+                            final selectedCountryObject = _countries.firstWhere(
+                                (country) => country['country_name'] == value,
+                                orElse: () => null);
+                            if (selectedCountryObject != null) {
+                              _selectedCountryId =
+                                  selectedCountryObject['id'].toString();
+                              Logger.success(
+                                  "selected country is $selectedCountry ID : $_selectedCountryId");
+                            }
+                            _loadStates(_selectedCountryId);
                           })),
                   SizedBox(height: 10),
                   _buildDropdown(
                       'State *',
-                      ['Goa', 'Delhi', 'Other'],
+                      _stateNames,
                       selectedState,
                       (value) => setState(() {
                             selectedState = value!;
+
+                            final selectedStateObject = _states.firstWhere(
+                                (state) => state['state_name'] == value,
+                                orElse: () => null);
+                            if (selectedStateObject != null) {
+                              _selectedStateId =
+                                  selectedStateObject['id'].toString();
+                              Logger.success(
+                                  "selected state is $selectedState ID : $_selectedStateId");
+                              _loadCities(_selectedStateId);
+                            }
                           })),
                   SizedBox(height: 10),
                   _buildDropdown(
                       'City *',
-                      ['Margao', 'Panjim', 'Other'],
+                      _cityNames,
                       selectedCity,
                       (value) => setState(() {
                             selectedCity = value!;
+                            final selectedCityObject = _cities.firstWhere(
+                                (city) => city['city_name'] == value,
+                                orElse: () => null);
+                            if (selectedCityObject != null) {
+                              _selectedCityId =
+                                  selectedCityObject['id'].toString();
+                              Logger.success(
+                                  "selected city is $selectedCity ID : $_selectedCityId");
+                            }
+                            getPincode(_selectedCityId);
                           })),
                   SizedBox(height: 10),
-                  _buildTextField('Pincode *', _pincodeController),
+                  _buildTextField('Pincode *', _pincodeController,
+                      forceReadOnly: true),
                   SizedBox(height: 15),
                   _buildTextField('Address *', _addressController),
                   SizedBox(height: 20),
+                  _buildDropdown(
+                    'Zone *',
+                    _zoneNames.isEmpty ? ['No zones available'] : _zoneNames,
+                    _selectedZone,
+                    (value) => setState(() {
+                      _selectedZone = value!;
+
+                      if (_zones.isNotEmpty) {
+                        final selectedZoneObject = _zones.firstWhere(
+                            (zone) => zone['zone_name'] == value,
+                            orElse: () => null);
+
+                        if (selectedZoneObject != null) {
+                          _selectedZoneId = selectedZoneObject['id'].toString();
+                          Logger.success(
+                              "Selected Zone: $_selectedZone, ID: $_selectedZoneId");
+                          _getBranches(_selectedZoneId!);
+                        }
+                      }
+                    }),
+                  ),
+                  SizedBox(height: 20),
+                  _buildDropdown(
+                      'Branch *',
+                      _branchesNames.isEmpty
+                          ? ['No branches available']
+                          : _branchesNames,
+                      _selectedBranch,
+                      (value) => setState(() {
+                            _selectedBranch = value!;
+                            final selectedBranchObject = _branches.firstWhere(
+                                (branch) => branch['branch_name'] == value,
+                                orElse: () => null);
+                            if (selectedBranchObject != null) {
+                              _selectedBranchId =
+                                  selectedBranchObject['id'].toString();
+                              Logger.success(
+                                  "selected branch is $_selectedBranch and its Id : $_selectedBranchId");
+                            }
+                          }),
+                      emptyMessage: "No Branches available"),
+                  SizedBox(height: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          text: "Payment Mode * ",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Row(
+                        children: ["Cash", "Cheque", "UPI/NEFT"].map((package) {
+                          return GestureDetector(
+                            onTap: widget.isViewMode
+                                ? null
+                                : () {
+                                    setState(() {
+                                      _selectedPaymentMode = package;
+                                    });
+                                  },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Radio<String>(
+                                  value: package,
+                                  groupValue: _selectedPaymentMode,
+                                  activeColor:
+                                      Colors.white, // Change radio button color
+                                  onChanged: widget.isViewMode
+                                      ? null
+                                      : (value) {
+                                          setState(() {
+                                            _selectedPaymentMode = value!;
+                                            Logger.success(
+                                                "Selected payment Mode: $_selectedPaymentMode");
+                                          });
+                                        },
+                                ),
+                                Text(
+                                  package,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors
+                                        .white, // Gray out text if disabled
+                                  ),
+                                ),
+                                SizedBox(
+                                    width: 10), // Spacing between radio buttons
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                  if (_selectedPaymentMode == "Cheque") ...{
+                    _buildTextField('Check No. *', _chequeNoController),
+                    SizedBox(height: 10),
+                    _buildTextField('Cheque  Date *', _chequeDateController),
+                    SizedBox(height: 10),
+                    _buildTextField('Bank Name *', _bankNameController),
+                    SizedBox(height: 10),
+                  } else if (_selectedPaymentMode == "UPI/NEFT") ...{
+                    _buildTextField(
+                        'Transaction No. *', _transactionIDController),
+                    SizedBox(height: 10),
+                  },
                   Text(
                     "Attachments",
                     style: TextStyle(
@@ -546,6 +1032,7 @@ class _AddbmState extends State<AddbmPage> {
                   _buildUploadButton("Pan Card"),
                   _buildUploadButton("Bank Passbook"),
                   _buildUploadButton("Voting Card"),
+                  _buildUploadButton("Payment Proof"),
                   SizedBox(height: 20),
                   if (widget.isEditMode) ...[
                     Center(
@@ -569,7 +1056,9 @@ class _AddbmState extends State<AddbmPage> {
                   ] else if (!widget.isViewMode) ...[
                     Center(
                       child: ElevatedButton(
-                        onPressed: submitForm,
+                        onPressed: () {
+                          submitForm(context);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(
@@ -631,23 +1120,60 @@ class _AddbmState extends State<AddbmPage> {
                             selectedFiles[fileType]!,
                             fit: BoxFit.cover,
                           )
-                        : Image.network(
-                            selectedFiles[fileType],
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.broken_image,
-                                      color: Colors.white,
-                                    )
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                        : (selectedFiles[fileType] != null &&
+                                selectedFiles[fileType].toString().isNotEmpty)
+                            ? Image.network(
+                                selectedFiles[fileType],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  // Instead of showing broken image icon for 404s,
+                                  // we can show the same UI as "No $fileType uploaded"
+                                  return Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.image,
+                                          color: Colors.white70,
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          "Image unavailable",
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              )
+                            : Image.network(
+                                selectedFiles[fileType],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.broken_image,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                },
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                              ),
                   ),
                 ),
                 if (!widget.isViewMode)

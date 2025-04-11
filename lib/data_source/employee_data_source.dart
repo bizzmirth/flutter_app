@@ -190,7 +190,7 @@ class EmployeeDataSource extends DataTableSource {
                       "------------ Delete ${employee.name}------------");
 
                   deleteEmployee(employee.id, showToast: true);
-                  Navigator.pop(context);
+                  // Navigator.pop(context);
                 },
               ),
             ),

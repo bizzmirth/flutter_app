@@ -38,170 +38,200 @@ const PendingBusinessMentorModelSchema = CollectionSchema(
       name: r'age',
       type: IsarType.long,
     ),
-    r'bankPassbook': PropertySchema(
+    r'bankName': PropertySchema(
       id: 4,
+      name: r'bankName',
+      type: IsarType.string,
+    ),
+    r'bankPassbook': PropertySchema(
+      id: 5,
       name: r'bankPassbook',
       type: IsarType.string,
     ),
     r'branch': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'branch',
-      type: IsarType.long,
+      type: IsarType.string,
     ),
     r'businessMentorId': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'businessMentorId',
       type: IsarType.long,
     ),
+    r'chequeDate': PropertySchema(
+      id: 8,
+      name: r'chequeDate',
+      type: IsarType.string,
+    ),
+    r'chequeNo': PropertySchema(
+      id: 9,
+      name: r'chequeNo',
+      type: IsarType.string,
+    ),
     r'city': PropertySchema(
-      id: 7,
+      id: 10,
       name: r'city',
       type: IsarType.string,
     ),
     r'country': PropertySchema(
-      id: 8,
+      id: 11,
       name: r'country',
       type: IsarType.string,
     ),
     r'countryCd': PropertySchema(
-      id: 9,
+      id: 12,
       name: r'countryCd',
       type: IsarType.string,
     ),
     r'deletedDate': PropertySchema(
-      id: 10,
+      id: 13,
       name: r'deletedDate',
       type: IsarType.string,
     ),
     r'designation': PropertySchema(
-      id: 11,
+      id: 14,
       name: r'designation',
       type: IsarType.string,
     ),
     r'dob': PropertySchema(
-      id: 12,
+      id: 15,
       name: r'dob',
       type: IsarType.string,
     ),
     r'email': PropertySchema(
-      id: 13,
+      id: 16,
       name: r'email',
       type: IsarType.string,
     ),
     r'firstName': PropertySchema(
-      id: 14,
+      id: 17,
       name: r'firstName',
       type: IsarType.string,
     ),
     r'gender': PropertySchema(
-      id: 15,
+      id: 18,
       name: r'gender',
       type: IsarType.string,
     ),
     r'gstNo': PropertySchema(
-      id: 16,
+      id: 19,
       name: r'gstNo',
       type: IsarType.string,
     ),
     r'kyc': PropertySchema(
-      id: 17,
+      id: 20,
       name: r'kyc',
       type: IsarType.string,
     ),
     r'lastName': PropertySchema(
-      id: 18,
+      id: 21,
       name: r'lastName',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 19,
+      id: 22,
       name: r'name',
       type: IsarType.string,
     ),
     r'nomineeName': PropertySchema(
-      id: 20,
+      id: 23,
       name: r'nomineeName',
       type: IsarType.string,
     ),
     r'nomineeRelation': PropertySchema(
-      id: 21,
+      id: 24,
       name: r'nomineeRelation',
       type: IsarType.string,
     ),
     r'panCard': PropertySchema(
-      id: 22,
+      id: 25,
       name: r'panCard',
       type: IsarType.string,
     ),
+    r'paymentMode': PropertySchema(
+      id: 26,
+      name: r'paymentMode',
+      type: IsarType.string,
+    ),
+    r'paymentProof': PropertySchema(
+      id: 27,
+      name: r'paymentProof',
+      type: IsarType.string,
+    ),
     r'phoneNumber': PropertySchema(
-      id: 23,
+      id: 28,
       name: r'phoneNumber',
       type: IsarType.string,
     ),
     r'pincode': PropertySchema(
-      id: 24,
+      id: 29,
       name: r'pincode',
       type: IsarType.string,
     ),
     r'profilePicture': PropertySchema(
-      id: 25,
+      id: 30,
       name: r'profilePicture',
       type: IsarType.string,
     ),
     r'refName': PropertySchema(
-      id: 26,
+      id: 31,
       name: r'refName',
       type: IsarType.string,
     ),
     r'referenceNo': PropertySchema(
-      id: 27,
+      id: 32,
       name: r'referenceNo',
       type: IsarType.string,
     ),
     r'registerBy': PropertySchema(
-      id: 28,
+      id: 33,
       name: r'registerBy',
       type: IsarType.long,
     ),
     r'registerDate': PropertySchema(
-      id: 29,
+      id: 34,
       name: r'registerDate',
       type: IsarType.string,
     ),
     r'registrant': PropertySchema(
-      id: 30,
+      id: 35,
       name: r'registrant',
       type: IsarType.string,
     ),
     r'state': PropertySchema(
-      id: 31,
+      id: 36,
       name: r'state',
       type: IsarType.string,
     ),
     r'status': PropertySchema(
-      id: 32,
+      id: 37,
       name: r'status',
       type: IsarType.long,
     ),
+    r'transactionNo': PropertySchema(
+      id: 38,
+      name: r'transactionNo',
+      type: IsarType.string,
+    ),
     r'userId': PropertySchema(
-      id: 33,
+      id: 39,
       name: r'userId',
       type: IsarType.string,
     ),
     r'userType': PropertySchema(
-      id: 34,
+      id: 40,
       name: r'userType',
       type: IsarType.long,
     ),
     r'votingCard': PropertySchema(
-      id: 35,
+      id: 41,
       name: r'votingCard',
       type: IsarType.string,
     ),
     r'zone': PropertySchema(
-      id: 36,
+      id: 42,
       name: r'zone',
-      type: IsarType.long,
+      type: IsarType.string,
     )
   },
   estimateSize: _pendingBusinessMentorModelEstimateSize,
@@ -243,7 +273,31 @@ int _pendingBusinessMentorModelEstimateSize(
     }
   }
   {
+    final value = object.bankName;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.bankPassbook;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.branch;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.chequeDate;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.chequeNo;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -345,6 +399,18 @@ int _pendingBusinessMentorModelEstimateSize(
     }
   }
   {
+    final value = object.paymentMode;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.paymentProof;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.phoneNumber;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -393,6 +459,12 @@ int _pendingBusinessMentorModelEstimateSize(
     }
   }
   {
+    final value = object.transactionNo;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.userId;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -400,6 +472,12 @@ int _pendingBusinessMentorModelEstimateSize(
   }
   {
     final value = object.votingCard;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.zone;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -417,39 +495,45 @@ void _pendingBusinessMentorModelSerialize(
   writer.writeString(offsets[1], object.address);
   writer.writeString(offsets[2], object.adharCard);
   writer.writeLong(offsets[3], object.age);
-  writer.writeString(offsets[4], object.bankPassbook);
-  writer.writeLong(offsets[5], object.branch);
-  writer.writeLong(offsets[6], object.businessMentorId);
-  writer.writeString(offsets[7], object.city);
-  writer.writeString(offsets[8], object.country);
-  writer.writeString(offsets[9], object.countryCd);
-  writer.writeString(offsets[10], object.deletedDate);
-  writer.writeString(offsets[11], object.designation);
-  writer.writeString(offsets[12], object.dob);
-  writer.writeString(offsets[13], object.email);
-  writer.writeString(offsets[14], object.firstName);
-  writer.writeString(offsets[15], object.gender);
-  writer.writeString(offsets[16], object.gstNo);
-  writer.writeString(offsets[17], object.kyc);
-  writer.writeString(offsets[18], object.lastName);
-  writer.writeString(offsets[19], object.name);
-  writer.writeString(offsets[20], object.nomineeName);
-  writer.writeString(offsets[21], object.nomineeRelation);
-  writer.writeString(offsets[22], object.panCard);
-  writer.writeString(offsets[23], object.phoneNumber);
-  writer.writeString(offsets[24], object.pincode);
-  writer.writeString(offsets[25], object.profilePicture);
-  writer.writeString(offsets[26], object.refName);
-  writer.writeString(offsets[27], object.referenceNo);
-  writer.writeLong(offsets[28], object.registerBy);
-  writer.writeString(offsets[29], object.registerDate);
-  writer.writeString(offsets[30], object.registrant);
-  writer.writeString(offsets[31], object.state);
-  writer.writeLong(offsets[32], object.status);
-  writer.writeString(offsets[33], object.userId);
-  writer.writeLong(offsets[34], object.userType);
-  writer.writeString(offsets[35], object.votingCard);
-  writer.writeLong(offsets[36], object.zone);
+  writer.writeString(offsets[4], object.bankName);
+  writer.writeString(offsets[5], object.bankPassbook);
+  writer.writeString(offsets[6], object.branch);
+  writer.writeLong(offsets[7], object.businessMentorId);
+  writer.writeString(offsets[8], object.chequeDate);
+  writer.writeString(offsets[9], object.chequeNo);
+  writer.writeString(offsets[10], object.city);
+  writer.writeString(offsets[11], object.country);
+  writer.writeString(offsets[12], object.countryCd);
+  writer.writeString(offsets[13], object.deletedDate);
+  writer.writeString(offsets[14], object.designation);
+  writer.writeString(offsets[15], object.dob);
+  writer.writeString(offsets[16], object.email);
+  writer.writeString(offsets[17], object.firstName);
+  writer.writeString(offsets[18], object.gender);
+  writer.writeString(offsets[19], object.gstNo);
+  writer.writeString(offsets[20], object.kyc);
+  writer.writeString(offsets[21], object.lastName);
+  writer.writeString(offsets[22], object.name);
+  writer.writeString(offsets[23], object.nomineeName);
+  writer.writeString(offsets[24], object.nomineeRelation);
+  writer.writeString(offsets[25], object.panCard);
+  writer.writeString(offsets[26], object.paymentMode);
+  writer.writeString(offsets[27], object.paymentProof);
+  writer.writeString(offsets[28], object.phoneNumber);
+  writer.writeString(offsets[29], object.pincode);
+  writer.writeString(offsets[30], object.profilePicture);
+  writer.writeString(offsets[31], object.refName);
+  writer.writeString(offsets[32], object.referenceNo);
+  writer.writeLong(offsets[33], object.registerBy);
+  writer.writeString(offsets[34], object.registerDate);
+  writer.writeString(offsets[35], object.registrant);
+  writer.writeString(offsets[36], object.state);
+  writer.writeLong(offsets[37], object.status);
+  writer.writeString(offsets[38], object.transactionNo);
+  writer.writeString(offsets[39], object.userId);
+  writer.writeLong(offsets[40], object.userType);
+  writer.writeString(offsets[41], object.votingCard);
+  writer.writeString(offsets[42], object.zone);
 }
 
 PendingBusinessMentorModel _pendingBusinessMentorModelDeserialize(
@@ -463,40 +547,46 @@ PendingBusinessMentorModel _pendingBusinessMentorModelDeserialize(
   object.address = reader.readStringOrNull(offsets[1]);
   object.adharCard = reader.readStringOrNull(offsets[2]);
   object.age = reader.readLongOrNull(offsets[3]);
-  object.bankPassbook = reader.readStringOrNull(offsets[4]);
-  object.branch = reader.readLongOrNull(offsets[5]);
-  object.businessMentorId = reader.readLongOrNull(offsets[6]);
-  object.city = reader.readStringOrNull(offsets[7]);
-  object.country = reader.readStringOrNull(offsets[8]);
-  object.countryCd = reader.readStringOrNull(offsets[9]);
-  object.deletedDate = reader.readStringOrNull(offsets[10]);
-  object.designation = reader.readStringOrNull(offsets[11]);
-  object.dob = reader.readStringOrNull(offsets[12]);
-  object.email = reader.readStringOrNull(offsets[13]);
-  object.firstName = reader.readStringOrNull(offsets[14]);
-  object.gender = reader.readStringOrNull(offsets[15]);
-  object.gstNo = reader.readStringOrNull(offsets[16]);
+  object.bankName = reader.readStringOrNull(offsets[4]);
+  object.bankPassbook = reader.readStringOrNull(offsets[5]);
+  object.branch = reader.readStringOrNull(offsets[6]);
+  object.businessMentorId = reader.readLongOrNull(offsets[7]);
+  object.chequeDate = reader.readStringOrNull(offsets[8]);
+  object.chequeNo = reader.readStringOrNull(offsets[9]);
+  object.city = reader.readStringOrNull(offsets[10]);
+  object.country = reader.readStringOrNull(offsets[11]);
+  object.countryCd = reader.readStringOrNull(offsets[12]);
+  object.deletedDate = reader.readStringOrNull(offsets[13]);
+  object.designation = reader.readStringOrNull(offsets[14]);
+  object.dob = reader.readStringOrNull(offsets[15]);
+  object.email = reader.readStringOrNull(offsets[16]);
+  object.firstName = reader.readStringOrNull(offsets[17]);
+  object.gender = reader.readStringOrNull(offsets[18]);
+  object.gstNo = reader.readStringOrNull(offsets[19]);
   object.id = id;
-  object.kyc = reader.readStringOrNull(offsets[17]);
-  object.lastName = reader.readStringOrNull(offsets[18]);
-  object.name = reader.readStringOrNull(offsets[19]);
-  object.nomineeName = reader.readStringOrNull(offsets[20]);
-  object.nomineeRelation = reader.readStringOrNull(offsets[21]);
-  object.panCard = reader.readStringOrNull(offsets[22]);
-  object.phoneNumber = reader.readStringOrNull(offsets[23]);
-  object.pincode = reader.readStringOrNull(offsets[24]);
-  object.profilePicture = reader.readStringOrNull(offsets[25]);
-  object.refName = reader.readStringOrNull(offsets[26]);
-  object.referenceNo = reader.readStringOrNull(offsets[27]);
-  object.registerBy = reader.readLongOrNull(offsets[28]);
-  object.registerDate = reader.readStringOrNull(offsets[29]);
-  object.registrant = reader.readStringOrNull(offsets[30]);
-  object.state = reader.readStringOrNull(offsets[31]);
-  object.status = reader.readLongOrNull(offsets[32]);
-  object.userId = reader.readStringOrNull(offsets[33]);
-  object.userType = reader.readLongOrNull(offsets[34]);
-  object.votingCard = reader.readStringOrNull(offsets[35]);
-  object.zone = reader.readLongOrNull(offsets[36]);
+  object.kyc = reader.readStringOrNull(offsets[20]);
+  object.lastName = reader.readStringOrNull(offsets[21]);
+  object.name = reader.readStringOrNull(offsets[22]);
+  object.nomineeName = reader.readStringOrNull(offsets[23]);
+  object.nomineeRelation = reader.readStringOrNull(offsets[24]);
+  object.panCard = reader.readStringOrNull(offsets[25]);
+  object.paymentMode = reader.readStringOrNull(offsets[26]);
+  object.paymentProof = reader.readStringOrNull(offsets[27]);
+  object.phoneNumber = reader.readStringOrNull(offsets[28]);
+  object.pincode = reader.readStringOrNull(offsets[29]);
+  object.profilePicture = reader.readStringOrNull(offsets[30]);
+  object.refName = reader.readStringOrNull(offsets[31]);
+  object.referenceNo = reader.readStringOrNull(offsets[32]);
+  object.registerBy = reader.readLongOrNull(offsets[33]);
+  object.registerDate = reader.readStringOrNull(offsets[34]);
+  object.registrant = reader.readStringOrNull(offsets[35]);
+  object.state = reader.readStringOrNull(offsets[36]);
+  object.status = reader.readLongOrNull(offsets[37]);
+  object.transactionNo = reader.readStringOrNull(offsets[38]);
+  object.userId = reader.readStringOrNull(offsets[39]);
+  object.userType = reader.readLongOrNull(offsets[40]);
+  object.votingCard = reader.readStringOrNull(offsets[41]);
+  object.zone = reader.readStringOrNull(offsets[42]);
   return object;
 }
 
@@ -518,11 +608,11 @@ P _pendingBusinessMentorModelDeserializeProp<P>(
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readLongOrNull(offset)) as P;
-    case 6:
-      return (reader.readLongOrNull(offset)) as P;
-    case 7:
       return (reader.readStringOrNull(offset)) as P;
+    case 6:
+      return (reader.readStringOrNull(offset)) as P;
+    case 7:
+      return (reader.readLongOrNull(offset)) as P;
     case 8:
       return (reader.readStringOrNull(offset)) as P;
     case 9:
@@ -564,7 +654,7 @@ P _pendingBusinessMentorModelDeserializeProp<P>(
     case 27:
       return (reader.readStringOrNull(offset)) as P;
     case 28:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 29:
       return (reader.readStringOrNull(offset)) as P;
     case 30:
@@ -572,15 +662,27 @@ P _pendingBusinessMentorModelDeserializeProp<P>(
     case 31:
       return (reader.readStringOrNull(offset)) as P;
     case 32:
-      return (reader.readLongOrNull(offset)) as P;
-    case 33:
       return (reader.readStringOrNull(offset)) as P;
-    case 34:
+    case 33:
       return (reader.readLongOrNull(offset)) as P;
+    case 34:
+      return (reader.readStringOrNull(offset)) as P;
     case 35:
       return (reader.readStringOrNull(offset)) as P;
     case 36:
+      return (reader.readStringOrNull(offset)) as P;
+    case 37:
       return (reader.readLongOrNull(offset)) as P;
+    case 38:
+      return (reader.readStringOrNull(offset)) as P;
+    case 39:
+      return (reader.readStringOrNull(offset)) as P;
+    case 40:
+      return (reader.readLongOrNull(offset)) as P;
+    case 41:
+      return (reader.readStringOrNull(offset)) as P;
+    case 42:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1226,6 +1328,162 @@ extension PendingBusinessMentorModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> bankNameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'bankName',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> bankNameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'bankName',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> bankNameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'bankName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> bankNameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'bankName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> bankNameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'bankName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> bankNameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'bankName',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> bankNameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'bankName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> bankNameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'bankName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      bankNameContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'bankName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      bankNameMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'bankName',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> bankNameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'bankName',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> bankNameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'bankName',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> bankPassbookIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1400,49 +1658,58 @@ extension PendingBusinessMentorModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QAfterFilterCondition> branchEqualTo(int? value) {
+      QAfterFilterCondition> branchEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'branch',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> branchGreaterThan(
-    int? value, {
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'branch',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> branchLessThan(
-    int? value, {
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'branch',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> branchBetween(
-    int? lower,
-    int? upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -1451,6 +1718,79 @@ extension PendingBusinessMentorModelQueryFilter on QueryBuilder<
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> branchStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'branch',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> branchEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'branch',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      branchContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'branch',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      branchMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'branch',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> branchIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'branch',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> branchIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'branch',
+        value: '',
       ));
     });
   }
@@ -1525,6 +1865,318 @@ extension PendingBusinessMentorModelQueryFilter on QueryBuilder<
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeDateIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'chequeDate',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeDateIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'chequeDate',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeDateEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chequeDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeDateGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'chequeDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeDateLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'chequeDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeDateBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'chequeDate',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeDateStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'chequeDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeDateEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'chequeDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      chequeDateContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'chequeDate',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      chequeDateMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'chequeDate',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeDateIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chequeDate',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeDateIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'chequeDate',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeNoIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'chequeNo',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeNoIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'chequeNo',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeNoEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chequeNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeNoGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'chequeNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeNoLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'chequeNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeNoBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'chequeNo',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeNoStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'chequeNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeNoEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'chequeNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      chequeNoContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'chequeNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      chequeNoMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'chequeNo',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeNoIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'chequeNo',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> chequeNoIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'chequeNo',
+        value: '',
       ));
     });
   }
@@ -4100,6 +4752,318 @@ extension PendingBusinessMentorModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentModeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'paymentMode',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentModeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'paymentMode',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentModeEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'paymentMode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentModeGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'paymentMode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentModeLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'paymentMode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentModeBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'paymentMode',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentModeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'paymentMode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentModeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'paymentMode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      paymentModeContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'paymentMode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      paymentModeMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'paymentMode',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentModeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'paymentMode',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentModeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'paymentMode',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentProofIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'paymentProof',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentProofIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'paymentProof',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentProofEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'paymentProof',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentProofGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'paymentProof',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentProofLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'paymentProof',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentProofBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'paymentProof',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentProofStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'paymentProof',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentProofEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'paymentProof',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      paymentProofContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'paymentProof',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      paymentProofMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'paymentProof',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentProofIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'paymentProof',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> paymentProofIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'paymentProof',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> phoneNumberIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -5496,6 +6460,162 @@ extension PendingBusinessMentorModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> transactionNoIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'transactionNo',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> transactionNoIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'transactionNo',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> transactionNoEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'transactionNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> transactionNoGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'transactionNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> transactionNoLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'transactionNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> transactionNoBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'transactionNo',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> transactionNoStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'transactionNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> transactionNoEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'transactionNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      transactionNoContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'transactionNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      transactionNoMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'transactionNo',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> transactionNoIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'transactionNo',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> transactionNoIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'transactionNo',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> userIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -5900,49 +7020,58 @@ extension PendingBusinessMentorModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QAfterFilterCondition> zoneEqualTo(int? value) {
+      QAfterFilterCondition> zoneEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'zone',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> zoneGreaterThan(
-    int? value, {
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'zone',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> zoneLessThan(
-    int? value, {
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'zone',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> zoneBetween(
-    int? lower,
-    int? upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -5951,6 +7080,79 @@ extension PendingBusinessMentorModelQueryFilter on QueryBuilder<
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> zoneStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> zoneEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      zoneContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'zone',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      zoneMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'zone',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> zoneIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'zone',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> zoneIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'zone',
+        value: '',
       ));
     });
   }
@@ -6021,6 +7223,20 @@ extension PendingBusinessMentorModelQuerySortBy on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByBankName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bankName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByBankNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bankName', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterSortBy> sortByBankPassbook() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'bankPassbook', Sort.asc);
@@ -6059,6 +7275,34 @@ extension PendingBusinessMentorModelQuerySortBy on QueryBuilder<
       QAfterSortBy> sortByBusinessMentorIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'businessMentorId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByChequeDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chequeDate', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByChequeDateDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chequeDate', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByChequeNo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chequeNo', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByChequeNoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chequeNo', Sort.desc);
     });
   }
 
@@ -6287,6 +7531,34 @@ extension PendingBusinessMentorModelQuerySortBy on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByPaymentMode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'paymentMode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByPaymentModeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'paymentMode', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByPaymentProof() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'paymentProof', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByPaymentProofDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'paymentProof', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterSortBy> sortByPhoneNumber() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'phoneNumber', Sort.asc);
@@ -6427,6 +7699,20 @@ extension PendingBusinessMentorModelQuerySortBy on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByTransactionNo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transactionNo', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByTransactionNoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transactionNo', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterSortBy> sortByUserId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userId', Sort.asc);
@@ -6542,6 +7828,20 @@ extension PendingBusinessMentorModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByBankName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bankName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByBankNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bankName', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterSortBy> thenByBankPassbook() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'bankPassbook', Sort.asc);
@@ -6580,6 +7880,34 @@ extension PendingBusinessMentorModelQuerySortThenBy on QueryBuilder<
       QAfterSortBy> thenByBusinessMentorIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'businessMentorId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByChequeDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chequeDate', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByChequeDateDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chequeDate', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByChequeNo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chequeNo', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByChequeNoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'chequeNo', Sort.desc);
     });
   }
 
@@ -6822,6 +8150,34 @@ extension PendingBusinessMentorModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByPaymentMode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'paymentMode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByPaymentModeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'paymentMode', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByPaymentProof() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'paymentProof', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByPaymentProofDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'paymentProof', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterSortBy> thenByPhoneNumber() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'phoneNumber', Sort.asc);
@@ -6962,6 +8318,20 @@ extension PendingBusinessMentorModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByTransactionNo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transactionNo', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByTransactionNoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'transactionNo', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterSortBy> thenByUserId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userId', Sort.asc);
@@ -7049,6 +8419,13 @@ extension PendingBusinessMentorModelQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QDistinct> distinctByBankName({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'bankName', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QDistinct> distinctByBankPassbook({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'bankPassbook', caseSensitive: caseSensitive);
@@ -7056,9 +8433,9 @@ extension PendingBusinessMentorModelQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QDistinct> distinctByBranch() {
+      QDistinct> distinctByBranch({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'branch');
+      return query.addDistinctBy(r'branch', caseSensitive: caseSensitive);
     });
   }
 
@@ -7066,6 +8443,20 @@ extension PendingBusinessMentorModelQueryWhereDistinct on QueryBuilder<
       QDistinct> distinctByBusinessMentorId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'businessMentorId');
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QDistinct> distinctByChequeDate({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chequeDate', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QDistinct> distinctByChequeNo({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'chequeNo', caseSensitive: caseSensitive);
     });
   }
 
@@ -7183,6 +8574,20 @@ extension PendingBusinessMentorModelQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QDistinct> distinctByPaymentMode({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'paymentMode', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QDistinct> distinctByPaymentProof({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'paymentProof', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QDistinct> distinctByPhoneNumber({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'phoneNumber', caseSensitive: caseSensitive);
@@ -7254,6 +8659,14 @@ extension PendingBusinessMentorModelQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QDistinct> distinctByTransactionNo({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'transactionNo',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QDistinct> distinctByUserId({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'userId', caseSensitive: caseSensitive);
@@ -7275,9 +8688,9 @@ extension PendingBusinessMentorModelQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QDistinct> distinctByZone() {
+      QDistinct> distinctByZone({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'zone');
+      return query.addDistinctBy(r'zone', caseSensitive: caseSensitive);
     });
   }
 }
@@ -7319,13 +8732,20 @@ extension PendingBusinessMentorModelQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
+      bankNameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'bankName');
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
       bankPassbookProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'bankPassbook');
     });
   }
 
-  QueryBuilder<PendingBusinessMentorModel, int?, QQueryOperations>
+  QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
       branchProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'branch');
@@ -7336,6 +8756,20 @@ extension PendingBusinessMentorModelQueryProperty on QueryBuilder<
       businessMentorIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'businessMentorId');
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
+      chequeDateProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chequeDate');
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
+      chequeNoProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'chequeNo');
     });
   }
 
@@ -7452,6 +8886,20 @@ extension PendingBusinessMentorModelQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
+      paymentModeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'paymentMode');
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
+      paymentProofProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'paymentProof');
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
       phoneNumberProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'phoneNumber');
@@ -7522,6 +8970,13 @@ extension PendingBusinessMentorModelQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
+      transactionNoProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'transactionNo');
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
       userIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'userId');
@@ -7542,7 +8997,7 @@ extension PendingBusinessMentorModelQueryProperty on QueryBuilder<
     });
   }
 
-  QueryBuilder<PendingBusinessMentorModel, int?, QQueryOperations>
+  QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
       zoneProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'zone');

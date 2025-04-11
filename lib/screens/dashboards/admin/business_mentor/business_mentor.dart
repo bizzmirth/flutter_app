@@ -10,6 +10,7 @@ import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class BusinessMentorPage extends StatefulWidget {
   const BusinessMentorPage({super.key});
@@ -26,6 +27,7 @@ class _BusinessMentorPageState extends State<BusinessMentorPage> {
   static const double paginationHeight = 60.0;
   List<PendingBusinessMentorModel> pendingBusinessMentor = [];
   final IsarService isarService = IsarService();
+  bool isLoading = false;
   late StreamSubscription<void> _pendingBusinessMentor;
   final AdminBusniessMentorController adminBusniessMentorController =
       AdminBusniessMentorController();
@@ -48,9 +50,16 @@ class _BusinessMentorPageState extends State<BusinessMentorPage> {
 
   Future<void> loadBusniessMenotrs() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       await adminBusniessMentorController.fetchAndSavePendingBusinessMentor();
 
       getBusniessMenotrs();
+
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
       Logger.error("Error fetching pending business mentors : $e");
     }
@@ -70,10 +79,12 @@ class _BusinessMentorPageState extends State<BusinessMentorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final controller =
+        Provider.of<AdminBusniessMentorController>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Business Mentors',
+          'Business Mentorsss',
           style: GoogleFonts.poppins(
             fontSize: 22,
             fontWeight: FontWeight.w600,
@@ -84,120 +95,129 @@ class _BusinessMentorPageState extends State<BusinessMentorPage> {
         backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Divider(thickness: 1, color: Colors.black26),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    "All Pending Business Mentor List:",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              Divider(thickness: 1, color: Colors.black26),
-              FilterBar(),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Divider(thickness: 1, color: Colors.black26),
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          "All Pending Business Mentor List:",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    Divider(thickness: 1, color: Colors.black26),
+                    FilterBar(),
 
-              Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SizedBox(
-                  height: (_rowsPerPage * dataRowHeight) +
-                      headerHeight +
-                      paginationHeight,
-                  child: PaginatedDataTable(
-                    columnSpacing: 35,
-                    dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("Image")),
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Full Name")),
-                      DataColumn(label: Text("Ref. ID")),
-                      DataColumn(label: Text("Ref. Name")),
-                      DataColumn(label: Text("Joining Date")),
-                      DataColumn(label: Text("Status")),
-                      DataColumn(label: Text("Action"))
-                    ],
-                    source: MyBMDataSource(pendingBusinessMentor),
-                    rowsPerPage: _rowsPerPage,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
-                    onRowsPerPageChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _rowsPerPage = value;
-                        });
-                      }
-                    },
-                    arrowHeadColor: Colors.blue,
-                  ),
-                ),
-              ),
+                    Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: SizedBox(
+                        height: (_rowsPerPage * dataRowHeight) +
+                            headerHeight +
+                            paginationHeight,
+                        child: PaginatedDataTable(
+                          columnSpacing: 35,
+                          dataRowMinHeight: 40,
+                          columns: [
+                            DataColumn(label: Text("Image")),
+                            DataColumn(label: Text("ID")),
+                            DataColumn(label: Text("Full Name")),
+                            DataColumn(label: Text("Ref. ID")),
+                            DataColumn(label: Text("Ref. Name")),
+                            DataColumn(label: Text("Joining Date")),
+                            DataColumn(label: Text("Status")),
+                            DataColumn(label: Text("Action"))
+                          ],
+                          source:
+                              MyBMDataSource(context, pendingBusinessMentor),
+                          rowsPerPage: _rowsPerPage,
+                          availableRowsPerPage: [5, 10, 15, 20, 25],
+                          onRowsPerPageChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _rowsPerPage = value;
+                              });
+                            }
+                          },
+                          arrowHeadColor: Colors.blue,
+                        ),
+                      ),
+                    ),
 
-              SizedBox(height: 35),
-              Divider(thickness: 1, color: Colors.black26),
-              // Upcoming Events Section
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  "All Registered Business Mentor List:",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Divider(thickness: 1, color: Colors.black26),
+                    SizedBox(height: 35),
+                    Divider(thickness: 1, color: Colors.black26),
+                    // Upcoming Events Section
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        "All Registered Business Mentor List:",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Divider(thickness: 1, color: Colors.black26),
 
-              FilterBar(),
-              Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SizedBox(
-                  height: (_rowsPerPage1 * dataRowHeight) +
-                      headerHeight +
-                      paginationHeight,
-                  child: PaginatedDataTable(
-                    columnSpacing: 35,
-                    dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("           ")),
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Full Name")),
-                      DataColumn(label: Text("Ref. ID")),
-                      DataColumn(label: Text("Ref. Name")),
-                      DataColumn(label: Text("Joining Date")),
-                      DataColumn(label: Text("Status")),
-                      DataColumn(label: Text("Action"))
-                    ],
-                    source: MyBMRegDataSource(orders1BM),
-                    rowsPerPage: _rowsPerPage1,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
-                    onRowsPerPageChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _rowsPerPage1 = value;
-                        });
-                      }
-                    },
-                    arrowHeadColor: Colors.blue,
-                  ),
+                    FilterBar(),
+                    Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: SizedBox(
+                        height: (_rowsPerPage1 * dataRowHeight) +
+                            headerHeight +
+                            paginationHeight,
+                        child: PaginatedDataTable(
+                          columnSpacing: 35,
+                          dataRowMinHeight: 40,
+                          columns: [
+                            DataColumn(label: Text("           ")),
+                            DataColumn(label: Text("ID")),
+                            DataColumn(label: Text("Full Name")),
+                            DataColumn(label: Text("Ref. ID")),
+                            DataColumn(label: Text("Ref. Name")),
+                            DataColumn(label: Text("Joining Date")),
+                            DataColumn(label: Text("Status")),
+                            DataColumn(label: Text("Action"))
+                          ],
+                          source: MyBMRegDataSource(orders1BM),
+                          rowsPerPage: _rowsPerPage1,
+                          availableRowsPerPage: [5, 10, 15, 20, 25],
+                          onRowsPerPageChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _rowsPerPage1 = value;
+                              });
+                            }
+                          },
+                          arrowHeadColor: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ), //AddViewTEPage
+            ), //AddViewTEPage
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => AddbmPage()),
-          );
+          ).then((value) {
+            loadBusniessMenotrs();
+          });
         },
         backgroundColor: const Color.fromARGB(255, 153, 198, 250),
         shape: RoundedRectangleBorder(
