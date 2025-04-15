@@ -788,6 +788,35 @@ Future<String?> getZoneById(String zoneId) async {
   return null;
 }
 
+void scrollToFirstFormErrors({
+  required BuildContext context,
+  required List<_ValidationTarget> targets,
+}) {
+  for (final target in targets) {
+    if (target.hasError()) {
+      final context = target.key.currentContext;
+      if (context != null) {
+        Scrollable.ensureVisible(
+          context,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+      return;
+    }
+  }
+}
+
+class _ValidationTarget {
+  final GlobalKey key;
+  final bool Function() hasError;
+
+  _ValidationTarget({
+    required this.key,
+    required this.hasError,
+  });
+}
+
 class _FilterBarState extends State<FilterBar> {
   TextEditingController searchController = TextEditingController();
   DateTime? fromDate;

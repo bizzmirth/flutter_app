@@ -57,7 +57,7 @@ class AdminBusniessMentorController extends ChangeNotifier {
       final newPanCard =
           extractPathSegment(businessMentor.panCard!, 'pan_card/');
       final newBankPassbook =
-          extractPathSegment(businessMentor.bankName!, 'passbook/');
+          extractPathSegment(businessMentor.bankPassbook!, 'passbook/');
       final newVotingCard =
           extractPathSegment(businessMentor.votingCard!, 'voting_card/');
       final newPaymentProof =
@@ -104,6 +104,19 @@ class AdminBusniessMentorController extends ChangeNotifier {
       Logger.success("API response: ${response.body}");
     } catch (e) {
       Logger.error("Error adding business Mentor : $e");
+    } finally {
+      _isLoading = true;
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiUpdateBusinessMentor(
+      PendingBusinessMentorModel businessMentor) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+    } catch (e) {
+      Logger.error("Error updating busniness Mentor : $e");
     } finally {
       _isLoading = true;
       notifyListeners();
@@ -402,6 +415,8 @@ class AdminBusniessMentorController extends ChangeNotifier {
         ..city = json['city'] ?? ''
         ..pincode = json['pincode'] ?? ''
         ..address = json['address'] ?? ''
+        ..zone = json['zone'] ?? ''
+        ..branch = json['branch'] ?? ''
         ..paymentMode = json['payment_mode'] ?? ''
         ..chequeNo = json['cheque_no'] ?? ''
         ..chequeDate = json['cheque_date'] ?? ''
@@ -412,6 +427,7 @@ class AdminBusniessMentorController extends ChangeNotifier {
         ..adharCard = json['aadhar_card'] ?? ''
         ..votingCard = json['voting_card'] ?? ''
         ..bankPassbook = json['bank_passbook'] ?? ''
+        ..paymentProof = json['payment_proof'] ?? ''
         ..registrant = json['registrant'] ?? ''
         ..referenceNo = json['reference_no'] ?? ''
         ..registerBy = parseIntSafely(json['register_by'])

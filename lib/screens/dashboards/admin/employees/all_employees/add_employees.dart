@@ -710,7 +710,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         _scrollToFirstError();
         ToastHelper.showErrorToast(
             context: context, title: "Please Fill all the required fields");
-        return; // Stop the submission process
+        return;
       }
       if (_formKey.currentState!.validate()) {
         // if (true) {
@@ -718,21 +718,16 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         String? idProofPath;
         String? bankDetailsPath;
 
-        // Upload Profile Picture if selected
         if (selectedFiles["Profile Picture"] != null) {
           await employeeController.uploadImage(
               context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
           profilePicturePath = selectedFiles["Profile Picture"]!.path;
         }
-
-        // Upload ID Proof if selected
         if (selectedFiles["ID Proof"] != null) {
           await employeeController.uploadImage(
               context, 'id_proof', selectedFiles["ID Proof"]!.path);
           idProofPath = selectedFiles["ID Proof"]!.path;
         }
-
-        // Upload Bank Details if selected
         if (selectedFiles["Bank Details"] != null) {
           await employeeController.uploadImage(
               context, 'passbook', selectedFiles["Bank Details"]!.path);

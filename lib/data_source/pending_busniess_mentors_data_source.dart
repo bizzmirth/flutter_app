@@ -48,7 +48,6 @@ class MyBMDataSource extends DataTableSource {
     }
 
     Logger.success("Final image URL: $imageUrl");
-// Action Menu Widget
 
     return Center(
       child: Container(
@@ -206,6 +205,19 @@ class MyBMDataSource extends DataTableSource {
             leading:
                 Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
             title: Text("Edit"),
+            onTap: () {
+              Navigator.pop(context);
+              Logger.success("This is the context : $context");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddbmPage(
+                    isEditMode: true,
+                    pendingBusinessMentor: businessMentor,
+                  ),
+                ),
+              );
+            },
           ),
         ),
         PopupMenuItem(
