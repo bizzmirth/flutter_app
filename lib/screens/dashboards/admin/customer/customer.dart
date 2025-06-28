@@ -139,6 +139,7 @@ class _CustPageState extends State<CustPage> {
                                 DataColumn(label: Text("Full Name")),
                                 DataColumn(label: Text("Ref. ID")),
                                 DataColumn(label: Text("Ref. Name")),
+                                DataColumn(label: Text("Type")),
                                 DataColumn(label: Text("Joining Date")),
                                 DataColumn(label: Text("Status")),
                                 DataColumn(label: Text("Action"))

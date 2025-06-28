@@ -124,8 +124,9 @@ class MyAdminCustRegDataSource extends DataTableSource {
         ),
         DataCell(Text(customer.caCustomerId.toString())),
         DataCell(Text(customer.name ?? "N/A")),
-        DataCell(Text(customer.referenceNo ?? "N/A")),
+        DataCell(Text(customer.taReferenceNo ?? "N/A")),
         DataCell(Text(customer.taReferenceName ?? "N/A")),
+        DataCell(Text(customer.customerType ?? "N/A")),
         DataCell(Text(customer.dob ?? "N/A")),
         DataCell(
           Container(
