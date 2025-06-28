@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AddcustPage extends StatefulWidget {
   const AddcustPage({super.key});
@@ -13,31 +16,104 @@ class AddcustPage extends StatefulWidget {
 }
 
 class _AddcustState extends State<AddcustPage> {
-  Map<String, String?> selectedFiles = {
+  Map<String, dynamic> selectedFiles = {
     "Profile Picture": null,
     "Aadhar Card": null,
     "Pan Card": null,
     "Bank Passbook": null,
     "Voting Card": null,
   };
+  var savedImagePath = "";
+  String _selectedPaymentMode = "Cash";
 
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _refNameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _nomineeNameController = TextEditingController();
+  final TextEditingController _nomineeRelationController =
+      TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _pincodeController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _chequeNoController = TextEditingController();
+  final TextEditingController _chequeDateController = TextEditingController();
+  final TextEditingController _bankNameController = TextEditingController();
+  final TextEditingController _transactionIDController =
+      TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
+  bool _isComplimentary = false;
+
+  String? _selectedUserName = "---- Select User Id & Name * ----";
+  String? _selectedGender = "---- Select Gender ----";
+  String? _selectedCountry = "---- Select Country ----";
+  String? _selectedState = "---- Select State ----";
+  String? _selectedCity = "---- Select City ----";
 
   String _selectedCountryCode = '+91'; // Default country code
 
   void _pickFile(String fileType) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
-      if (result != null && result.files.isNotEmpty) {
-        PlatformFile file = result.files.first;
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+      );
+      if (result == null) return;
 
-        setState(() {
-          selectedFiles[fileType] = file.name; // 🔥 Save selected file name
-        });
+      String originalPath = result.files.single.path!;
 
-        Logger.info("Picked file for $fileType: ${file.name}");
+      final appDir = await getApplicationDocumentsDirectory();
+      final bizmirthDir = Directory('${appDir.path}/bizmirth');
+
+      if (!await bizmirthDir.exists()) {
+        await bizmirthDir.create();
       }
+
+      String subFolderName;
+      switch (fileType) {
+        case "Profile Picture":
+          subFolderName = "profile_pic";
+          break;
+        case "ID Proof":
+          subFolderName = "id_proof";
+          break;
+        case "Bank Passbook":
+          subFolderName = "passbook";
+          break;
+
+        case "Aadhar Card":
+          subFolderName = "aadhar_card";
+          break;
+        case "Pan Card":
+          subFolderName = "pan_card";
+          break;
+        case "Voting Card":
+          subFolderName = "voting_card";
+          break;
+        case "Payment Proof":
+          subFolderName = "payment_proof";
+          break;
+        default:
+          subFolderName = "other_documents";
+      }
+
+      // Create the specific subfolder
+      final typeDir = Directory('${bizmirthDir.path}/$subFolderName');
+      if (!await typeDir.exists()) {
+        await typeDir.create();
+      }
+
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+      savedImagePath = '${typeDir.path}/$fileName';
+
+      await File(originalPath).copy(savedImagePath);
+
+      Logger.success('File saved to: $savedImagePath');
+
+      setState(() {
+        selectedFiles[fileType] = File(savedImagePath);
+      });
     } catch (e) {
       Logger.error("Error picking file: $e");
     }
@@ -45,13 +121,21 @@ class _AddcustState extends State<AddcustPage> {
 
   void _removeFile(String fileType) {
     setState(() {
-      selectedFiles[fileType] = null; // 🔥 Remove selected file
+      selectedFiles[fileType] = null;
     });
   }
 
-  Widget _buildTextField(String label, {int maxLines = 1}) {
-    return TextField(
+  Widget _buildTextField(String label, TextEditingController controller,
+      {int maxLines = 1,
+      String? Function(String?)? validator,
+      GlobalKey<FormFieldState>? fieldKey,
+      bool? forceReadOnly}) {
+    return TextFormField(
+      key: fieldKey,
+      // readOnly: forceReadOnly ?? widget.isViewMode,
       maxLines: maxLines,
+      validator: validator,
+      controller: controller,
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
@@ -106,6 +190,24 @@ class _AddcustState extends State<AddcustPage> {
     );
   }
 
+  void submitForm(context) {
+    try {
+      final name = '${_firstNameController.text} ${_lastNameController.text}';
+      final nomineeName = _nomineeNameController.text;
+      final nomineeRelation = _nomineeRelationController.text;
+      final phone = _phoneController.text;
+      final email = _emailController.text;
+      final dob = _dateController.text;
+      final pincode = _pincodeController.text;
+      final address = _addressController.text;
+
+      Logger.success(
+          "$name, $nomineeRelation, $nomineeName, $phone, $email, $dob, $pincode, $address");
+    } catch (e, s) {
+      Logger.error("Error Submitting Form, Error: $e Stacktree $s");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,18 +240,56 @@ class _AddcustState extends State<AddcustPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Complimentary',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Theme(
+                        data: Theme.of(context).copyWith(
+                          checkboxTheme: CheckboxThemeData(
+                            side: BorderSide(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ),
+                        child: Checkbox(
+                          value: _isComplimentary,
+                          activeColor: Colors.white,
+                          checkColor: Colors.black,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              _isComplimentary = value ?? false;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                   _buildDropdown(
                       'User Id & Name *', ['Margao', 'Panjim', 'Other']),
                   SizedBox(height: 10),
-                  _buildTextField('Reference Name *'),
+                  _buildTextField('Reference Name *', _refNameController),
                   SizedBox(height: 15),
-                  _buildTextField('First Name*'),
+                  _buildTextField('First Name*', _firstNameController),
                   SizedBox(height: 15),
-                  _buildTextField('Last Name*'),
+                  _buildTextField('Last Name*', _lastNameController),
                   SizedBox(height: 15),
-                  _buildTextField('Nominee Name*'),
+                  _buildTextField('Nominee Name*', _nomineeNameController),
                   SizedBox(height: 15),
-                  _buildTextField('Nominee Relation*'),
+                  _buildTextField(
+                      'Nominee Relation*', _nomineeRelationController),
                   SizedBox(height: 15),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -196,6 +336,7 @@ class _AddcustState extends State<AddcustPage> {
                         SizedBox(width: 10),
                         Expanded(
                           child: TextField(
+                            controller: _phoneController,
                             keyboardType: TextInputType.phone,
                             maxLength:
                                 10, // Limit to typical phone number length
@@ -220,7 +361,7 @@ class _AddcustState extends State<AddcustPage> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  _buildTextField('Email *'),
+                  _buildTextField('Email *', _emailController),
                   SizedBox(height: 15),
                   _buildDropdown('Gender *', ['Male', 'Female', 'Other']),
                   SizedBox(height: 10),
@@ -278,10 +419,99 @@ class _AddcustState extends State<AddcustPage> {
                   SizedBox(height: 10),
                   _buildDropdown('City *', ['Margao', 'Panjim', 'Other']),
                   SizedBox(height: 10),
-                  _buildTextField('Pincode *'),
+                  SizedBox(height: 10),
+                  _buildTextField('Pincode *', _pincodeController),
                   SizedBox(height: 15),
-                  _buildTextField('Address *'),
+                  _buildTextField('Address *', _addressController),
                   SizedBox(height: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          text: "Payment Mode * ",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.2),
+                          ),
+                        ),
+                        child: Row(
+                          children:
+                              ["Cash", "Cheque", "UPI/NEFT"].map((package) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedPaymentMode = package;
+                                });
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Radio<String>(
+                                    value: package,
+                                    groupValue: _selectedPaymentMode,
+                                    activeColor: Colors
+                                        .white, // Change radio button color
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedPaymentMode = value!;
+                                        Logger.success(
+                                            "Selected payment Mode: $_selectedPaymentMode");
+                                      });
+                                    },
+                                  ),
+                                  Text(
+                                    package,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors
+                                          .white, // Gray out text if disabled
+                                    ),
+                                  ),
+                                  SizedBox(
+                                      width:
+                                          10), // Spacing between radio buttons
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  if (_selectedPaymentMode == "Cheque") ...{
+                    _buildTextField('Check No. *', _chequeNoController),
+                    SizedBox(height: 10),
+                    _buildTextField('Cheque  Date *', _chequeDateController),
+                    SizedBox(height: 10),
+                    _buildTextField('Bank Name *', _bankNameController),
+                    SizedBox(height: 10),
+                  } else if (_selectedPaymentMode == "UPI/NEFT") ...{
+                    _buildTextField(
+                        'Transaction No. *', _transactionIDController),
+                    SizedBox(height: 10),
+                  },
+                  SizedBox(height: 10),
+                  _buildDropdown(
+                    'Payment Fee *',
+                    [
+                      'Free',
+                      'Prime: ₹ 10,000',
+                      'Premium: ₹ 30,000',
+                      'Premium Plus: ₹ 35,000'
+                    ],
+                  ),
+                  SizedBox(height: 10),
                   Text(
                     "Attachments",
                     style: TextStyle(
@@ -296,10 +526,14 @@ class _AddcustState extends State<AddcustPage> {
                   _buildUploadButton("Pan Card"),
                   _buildUploadButton("Bank Passbook"),
                   _buildUploadButton("Voting Card"),
+                  SizedBox(height: 10),
+                  _buildTextField('Extra Notes *', _notesController),
                   SizedBox(height: 20),
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        submitForm(context);
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         padding:
@@ -326,39 +560,139 @@ class _AddcustState extends State<AddcustPage> {
 
   Widget _buildUploadButton(String fileType) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10), // 🔥 Add spacing
-      child: Row(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Column(
         children: [
-          ElevatedButton.icon(
-            onPressed: () => _pickFile(fileType),
-            icon: Icon(Icons.upload_file),
-            label: Text("Upload $fileType"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
+          if (true) // later change this to isViewMode
+            ElevatedButton.icon(
+              onPressed: () => _pickFile(fileType),
+              icon: Icon(Icons.upload_file),
+              label: Text("Upload $fileType"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
               ),
             ),
-          ),
-          SizedBox(width: 10), // 🔥 Ensure spacing between button & file name
-
-          if (selectedFiles[fileType] !=
-              null) // 🔥 Show file name & remove button
-            Row(
-              mainAxisSize: MainAxisSize.min,
+          SizedBox(height: 8),
+          if (selectedFiles[fileType] != null)
+            Stack(
               children: [
-                Text(
-                  selectedFiles[fileType]!,
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                  overflow: TextOverflow.ellipsis, // 🔥 Avoid overflow issues
+                Container(
+                  height: 100,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: selectedFiles[fileType] is File
+                        ? Image.file(
+                            selectedFiles[fileType]!,
+                            fit: BoxFit.cover,
+                          )
+                        : (selectedFiles[fileType] != null &&
+                                selectedFiles[fileType].toString().isNotEmpty)
+                            ? Image.network(
+                                selectedFiles[fileType],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  // Instead of showing broken image icon for 404s,
+                                  // we can show the same UI as "No $fileType uploaded"
+                                  return Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.image,
+                                          color: Colors.white70,
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          "Image unavailable",
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              )
+                            : Image.network(
+                                selectedFiles[fileType],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.broken_image,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                },
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                              ),
+                  ),
                 ),
-                SizedBox(width: 5),
-                IconButton(
-                  icon: Icon(Icons.close, color: Colors.red),
-                  onPressed: () => _removeFile(fileType), // 🔥 Remove file
-                ),
+                if (true) // later change this to isViewMode
+                  Positioned(
+                    top: 5,
+                    right: 5,
+                    child: InkWell(
+                      onTap: () => _removeFile(fileType),
+                      child: Container(
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
+            )
+          else
+            Container(
+              height: 100,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  // widget.isViewMode ? "No $fileType available"
+                  "No $fileType uploaded",
+                  style: TextStyle(
+                    color: Colors.white70,
+                  ),
+                ),
+              ),
             ),
         ],
       ),

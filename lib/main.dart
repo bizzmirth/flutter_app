@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AdminBusniessMentorController()),
         ChangeNotifierProvider(
             create: (_) => DesignationDepartmentController()),
+        ChangeNotifierProvider(create: (_) => CustomerController()),
       ],
       child: MaterialApp(
         title: 'UniqBizz',
@@ -3316,114 +3318,6 @@ class MyViewTCDataSource extends DataTableSource {
   int get selectedRowCount => 0;
 }
 
-class MyAdminCustPendingDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyAdminCustPendingDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(
-          Center(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(order["profilePicture"]),
-            ),
-          ),
-        ),
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["rid"]?.toString() ?? "N/A")),
-        DataCell(Text(order["rname"]?.toString() ?? "N/A")),
-        DataCell(Text(order["jd"]?.toString() ?? "N/A")),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order["status"]?.toString() ?? ""),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order["status"]?.toString() ?? "Unknown",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "pending":
-        return Colors.orange;
-      case "completed":
-        return Colors.green;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading:
-                Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "register",
-          child: ListTile(
-            leading: Icon(Icons.app_registration,
-                color: const Color.fromARGB(255, 43, 29, 240)),
-            title: Text("Register"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
 class MyPackageMarkupApprovedDataSource extends DataTableSource {
   final List<Map<String, dynamic>> data;
   MyPackageMarkupApprovedDataSource(this.data);
@@ -3933,114 +3827,6 @@ class MyQuotationsApprovedDataSource extends DataTableSource {
             leading: Icon(Icons.currency_exchange_outlined,
                 color: Colors.green[400]),
             title: Text("Sold"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
-class MyAdminCustRegDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyAdminCustRegDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(
-          Center(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(order["profilePicture"]),
-            ),
-          ),
-        ),
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["rid"]?.toString() ?? "N/A")),
-        DataCell(Text(order["rname"]?.toString() ?? "N/A")),
-        DataCell(Text(order["jd"]?.toString() ?? "N/A")),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order["status"]?.toString() ?? ""),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order["status"]?.toString() ?? "Unknown",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "pending":
-        return Colors.orange;
-      case "completed":
-        return Colors.green;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading:
-                Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "unregister",
-          child: ListTile(
-            leading: Icon(Icons.app_registration,
-                color: const Color.fromARGB(255, 0, 238, 127)),
-            title: Text("Un-Register"),
           ),
         ),
       ],
