@@ -1,14 +1,24 @@
 import 'dart:io';
 
+import 'package:bizzmirth_app/controllers/customer_controller.dart';
+import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 
 class AddcustPage extends StatefulWidget {
-  const AddcustPage({super.key});
+  final PendingCustomer? pendingCustomer;
+  final bool isViewMode;
+  final bool isEditMode;
+  const AddcustPage(
+      {super.key,
+      this.pendingCustomer,
+      this.isEditMode = false,
+      this.isViewMode = false});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -46,13 +56,127 @@ class _AddcustState extends State<AddcustPage> {
   final TextEditingController _notesController = TextEditingController();
   bool _isComplimentary = false;
 
-  String? _selectedUserName = "---- Select User Id & Name * ----";
-  String? _selectedGender = "---- Select Gender ----";
-  String? _selectedCountry = "---- Select Country ----";
-  String? _selectedState = "---- Select State ----";
-  String? _selectedCity = "---- Select City ----";
+  String _selectedUserName = "---- Select User Id & Name * ----";
+  String _selectedGender = "---- Select Gender ----";
+  String _selectedCountry = "---- Select Country ----";
+  String _selectedState = "---- Select State ----";
+  String _selectedCity = "---- Select City ----";
+
+  String _selectedPayment = "---- Select Payment Fee * ----";
 
   String _selectedCountryCode = '+91'; // Default country code
+
+  final _userIdNameKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _refNameKey = GlobalKey<FormFieldState>();
+
+  final GlobalKey<FormFieldState> _firstNameKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _lastNameKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _nomineeName = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _nomineeRelation =
+      GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _mobileKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _genderKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _dojKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _emailKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _addressKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _pincodeKey = GlobalKey<FormFieldState>();
+  final _countryKey = GlobalKey<FormFieldState>();
+  final _stateKey = GlobalKey<FormFieldState>();
+  final _cityKey = GlobalKey<FormFieldState>();
+
+  String? _selectedCountryId;
+  List<dynamic> _countries = [];
+  List<String> _countryNames = [];
+
+  String? _selectedStateId;
+  List<dynamic> _states = [];
+  List<String> _stateNames = [];
+
+  String? _selectedCityId;
+  List<dynamic> _cities = [];
+  List<String> _cityNames = [];
+
+  Future<void> _loadCountry() async {
+    try {
+      final controller =
+          Provider.of<CustomerController>(context, listen: false);
+      List<dynamic> countries = await controller.apiGetCountry();
+
+      _countries = countries;
+
+      List<String> countryNames = countries
+          .map<String>(
+              (country) => country['country_name'] ?? "No Country Available")
+          .toList();
+      setState(() {
+        _countryNames = countryNames;
+        Logger.success("Countries: $_countryNames");
+      });
+    } catch (e, s) {
+      Logger.error("Error fetching countries, Error: $e, Stacktrace: $s");
+    }
+  }
+
+  Future<void> _loadStates(selectedCountryId) async {
+    try {
+      final controller =
+          Provider.of<CustomerController>(context, listen: false);
+
+      List<dynamic> states = await controller.apiGetStates(selectedCountryId);
+      _states = states;
+
+      List<String> stateNames = states
+          .map<String>((state) => state['state_name'] ?? "No State Available")
+          .toList();
+
+      setState(() {
+        _stateNames = stateNames;
+      });
+      Logger.success("Fetched states from the api $states");
+    } catch (e, s) {
+      Logger.success("Error fetching states, Error: $e, Stacktrace $s");
+    }
+  }
+
+  Future<void> _loadCities(selectedStateId) async {
+    try {
+      final controller =
+          Provider.of<CustomerController>(context, listen: false);
+      List<dynamic> cities = await controller.apiGetCity(selectedStateId);
+      _cities = cities;
+
+      List<String> citiesNames = cities
+          .map<String>((city) => city['city_name'] ?? "No cities available")
+          .toList();
+
+      setState(() {
+        _cityNames = citiesNames;
+      });
+      Logger.success("Fetched cities from the api $cities");
+    } catch (e, s) {
+      Logger.error("Error fetching cities, Error: $e, StackTrace: $s");
+    }
+  }
+
+  Future<void> getPincode(selectedCity) async {
+    try {
+      final controller =
+          Provider.of<CustomerController>(context, listen: false);
+      final pincode = await controller.apiGetPincode(selectedCity);
+      setState(() {
+        _pincodeController.text = pincode;
+      });
+      Logger.success("Pincode fetched from the $pincode");
+    } catch (e, s) {
+      Logger.error("Error fetching pincode, Error: $e, Stacktrace: $s");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCountry();
+  }
 
   void _pickFile(String fileType) async {
     try {
@@ -98,7 +222,6 @@ class _AddcustState extends State<AddcustPage> {
           subFolderName = "other_documents";
       }
 
-      // Create the specific subfolder
       final typeDir = Directory('${bizmirthDir.path}/$subFolderName');
       if (!await typeDir.exists()) {
         await typeDir.create();
@@ -152,15 +275,55 @@ class _AddcustState extends State<AddcustPage> {
     );
   }
 
-  Widget _buildDropdown(String label, List<String> items) {
+  Widget _buildDropdown(
+    String label,
+    List<String> items,
+    String selectedValue,
+    Function(String?) onValueChanged, {
+    String? Function(String?)? validator,
+    String? emptyMessage,
+    GlobalKey<FormFieldState>? fieldKey,
+  }) {
     String defaultOption = "---- Select $label ----"; // Default placeholder
+
+    // Handle empty items list with emptyMessage
+    if (items.isEmpty && emptyMessage != null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: TextStyle(
+                    color: const Color.fromARGB(255, 255, 255, 255)
+                        .withOpacity(0.8))),
+            Container(
+              padding: EdgeInsets.all(12),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child:
+                  Text(emptyMessage, style: TextStyle(color: Colors.red[300])),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (!items.contains(selectedValue) && selectedValue != defaultOption) {
+      selectedValue = defaultOption;
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: defaultOption, // Set default selection
+        value: selectedValue, // Use the provided selected value
         items: [
           DropdownMenuItem(
+            enabled: widget.isViewMode, // change with is viewmode
+            key: fieldKey,
             value: defaultOption, // Placeholder value
             child: Text(defaultOption, style: TextStyle(color: Colors.white)),
           ),
@@ -171,9 +334,8 @@ class _AddcustState extends State<AddcustPage> {
                 style: const TextStyle(color: Colors.white),
               ))),
         ],
-        onChanged: (value) {
-          // Handle selection
-        },
+        onChanged: widget.isViewMode ? null : onValueChanged,
+        validator: validator,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
@@ -278,18 +440,65 @@ class _AddcustState extends State<AddcustPage> {
                     ],
                   ),
                   _buildDropdown(
-                      'User Id & Name *', ['Margao', 'Panjim', 'Other']),
+                    'User Id & Name *',
+                    ['Margao', 'Panjim', 'Other'],
+                    _selectedUserName,
+                    (String? value) {
+                      // Handle the selection change
+                      setState(() {
+                        _selectedUserName = value!;
+                      });
+                    },
+                    fieldKey: _userIdNameKey,
+                    validator: (value) {
+                      if (value == null ||
+                          value == "---- Select User Id & Name * ----") {
+                        return 'Please select a user id and name';
+                      }
+                      return null;
+                    },
+                  ),
                   SizedBox(height: 10),
-                  _buildTextField('Reference Name *', _refNameController),
+                  _buildTextField('Reference Name *', _refNameController,
+                      validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Reference name is required';
+                    }
+                    return null;
+                  }, fieldKey: _refNameKey, forceReadOnly: true),
                   SizedBox(height: 15),
-                  _buildTextField('First Name*', _firstNameController),
+                  _buildTextField('First Name*', _firstNameController,
+                      fieldKey: _firstNameKey, validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your first name';
+                    }
+                    return null;
+                  }),
                   SizedBox(height: 15),
-                  _buildTextField('Last Name*', _lastNameController),
+                  _buildTextField('Last Name*', _lastNameController,
+                      fieldKey: _lastNameKey, validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your last name';
+                    }
+                    return null;
+                  }),
                   SizedBox(height: 15),
-                  _buildTextField('Nominee Name*', _nomineeNameController),
+                  _buildTextField('Nominee Name*', _nomineeNameController,
+                      fieldKey: _nomineeName, validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter nominee name';
+                    }
+                    return null;
+                  }),
                   SizedBox(height: 15),
                   _buildTextField(
-                      'Nominee Relation*', _nomineeRelationController),
+                      'Nominee Relation*', _nomineeRelationController,
+                      fieldKey: _nomineeRelation, validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter nominee relation';
+                    }
+                    return null;
+                  }),
                   SizedBox(height: 15),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -332,12 +541,18 @@ class _AddcustState extends State<AddcustPage> {
                                 SizedBox(), // Hides the default underline
                           ),
                         ),
-                        // Phone number text field
                         SizedBox(width: 10),
                         Expanded(
-                          child: TextField(
+                          child: TextFormField(
+                            key: _mobileKey,
                             controller: _phoneController,
                             keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your phone name';
+                              }
+                              return null;
+                            },
                             maxLength:
                                 10, // Limit to typical phone number length
                             style: TextStyle(
@@ -361,9 +576,29 @@ class _AddcustState extends State<AddcustPage> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  _buildTextField('Email *', _emailController),
+                  _buildTextField('Email *', _emailController,
+                      fieldKey: _emailKey, validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email name';
+                    }
+                    return null;
+                  }),
                   SizedBox(height: 15),
-                  _buildDropdown('Gender *', ['Male', 'Female', 'Other']),
+                  _buildDropdown(
+                      'Gender *',
+                      ['Male', 'Female', 'Other'],
+                      _selectedGender,
+                      fieldKey: _genderKey,
+                      (value) => setState(
+                            () {
+                              _selectedGender = value!;
+                            },
+                          ), validator: (value) {
+                    if (value == null || value == "---- Select Gender * ----") {
+                      return 'Please select a gender';
+                    }
+                    return null;
+                  }),
                   SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -413,16 +648,93 @@ class _AddcustState extends State<AddcustPage> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  _buildDropdown('Country *', ['India', 'Pakistan', 'Other']),
+                  _buildDropdown('Country *', [""], fieldKey: _countryKey,
+                      validator: (value) {
+                    if (value == null ||
+                        value == "---- Select Country * ----") {
+                      return 'Please select a Country';
+                    }
+                    return null;
+                  },
+                      _selectedCountry,
+                      (value) => setState(() {
+                            _selectedCity = value!;
+                            final selectedCountryObject = _countries.firstWhere(
+                                (country) => country['country_name'] == value,
+                                orElse: () => null);
+                            if (selectedCountryObject != null) {
+                              _selectedCountryId =
+                                  selectedCountryObject['id'].toString();
+                              Logger.success(
+                                  "selected country is $_selectedCountry ID : $_selectedCountryId");
+                            }
+                            _loadStates(_selectedCountryId);
+                          })),
                   SizedBox(height: 10),
-                  _buildDropdown('State *', ['Goa', 'Delhi', 'Other']),
+                  _buildDropdown('State *', _stateNames, fieldKey: _stateKey,
+                      validator: (value) {
+                    if (value == null || value == "---- Select State * ----") {
+                      return 'Please select a state';
+                    }
+                    return null;
+                  },
+                      _selectedState,
+                      (value) => setState(() {
+                            _selectedState = value!;
+
+                            final selectedStateObject = _states.firstWhere(
+                                (state) => state['state_name'] == value,
+                                orElse: () => null);
+                            if (selectedStateObject != null) {
+                              _selectedStateId =
+                                  selectedStateObject['id'].toString();
+                              Logger.success(
+                                  "selected state is $_selectedState ID : $_selectedStateId");
+                              _loadCities(_selectedStateId);
+                            }
+                          })),
                   SizedBox(height: 10),
-                  _buildDropdown('City *', ['Margao', 'Panjim', 'Other']),
+                  _buildDropdown('City *', _cityNames, _selectedCity,
+                      fieldKey: _cityKey, validator: (value) {
+                    if (value == null || value == "---- Select City * ----") {
+                      return 'Please select a city';
+                    }
+                    return null;
+                  },
+                      (value) => setState(() {
+                            _selectedCity = value!;
+                            final selectedCityObject = _cities.firstWhere(
+                                (city) => city['city_name'] == value,
+                                orElse: () => null);
+                            if (selectedCityObject != null) {
+                              _selectedCityId =
+                                  selectedCityObject['id'].toString();
+                              Logger.success(
+                                  "selected city is $_selectedCity ID : $_selectedCityId");
+                            }
+                            getPincode(_selectedCityId);
+                          })),
                   SizedBox(height: 10),
                   SizedBox(height: 10),
-                  _buildTextField('Pincode *', _pincodeController),
+                  _buildTextField('Pincode *', _pincodeController,
+                      fieldKey: _pincodeKey, validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Pincode is required';
+                    }
+                    return null;
+                  }, forceReadOnly: true),
                   SizedBox(height: 15),
-                  _buildTextField('Address *', _addressController),
+                  _buildTextField(
+                    'Address *',
+                    _addressController,
+                    fieldKey: _addressKey,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your address';
+                      }
+                      return null;
+                    },
+                  ),
                   SizedBox(height: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -503,14 +815,24 @@ class _AddcustState extends State<AddcustPage> {
                   },
                   SizedBox(height: 10),
                   _buildDropdown(
-                    'Payment Fee *',
-                    [
-                      'Free',
-                      'Prime: ₹ 10,000',
-                      'Premium: ₹ 30,000',
-                      'Premium Plus: ₹ 35,000'
-                    ],
-                  ),
+                      'Payment Fee *',
+                      [
+                        'Free',
+                        'Prime: ₹ 10,000',
+                        'Premium: ₹ 30,000',
+                        'Premium Plus: ₹ 35,000'
+                      ],
+                      _selectedPayment,
+                      fieldKey: _genderKey,
+                      (value) => setState(() {
+                            _selectedPayment = value!;
+                          }), validator: (value) {
+                    if (value == null ||
+                        value == "---- Select Payment Fee * ----") {
+                      return 'Please select a payment fee';
+                    }
+                    return null;
+                  }),
                   SizedBox(height: 10),
                   Text(
                     "Attachments",
