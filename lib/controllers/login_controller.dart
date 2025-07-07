@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:bizzmirth_app/models/user_type_mode.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +17,7 @@ class LoginController extends ChangeNotifier {
   bool rememberMe = false;
   String? selectedUserTypeId;
   String? selectedUserTypeName;
+  final SharedPrefHelper _sharedPrefHelper = SharedPrefHelper();
 
   List<Map<String, String>> userTypeNames = [];
 
@@ -62,8 +65,8 @@ class LoginController extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final prefs = await SharedPreferences.getInstance();
-      final String? storedData = prefs.getString('user_data_type');
+      final String? storedData =
+          await _sharedPrefHelper.getUserDataType('user_data_type');
 
       // List of IDs you want to display
       final List<String> allowedIds = ['1', '10', '11', '16', '24', '25', '26'];
@@ -107,17 +110,18 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>> loginUser() async {
+  Future<Map<String, dynamic>> loginUser(context) async {
     try {
       errorMessage = null;
       isLoading = true;
       notifyListeners();
 
-      // Validate form data
       if (selectedUserTypeId == null || selectedUserTypeId!.isEmpty) {
         errorMessage = "Please select a user type";
         isLoading = false;
         notifyListeners();
+        ToastHelper.showInfoToast(
+            context: context, title: "Login Failed", description: errorMessage);
         return {"success": false, "message": errorMessage};
       }
 
@@ -125,6 +129,10 @@ class LoginController extends ChangeNotifier {
         errorMessage = "Please enter your email";
         isLoading = false;
         notifyListeners();
+        ToastHelper.showInfoToast(
+            context: context,
+            title: "Login Failed",
+            description: "Please enter all the fields.");
         return {"success": false, "message": errorMessage};
       }
 
@@ -132,6 +140,10 @@ class LoginController extends ChangeNotifier {
         errorMessage = "Please enter your password";
         isLoading = false;
         notifyListeners();
+        ToastHelper.showInfoToast(
+            context: context,
+            title: "Login Failed",
+            description: "Please enter all the fields.");
         return {"success": false, "message": errorMessage};
       }
 
@@ -154,9 +166,8 @@ class LoginController extends ChangeNotifier {
         final Map<String, dynamic> responseData = json.decode(response.body);
         String userType = responseData["user_type"];
 
-        // Save user type to shared preferences
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_type', userType);
+        await _sharedPrefHelper.saveUserType(userType);
+        await _sharedPrefHelper.saveUserEmail(email);
 
         Logger.success("Login Successful ${response.body}");
         Logger.info("User Type from response: $userType");
@@ -164,13 +175,16 @@ class LoginController extends ChangeNotifier {
         isLoading = false;
         clearFormFields();
         notifyListeners();
+        Logger.success("Login response ${response.body}");
 
-        return {"success": true, "user_type": userType, "data": responseData};
+        return {"status": true, "user_type": userType, "data": responseData};
       } else {
         Logger.error("Login Failed: ${response.body}");
         errorMessage = "Login failed. Please check your credentials.";
         isLoading = false;
         notifyListeners();
+        ToastHelper.showErrorToast(
+            context: context, title: "Login Failed", description: errorMessage);
         return {"success": false, "message": errorMessage};
       }
     } catch (e) {
@@ -178,6 +192,8 @@ class LoginController extends ChangeNotifier {
       errorMessage = "An error occurred: ${e.toString()}";
       isLoading = false;
       notifyListeners();
+      ToastHelper.showErrorToast(
+          context: context, title: "Login Failed", description: errorMessage);
       return {"success": false, "message": errorMessage};
     }
   }

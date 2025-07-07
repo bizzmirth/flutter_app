@@ -53,6 +53,19 @@ Widget customInputField(IconData icon, String label, {int maxLines = 1}) {
   );
 }
 
+String normalizeGender(String gender) {
+  switch (gender.toLowerCase().trim()) {
+    case 'male':
+      return 'Male';
+    case 'female':
+      return 'Female';
+    case 'other':
+      return 'Other';
+    default:
+      return "---- Select Gender ----";
+  }
+}
+
 // Helper function for tab buttons
 Widget buildTabButton(String label) {
   return Padding(
@@ -70,6 +83,7 @@ Widget buildTabButton(String label) {
 }
 
 // Helper function for tiles
+
 Widget buildTile(String title, List<String> subTitles, List<String> values) {
   return Container(
     padding: EdgeInsets.all(12),
@@ -90,6 +104,8 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
         Text(
           title,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         SizedBox(height: 8), // Space between title & content
 
@@ -102,6 +118,8 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
                 child: Text(
                   subTitle,
                   style: TextStyle(fontSize: 12, color: Colors.black54),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               );
             }).toList(),
@@ -117,6 +135,8 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
               child: Text(
                 value,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             );
           }).toList(),
@@ -655,6 +675,31 @@ String extractUserId(String fullUserId) {
     return fullUserId.split(" - ")[0].trim();
   }
   return fullUserId;
+}
+
+String calculateAge(String dobString) {
+  try {
+    final parts = dobString.split('-');
+    if (parts.length != 3) return 'Invalid date';
+
+    final day = int.parse(parts[0]);
+    final month = int.parse(parts[1]);
+    final year = int.parse(parts[2]);
+
+    final dob = DateTime(year, month, day);
+    final today = DateTime.now();
+
+    int age = today.year - dob.year;
+
+    if (today.month < dob.month ||
+        (today.month == dob.month && today.day < dob.day)) {
+      age--;
+    }
+
+    return age.toString();
+  } catch (e) {
+    return 'Invalid date';
+  }
 }
 
 String extractPathSegment(String fullPath, String folderPrefix) {

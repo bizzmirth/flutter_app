@@ -218,6 +218,31 @@ class _AdminDashboardState extends State<AdminDashboard> {
     ];
   }
 
+  Widget buildResponsiveGrid(BuildContext context) {
+    // Check if it's mobile (small screen)
+    bool isMobile = MediaQuery.of(context).size.width < 600;
+
+    return GridView.count(
+      crossAxisCount: 2,
+      crossAxisSpacing: 15,
+      mainAxisSpacing: 10,
+      childAspectRatio:
+          isMobile ? 1.5 : 3.5, // Only change aspect ratio for mobile
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      children: [
+        buildTile("Total Recruits", ["Total Count", "Amount Earned"],
+            ["26", "₹ 25,000/-"]),
+        buildTile("Total Production", ["Packages Sold", "Amount Earned"],
+            ["91", "₹ 91,596/-"]),
+        buildTile("Total Travel Consultants", [], ["61"]),
+        buildTile("Total Customers", [], ["126"]),
+        buildTile("Total Business Mentors", [], ["32"]),
+        buildTile("Total Employees", [], ["441"]),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -418,24 +443,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               SizedBox(height: 10),
 
               // Tiles Grid Layout (Fixed)
-              GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 15,
-                mainAxisSpacing: 10,
-                childAspectRatio: 3.5,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  buildTile("Total Recruits (TE/CA)",
-                      ["Total Count", "Amount Earned"], ["26", "₹ 25,000/-"]),
-                  buildTile("Total Production",
-                      ["Packages Sold", "Amount Earned"], ["91", "₹ 91,596/-"]),
-                  buildTile("Total Travel Consultants", [], ["61"]),
-                  buildTile("Total Customers", [], ["126"]),
-                  buildTile("Total Business Mentors", [], ["32"]),
-                  buildTile("Total Employees", [], ["441"]),
-                ],
-              ),
+              buildResponsiveGrid(context),
 
               SizedBox(height: 20),
               Divider(thickness: 1, color: Colors.black26),

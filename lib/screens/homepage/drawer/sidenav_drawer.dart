@@ -1,10 +1,32 @@
 import 'package:bizzmirth_app/screens/login_page/login.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// ✅ **Side Navigation Drawer**
-class SideNavDrawer extends StatelessWidget {
+class SideNavDrawer extends StatefulWidget {
   const SideNavDrawer({super.key});
+
+  @override
+  State<SideNavDrawer> createState() => _SideNavDrawerState();
+}
+
+class _SideNavDrawerState extends State<SideNavDrawer> {
+  String? userType = '';
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void getUserType() async {
+    final getUserType = await SharedPrefHelper().getUserType();
+    Logger.info("User Type from Shared Preferences: $getUserType");
+
+    setState(() {
+      userType = getUserType;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

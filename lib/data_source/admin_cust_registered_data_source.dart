@@ -1,10 +1,13 @@
+import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
+import 'package:bizzmirth_app/screens/dashboards/admin/customer/add_customer.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 
 class MyAdminCustRegDataSource extends DataTableSource {
+  final BuildContext context;
   final List<RegisteredCustomer> data;
-  MyAdminCustRegDataSource(this.data);
+  MyAdminCustRegDataSource(this.context, this.data);
 
   @override
   DataRow? getRow(int index) {
@@ -141,13 +144,13 @@ class MyAdminCustRegDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(_buildActionMenu()),
+        DataCell(_buildActionMenu(context, customer)),
       ],
     );
   }
 
 // Action Menu Widget
-  Widget _buildActionMenu() {
+  Widget _buildActionMenu(context, RegisteredCustomer customer) {
     return PopupMenuButton<String>(
       onSelected: (value) {
         // Handle menu actions
@@ -166,6 +169,17 @@ class MyAdminCustRegDataSource extends DataTableSource {
             leading:
                 Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
             title: Text("Edit"),
+            onTap: () {
+              Logger.success(customer.name!);
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddcustPage(
+                            registeredCustomer: customer,
+                            isEditMode: true,
+                          )));
+            },
           ),
         ),
         PopupMenuItem(

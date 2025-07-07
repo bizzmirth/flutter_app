@@ -313,7 +313,7 @@ class EmployeeDataSource extends DataTableSource {
     // Store in cache for future use
     _departmentNameCache[managerId] = deptName;
 
-    return deptName ?? "N/A";
+    return deptName;
   }
 
   String _getStatusText(dynamic status) {
@@ -400,8 +400,7 @@ class EmployeeDataSource extends DataTableSource {
           ),
         ),
       ),
-      DataCell(Text(pendingEmployee.id
-          .toString())), //changed this for time being because it was showing null
+      DataCell(Text(pendingEmployee.id.toString())),
       DataCell(Text(pendingEmployee.name ?? "N/A")),
       DataCell(Text(pendingEmployee.reportingManager ?? "N/A")),
       DataCell(FutureBuilder<String?>(

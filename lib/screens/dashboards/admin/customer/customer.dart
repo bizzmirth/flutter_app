@@ -95,7 +95,7 @@ class _CustPageState extends State<CustPage> {
                                 DataColumn(label: Text("Action"))
                               ],
                               source: MyAdminCustPendingDataSource(
-                                  controller.pendingCustomer),
+                                  context, controller.pendingCustomer),
                               rowsPerPage: _rowsPerPage,
                               availableRowsPerPage: [5, 10, 15, 20, 25],
                               onRowsPerPageChanged: (value) {
@@ -145,7 +145,7 @@ class _CustPageState extends State<CustPage> {
                                 DataColumn(label: Text("Action"))
                               ],
                               source: MyAdminCustRegDataSource(
-                                  controller.registeredCustomer),
+                                  context, controller.registeredCustomer),
                               rowsPerPage: _rowsPerPage1,
                               availableRowsPerPage: [5, 10, 15, 20, 25],
                               onRowsPerPageChanged: (value) {

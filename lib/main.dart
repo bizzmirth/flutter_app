@@ -7,6 +7,9 @@ import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/admin_dashboard.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
+import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +46,7 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.robotoTextTheme(
               Theme.of(context).textTheme,
             )),
-        home: AdminDashboard(),
+        home: HomePage(),
         debugShowCheckedModeBanner: false,
       ),
     );
@@ -51,7 +54,7 @@ class MyApp extends StatelessWidget {
 }
 
 void bypassSSLVerification() {
-  HttpOverrides.global = new MyHttpOverrides();
+  HttpOverrides.global = MyHttpOverrides();
 }
 
 class MyHttpOverrides extends HttpOverrides {

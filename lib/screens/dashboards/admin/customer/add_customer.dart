@@ -1,7 +1,8 @@
 import 'dart:io';
-
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
+import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -12,16 +13,17 @@ import 'package:provider/provider.dart';
 
 class AddcustPage extends StatefulWidget {
   final PendingCustomer? pendingCustomer;
+  final RegisteredCustomer? registeredCustomer;
   final bool isViewMode;
   final bool isEditMode;
   const AddcustPage(
       {super.key,
       this.pendingCustomer,
+      this.registeredCustomer,
       this.isEditMode = false,
       this.isViewMode = false});
 
   @override
-  // ignore: library_private_types_in_public_api
   _AddcustState createState() => _AddcustState();
 }
 
@@ -32,12 +34,14 @@ class _AddcustState extends State<AddcustPage> {
     "Pan Card": null,
     "Bank Passbook": null,
     "Voting Card": null,
+    "Payment Proof": null,
   };
   var savedImagePath = "";
   String _selectedPaymentMode = "Cash";
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _refNameController = TextEditingController();
+  final TextEditingController _refNoController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _nomineeNameController = TextEditingController();
@@ -62,9 +66,14 @@ class _AddcustState extends State<AddcustPage> {
   String _selectedState = "---- Select State ----";
   String _selectedCity = "---- Select City ----";
 
-  String _selectedPayment = "---- Select Payment Fee * ----";
+  String _selectedPayment = "Free";
 
-  String _selectedCountryCode = '+91'; // Default country code
+  String chequeNo = "";
+  String chequeDate = "";
+  String bankDate = "";
+  String transactionId = "";
+
+  String _selectedCountryCode = '+91';
 
   final _userIdNameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _refNameKey = GlobalKey<FormFieldState>();
@@ -75,14 +84,17 @@ class _AddcustState extends State<AddcustPage> {
   final GlobalKey<FormFieldState> _nomineeRelation =
       GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _mobileKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState<String>> _paymentFeeKey = GlobalKey();
+
   final GlobalKey<FormFieldState> _genderKey = GlobalKey<FormFieldState>();
-  final GlobalKey<FormFieldState> _dojKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _emailKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _addressKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _pincodeKey = GlobalKey<FormFieldState>();
   final _countryKey = GlobalKey<FormFieldState>();
   final _stateKey = GlobalKey<FormFieldState>();
   final _cityKey = GlobalKey<FormFieldState>();
+
+  bool isLoading = false;
 
   String? _selectedCountryId;
   List<dynamic> _countries = [];
@@ -95,6 +107,32 @@ class _AddcustState extends State<AddcustPage> {
   String? _selectedCityId;
   List<dynamic> _cities = [];
   List<String> _cityNames = [];
+
+  List<dynamic> _consultants = [];
+  List<String> _consultantDisplayNames = [];
+  String? _selectedUserId;
+  String? _selectedUserNameOnly;
+
+  Future<void> _loadConsultants() async {
+    try {
+      final controller =
+          Provider.of<CustomerController>(context, listen: false);
+      await controller.fetchTravelConsultants();
+
+      _consultants = controller.consultants;
+
+      List<String> displayNames = _consultants
+          .map((c) => "${c.caTravelAgencyId} (${c.firstname} ${c.lastname})")
+          .toList();
+
+      setState(() {
+        _consultantDisplayNames = displayNames;
+        Logger.success("Consultants: $_consultantDisplayNames");
+      });
+    } catch (e, s) {
+      Logger.error("Error fetching consultants, Error: $e, Stacktrace: $s");
+    }
+  }
 
   Future<void> _loadCountry() async {
     try {
@@ -175,7 +213,11 @@ class _AddcustState extends State<AddcustPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.registeredCustomer != null) {
+      populateRegisteredCustomer(widget.registeredCustomer!);
+    }
     _loadCountry();
+    _loadConsultants();
   }
 
   void _pickFile(String fileType) async {
@@ -255,7 +297,7 @@ class _AddcustState extends State<AddcustPage> {
       bool? forceReadOnly}) {
     return TextFormField(
       key: fieldKey,
-      // readOnly: forceReadOnly ?? widget.isViewMode,
+      readOnly: forceReadOnly ?? widget.isViewMode,
       maxLines: maxLines,
       validator: validator,
       controller: controller,
@@ -352,531 +394,911 @@ class _AddcustState extends State<AddcustPage> {
     );
   }
 
-  void submitForm(context) {
+  Future<void> submitForm(context) async {
+    final controller = Provider.of<CustomerController>(context, listen: false);
     try {
+      final refrenceId = _selectedUserId;
+      final refrenceName = _selectedUserNameOnly;
       final name = '${_firstNameController.text} ${_lastNameController.text}';
       final nomineeName = _nomineeNameController.text;
       final nomineeRelation = _nomineeRelationController.text;
+      final countryCd = _selectedCountryCode;
       final phone = _phoneController.text;
       final email = _emailController.text;
+      final gender = _selectedGender;
       final dob = _dateController.text;
+      final country = _selectedCountry;
+      final state = _selectedState;
+      final city = _selectedCity;
       final pincode = _pincodeController.text;
       final address = _addressController.text;
+      final paymentFee = _selectedPayment;
+      final paymentMode = _selectedPaymentMode;
+      final note = _notesController.text;
+      final String customerType;
+
+      Map<String, String> documentPaths = {};
+
+      selectedFiles.forEach((key, value) {
+        if (value != null) {
+          String filePath = value.path;
+
+          switch (key) {
+            case "Profile Picture":
+              documentPaths['profilePicture'] = filePath;
+              break;
+            case "Aadhar Card":
+              documentPaths['adharCard'] = filePath;
+              break;
+            case "Pan Card":
+              documentPaths['panCard'] = filePath;
+              break;
+            case "Bank Passbook":
+              documentPaths['bankPassbook'] = filePath;
+              break;
+            case "Voting Card":
+              documentPaths['votingCard'] = filePath;
+              break;
+            case "Payment Proof":
+              documentPaths['paymentProof'] = filePath;
+          }
+        }
+      });
+      if (selectedFiles["Profile Picture"] != null) {
+        await controller.uploadImage(
+            context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+      }
+      if (selectedFiles["Aadhar Card"] != null) {
+        await controller.uploadImage(
+            context, 'aadhar_card', selectedFiles["Aadhar Card"]!.path);
+      }
+      if (selectedFiles["Pan Card"] != null) {
+        await controller.uploadImage(
+            context, 'pan_card', selectedFiles["Pan Card"]!.path);
+      }
+      if (selectedFiles["Voting Card"] != null) {
+        await controller.uploadImage(
+            context, 'voting_card', selectedFiles["Voting Card"]!.path);
+      }
+      if (selectedFiles["Bank Passbook"] != null) {
+        await controller.uploadImage(
+            context, 'passbook', selectedFiles["Bank Passbook"]!.path);
+      }
+      if (selectedFiles["Payment Proof"] != null) {
+        await controller.uploadImage(
+            context, 'payment_proof', selectedFiles["Payment Proof"]!.path);
+      }
+
+      if (_selectedPaymentMode == "Cheque") {
+        chequeNo = _chequeNoController.text;
+        chequeDate = _chequeDateController.text;
+        bankDate = _bankNameController.text;
+      } else if (_selectedPaymentMode == "UPI/NEFT") {
+        transactionId = _transactionIDController.text;
+      }
+
+      if (_selectedPayment == "Free") {
+        customerType = "Free";
+      } else if (_selectedPayment == "Prime: ₹ 10,000") {
+        customerType = "Prime";
+      } else if (_selectedPayment == "Premium: ₹ 30,000") {
+        customerType = "Premium";
+      } else {
+        customerType = "Premium Plus";
+      }
 
       Logger.success(
-          "$name, $nomineeRelation, $nomineeName, $phone, $email, $dob, $pincode, $address");
+          "$refrenceName, $refrenceId, $name, $nomineeRelation, $nomineeName, $countryCd, $phone, $email, $gender, $dob, $country, $state, $city, $pincode, $address, $paymentFee, $paymentMode, ${documentPaths["profilePicture"]}, ${documentPaths["adharCard"]}, ${documentPaths["panCard"]}, $note");
+
+      final newCustomer = PendingCustomer()
+        ..compChek = _isComplimentary ? "1" : "2"
+        ..taReferenceName = _selectedUserNameOnly
+        ..taReferenceNo = _selectedUserId
+        ..firstname = _firstNameController.text
+        ..lastname = _lastNameController.text
+        ..nomineeName = nomineeName
+        ..nomineeRelation = nomineeRelation
+        ..countryCd = countryCd
+        ..phoneNumber = phone
+        ..email = email
+        ..gender = gender
+        ..dob = dob
+        ..country = _selectedCountryId
+        ..state = _selectedStateId
+        ..city = _selectedCityId
+        ..pincode = pincode
+        ..address = address
+        ..paymentMode = paymentMode
+        ..paidAmount = paymentFee
+        ..customerType = customerType
+        ..chequeNo = chequeNo
+        ..chequeDate = chequeDate
+        ..bankName = bankDate
+        ..transactionNo = transactionId
+        ..profilePicture = documentPaths["profilePicture"]
+        ..adharCard = documentPaths["adharCard"]
+        ..panCard = documentPaths["panCard"]
+        ..bankPassbook = documentPaths["bankPassbook"]
+        ..votingCard = documentPaths["votingCard"]
+        ..paymentProof = documentPaths['paymentProof']
+        ..note = note.trim()
+        ..status = "2";
+
+      await controller.apiAddCustomer(newCustomer);
+      // clearFormFields();
+      // Navigator.pop(context);
     } catch (e, s) {
       Logger.error("Error Submitting Form, Error: $e Stacktree $s");
     }
   }
 
+  void clearFormFields() {
+    _refNameController.clear();
+    _firstNameController.clear();
+    _lastNameController.clear();
+    _emailController.clear();
+    _phoneController.clear();
+    _addressController.clear();
+    _nomineeNameController.clear();
+    _nomineeRelationController.clear();
+    _chequeNoController.clear();
+    _chequeDateController.clear();
+    _bankNameController.clear();
+    _transactionIDController.clear();
+    _pincodeController.clear();
+    _dateController.clear();
+  }
+
+  void populateRegisteredCustomer(RegisteredCustomer customer) async {
+    try {
+      isLoading = true;
+      _refNoController.text = customer.taReferenceNo!;
+      _refNameController.text = customer.taReferenceName!;
+      _firstNameController.text = customer.firstname!;
+      _lastNameController.text = customer.lastname!;
+      _nomineeNameController.text = customer.nomineeName!;
+      _nomineeRelationController.text = customer.nomineeRelation!;
+      String countryCode = customer.countryCd!;
+      if (!countryCode.startsWith('+')) {
+        countryCode = '+$countryCode';
+      }
+
+      final allowedCodes = ["+91", "+1", "+44", "+61", "+971"];
+      if (allowedCodes.contains(countryCode)) {
+        _selectedCountryCode = countryCode;
+      } else {
+        _selectedCountryCode = '+91'; // Default fallback
+      }
+      _phoneController.text = customer.phoneNumber!;
+      _emailController.text = customer.email!;
+      _selectedGender = normalizeGender(customer.gender!);
+      _dateController.text = customer.dob!;
+      _pincodeController.text = customer.pincode!;
+      _addressController.text = customer.address!;
+      _selectedPayment = customer.paidAmount!;
+      _notesController.text = customer.note ?? "";
+
+      if (customer.profilePicture != null) {
+        if (customer.profilePicture!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Profile Picture"] = customer.profilePicture!;
+        } else {
+          selectedFiles["Profile Picture"] =
+              "https://testca.uniqbizz.com/uploading/${customer.profilePicture!}";
+        }
+        Logger.success(selectedFiles["Profile Picture"]);
+      }
+
+      if (customer.adharCard != null) {
+        if (customer.adharCard!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Aadhar Card"] = customer.adharCard!;
+        } else {
+          selectedFiles["Aadhar Card"] =
+              "https://testca.uniqbizz.com/uploading/${customer.adharCard!}";
+        }
+        Logger.success(selectedFiles["Aadhar Card"]);
+      }
+
+      if (customer.panCard != null) {
+        if (customer.panCard!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Pan Card"] = customer.panCard!;
+        } else {
+          selectedFiles["Pan Card"] =
+              "https://testca.uniqbizz.com/uploading/${customer.panCard!}";
+        }
+        Logger.success(selectedFiles["Pan Card"]);
+      }
+
+      if (customer.bankPassbook != null) {
+        if (customer.bankPassbook!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Bank Passbook"] = customer.bankPassbook!;
+        } else {
+          selectedFiles["Bank Passbook"] =
+              "https://testca.uniqbizz.com/uploading/${customer.bankPassbook!}";
+        }
+        Logger.success(selectedFiles["Bank Passbook"]);
+      }
+
+      if (customer.votingCard != null) {
+        if (customer.votingCard!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Voting Card"] = customer.votingCard!;
+        } else {
+          selectedFiles["Voting Card"] =
+              "https://testca.uniqbizz.com/uploading/${customer.votingCard!}";
+        }
+        Logger.success(selectedFiles["Voting Card"]);
+      }
+
+      if (customer.paymentProof != null) {
+        if (customer.paymentProof!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Payment Proof"] = customer.paymentProof!;
+        } else {
+          selectedFiles["Payment Proof"] =
+              "https://testca.uniqbizz.com/uploading/${customer.paymentProof!}";
+        }
+        Logger.success(selectedFiles["Payment Proof"]);
+      }
+
+      if (_countries.isEmpty) {
+        await _loadCountry();
+      }
+
+      final String countryId = customer.country!;
+      _selectedCountryId = countryId;
+
+      final countryObject = _countries.firstWhere(
+        (country) => country['id'].toString() == countryId,
+        orElse: () => {'country_name': '---- Select Country ----'},
+      );
+
+      setState(() {
+        _selectedCountry =
+            countryObject['country_name'] ?? '---- Select Country ----';
+        Logger.success(
+            "Set selected country to: $_selectedCountry with ID: $_selectedCountryId");
+      });
+
+      await _loadStates(_selectedCountryId);
+      final String stateId = customer.state!;
+      _selectedStateId = stateId;
+
+      final stateObject = _states.firstWhere(
+        (state) => state['id'].toString() == stateId,
+        orElse: () => {'state_name': '---- Select State ----'},
+      );
+
+      setState(() {
+        _selectedState = stateObject['state_name'] ?? '---- Select State ----';
+        Logger.success(
+            "Set selected state to: $_selectedState with ID: $_selectedStateId");
+      });
+
+      await _loadCities(_selectedStateId);
+      final String cityId = customer.city!;
+      _selectedCityId = cityId;
+
+      final cityObject = _cities.firstWhere(
+        (city) => city['id'].toString() == cityId,
+        orElse: () => {'city_name': '---- Select City -----'},
+      );
+
+      setState(() {
+        _selectedCity = cityObject['city_name'] ?? '---- Select City -----';
+        Logger.success(
+            "Set selected city $_selectedCity with ID: $_selectedCityId");
+      });
+    } catch (e, s) {
+      Logger.error(
+          "Error populating registered customer, Error: $e, Stacktrace: $s");
+    } finally {
+      isLoading = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Add Customer',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+    String appBarTitle = 'Add Customer';
+
+    if (widget.isEditMode) {
+      appBarTitle = 'Edit Customer';
+    } else if (widget.isViewMode) {
+      appBarTitle = 'View Customer';
+    }
+    return Consumer<CustomerController>(
+      builder: (context, controller, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              appBarTitle,
+              style: GoogleFonts.poppins(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.blueAccent,
+            elevation: 0,
           ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blue.shade900, Colors.blueAccent.shade200],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Complimentary',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Theme(
-                        data: Theme.of(context).copyWith(
-                          checkboxTheme: CheckboxThemeData(
-                            side: BorderSide(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                        ),
-                        child: Checkbox(
-                          value: _isComplimentary,
-                          activeColor: Colors.white,
-                          checkColor: Colors.black,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _isComplimentary = value ?? false;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
+          body: isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.blue.shade900,
+                        Colors.blueAccent.shade200
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                   ),
-                  _buildDropdown(
-                    'User Id & Name *',
-                    ['Margao', 'Panjim', 'Other'],
-                    _selectedUserName,
-                    (String? value) {
-                      // Handle the selection change
-                      setState(() {
-                        _selectedUserName = value!;
-                      });
-                    },
-                    fieldKey: _userIdNameKey,
-                    validator: (value) {
-                      if (value == null ||
-                          value == "---- Select User Id & Name * ----") {
-                        return 'Please select a user id and name';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  _buildTextField('Reference Name *', _refNameController,
-                      validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Reference name is required';
-                    }
-                    return null;
-                  }, fieldKey: _refNameKey, forceReadOnly: true),
-                  SizedBox(height: 15),
-                  _buildTextField('First Name*', _firstNameController,
-                      fieldKey: _firstNameKey, validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your first name';
-                    }
-                    return null;
-                  }),
-                  SizedBox(height: 15),
-                  _buildTextField('Last Name*', _lastNameController,
-                      fieldKey: _lastNameKey, validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your last name';
-                    }
-                    return null;
-                  }),
-                  SizedBox(height: 15),
-                  _buildTextField('Nominee Name*', _nomineeNameController,
-                      fieldKey: _nomineeName, validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter nominee name';
-                    }
-                    return null;
-                  }),
-                  SizedBox(height: 15),
-                  _buildTextField(
-                      'Nominee Relation*', _nomineeRelationController,
-                      fieldKey: _nomineeRelation, validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter nominee relation';
-                    }
-                    return null;
-                  }),
-                  SizedBox(height: 15),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        // Country code dropdown
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 3, horizontal: 10.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: DropdownButton<String>(
-                            value: _selectedCountryCode,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _selectedCountryCode = newValue!;
-                              });
-                            },
-                            items: ["+91", "+1", "+44", "+61", "+971"]
-                                .map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Container(
-                                  width:
-                                      50, // Adjust this value to reduce the width of each item
-                                  alignment: Alignment.center,
-                                  child: Text(value,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Form(
+                      key: _formKey,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'Complimentary',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Theme(
+                                  data: Theme.of(context).copyWith(
+                                    checkboxTheme: CheckboxThemeData(
+                                      side: BorderSide(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                  ),
+                                  child: Checkbox(
+                                    value: _isComplimentary,
+                                    activeColor: Colors.white,
+                                    checkColor: Colors.black,
+                                    onChanged: (widget.isEditMode ||
+                                            widget.isViewMode)
+                                        ? null
+                                        : (bool? value) {
+                                            setState(() {
+                                              _isComplimentary = value ?? false;
+                                              Logger.success(
+                                                  "Complementary : $_isComplimentary");
+                                            });
+                                          },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (widget.isEditMode || widget.isViewMode)
+                              _buildTextField(
+                                'Reference No.',
+                                _refNoController,
+                                forceReadOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter reference number';
+                                  }
+                                  return null;
+                                },
+                              )
+                            else
+                              _buildDropdown(
+                                'User Id & Name *',
+                                _consultantDisplayNames,
+                                _selectedUserName,
+                                (String? value) {
+                                  setState(() {
+                                    _selectedUserName = value!;
+
+                                    final regex =
+                                        RegExp(r'^(.*?)\s+\((.*?)\)$');
+                                    final match =
+                                        regex.firstMatch(_selectedUserName);
+
+                                    if (match != null) {
+                                      _selectedUserId = match.group(1);
+                                      _selectedUserNameOnly = match.group(2);
+                                    }
+
+                                    _refNameController.text =
+                                        _selectedUserNameOnly!;
+
+                                    Logger.success(
+                                        "Selected ID: $_selectedUserId");
+                                    Logger.success(
+                                        "Selected Name: $_selectedUserNameOnly");
+                                  });
+                                },
+                                fieldKey: _userIdNameKey,
+                                validator: (value) {
+                                  if (value == null ||
+                                      value ==
+                                          "---- Select User Id & Name * ----") {
+                                    return 'Please select a user id and name';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            SizedBox(height: 10),
+                            _buildTextField(
+                                'Reference Name *', _refNameController,
+                                validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Reference name is required';
+                              }
+                              return null;
+                            }, fieldKey: _refNameKey, forceReadOnly: true),
+                            SizedBox(height: 15),
+                            _buildTextField(
+                              'First Name*',
+                              _firstNameController,
+                              fieldKey: _firstNameKey,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your first name';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 15),
+                            _buildTextField('Last Name*', _lastNameController,
+                                fieldKey: _lastNameKey, validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your last name';
+                              }
+                              return null;
+                            }),
+                            SizedBox(height: 15),
+                            _buildTextField(
+                                'Nominee Name*', _nomineeNameController,
+                                fieldKey: _nomineeName, validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter nominee name';
+                              }
+                              return null;
+                            }),
+                            SizedBox(height: 15),
+                            _buildTextField(
+                                'Nominee Relation*', _nomineeRelationController,
+                                fieldKey: _nomineeRelation, validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter nominee relation';
+                              }
+                              return null;
+                            }),
+                            SizedBox(height: 15),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Row(
+                                children: [
+                                  // Country code dropdown
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 3, horizontal: 10.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: DropdownButton<String>(
+                                      value: _selectedCountryCode,
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          _selectedCountryCode = newValue!;
+                                          Logger.success(
+                                              "selectedCountryCode : $_selectedCountryCode");
+                                        });
+                                      },
+                                      items: ["+91", "+1", "+44", "+61", "+971"]
+                                          .map((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Container(
+                                            width:
+                                                50, // Adjust this value to reduce the width of each item
+                                            alignment: Alignment.center,
+                                            child: Text(value,
+                                                style: TextStyle(
+                                                    color: const Color.fromARGB(
+                                                        255, 255, 255, 255))),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      dropdownColor:
+                                          const Color.fromARGB(255, 83, 83, 83),
+                                      isExpanded: false,
+                                      underline:
+                                          SizedBox(), // Hides the default underline
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: TextFormField(
+                                      key: _mobileKey,
+                                      controller: _phoneController,
+                                      keyboardType: TextInputType.phone,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter your phone name';
+                                        }
+                                        return null;
+                                      },
+                                      maxLength:
+                                          10, // Limit to typical phone number length
                                       style: TextStyle(
                                           color: const Color.fromARGB(
-                                              255, 255, 255, 255))),
-                                ),
-                              );
-                            }).toList(),
-                            dropdownColor:
-                                const Color.fromARGB(255, 83, 83, 83),
-                            isExpanded: false,
-                            underline:
-                                SizedBox(), // Hides the default underline
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: TextFormField(
-                            key: _mobileKey,
-                            controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            validator: (value) {
+                                              255, 255, 255, 255)),
+                                      decoration: InputDecoration(
+                                        labelText: "Phone number",
+                                        labelStyle: TextStyle(
+                                            color:
+                                                Colors.white.withOpacity(0.8)),
+                                        filled: true,
+                                        fillColor:
+                                            Colors.white.withOpacity(0.2),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        counterText:
+                                            "", // Hide character counter
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            _buildTextField('Email *', _emailController,
+                                fieldKey: _emailKey, validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your phone name';
+                                return 'Please enter your email name';
+                              }
+                              return null;
+                            }),
+                            SizedBox(height: 15),
+                            _buildDropdown(
+                                'Gender *',
+                                ['Male', 'Female', 'Other'],
+                                _selectedGender,
+                                fieldKey: _genderKey,
+                                (value) => setState(
+                                      () {
+                                        _selectedGender = value!;
+                                      },
+                                    ), validator: (value) {
+                              if (value == null ||
+                                  value == "---- Select Gender * ----") {
+                                return 'Please select a gender';
+                              }
+                              return null;
+                            }),
+                            SizedBox(height: 10),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: TextFormField(
+                                controller: _dateController,
+                                readOnly:
+                                    true, // Makes the TextFormField non-editable
+                                style: TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                  labelText: 'Date of Birth *',
+                                  labelStyle: TextStyle(
+                                      color: Colors.white.withOpacity(0.8)),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.white.withOpacity(0.2),
+                                  suffixIcon: _dateController.text.isNotEmpty
+                                      ? IconButton(
+                                          icon: Icon(Icons.close,
+                                              color: Colors.white),
+                                          onPressed: () {
+                                            setState(() {
+                                              _dateController
+                                                  .clear(); // Clears the date when cancel button is pressed
+                                            });
+                                          },
+                                        )
+                                      : null, // Only show cancel button if date is selected
+                                ),
+                                onTap: () async {
+                                  DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: _dateController.text.isNotEmpty
+                                        ? DateFormat('dd-MM-yyyy')
+                                            .parse(_dateController.text)
+                                        : DateTime.now(),
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime(2100),
+                                  );
+                                  if (pickedDate != null) {
+                                    setState(() {
+                                      _dateController.text =
+                                          DateFormat('dd-MM-yyyy')
+                                              .format(pickedDate);
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            _buildDropdown('Country *', _countryNames,
+                                fieldKey: _countryKey, validator: (value) {
+                              if (value == null ||
+                                  value == "---- Select Country * ----") {
+                                return 'Please select a Country';
                               }
                               return null;
                             },
-                            maxLength:
-                                10, // Limit to typical phone number length
-                            style: TextStyle(
-                                color:
-                                    const Color.fromARGB(255, 255, 255, 255)),
-                            decoration: InputDecoration(
-                              labelText: "Phone number",
-                              labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
-                              filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              counterText: "", // Hide character counter
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  _buildTextField('Email *', _emailController,
-                      fieldKey: _emailKey, validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email name';
-                    }
-                    return null;
-                  }),
-                  SizedBox(height: 15),
-                  _buildDropdown(
-                      'Gender *',
-                      ['Male', 'Female', 'Other'],
-                      _selectedGender,
-                      fieldKey: _genderKey,
-                      (value) => setState(
-                            () {
-                              _selectedGender = value!;
-                            },
-                          ), validator: (value) {
-                    if (value == null || value == "---- Select Gender * ----") {
-                      return 'Please select a gender';
-                    }
-                    return null;
-                  }),
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      controller: _dateController,
-                      readOnly: true, // Makes the TextFormField non-editable
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: 'Date of Birth *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
-                        suffixIcon: _dateController.text.isNotEmpty
-                            ? IconButton(
-                                icon: Icon(Icons.close, color: Colors.white),
-                                onPressed: () {
-                                  setState(() {
-                                    _dateController
-                                        .clear(); // Clears the date when cancel button is pressed
-                                  });
-                                },
-                              )
-                            : null, // Only show cancel button if date is selected
-                      ),
-                      onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: _dateController.text.isNotEmpty
-                              ? DateFormat('dd-MM-yyyy')
-                                  .parse(_dateController.text)
-                              : DateTime.now(),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime(2100),
-                        );
-                        if (pickedDate != null) {
-                          setState(() {
-                            _dateController.text =
-                                DateFormat('dd-MM-yyyy').format(pickedDate);
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  _buildDropdown('Country *', [""], fieldKey: _countryKey,
-                      validator: (value) {
-                    if (value == null ||
-                        value == "---- Select Country * ----") {
-                      return 'Please select a Country';
-                    }
-                    return null;
-                  },
-                      _selectedCountry,
-                      (value) => setState(() {
-                            _selectedCity = value!;
-                            final selectedCountryObject = _countries.firstWhere(
-                                (country) => country['country_name'] == value,
-                                orElse: () => null);
-                            if (selectedCountryObject != null) {
-                              _selectedCountryId =
-                                  selectedCountryObject['id'].toString();
-                              Logger.success(
-                                  "selected country is $_selectedCountry ID : $_selectedCountryId");
-                            }
-                            _loadStates(_selectedCountryId);
-                          })),
-                  SizedBox(height: 10),
-                  _buildDropdown('State *', _stateNames, fieldKey: _stateKey,
-                      validator: (value) {
-                    if (value == null || value == "---- Select State * ----") {
-                      return 'Please select a state';
-                    }
-                    return null;
-                  },
-                      _selectedState,
-                      (value) => setState(() {
-                            _selectedState = value!;
-
-                            final selectedStateObject = _states.firstWhere(
-                                (state) => state['state_name'] == value,
-                                orElse: () => null);
-                            if (selectedStateObject != null) {
-                              _selectedStateId =
-                                  selectedStateObject['id'].toString();
-                              Logger.success(
-                                  "selected state is $_selectedState ID : $_selectedStateId");
-                              _loadCities(_selectedStateId);
-                            }
-                          })),
-                  SizedBox(height: 10),
-                  _buildDropdown('City *', _cityNames, _selectedCity,
-                      fieldKey: _cityKey, validator: (value) {
-                    if (value == null || value == "---- Select City * ----") {
-                      return 'Please select a city';
-                    }
-                    return null;
-                  },
-                      (value) => setState(() {
-                            _selectedCity = value!;
-                            final selectedCityObject = _cities.firstWhere(
-                                (city) => city['city_name'] == value,
-                                orElse: () => null);
-                            if (selectedCityObject != null) {
-                              _selectedCityId =
-                                  selectedCityObject['id'].toString();
-                              Logger.success(
-                                  "selected city is $_selectedCity ID : $_selectedCityId");
-                            }
-                            getPincode(_selectedCityId);
-                          })),
-                  SizedBox(height: 10),
-                  SizedBox(height: 10),
-                  _buildTextField('Pincode *', _pincodeController,
-                      fieldKey: _pincodeKey, validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Pincode is required';
-                    }
-                    return null;
-                  }, forceReadOnly: true),
-                  SizedBox(height: 15),
-                  _buildTextField(
-                    'Address *',
-                    _addressController,
-                    fieldKey: _addressKey,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your address';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          text: "Payment Mode * ",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
-                      ),
-                      SizedBox(height: 2),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
-                          ),
-                        ),
-                        child: Row(
-                          children:
-                              ["Cash", "Cheque", "UPI/NEFT"].map((package) {
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _selectedPaymentMode = package;
-                                });
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Radio<String>(
-                                    value: package,
-                                    groupValue: _selectedPaymentMode,
-                                    activeColor: Colors
-                                        .white, // Change radio button color
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _selectedPaymentMode = value!;
+                                _selectedCountry,
+                                (value) => setState(() {
+                                      _selectedCountry = value!;
+                                      final selectedCountryObject =
+                                          _countries.firstWhere(
+                                              (country) =>
+                                                  country['country_name'] ==
+                                                  value,
+                                              orElse: () => null);
+                                      if (selectedCountryObject != null) {
+                                        _selectedCountryId =
+                                            selectedCountryObject['id']
+                                                .toString();
                                         Logger.success(
-                                            "Selected payment Mode: $_selectedPaymentMode");
-                                      });
-                                    },
-                                  ),
-                                  Text(
-                                    package,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors
-                                          .white, // Gray out text if disabled
+                                            "selected country is $_selectedCountry ID : $_selectedCountryId");
+                                      }
+                                      _loadStates(_selectedCountryId);
+                                    })),
+                            SizedBox(height: 10),
+                            _buildDropdown('State *', _stateNames,
+                                fieldKey: _stateKey, validator: (value) {
+                              if (value == null ||
+                                  value == "---- Select State * ----") {
+                                return 'Please select a state';
+                              }
+                              return null;
+                            },
+                                _selectedState,
+                                (value) => setState(() {
+                                      _selectedState = value!;
+
+                                      final selectedStateObject =
+                                          _states.firstWhere(
+                                              (state) =>
+                                                  state['state_name'] == value,
+                                              orElse: () => null);
+                                      if (selectedStateObject != null) {
+                                        _selectedStateId =
+                                            selectedStateObject['id']
+                                                .toString();
+                                        Logger.success(
+                                            "selected state is $_selectedState ID : $_selectedStateId");
+                                        _loadCities(_selectedStateId);
+                                      }
+                                    })),
+                            SizedBox(height: 10),
+                            _buildDropdown('City *', _cityNames, _selectedCity,
+                                fieldKey: _cityKey, validator: (value) {
+                              if (value == null ||
+                                  value == "---- Select City * ----") {
+                                return 'Please select a city';
+                              }
+                              return null;
+                            },
+                                (value) => setState(() {
+                                      _selectedCity = value!;
+                                      final selectedCityObject =
+                                          _cities.firstWhere(
+                                              (city) =>
+                                                  city['city_name'] == value,
+                                              orElse: () => null);
+                                      if (selectedCityObject != null) {
+                                        _selectedCityId =
+                                            selectedCityObject['id'].toString();
+                                        Logger.success(
+                                            "selected city is $_selectedCity ID : $_selectedCityId");
+                                      }
+                                      getPincode(_selectedCityId);
+                                    })),
+                            SizedBox(height: 10),
+                            _buildTextField('Pincode *', _pincodeController,
+                                fieldKey: _pincodeKey, validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Pincode is required';
+                              }
+                              return null;
+                            }, forceReadOnly: true),
+                            SizedBox(height: 15),
+                            _buildTextField(
+                              'Address *',
+                              _addressController,
+                              fieldKey: _addressKey,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your address';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 10),
+                            if (_selectedPaymentMode == "Cheque") ...{
+                              _buildTextField(
+                                  'Check No. *', _chequeNoController),
+                              SizedBox(height: 10),
+                              _buildTextField(
+                                  'Cheque  Date *', _chequeDateController),
+                              SizedBox(height: 10),
+                              _buildTextField(
+                                  'Bank Name *', _bankNameController),
+                              SizedBox(height: 10),
+                            } else if (_selectedPaymentMode == "UPI/NEFT") ...{
+                              _buildTextField('Transaction No. *',
+                                  _transactionIDController),
+                              SizedBox(height: 10),
+                            },
+                            SizedBox(height: 10),
+                            _buildDropdown(
+                                'Payment Fee *',
+                                [
+                                  'Free',
+                                  'Prime: ₹ 10,000',
+                                  'Premium: ₹ 30,000',
+                                  'Premium Plus: ₹ 35,000'
+                                ],
+                                _selectedPayment,
+                                fieldKey: _paymentFeeKey,
+                                (value) => setState(() {
+                                      _selectedPayment = value!;
+                                      Logger.success(
+                                          "Customer Type : $_selectedPayment");
+                                    }), validator: (value) {
+                              if (value == null ||
+                                  value == "---- Select Payment Fee * ----") {
+                                return 'Please select a payment fee';
+                              }
+                              return null;
+                            }),
+                            SizedBox(height: 10),
+                            if (_selectedPayment != "Free")
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      text: "Payment Mode * ",
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.white),
                                     ),
                                   ),
-                                  SizedBox(
-                                      width:
-                                          10), // Spacing between radio buttons
+                                  SizedBox(height: 2),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.2),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: ["Cash", "Cheque", "UPI/NEFT"]
+                                          .map((package) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              _selectedPaymentMode = package;
+                                            });
+                                          },
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Radio<String>(
+                                                value: package,
+                                                groupValue:
+                                                    _selectedPaymentMode,
+                                                activeColor: Colors
+                                                    .white, // Change radio button color
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    _selectedPaymentMode =
+                                                        value!;
+                                                    Logger.success(
+                                                        "Selected payment Mode: $_selectedPaymentMode");
+                                                  });
+                                                },
+                                              ),
+                                              Text(
+                                                package,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors
+                                                      .white, // Gray out text if disabled
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                  width:
+                                                      10), // Spacing between radio buttons
+                                            ],
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
                                 ],
                               ),
-                            );
-                          }).toList(),
+                            Text(
+                              "Attachments",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            _buildUploadButton("Profile Picture"),
+                            _buildUploadButton("Aadhar Card"),
+                            _buildUploadButton("Pan Card"),
+                            _buildUploadButton("Bank Passbook"),
+                            _buildUploadButton("Voting Card"),
+                            if (_selectedPayment != "Free")
+                              _buildUploadButton("Payment Proof"),
+                            SizedBox(height: 10),
+                            _buildTextField('Extra Notes *', _notesController),
+                            SizedBox(height: 20),
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  submitForm(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                ),
+                                child: Text(
+                                  "Submit",
+                                  style: TextStyle(
+                                      color: Colors.blueAccent, fontSize: 16),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  if (_selectedPaymentMode == "Cheque") ...{
-                    _buildTextField('Check No. *', _chequeNoController),
-                    SizedBox(height: 10),
-                    _buildTextField('Cheque  Date *', _chequeDateController),
-                    SizedBox(height: 10),
-                    _buildTextField('Bank Name *', _bankNameController),
-                    SizedBox(height: 10),
-                  } else if (_selectedPaymentMode == "UPI/NEFT") ...{
-                    _buildTextField(
-                        'Transaction No. *', _transactionIDController),
-                    SizedBox(height: 10),
-                  },
-                  SizedBox(height: 10),
-                  _buildDropdown(
-                      'Payment Fee *',
-                      [
-                        'Free',
-                        'Prime: ₹ 10,000',
-                        'Premium: ₹ 30,000',
-                        'Premium Plus: ₹ 35,000'
-                      ],
-                      _selectedPayment,
-                      fieldKey: _genderKey,
-                      (value) => setState(() {
-                            _selectedPayment = value!;
-                          }), validator: (value) {
-                    if (value == null ||
-                        value == "---- Select Payment Fee * ----") {
-                      return 'Please select a payment fee';
-                    }
-                    return null;
-                  }),
-                  SizedBox(height: 10),
-                  Text(
-                    "Attachments",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  _buildUploadButton("Profile Picture"),
-                  _buildUploadButton("Aadhar Card"),
-                  _buildUploadButton("Pan Card"),
-                  _buildUploadButton("Bank Passbook"),
-                  _buildUploadButton("Voting Card"),
-                  SizedBox(height: 10),
-                  _buildTextField('Extra Notes *', _notesController),
-                  SizedBox(height: 20),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        submitForm(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      child: Text(
-                        "Submit",
-                        style:
-                            TextStyle(color: Colors.blueAccent, fontSize: 16),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+                ),
+        );
+      },
     );
   }
 

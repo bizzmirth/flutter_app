@@ -3,8 +3,9 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 
 class MyAdminCustPendingDataSource extends DataTableSource {
+  final BuildContext context;
   final List<PendingCustomer> data;
-  MyAdminCustPendingDataSource(this.data);
+  MyAdminCustPendingDataSource(this.context, this.data);
 
   @override
   DataRow? getRow(int index) {
@@ -148,49 +149,66 @@ class MyAdminCustPendingDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(_buildActionMenu()),
+        DataCell(_buildActionMenu(context, customer)),
       ],
     );
   }
 
-  // Action Menu Widget
-  Widget _buildActionMenu() {
+// Action Menu Widget
+  Widget _buildActionMenu(BuildContext context, PendingCustomer customer) {
     return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
+      onSelected: (value) {},
+      itemBuilder: (BuildContext context) {
+        List<PopupMenuEntry<String>> menuItems = [];
+
+        if (customer.status == "2") {
+          menuItems = [
+            PopupMenuItem(
+              value: "view",
+              child: ListTile(
+                leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
+                title: Text("View"),
+              ),
+            ),
+            PopupMenuItem(
+              value: "edit",
+              child: ListTile(
+                leading: Icon(Icons.edit,
+                    color: const Color.fromARGB(255, 0, 105, 190)),
+                title: Text("Edit"),
+              ),
+            ),
+            PopupMenuItem(
+              value: "delete",
+              child: ListTile(
+                leading: Icon(Icons.delete, color: Colors.red),
+                title: Text("Delete"),
+              ),
+            ),
+            PopupMenuItem(
+              value: "register",
+              child: ListTile(
+                leading: Icon(Icons.app_registration,
+                    color: const Color.fromARGB(255, 43, 29, 240)),
+                title: Text("Register"),
+              ),
+            ),
+          ];
+        } else if (customer.status == "1") {
+          // Handle other status cases if needed
+          menuItems = [
+            PopupMenuItem(
+              value: "view",
+              child: ListTile(
+                leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
+                title: Text("View"),
+              ),
+            ),
+          ];
+        }
+
+        return menuItems;
       },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading:
-                Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "register",
-          child: ListTile(
-            leading: Icon(Icons.app_registration,
-                color: const Color.fromARGB(255, 43, 29, 240)),
-            title: Text("Register"),
-          ),
-        ),
-      ],
       icon: Icon(Icons.more_vert, color: Colors.black54),
     );
   }

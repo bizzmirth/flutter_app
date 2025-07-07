@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:bizzmirth_app/models/user_type_mode.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/widgets/carousel_section.dart';
 import 'package:bizzmirth_app/screens/homepage/drawer/sidenav_drawer.dart';
 import 'package:bizzmirth_app/widgets/footer_section.dart';
@@ -23,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   List<UserType> userTypes = [];
   bool isLoading = true;
   String error = '';
-
+  final SharedPrefHelper _sharedPrefHelper = SharedPrefHelper();
   @override
   void initState() {
     // TODO: implement initState
@@ -41,8 +42,7 @@ class _HomePageState extends State<HomePage> {
         final jsonData = json.decode(response.body);
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_data_type', response.body);
+        await _sharedPrefHelper.saveUserDataType(response.body);
 
         setState(() {
           userTypes = userTypeResponse.data;
@@ -62,8 +62,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> printSavedUserTypes() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final String? storedData = prefs.getString('user_data_type');
+      final String? storedData =
+          await _sharedPrefHelper.getUserDataType('user_data_type');
 
       if (storedData != null) {
         final jsonData = json.decode(storedData);

@@ -53,8 +53,8 @@ dependencies:
   path_provider: ^2.1.5
   http: ^1.3.0
   isar_generator: ^3.1.0+1
-  rename_app: ^1.6.2
-  flutter_launcher_icons: ^0.14.3
+  rename_app: ^1.6.5
+  flutter_launcher_icons: ^0.14.4
   toastification: 3.0.1
   connectivity_plus: ^6.1.3
 
@@ -104,3 +104,10 @@ flutter:
     - assets/3.jpg
     - assets/4.jpg
     - assets/5.jpg
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/Bizzmirth.png"
+  adaptive_icon_background: "#FFFFFF" # White background
+  adaptive_icon_foreground: "assets/Bizzmirth.png"

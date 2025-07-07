@@ -6,6 +6,7 @@ import 'package:bizzmirth_app/screens/dashboards/business_mentor/business_mentor
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -78,11 +79,20 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _handleLogin(BuildContext context) async {
     final controller = Provider.of<LoginController>(context, listen: false);
-    final result = await controller.loginUser();
+    final result = await controller.loginUser(context);
 
-    if (result["success"]) {
+    if (result["status"]) {
+      ToastHelper.showSuccessToast(
+          context: context,
+          title: "Login Successful",
+          description: "Welcome back!");
       if (!context.mounted) return;
       _navigateToDashboard(context, result["user_type"]);
+    } else {
+      ToastHelper.showErrorToast(
+          context: context,
+          title: "Login Failed",
+          description: result["message"] ?? "An error occurred during login.");
     }
   }
 

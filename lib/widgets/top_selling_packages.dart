@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/models/travel_plan_top_selling_packages.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/screens/more_top_selling_packages/more_top_selling_packages.dart';
+import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -123,7 +124,7 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LoginPage()),
+                                  builder: (context) => PackageDetailsPage()),
                             );
                           },
                           style: ElevatedButton.styleFrom(
