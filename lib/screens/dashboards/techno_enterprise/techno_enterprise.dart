@@ -5,6 +5,7 @@ import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/customers/cus
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/payouts/product_payouts/te_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/payouts/te_payouts/te_payouts.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -152,6 +153,7 @@ class _TEDashboardPageState extends State<TEDashboardPage> {
                       ),
                       title: Text("Log Out"),
                       onTap: () {
+                        SharedPrefHelper().removeUserEmailAndType();
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),

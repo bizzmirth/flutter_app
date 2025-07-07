@@ -2,6 +2,7 @@ import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -125,6 +126,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                       title: Text("Log Out"),
                       onTap: () async {
+                        SharedPrefHelper().removeUserEmailAndType();
                         await Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),

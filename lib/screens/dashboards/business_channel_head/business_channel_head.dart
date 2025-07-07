@@ -6,6 +6,7 @@ import 'package:bizzmirth_app/screens/dashboards/business_channel_head/payouts/p
 import 'package:bizzmirth_app/screens/dashboards/business_channel_head/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_channel_head/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -163,6 +164,7 @@ class _BCHDashboardPageState extends State<BCHDashboardPage> {
                       ),
                       title: Text("Log Out"),
                       onTap: () {
+                        SharedPrefHelper().removeUserEmailAndType();
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),
