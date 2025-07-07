@@ -6,7 +6,9 @@ import 'package:bizzmirth_app/entities/registered_employee/registered_employee_m
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/book_now_page/book_now_page.dart';
+import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -591,14 +593,13 @@ class _ProgressTrackerState extends State<ProgressTracker> {
 void showBookingPopup(BuildContext context) {
   showDialog(
     context: context,
-    builder: (BuildContext context) {
+    builder: (context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.info_outline,
-                size: 40, color: Colors.blueAccent), // Info icon
+            Icon(Icons.info_outline, size: 40, color: Colors.blueAccent),
             SizedBox(height: 10),
             Text(
               'Need More Info or Ready to Book?',
@@ -615,26 +616,22 @@ void showBookingPopup(BuildContext context) {
         ),
         actions: [
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.center, // Adjust this as needed
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(width: 65),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close popup
+                  Navigator.of(context).pop();
                 },
                 child: Text(
                   'Close',
                   style: GoogleFonts.poppins(fontSize: 14, color: Colors.red),
                 ),
               ),
-              SizedBox(width: 65), // Adjust spacing between buttons
+              SizedBox(width: 65),
               TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => EnquireNowPage()),
-                  );
+                onPressed: () async {
+                  await _handleUserAction(context, 'enquire');
                 },
                 child: Text(
                   'Submit Your Query',
@@ -644,13 +641,10 @@ void showBookingPopup(BuildContext context) {
                       color: Colors.orange),
                 ),
               ),
-              SizedBox(width: 65), // Adjust spacing between buttons
+              SizedBox(width: 65),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BookNowPage()),
-                  );
+                onPressed: () async {
+                  await _handleUserAction(context, 'book');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -668,6 +662,230 @@ void showBookingPopup(BuildContext context) {
       );
     },
   );
+}
+
+Future<void> _handleUserAction(BuildContext context, String action) async {
+  final navigator = Navigator.of(context);
+  final scaffoldMessenger = ScaffoldMessenger.of(context);
+  final mediaQuery = MediaQuery.of(context);
+
+  navigator.pop();
+
+  final userType = await SharedPrefHelper().getUserType();
+
+  if (userType == null || userType.isEmpty) {
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.warning, color: Colors.white),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'You need to log in to continue',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                scaffoldMessenger.hideCurrentSnackBar();
+                navigator.push(
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+              child: Text(
+                'Login',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.orange,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(
+          bottom: 20,
+          left: 20,
+          right: mediaQuery.size.width * 0.3,
+        ),
+        duration: Duration(seconds: 4),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  } else {
+    if (action == 'enquire') {
+      navigator.push(MaterialPageRoute(builder: (context) => EnquireNowPage()));
+    } else if (action == 'book') {
+      navigator.push(MaterialPageRoute(builder: (context) => BookNowPage()));
+    }
+  }
+}
+
+void showBookingPopupAlternative(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.info_outline, size: 40, color: Colors.blueAccent),
+            SizedBox(height: 10),
+            Text(
+              'Need More Info or Ready to Book?',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                  fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        content: Text(
+          'Would you like to enquire more about this package or proceed to booking?',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(fontSize: 14),
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: 65),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'Close',
+                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.red),
+                ),
+              ),
+              SizedBox(width: 65),
+              TextButton(
+                onPressed: () async {
+                  await _handleUserActionWithBanner(context, 'enquire');
+                },
+                child: Text(
+                  'Submit Your Query',
+                  style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.orange),
+                ),
+              ),
+              SizedBox(width: 65),
+              ElevatedButton(
+                onPressed: () async {
+                  await _handleUserActionWithBanner(context, 'book');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+                child: Text(
+                  'Book Now',
+                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _handleUserActionWithBanner(
+    BuildContext context, String action) async {
+  final userType = await SharedPrefHelper().getUserType();
+
+  if (!context.mounted) return;
+
+  if (userType == null || userType.isEmpty) {
+    await Future.delayed(Duration(milliseconds: 100));
+
+    if (!context.mounted) return;
+
+    ScaffoldMessenger.of(context).showMaterialBanner(
+      MaterialBanner(
+        content: Text(
+          'You need to log in to continue with your ${action == 'enquire' ? 'enquiry' : 'booking'}',
+          style: GoogleFonts.poppins(fontSize: 14),
+        ),
+        leading: Icon(Icons.lock_outline, color: Colors.orange),
+        backgroundColor: Colors.orange.shade50,
+        actions: [
+          TextButton(
+            onPressed: () {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+              }
+            },
+            child: Text(
+              'Dismiss',
+              style: GoogleFonts.poppins(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'Login Now',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Future.delayed(Duration(seconds: 5), () {
+      if (context.mounted) {
+        try {
+          ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+        } catch (e) {}
+      }
+    });
+  } else {
+    Navigator.of(context).pop();
+
+    if (!context.mounted) return;
+
+    if (action == 'enquire') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => EnquireNowPage()),
+      );
+    } else if (action == 'book') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => BookNowPage()),
+      );
+    }
+  }
 }
 
 String extractUserId(String fullUserId) {

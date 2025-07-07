@@ -173,7 +173,6 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
                   ),
 
                 Divider(),
-                // Show login/logout based on user status
                 ListTile(
                   leading: Icon(
                     (userType != null && userType!.isNotEmpty)

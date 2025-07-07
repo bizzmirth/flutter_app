@@ -417,7 +417,6 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
           ]),
         ),
 
-        // Floating buttons positioned at the bottom
         Positioned(
           bottom: 20,
           right: 16,
@@ -453,7 +452,6 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
           left: 290, // Keeps it aligned properly
           child: ElevatedButton(
             onPressed: () {
-              // Open Enquire or Book Now popup
               showBookingPopup(context);
             },
             style: ElevatedButton.styleFrom(
