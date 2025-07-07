@@ -124,8 +124,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         color: Colors.red,
                       ),
                       title: Text("Log Out"),
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
+                      onTap: () async {
+                        await Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),
                           (Route<dynamic> route) => false,
