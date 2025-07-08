@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:bizzmirth_app/controllers/customer_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -116,7 +116,7 @@ class _AddcustState extends State<AddcustPage> {
   Future<void> _loadConsultants() async {
     try {
       final controller =
-          Provider.of<CustomerController>(context, listen: false);
+          Provider.of<AdminCustomerController>(context, listen: false);
       await controller.fetchTravelConsultants();
 
       _consultants = controller.consultants;
@@ -137,7 +137,7 @@ class _AddcustState extends State<AddcustPage> {
   Future<void> _loadCountry() async {
     try {
       final controller =
-          Provider.of<CustomerController>(context, listen: false);
+          Provider.of<AdminCustomerController>(context, listen: false);
       List<dynamic> countries = await controller.apiGetCountry();
 
       _countries = countries;
@@ -158,7 +158,7 @@ class _AddcustState extends State<AddcustPage> {
   Future<void> _loadStates(selectedCountryId) async {
     try {
       final controller =
-          Provider.of<CustomerController>(context, listen: false);
+          Provider.of<AdminCustomerController>(context, listen: false);
 
       List<dynamic> states = await controller.apiGetStates(selectedCountryId);
       _states = states;
@@ -179,7 +179,7 @@ class _AddcustState extends State<AddcustPage> {
   Future<void> _loadCities(selectedStateId) async {
     try {
       final controller =
-          Provider.of<CustomerController>(context, listen: false);
+          Provider.of<AdminCustomerController>(context, listen: false);
       List<dynamic> cities = await controller.apiGetCity(selectedStateId);
       _cities = cities;
 
@@ -199,7 +199,7 @@ class _AddcustState extends State<AddcustPage> {
   Future<void> getPincode(selectedCity) async {
     try {
       final controller =
-          Provider.of<CustomerController>(context, listen: false);
+          Provider.of<AdminCustomerController>(context, listen: false);
       final pincode = await controller.apiGetPincode(selectedCity);
       setState(() {
         _pincodeController.text = pincode;
@@ -395,7 +395,8 @@ class _AddcustState extends State<AddcustPage> {
   }
 
   Future<void> submitForm(context) async {
-    final controller = Provider.of<CustomerController>(context, listen: false);
+    final controller =
+        Provider.of<AdminCustomerController>(context, listen: false);
     try {
       final refrenceId = _selectedUserId;
       final refrenceName = _selectedUserNameOnly;
@@ -709,7 +710,7 @@ class _AddcustState extends State<AddcustPage> {
     } else if (widget.isViewMode) {
       appBarTitle = 'View Customer';
     }
-    return Consumer<CustomerController>(
+    return Consumer<AdminCustomerController>(
       builder: (context, controller, child) {
         return Scaffold(
           appBar: AppBar(

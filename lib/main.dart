@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart';
-import 'package:bizzmirth_app/controllers/customer_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AdminBusniessMentorController()),
         ChangeNotifierProvider(
             create: (_) => DesignationDepartmentController()),
-        ChangeNotifierProvider(create: (_) => CustomerController()),
+        ChangeNotifierProvider(create: (_) => AdminCustomerController()),
       ],
       child: MaterialApp(
         title: 'UniqBizz',

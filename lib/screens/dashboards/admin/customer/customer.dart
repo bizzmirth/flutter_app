@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/customer_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
 import 'package:bizzmirth_app/data_source/admin_cust_pending_data_source.dart';
 import 'package:bizzmirth_app/data_source/admin_cust_registered_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
@@ -28,7 +28,7 @@ class _CustPageState extends State<CustPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller =
-          Provider.of<CustomerController>(context, listen: false);
+          Provider.of<AdminCustomerController>(context, listen: false);
       controller.apifetchPendingEmployee();
       controller.apiFetchRegisteredCustomer();
     });
@@ -36,7 +36,7 @@ class _CustPageState extends State<CustPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CustomerController>(
+    return Consumer<AdminCustomerController>(
       builder: (context, controller, child) {
         return Scaffold(
           appBar: AppBar(

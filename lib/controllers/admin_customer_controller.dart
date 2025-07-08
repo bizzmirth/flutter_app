@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CustomerController extends ChangeNotifier {
+class AdminCustomerController extends ChangeNotifier {
   final String baseUrl = 'https://testca.uniqbizz.com/api/customers';
 
   bool _isLoading = false; // ✅ Private variable
