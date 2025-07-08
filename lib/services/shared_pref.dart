@@ -7,6 +7,8 @@ class SharedPrefHelper {
 
   static String _userEmailKey = "user_email";
 
+  static String _currUserCustId = "ca_customer_id";
+
   Future<void> saveUserDataType(String userDataType) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userDataTypeKey, userDataType);
@@ -22,6 +24,11 @@ class SharedPrefHelper {
     await prefs.setString(_userEmailKey, userEmail);
   }
 
+  Future<void> saveCurrentUserCustId(String custId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_currUserCustId, custId);
+  }
+
   Future<String?> getUserType() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userTypeKey);
@@ -35,6 +42,11 @@ class SharedPrefHelper {
   Future<String?> getUserDataType(String s) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userDataTypeKey);
+  }
+
+  Future<String?> getCurrentUserCustId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_currUserCustId);
   }
 
   Future<void> clearAllData() async {

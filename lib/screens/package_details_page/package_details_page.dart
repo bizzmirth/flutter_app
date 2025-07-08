@@ -319,9 +319,8 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
             SizedBox(height: 8),
 
             ListView.builder(
-              physics:
-                  NeverScrollableScrollPhysics(), // Prevents internal scrolling
-              shrinkWrap: true, // Ensures ListView fits its contents
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
               itemCount: itinerary.length,
               itemBuilder: (context, index) {
                 final item = itinerary[index];
@@ -416,7 +415,6 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
             SizedBox(height: 100),
           ]),
         ),
-
         Positioned(
           bottom: 20,
           right: 16,
@@ -432,7 +430,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                 heroTag: "whatsapp",
                 child: FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white),
               ),
-              SizedBox(height: 12), // Space between WA & Share
+              SizedBox(height: 12),
               FloatingActionButton(
                 onPressed: () {
                   // Add share functionality
@@ -444,12 +442,10 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
             ],
           ),
         ),
-
-        // Enquire or Book Now Button (aligned with Share button)
         Positioned(
           bottom: 20, // Adjust as needed
-          right: 290, // Aligns with Share button
-          left: 290, // Keeps it aligned properly
+          left: MediaQuery.of(context).size.width * 0.2,
+          right: MediaQuery.of(context).size.width * 0.2,
           child: ElevatedButton(
             onPressed: () {
               showBookingPopup(context);

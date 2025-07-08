@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 class CDashboardPage extends StatefulWidget {
   const CDashboardPage({super.key});
@@ -15,6 +19,80 @@ class CDashboardPage extends StatefulWidget {
 }
 
 class _CDashboardPageState extends State<CDashboardPage> {
+  int regCustomerCount = 0;
+  @override
+  void initState() {
+    super.initState();
+    getRegCustomerCount();
+  }
+
+  void getRegCustomerCount() async {
+    try {
+      String email = await SharedPrefHelper().getUserEmail() ?? "";
+      Logger.success("the stored email is $email");
+
+      final response = await http.get(
+        Uri.parse(
+            'https://testca.uniqbizz.com/api/customers/customers.php?action=registered_cust'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+
+        if (jsonData['status'] == 'success') {
+          List<dynamic> customers = jsonData['data'];
+
+          String? userTaReferenceNo;
+          String? userCustomerId;
+
+          for (var customer in customers) {
+            if (customer['email'] == email) {
+              userTaReferenceNo = customer['ta_reference_no'];
+              userCustomerId = customer['ca_customer_id'];
+              await SharedPrefHelper().saveCurrentUserCustId(userCustomerId!);
+              Logger.success("Found user with ca_customer_id: $userCustomerId");
+              Logger.success("User's ta_reference_no: $userTaReferenceNo");
+              break;
+            }
+          }
+
+          if (userCustomerId != null) {
+            int count = 0;
+            for (var customer in customers) {
+              if (customer['reference_no'] == userCustomerId) {
+                count++;
+              }
+            }
+
+            setState(() {
+              regCustomerCount = count;
+            });
+
+            Logger.success(
+                "Total customers with ta_reference_no '$userTaReferenceNo': $regCustomerCount");
+          } else {
+            Logger.error("No customer found with email: $email");
+            setState(() {
+              regCustomerCount = 0;
+            });
+          }
+        } else {
+          Logger.error("API returned error status: ${jsonData['status']}");
+        }
+      } else {
+        Logger.error("HTTP Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      Logger.error("Error in getRegCustomerCount: $e");
+      setState(() {
+        regCustomerCount = 0;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,7 +230,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
               cardData: [
                 SummaryCardData(
                     title: 'REFERRAL CUSTOMER REGISTERED',
-                    value: '3',
+                    value: '$regCustomerCount',
                     icon: Icons.people),
                 SummaryCardData(
                     title: 'TOTAL BOOKING',
