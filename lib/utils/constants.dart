@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
@@ -14,6 +15,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final IsarService _isarService = IsarService();
@@ -246,19 +248,99 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
 }
 
 // linechart
-class ImprovedLineChart extends StatelessWidget {
-  final List<FlSpot> chartData = [
-    FlSpot(1, 2),
-    FlSpot(2, 5),
-    FlSpot(3, 3),
-    FlSpot(4, 7),
-    FlSpot(5, 6),
-    FlSpot(6, 9),
-    FlSpot(7, 10),
-  ];
+class ImprovedLineChart extends StatefulWidget {
+  const ImprovedLineChart({super.key});
+
+  @override
+  _ImprovedLineChartState createState() => _ImprovedLineChartState();
+}
+
+class _ImprovedLineChartState extends State<ImprovedLineChart> {
+  String? selectedYear;
+  List<String> availableYears = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAvailableYears();
+  }
+
+  Future<void> _loadAvailableYears() async {
+    try {
+      String? regDate = await SharedPrefHelper().getCurrentUserRegDate();
+
+      List<String> dateParts = regDate!.split('-');
+      int registrationYear = int.parse(dateParts[2]);
+      int currentYear = DateTime.now().year;
+
+      List<String> years = [];
+      for (int year = registrationYear; year <= currentYear; year++) {
+        years.add(year.toString());
+      }
+
+      setState(() {
+        availableYears = years;
+        selectedYear = currentYear.toString();
+        isLoading = false;
+      });
+
+      if (mounted) {
+        final customerController =
+            Provider.of<CustomerController>(context, listen: false);
+        await customerController.apiGetChartData(selectedYear!);
+      }
+    } catch (e) {
+      Logger.error('Error loading registration date: $e');
+      setState(() {
+        availableYears = [DateTime.now().year.toString()];
+        selectedYear = DateTime.now().year.toString();
+        isLoading = false;
+      });
+    }
+  }
+
+  String getMonthName(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    return months[month - 1];
+  }
+
+  // Helper method to get maximum month to display
+  int getMaxMonth() {
+    if (selectedYear == null) return 12;
+
+    int currentYear = DateTime.now().year;
+    int currentMonth = DateTime.now().month;
+    int selectedYearInt = int.parse(selectedYear!);
+
+    // If selected year is current year, show only up to current month
+    if (selectedYearInt == currentYear) {
+      return currentMonth;
+    }
+
+    // If selected year is past year, show all 12 months
+    return 12;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final customerController = Provider.of<CustomerController>(context);
+    final chartData = customerController.getChartSpots();
+    final maxMonth = getMaxMonth();
+
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 3,
@@ -273,37 +355,50 @@ class ImprovedLineChart extends StatelessWidget {
                   "Performance Overview",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
-                  width: 300,
-                ),
-                Expanded(
-                  child: Positioned(
-                    top: 20,
-                    right: 70,
-                    child: Row(
-                      children: [
-                        Text(
-                          "23/02/2025",
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
+                Spacer(),
+                isLoading
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
                         ),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () => null,
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 1),
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: selectedYear,
+                            hint: Text("Select Year"),
+                            items: availableYears.map((String year) {
+                              return DropdownMenuItem<String>(
+                                value: year,
+                                child: Text(year),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) async {
+                              setState(() {
+                                selectedYear = newValue;
+                                isLoading = true;
+                              });
+
+                              await customerController
+                                  .apiGetChartData(selectedYear!);
+
+                              setState(() {
+                                isLoading = false;
+                              });
+                            },
+                            icon:
+                                Icon(Icons.arrow_drop_down, color: Colors.grey),
+                            style: TextStyle(color: Colors.black, fontSize: 14),
                           ),
-                          child: Text("Select Month"),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      ),
               ],
             ),
             SizedBox(height: 10),
@@ -312,12 +407,14 @@ class ImprovedLineChart extends StatelessWidget {
               child: LineChart(
                 LineChartData(
                   minX: 1,
-                  maxX: chartData.length.toDouble(),
+                  maxX: maxMonth.toDouble(),
                   minY: 0,
-                  maxY: chartData
-                          .map((e) => e.y)
-                          .reduce((a, b) => a > b ? a : b) +
-                      2,
+                  maxY: chartData.isNotEmpty
+                      ? chartData
+                              .map((e) => e.y)
+                              .reduce((a, b) => a > b ? a : b) +
+                          2
+                      : 10,
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: true,
@@ -328,70 +425,43 @@ class ImprovedLineChart extends StatelessWidget {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 40, // Ensures Y-axis labels fit properly
-                        interval: 2, // Proper spacing between Y-axis numbers
-                        getTitlesWidget: (value, _) {
-                          return Padding(
-                            padding:
-                                EdgeInsets.only(right: 18.0), // Prevent overlap
-                            child: Text(
-                              value.toInt().toString(),
-                              style: TextStyle(fontSize: 12),
-                              textAlign: TextAlign.right,
-                            ),
-                          );
-                        },
+                        reservedSize: 40,
+                        interval: 2,
+                        getTitlesWidget: (value, _) => Padding(
+                          padding: EdgeInsets.only(right: 18.0),
+                          child: Text(
+                            value.toInt().toString(),
+                            style: TextStyle(fontSize: 12),
+                            textAlign: TextAlign.right,
+                          ),
+                        ),
                       ),
                     ),
                     rightTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40, // Ensures Y-axis labels fit properly
-                        interval: 2, // Proper spacing between Y-axis numbers
-                        getTitlesWidget: (value, _) {
-                          return Padding(
-                            padding:
-                                EdgeInsets.only(right: 6.0), // Prevent overlap
-                            child: Text(
-                              value.toInt().toString(),
-                              style: TextStyle(fontSize: 12),
-                              textAlign: TextAlign.right,
-                            ),
-                          );
-                        },
-                      ),
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: 1, // Ensures each day is evenly spaced
+                        interval: 1,
                         getTitlesWidget: (value, _) {
-                          return Padding(
-                            padding: EdgeInsets.only(top: 6.0), // Fixes spacing
-                            child: Text(
-                              "Day ${value.toInt()}",
-                              style: TextStyle(fontSize: 12),
-                              textAlign: TextAlign.center,
-                            ),
-                          );
+                          // Only show month labels up to maxMonth
+                          if (value.toInt() <= maxMonth) {
+                            return Padding(
+                              padding: EdgeInsets.only(top: 6.0),
+                              child: Text(
+                                getMonthName(value.toInt()),
+                                style: TextStyle(fontSize: 12),
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          }
+                          return SizedBox.shrink();
                         },
                       ),
                     ),
                     topTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        interval: 1, // Ensures each day is evenly spaced
-                        getTitlesWidget: (value, _) {
-                          return Padding(
-                            padding: EdgeInsets.only(top: 0.0), // Fixes spacing
-                            child: Text(
-                              "${value.toInt()}",
-                              style: TextStyle(fontSize: 12),
-                              textAlign: TextAlign.center,
-                            ),
-                          );
-                        },
-                      ),
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                   ),
                   borderData: FlBorderData(
@@ -401,7 +471,7 @@ class ImprovedLineChart extends StatelessWidget {
                   lineBarsData: [
                     LineChartBarData(
                       spots: chartData,
-                      isCurved: true, // Smooth Curves
+                      isCurved: false,
                       color: Colors.blueAccent,
                       barWidth: 4,
                       isStrokeCapRound: true,
@@ -410,7 +480,7 @@ class ImprovedLineChart extends StatelessWidget {
                         gradient: LinearGradient(
                           colors: [
                             Colors.blue.withOpacity(0.3),
-                            Colors.transparent
+                            Colors.transparent,
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -418,14 +488,13 @@ class ImprovedLineChart extends StatelessWidget {
                       ),
                       dotData: FlDotData(
                         show: true,
-                        getDotPainter: (spot, percent, barData, index) {
-                          return FlDotCirclePainter(
-                            radius: 4,
-                            color: const Color.fromARGB(255, 29, 153, 255),
-                            strokeColor: Colors.white,
-                            strokeWidth: 2,
-                          );
-                        },
+                        getDotPainter: (spot, percent, barData, index) =>
+                            FlDotCirclePainter(
+                          radius: 4,
+                          color: const Color.fromARGB(255, 29, 153, 255),
+                          strokeColor: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       ),
                     ),
                   ],
@@ -447,12 +516,12 @@ class ProgressTrackerCard extends StatelessWidget {
   final Color progressColor;
 
   const ProgressTrackerCard({
-    Key? key,
+    super.key,
     required this.totalSteps,
     required this.currentStep,
     required this.message,
-    this.progressColor = Colors.blueAccent, // Default color
-  }) : super(key: key);
+    this.progressColor = Colors.blueAccent,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -464,7 +533,6 @@ class ProgressTrackerCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Customizable Progress Tracker
             ProgressTracker(
               totalSteps: totalSteps,
               currentStep: currentStep,

@@ -2,6 +2,7 @@
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -12,7 +13,12 @@ class CustomerController extends ChangeNotifier {
   String? _error;
   String? _userCustomerId;
   String? _userTaReferenceNo;
+  String? _userRegDate;
   final List<TopCustomerRefereralModel> _topCustomerRefererals = [];
+  List<double> _chartData = [];
+  List<double> get chartData => _chartData;
+  String? _selectedYear;
+  String? get selectedYear => _selectedYear;
 
   List<TopCustomerRefereralModel> get topCustomerRefererals =>
       _topCustomerRefererals;
@@ -54,7 +60,9 @@ class CustomerController extends ChangeNotifier {
             if (customer['email'] == email) {
               _userTaReferenceNo = customer['ta_reference_no'];
               _userCustomerId = customer['ca_customer_id'];
+              _userRegDate = customer['register_date'];
               await SharedPrefHelper().saveCurrentUserCustId(_userCustomerId!);
+              await SharedPrefHelper().saveCurrentUserRegDate(_userRegDate!);
               Logger.success(
                   "Found user with ca_customer_id: $_userCustomerId");
               Logger.success("User's ta_reference_no: $_userTaReferenceNo");
@@ -95,6 +103,83 @@ class CustomerController extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> apiGetChartData(String selectedYear) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final url = "https://testca.uniqbizz.com/api/dashboard/chartData.php";
+      _selectedYear = selectedYear;
+
+      final Map<String, dynamic> body = {
+        "year": selectedYear,
+        "current_year": 2025,
+        "current_month": 12,
+        "user_id": userId,
+        "user_type": "10",
+      };
+
+      Logger.warning("Request body: $body");
+      final encodeBody = json.encode(body);
+      Logger.warning("Encoded body: $encodeBody");
+
+      final response = await http.post(
+        Uri.parse(url),
+        body: encodeBody,
+        headers: {"Content-Type": "application/json"}, // Important!
+      );
+
+      Logger.success("Raw response body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+
+        if (jsonData is List && jsonData.isNotEmpty && jsonData[0] is List) {
+          // We got [[0,0,0,...]]
+          List<dynamic> dataArray = jsonData[0];
+
+          _chartData = dataArray
+              .map<double>((item) => (item as num).toDouble())
+              .toList();
+          Logger.success(
+              "Chart data fetched successfully for year $selectedYear");
+          Logger.info("Chart data: $_chartData");
+        } else {
+          _error = "Unexpected response format";
+          _chartData = List.filled(12, 0.0);
+          Logger.error("Unexpected response format: $jsonData");
+        }
+      }
+    } catch (e, s) {
+      Logger.error("Exception in apiGetChartData: $e\n$s");
+      _error = "Exception: $e";
+      _chartData = List.filled(12, 0.0);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  List<FlSpot> getChartSpots() {
+    int currentYear = DateTime.now().year;
+    int currentMonth = DateTime.now().month;
+
+    // Determine how many months of data to show
+    int limit = selectedYear == currentYear.toString()
+        ? currentMonth
+        : _chartData.length;
+
+    List<FlSpot> spots = [];
+
+    for (int i = 0; i < limit && i < _chartData.length; i++) {
+      spots.add(FlSpot((i + 1).toDouble(), _chartData[i]));
+    }
+
+    return spots;
   }
 
   Future<void> apiGetTopCustomerRefererals() async {
