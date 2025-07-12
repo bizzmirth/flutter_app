@@ -499,11 +499,11 @@ class ProgressTracker extends StatefulWidget {
   final Color progressColor;
 
   const ProgressTracker({
-    Key? key,
+    super.key,
     required this.totalSteps,
     required this.currentStep,
     this.progressColor = Colors.blueAccent, // Default color
-  }) : super(key: key);
+  });
 
   @override
   _ProgressTrackerState createState() => _ProgressTrackerState();
@@ -516,6 +516,14 @@ class _ProgressTrackerState extends State<ProgressTracker> {
   void initState() {
     super.initState();
     _startStepAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant ProgressTracker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentStep != widget.currentStep) {
+      _startStepAnimation();
+    }
   }
 
   void _startStepAnimation() async {

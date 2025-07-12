@@ -6,7 +6,6 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();

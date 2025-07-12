@@ -1,4 +1,3 @@
-import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/customer/add_customer.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -13,14 +12,6 @@ class MyAdminCustRegDataSource extends DataTableSource {
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
     final customer = data[index];
-
-    var newStatus = "";
-    final status = customer.status.toString();
-    if (status == '2') {
-      newStatus = "Pending";
-    } else if (status == '0') {
-      newStatus = "Deleted";
-    }
 
     String _getStatusText(dynamic status) {
       if (status == null) return "Unknown";
