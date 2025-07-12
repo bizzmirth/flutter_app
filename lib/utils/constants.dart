@@ -346,163 +346,176 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
       elevation: 3,
       child: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  "Performance Overview",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
-                isLoading
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: selectedYear,
-                            hint: Text("Select Year"),
-                            items: availableYears.map((String year) {
-                              return DropdownMenuItem<String>(
-                                value: year,
-                                child: Text(year),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) async {
-                              setState(() {
-                                selectedYear = newValue;
-                                isLoading = true;
-                              });
-
-                              await customerController
-                                  .apiGetChartData(selectedYear!);
-
-                              setState(() {
-                                isLoading = false;
-                              });
-                            },
-                            icon:
-                                Icon(Icons.arrow_drop_down, color: Colors.grey),
-                            style: TextStyle(color: Colors.black, fontSize: 14),
-                          ),
-                        ),
-                      ),
-              ],
-            ),
-            SizedBox(height: 10),
-            AspectRatio(
-              aspectRatio: 1.8,
-              child: LineChart(
-                LineChartData(
-                  minX: 1,
-                  maxX: maxMonth.toDouble(),
-                  minY: 0,
-                  maxY: chartData.isNotEmpty
-                      ? chartData
-                              .map((e) => e.y)
-                              .reduce((a, b) => a > b ? a : b) +
-                          2
-                      : 10,
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: true,
-                    verticalInterval: 1,
-                    horizontalInterval: 2,
+        child: customerController.isLoading
+            ? Container(
+                width: double.infinity,
+                height: 400,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.blueAccent,
                   ),
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        interval: 2,
-                        getTitlesWidget: (value, _) => Padding(
-                          padding: EdgeInsets.only(right: 18.0),
-                          child: Text(
-                            value.toInt().toString(),
-                            style: TextStyle(fontSize: 12),
-                            textAlign: TextAlign.right,
-                          ),
-                        ),
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "Performance Overview",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        interval: 1,
-                        getTitlesWidget: (value, _) {
-                          // Only show month labels up to maxMonth
-                          if (value.toInt() <= maxMonth) {
-                            return Padding(
-                              padding: EdgeInsets.only(top: 6.0),
-                              child: Text(
-                                getMonthName(value.toInt()),
-                                style: TextStyle(fontSize: 12),
-                                textAlign: TextAlign.center,
+                      Spacer(),
+                      isLoading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(8),
+                                color: Colors.white,
                               ),
-                            );
-                          }
-                          return SizedBox.shrink();
-                        },
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  value: selectedYear,
+                                  hint: Text("Select Year"),
+                                  items: availableYears.map((String year) {
+                                    return DropdownMenuItem<String>(
+                                      value: year,
+                                      child: Text(year),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) async {
+                                    setState(() {
+                                      selectedYear = newValue;
+                                      isLoading = true;
+                                    });
+
+                                    await customerController
+                                        .apiGetChartData(selectedYear!);
+
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  },
+                                  icon: Icon(Icons.arrow_drop_down,
+                                      color: Colors.grey),
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 14),
+                                ),
+                              ),
+                            ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  AspectRatio(
+                    aspectRatio: 1.8,
+                    child: LineChart(
+                      LineChartData(
+                        minX: 1,
+                        maxX: maxMonth.toDouble(),
+                        minY: 0,
+                        maxY: chartData.isNotEmpty
+                            ? chartData
+                                    .map((e) => e.y)
+                                    .reduce((a, b) => a > b ? a : b) +
+                                2
+                            : 10,
+                        gridData: FlGridData(
+                          show: true,
+                          drawVerticalLine: true,
+                          verticalInterval: 1,
+                          horizontalInterval: 2,
+                        ),
+                        titlesData: FlTitlesData(
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 40,
+                              interval: 2,
+                              getTitlesWidget: (value, _) => Padding(
+                                padding: EdgeInsets.only(right: 18.0),
+                                child: Text(
+                                  value.toInt().toString(),
+                                  style: TextStyle(fontSize: 12),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                            ),
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              interval: 1,
+                              getTitlesWidget: (value, _) {
+                                // Only show month labels up to maxMonth
+                                if (value.toInt() <= maxMonth) {
+                                  return Padding(
+                                    padding: EdgeInsets.only(top: 6.0),
+                                    child: Text(
+                                      getMonthName(value.toInt()),
+                                      style: TextStyle(fontSize: 12),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  );
+                                }
+                                return SizedBox.shrink();
+                              },
+                            ),
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                        ),
+                        borderData: FlBorderData(
+                          show: true,
+                          border: Border.all(color: Colors.grey, width: 0.5),
+                        ),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: chartData,
+                            isCurved: false,
+                            color: Colors.blueAccent,
+                            barWidth: 4,
+                            isStrokeCapRound: true,
+                            belowBarData: BarAreaData(
+                              show: true,
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.blue.withOpacity(0.3),
+                                  Colors.transparent,
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                            ),
+                            dotData: FlDotData(
+                              show: true,
+                              getDotPainter: (spot, percent, barData, index) =>
+                                  FlDotCirclePainter(
+                                radius: 4,
+                                color: const Color.fromARGB(255, 29, 153, 255),
+                                strokeColor: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
                     ),
                   ),
-                  borderData: FlBorderData(
-                    show: true,
-                    border: Border.all(color: Colors.grey, width: 0.5),
-                  ),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: chartData,
-                      isCurved: false,
-                      color: Colors.blueAccent,
-                      barWidth: 4,
-                      isStrokeCapRound: true,
-                      belowBarData: BarAreaData(
-                        show: true,
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.blue.withOpacity(0.3),
-                            Colors.transparent,
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                      dotData: FlDotData(
-                        show: true,
-                        getDotPainter: (spot, percent, barData, index) =>
-                            FlDotCirclePainter(
-                          radius: 4,
-                          color: const Color.fromARGB(255, 29, 153, 255),
-                          strokeColor: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
