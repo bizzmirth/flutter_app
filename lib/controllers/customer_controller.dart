@@ -1,4 +1,5 @@
 // customer_controller.dart
+import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
@@ -18,6 +19,8 @@ class CustomerController extends ChangeNotifier {
   final List<TopCustomerRefereralModel> _topCustomerRefererals = [];
 
   final List<RegisteredCustomer> _registeredCustomers = [];
+  final List<PendingCustomer> _pendingCustomers = [];
+  List<PendingCustomer> get pendingCustomers => _pendingCustomers;
   List<RegisteredCustomer> get registeredCustomers => _registeredCustomers;
   List<double> _chartData = [];
   List<double> get chartData => _chartData;
@@ -272,6 +275,55 @@ class CustomerController extends ChangeNotifier {
       }
     } catch (e, s) {
       Logger.error("Error in apiGetRegisteredCustomers: $e\n$s");
+      _error = "Exception: $e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiGetPendingCustomers() async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final String url =
+          'https://testca.uniqbizz.com/api/customers/customers.php?action=pending_cust';
+
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        Logger.success("Pending Customer Response data: $jsonData");
+
+        if (jsonData['status'] == 'success' && jsonData['data'] != null) {
+          _pendingCustomers.clear();
+
+          List<dynamic> dataList = jsonData['data'];
+          List<PendingCustomer> allCustomers =
+              dataList.map((e) => PendingCustomer.fromJson(e)).toList();
+          List<PendingCustomer> filteredCustomers = allCustomers
+              .where((customer) => customer.referenceNo == userId)
+              .toList();
+
+          _pendingCustomers.addAll(filteredCustomers);
+
+          for (var x in _pendingCustomers) {
+            Logger.success(
+                "Pending Customer: ${x.name}, Reference No: ${x.referenceNo}");
+          }
+        } else {
+          _error = "No data found";
+          Logger.error("API responded with no data");
+        }
+      } else {
+        _error = "HTTP error: ${response.statusCode} - ${response.body}";
+        Logger.error("HTTP error: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e, s) {
+      Logger.error("Error in apiGetPendingCustomers: $e\n$s");
       _error = "Exception: $e";
     } finally {
       _isLoading = false;

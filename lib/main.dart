@@ -7,10 +7,7 @@ import 'package:bizzmirth_app/controllers/designation_department_controller.dart
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
-import 'package:bizzmirth_app/screens/dashboards/admin/admin_dashboard.dart';
-import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
-import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -1979,122 +1976,6 @@ class MyEmployeePendingDataSource extends DataTableSource {
           child: ListTile(
             leading: Icon(Icons.app_registration, color: Colors.purple),
             title: Text("Register"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
-class MyrefCustPendingDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyrefCustPendingDataSource(this.data, this.context);
-  final BuildContext context; // Pass context from parent widget
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(
-          Center(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(order["profilePicture"]),
-            ),
-          ),
-        ),
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["phone"]?.toString() ?? "N/A")),
-        DataCell(Text(order["phone1"]?.toString() ?? "N/A")),
-        DataCell(Text(order["jd"]?.toString() ?? "N/A")),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order["status"]?.toString() ?? ""),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order["status"]?.toString() ?? "Unknown",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "pending":
-        return Colors.orange;
-      case "completed":
-        return Colors.green;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-        switch (value) {
-          case "add_ref":
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddTAcustPage(isHidden: false),
-              ),
-            );
-            break;
-          case "edit":
-            break;
-          case "delete":
-            break;
-          default:
-            break;
-        }
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "add_ref",
-          child: ListTile(
-            leading: Icon(Icons.person_add_alt_1, color: Colors.blue),
-            title: Text("Add Ref"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
           ),
         ),
       ],

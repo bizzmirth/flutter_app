@@ -1,6 +1,6 @@
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
+import 'package:bizzmirth_app/data_source/cust_pending_data_source.dart';
 import 'package:bizzmirth_app/data_source/cust_reg_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,10 +22,10 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CustomerController>().apiGetRegisteredCustomers();
+      context.read<CustomerController>().apiGetPendingCustomers();
     });
   }
 
@@ -89,7 +89,8 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                         DataColumn(label: Text("Status")),
                         DataColumn(label: Text("Action"))
                       ],
-                      source: MyrefCustPendingDataSource(orders, this.context),
+                      source: MyrefCustPendingDataSource(
+                          customerController.pendingCustomers, this.context),
                       rowsPerPage: _rowsPerPage,
                       availableRowsPerPage: [5, 10, 15, 20, 25],
                       onRowsPerPageChanged: (value) {
