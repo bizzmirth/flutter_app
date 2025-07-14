@@ -347,7 +347,7 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
       child: Padding(
         padding: EdgeInsets.all(16.0),
         child: customerController.isLoading
-            ? Container(
+            ? SizedBox(
                 width: double.infinity,
                 height: 400,
                 child: Center(

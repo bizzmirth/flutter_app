@@ -1,4 +1,5 @@
 // customer_controller.dart
+import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -15,6 +16,9 @@ class CustomerController extends ChangeNotifier {
   String? _userTaReferenceNo;
   String? _userRegDate;
   final List<TopCustomerRefereralModel> _topCustomerRefererals = [];
+
+  final List<RegisteredCustomer> _registeredCustomers = [];
+  List<RegisteredCustomer> get registeredCustomers => _registeredCustomers;
   List<double> _chartData = [];
   List<double> get chartData => _chartData;
   String? _selectedYear;
@@ -92,8 +96,8 @@ class CustomerController extends ChangeNotifier {
           _error = "API returned error status: ${jsonData['status']}";
         }
       } else {
-        Logger.error("HTTP Error: ${response.statusCode}");
-        _error = "HTTP Error: ${response.statusCode}";
+        Logger.error("HTTP Error: ${response.statusCode} - ${response.body}");
+        _error = "HTTP Error: ${response.statusCode} - ${response.body}";
       }
     } catch (e) {
       Logger.error("Error in getRegCustomerCount: $e");
@@ -167,8 +171,6 @@ class CustomerController extends ChangeNotifier {
   List<FlSpot> getChartSpots() {
     int currentYear = DateTime.now().year;
     int currentMonth = DateTime.now().month;
-
-    // Determine how many months of data to show
     int limit = selectedYear == currentYear.toString()
         ? currentMonth
         : _chartData.length;
@@ -191,7 +193,7 @@ class CustomerController extends ChangeNotifier {
       final userId = await SharedPrefHelper().getCurrentUserCustId();
 
       final String url =
-          'https://testca.uniqbizz.com/api/top_customer_refereral.php';
+          'https://testca.uniqbizz.com/api/dashboard/top_customer_refereral.php';
 
       final Map<String, dynamic> body = {"userId": userId};
       final response = await http.post(Uri.parse(url), body: jsonEncode(body));
@@ -213,8 +215,8 @@ class CustomerController extends ChangeNotifier {
           Logger.error("API responded with no data");
         }
       } else {
-        _error = "HTTP error: ${response.statusCode}";
-        Logger.error("HTTP error: ${response.statusCode}");
+        _error = "HTTP error: ${response.statusCode} - ${response.body}";
+        Logger.error("HTTP error: ${response.statusCode} - ${response.body}");
       }
     } catch (e, s) {
       Logger.error("Error in apiGetTopCustomerRefererals: $e\n$s");
@@ -229,7 +231,54 @@ class CustomerController extends ChangeNotifier {
     await getRegCustomerCount();
   }
 
-  // Reset controller state
+  Future<void> apiGetRegisteredCustomers() async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final String url =
+          'https://testca.uniqbizz.com/api/customers/customers.php?action=registered_cust';
+
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+
+        if (jsonData['status'] == 'success' && jsonData['data'] != null) {
+          _registeredCustomers.clear();
+
+          List<dynamic> dataList = jsonData['data'];
+          List<RegisteredCustomer> allCustomers =
+              dataList.map((e) => RegisteredCustomer.fromJson(e)).toList();
+          List<RegisteredCustomer> filteredCustomers = allCustomers
+              .where((customer) => customer.referenceNo == userId)
+              .toList();
+
+          _registeredCustomers.addAll(filteredCustomers);
+
+          for (var x in _registeredCustomers) {
+            Logger.success(
+                "Customer: ${x.name}, Reference No: ${x.referenceNo}");
+          }
+        } else {
+          _error = "No data found";
+          Logger.error("API responded with no data");
+        }
+      } else {
+        _error = "HTTP error: ${response.statusCode} - ${response.body}";
+        Logger.error("HTTP error: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e, s) {
+      Logger.error("Error in apiGetRegisteredCustomers: $e\n$s");
+      _error = "Exception: $e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   void reset() {
     _regCustomerCount = 0;
     _isLoading = false;

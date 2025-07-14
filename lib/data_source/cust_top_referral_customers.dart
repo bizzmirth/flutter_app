@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CustTopReferralCustomers extends DataTableSource {
@@ -14,11 +15,13 @@ class CustTopReferralCustomers extends DataTableSource {
     final customer = customers[index];
 
     Widget getProfileImage(String? profilePicture) {
+      const double imageSize = 40;
+
       if (profilePicture == null || profilePicture.isEmpty) {
         return Center(
           child: Container(
-            width: 40,
-            height: 40,
+            width: imageSize,
+            height: imageSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
             ),
@@ -43,29 +46,28 @@ class CustTopReferralCustomers extends DataTableSource {
 
       return Center(
         child: Container(
-          width: 40,
-          height: 40,
+          width: imageSize,
+          height: imageSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
           ),
           clipBehavior: Clip.antiAlias,
-          child: Image.network(
-            imageUrl,
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              // Logger.error("Failed to load image: $error");S
-              return Image.asset(
-                "assets/default_profile.png",
-                fit: BoxFit.cover,
-              );
-            },
+            placeholder: (context, url) => const Center(
+              child: CircularProgressIndicator(strokeWidth: 1.5),
+            ),
+            errorWidget: (context, url, error) => Image.asset(
+              "assets/default_profile.png",
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       );
     }
 
     return DataRow(cells: [
-      // Rank
       DataCell(
         Container(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
