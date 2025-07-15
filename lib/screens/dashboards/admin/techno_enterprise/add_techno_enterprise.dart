@@ -110,7 +110,7 @@ class _AddAddTechnoPageState extends State<AddTechnoPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add Techno Enterprise',
+          'Add Techno Enterprisess',
           style: GoogleFonts.poppins(
             fontSize: 22,
             fontWeight: FontWeight.w600,

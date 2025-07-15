@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_pending_data_source.dart';
 import 'package:bizzmirth_app/data_source/cust_reg_data_source.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -47,121 +48,140 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           backgroundColor: Colors.blueAccent,
           elevation: 0,
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Divider(thickness: 1, color: Colors.black26),
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      "All Pending Referral Customer's List:",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
+        body: customerController.isLoading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Divider(thickness: 1, color: Colors.black26),
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            "All Pending Referral Customer's List:",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      Divider(thickness: 1, color: Colors.black26),
+                      FilterBar(),
+
+                      // Paginated Table for Pending List
+                      Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: SizedBox(
+                          height: (_rowsPerPage * dataRowHeight) +
+                              headerHeight +
+                              paginationHeight,
+                          child: PaginatedDataTable(
+                            columnSpacing: 36,
+                            dataRowMinHeight: 40,
+                            columns: [
+                              DataColumn(label: Text("Image")),
+                              DataColumn(label: Text("ID")),
+                              DataColumn(label: Text("Full Name")),
+                              DataColumn(label: Text("Ref. ID")),
+                              DataColumn(label: Text("Ref. Name")),
+                              DataColumn(label: Text("Joining Date")),
+                              DataColumn(label: Text("Status")),
+                              DataColumn(label: Text("Action"))
+                            ],
+                            source: MyrefCustPendingDataSource(
+                                customerController.pendingCustomers,
+                                this.context),
+                            rowsPerPage: _rowsPerPage,
+                            availableRowsPerPage: [5, 10, 15, 20, 25],
+                            onRowsPerPageChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _rowsPerPage = value;
+                                });
+                              }
+                            },
+                            arrowHeadColor: Colors.blue,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 35),
+                      Divider(thickness: 1, color: Colors.black26),
+                      // Upcoming Events Section
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          "All Registered Referral Customer's List:",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Divider(thickness: 1, color: Colors.black26),
+
+                      // MyEmployeeRegDataSource
+
+                      FilterBar(),
+
+                      // Paginated Table for Pending List
+                      Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: SizedBox(
+                          height: (_rowsPerPage1 * dataRowHeight) +
+                              headerHeight +
+                              paginationHeight,
+                          child: PaginatedDataTable(
+                            columnSpacing: 36,
+                            dataRowMinHeight: 40,
+                            columns: [
+                              DataColumn(label: Text("Image")),
+                              DataColumn(label: Text("ID")),
+                              DataColumn(label: Text("Full Name")),
+                              DataColumn(label: Text("Reg. ID")),
+                              DataColumn(label: Text("Reg. Name")),
+                              DataColumn(label: Text("Joining Date")),
+                              DataColumn(label: Text("Status")),
+                              DataColumn(label: Text("Action"))
+                            ],
+                            source: MyrefCustRegDataSource(
+                                customerController.registeredCustomers,
+                                this.context),
+                            rowsPerPage: _rowsPerPage1,
+                            availableRowsPerPage: [5, 10, 15, 20, 25],
+                            onRowsPerPageChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _rowsPerPage1 = value;
+                                });
+                              }
+                            },
+                            arrowHeadColor: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Divider(thickness: 1, color: Colors.black26),
-                FilterBar(),
-
-                // Paginated Table for Pending List
-                Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: SizedBox(
-                    height: (_rowsPerPage * dataRowHeight) +
-                        headerHeight +
-                        paginationHeight,
-                    child: PaginatedDataTable(
-                      columnSpacing: 36,
-                      dataRowMinHeight: 40,
-                      columns: [
-                        DataColumn(label: Text("Image")),
-                        DataColumn(label: Text("ID")),
-                        DataColumn(label: Text("Full Name")),
-                        DataColumn(label: Text("Ref. ID")),
-                        DataColumn(label: Text("Ref. Name")),
-                        DataColumn(label: Text("Joining Date")),
-                        DataColumn(label: Text("Status")),
-                        DataColumn(label: Text("Action"))
-                      ],
-                      source: MyrefCustPendingDataSource(
-                          customerController.pendingCustomers, this.context),
-                      rowsPerPage: _rowsPerPage,
-                      availableRowsPerPage: [5, 10, 15, 20, 25],
-                      onRowsPerPageChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _rowsPerPage = value;
-                          });
-                        }
-                      },
-                      arrowHeadColor: Colors.blue,
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 35),
-                Divider(thickness: 1, color: Colors.black26),
-                // Upcoming Events Section
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    "All Registered Referral Customer's List:",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Divider(thickness: 1, color: Colors.black26),
-
-                // MyEmployeeRegDataSource
-
-                FilterBar(),
-
-                // Paginated Table for Pending List
-                Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: SizedBox(
-                    height: (_rowsPerPage1 * dataRowHeight) +
-                        headerHeight +
-                        paginationHeight,
-                    child: PaginatedDataTable(
-                      columnSpacing: 36,
-                      dataRowMinHeight: 40,
-                      columns: [
-                        DataColumn(label: Text("Image")),
-                        DataColumn(label: Text("ID")),
-                        DataColumn(label: Text("Full Name")),
-                        DataColumn(label: Text("Reg. ID")),
-                        DataColumn(label: Text("Reg. Name")),
-                        DataColumn(label: Text("Joining Date")),
-                        DataColumn(label: Text("Status")),
-                        DataColumn(label: Text("Action"))
-                      ],
-                      source: MyrefCustRegDataSource(
-                          customerController.registeredCustomers, this.context),
-                      rowsPerPage: _rowsPerPage1,
-                      availableRowsPerPage: [5, 10, 15, 20, 25],
-                      onRowsPerPageChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _rowsPerPage1 = value;
-                          });
-                        }
-                      },
-                      arrowHeadColor: Colors.blue,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => AddReferralCustomer()));
+          },
+          backgroundColor: const Color.fromARGB(255, 153, 198, 250),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50),
           ),
+          tooltip: "Add New Referral Customer",
+          child: Icon(Icons.add, size: 30),
         ),
       );
     });
