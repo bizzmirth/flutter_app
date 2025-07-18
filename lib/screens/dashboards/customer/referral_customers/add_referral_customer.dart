@@ -84,9 +84,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _firstNameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _lastNameKey = GlobalKey<FormFieldState>();
-  final GlobalKey<FormFieldState> _nomineeName = GlobalKey<FormFieldState>();
-  final GlobalKey<FormFieldState> _nomineeRelation =
-      GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _mobileKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState<String>> _paymentFeeKey = GlobalKey();
 
@@ -334,6 +331,149 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     }
   }
 
+  Future<void> _updatePendingReferralCustomer() async {
+    try {
+      final controller =
+          Provider.of<CustomerController>(context, listen: false);
+      Map<String, String> documentPaths = {};
+      final String customerType;
+      final String paidAmount;
+
+      // Handle file uploads (only upload if new files are selected)
+      selectedFiles.forEach((key, value) {
+        if (value != null) {
+          String filePath;
+
+          // Check if it's a new file (File object) or existing URL (String)
+          if (value is File) {
+            filePath = value.path;
+          } else {
+            filePath = value.toString(); // It's already a URL
+          }
+
+          switch (key) {
+            case "Profile Picture":
+              documentPaths['profilePicture'] = filePath;
+              break;
+            case "Aadhar Card":
+              documentPaths['adharCard'] = filePath;
+              break;
+            case "Pan Card":
+              documentPaths['panCard'] = filePath;
+              break;
+            case "Bank Passbook":
+              documentPaths['bankPassbook'] = filePath;
+              break;
+            case "Voting Card":
+              documentPaths['votingCard'] = filePath;
+              break;
+            case "Payment Proof":
+              documentPaths['paymentProof'] = filePath;
+          }
+        }
+      });
+
+      // Only upload new files (File objects, not existing URLs)
+      if (selectedFiles["Profile Picture"] != null &&
+          selectedFiles["Profile Picture"] is File) {
+        await controller.uploadImage(
+            context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+      }
+      if (selectedFiles["Aadhar Card"] != null &&
+          selectedFiles["Aadhar Card"] is File) {
+        await controller.uploadImage(
+            context, 'aadhar_card', selectedFiles["Aadhar Card"]!.path);
+      }
+      if (selectedFiles["Pan Card"] != null &&
+          selectedFiles["Pan Card"] is File) {
+        await controller.uploadImage(
+            context, 'pan_card', selectedFiles["Pan Card"]!.path);
+      }
+      if (selectedFiles["Voting Card"] != null &&
+          selectedFiles["Voting Card"] is File) {
+        await controller.uploadImage(
+            context, 'voting_card', selectedFiles["Voting Card"]!.path);
+      }
+      if (selectedFiles["Bank Passbook"] != null &&
+          selectedFiles["Bank Passbook"] is File) {
+        await controller.uploadImage(
+            context, 'passbook', selectedFiles["Bank Passbook"]!.path);
+      }
+      if (selectedFiles["Payment Proof"] != null &&
+          selectedFiles["Payment Proof"] is File) {
+        await controller.uploadImage(
+            context, 'payment_proof', selectedFiles["Payment Proof"]!.path);
+      }
+
+      // Handle payment mode data
+      if (_selectedPaymentMode == "Cheque") {
+        chequeNo = _chequeNoController.text;
+        chequeDate = _chequeDateController.text;
+        bankName = _bankNameController.text;
+      } else if (_selectedPaymentMode == "UPI/NEFT") {
+        transactionId = _transactionIDController.text;
+      }
+
+      // Handle payment type
+      if (_selectedPayment == "Free") {
+        customerType = "Free";
+        paidAmount = "Free";
+      } else if (_selectedPayment == "Prime: ₹ 10,000") {
+        customerType = "Prime";
+        paidAmount = "10,000";
+      } else if (_selectedPayment == "Premium: ₹ 30,000") {
+        customerType = "Premium";
+        paidAmount = "30,000";
+      } else {
+        customerType = "Premium Plus";
+        paidAmount = "35,000";
+      }
+
+      final int id = widget.pendingCustomer!.id!;
+      final updatedCustomer = PendingCustomer()
+        ..id = id
+        ..taReferenceNo = _taRefrenceIdController.text
+        ..taReferenceName = _taRefrenceNameController.text
+        ..cuRefId = _customerRefIdController.text
+        ..cuRefName = _customerRefNameController.text
+        ..firstname = _firstNameController.text
+        ..lastname = _lastNameController.text
+        ..nomineeName = _nomineeNameController.text
+        ..nomineeRelation = _nomineeRelationController.text
+        ..email = _emailController.text
+        ..dob = _dateController.text
+        ..gender = _selectedGender
+        ..countryCd = _selectedCountryCode
+        ..phoneNumber = _phoneController.text
+        ..country = _selectedCountryId
+        ..state = _selectedStateId
+        ..city = _selectedCityId
+        ..pincode = _pincodeController.text
+        ..address = _addressController.text
+        ..profilePicture = documentPaths['profilePicture']
+        ..compChek = "2"
+        ..adharCard = documentPaths['adharCard']
+        ..panCard = documentPaths['panCard']
+        ..bankPassbook = documentPaths['bankPassbook']
+        ..votingCard = documentPaths['votingCard']
+        ..paymentProof = documentPaths['paymentProof']
+        ..registerBy = "10"
+        ..registrant = _customerRefIdController.text
+        ..paymentMode = _selectedPaymentMode
+        ..chequeNo = chequeNo
+        ..chequeDate = chequeDate
+        ..bankName = bankName
+        ..transactionNo = transactionId
+        ..paidAmount = paidAmount
+        ..customerType = customerType;
+
+      await controller.apiUpdateCustomer(updatedCustomer);
+      // Navigator.pop(context);
+    } catch (e, s) {
+      Logger.error("Error updating form: $e, Stacktrace: $s");
+    }
+  }
+
   void populatePendingReferralCustomer(PendingCustomer customer) async {
     try {
       _taRefrenceIdController.text = customer.taReferenceNo ?? "";
@@ -360,6 +500,20 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       _phoneController.text = customer.phoneNumber ?? "";
       _addressController.text = customer.address ?? "";
       _pincodeController.text = customer.pincode ?? "";
+      _chequeNoController.text = customer.chequeNo ?? "";
+      _chequeDateController.text = customer.chequeDate ?? "";
+      _bankNameController.text = customer.bankName ?? "";
+      _transactionIDController.text = customer.transactionNo ?? "";
+      _selectedPaymentMode = customer.paymentMode!;
+      if (customer.paidAmount == "Free") {
+        _selectedPayment = "Free";
+      } else if (customer.paidAmount == "10,000") {
+        _selectedPayment = "Prime: ₹ 10,000";
+      } else if (customer.paidAmount == "30,000") {
+        _selectedPayment = "Premium: ₹ 30,000";
+      } else {
+        _selectedPayment = "Premium Plus: ₹ 35,000";
+      }
 
       if (customer.profilePicture != null) {
         if (customer.profilePicture!
@@ -996,20 +1150,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                             },
                           ),
                           SizedBox(height: 10),
-                          if (_selectedPaymentMode == "Cheque") ...{
-                            _buildTextField('Check No. *', _chequeNoController),
-                            SizedBox(height: 10),
-                            _buildTextField(
-                                'Cheque  Date *', _chequeDateController),
-                            SizedBox(height: 10),
-                            _buildTextField('Bank Name *', _bankNameController),
-                            SizedBox(height: 10),
-                          } else if (_selectedPaymentMode == "UPI/NEFT") ...{
-                            _buildTextField(
-                                'Transaction No. *', _transactionIDController),
-                            SizedBox(height: 10),
-                          },
-                          SizedBox(height: 10),
                           _buildDropdown(
                               'Payment Fee *',
                               [
@@ -1098,6 +1238,20 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 ),
                               ],
                             ),
+                          SizedBox(height: 10),
+                          if (_selectedPaymentMode == "Cheque") ...{
+                            _buildTextField('Check No. *', _chequeNoController),
+                            SizedBox(height: 10),
+                            _buildTextField(
+                                'Cheque  Date *', _chequeDateController),
+                            SizedBox(height: 10),
+                            _buildTextField('Bank Name *', _bankNameController),
+                            SizedBox(height: 10),
+                          } else if (_selectedPaymentMode == "UPI/NEFT") ...{
+                            _buildTextField(
+                                'Transaction No. *', _transactionIDController),
+                            SizedBox(height: 10),
+                          },
                           SizedBox(height: 20),
                           Text(
                             "Attachments",
@@ -1116,26 +1270,56 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                           if (_selectedPayment != "Free")
                             _buildUploadButton("Payment Proof"),
                           SizedBox(height: 20),
-                          Center(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                _submitForm();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
+                          if (widget.isEditMode) ...[
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (widget.pendingCustomer != null) {
+                                    _updatePendingReferralCustomer();
+                                    // employeeController.updatePendingEmployees(pending);
+                                  }
+
+                                  //  else if (widget. != null) {
+                                  //   updateRegisteredEmployee();
+                                  // }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                ),
+                                child: Text(
+                                  "Save Changes",
+                                  style: TextStyle(
+                                      color: Colors.blueAccent, fontSize: 16),
                                 ),
                               ),
-                              child: Text(
-                                "Submit",
-                                style: TextStyle(
-                                    color: Colors.blueAccent, fontSize: 16),
+                            ),
+                          ] else if (!widget.isViewMode) ...[
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _submitForm();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                ),
+                                child: Text(
+                                  "Submit",
+                                  style: TextStyle(
+                                      color: Colors.blueAccent, fontSize: 16),
+                                ),
                               ),
                             ),
-                          ),
+                          ]
                         ],
                       ),
                     ),
@@ -1151,7 +1335,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         children: [
-          if (true) // later change this to isViewMode
+          if (!widget.isViewMode) // later change this to isViewMode
             ElevatedButton.icon(
               onPressed: () => _pickFile(fileType),
               icon: Icon(Icons.upload_file),
@@ -1236,7 +1420,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                               ),
                   ),
                 ),
-                if (true) // later change this to isViewMode
+                if (!widget.isViewMode)
                   Positioned(
                     top: 5,
                     right: 5,
