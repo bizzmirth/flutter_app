@@ -3,18 +3,23 @@ import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.d
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 class CustomerController extends ChangeNotifier {
   int _regCustomerCount = 0;
   bool _isLoading = false;
   String? _error;
   String? _userCustomerId;
+  String? _customerRefrenceName;
   String? _userTaReferenceNo;
+  String? _userTaRefrenceName;
   String? _userRegDate;
   final List<TopCustomerRefereralModel> _topCustomerRefererals = [];
 
@@ -33,7 +38,10 @@ class CustomerController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   String? get userCustomerId => _userCustomerId;
+  String? get customerRefrenceName => _customerRefrenceName;
   String? get userTaReferenceNo => _userTaReferenceNo;
+
+  String? get userTaRefrenceName => _userTaRefrenceName;
 
   void clearError() {
     _error = null;
@@ -67,7 +75,10 @@ class CustomerController extends ChangeNotifier {
             if (customer['email'] == email) {
               _userTaReferenceNo = customer['ta_reference_no'];
               _userCustomerId = customer['ca_customer_id'];
+              _customerRefrenceName =
+                  '${customer['firstname']} ${customer['lastname']}';
               _userRegDate = customer['register_date'];
+              _userTaRefrenceName = customer['ta_reference_name'];
               await SharedPrefHelper().saveCurrentUserCustId(_userCustomerId!);
               await SharedPrefHelper().saveCurrentUserRegDate(_userRegDate!);
               Logger.success(
@@ -325,6 +336,128 @@ class CustomerController extends ChangeNotifier {
     } catch (e, s) {
       Logger.error("Error in apiGetPendingCustomers: $e\n$s");
       _error = "Exception: $e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> uploadImage(
+      context, String folder, String savedImagePath) async {
+    try {
+      final fullUrl = 'http://testca.uniqbizz.com/api/upload_mobile.php';
+      var request = http.MultipartRequest('POST', Uri.parse(fullUrl));
+      request.files
+          .add(await http.MultipartFile.fromPath('file', savedImagePath));
+      request.fields['folder'] = folder;
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      Logger.warning('Raw API response body: $responseBody');
+      Logger.success("Upload Api FULL URL: $fullUrl");
+      Logger.info('this is reuest $request');
+
+      if (responseBody == '1') {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Upload Failed  $responseBody")));
+      } else if (responseBody == '2') {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Invalid File Extension  $responseBody")));
+      } else if (responseBody == '3') {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("No File Selected  $responseBody")));
+      } else if (responseBody == '4') {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("File Size Exceeds 2MB  $responseBody")));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Upload Successful: $responseBody")));
+      }
+    } catch (e) {
+      Logger.error("Error uploading image: $e");
+    }
+  }
+
+  Future<void> apiAddCustomer(PendingCustomer customer) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final newProfilePic =
+          extractPathSegment(customer.profilePicture!, 'profile_pic/');
+      final newAdharCard =
+          extractPathSegment(customer.adharCard!, 'aadhar_card/');
+      final newPanCard = extractPathSegment(customer.panCard!, 'pan_card/');
+      final newBankPassbook =
+          extractPathSegment(customer.bankPassbook!, 'passbook/');
+      final newVotingCard =
+          extractPathSegment(customer.votingCard!, 'voting_card/');
+      final newPaymentProof =
+          extractPathSegment(customer.paymentProof ?? "", 'payment_proof');
+
+      final fullUrl =
+          'https://testca.uniqbizz.com/api/customers/add_customers_data.php';
+
+      final now = DateTime.now();
+      final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+      String oldDob = customer.dob ?? "";
+      DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(oldDob);
+      String newDob = DateFormat("yyyy-MM-dd").format(parsedDate);
+
+      final Map<String, dynamic> body = {
+        "ta_user_id_name": customer.taReferenceNo,
+        "ta_reference_name": customer.taReferenceName,
+        "cu_user_id_name": customer.cuRefId,
+        "cu_reference_name": customer.cuRefName,
+        "firstname": customer.firstname,
+        "lastname": customer.lastname,
+        "nominee_name": customer.nomineeName,
+        "nominee_relation": customer.nomineeRelation,
+        "email": customer.email,
+        "dob": newDob,
+        "gender": customer.gender,
+        "country_code": customer.countryCd,
+        "phone": customer.phoneNumber,
+        "country": customer.country,
+        "state": customer.state,
+        "city": customer.city,
+        "pincode": customer.pincode,
+        "address": customer.address,
+        "profile_pic": newProfilePic,
+        "isComplementary": customer.compChek,
+        "aadhar_card": newAdharCard,
+        "pan_card": newPanCard,
+        "passbook": newBankPassbook,
+        "voting_card": newVotingCard,
+        "payment_proof": newPaymentProof,
+        "register_by": "10",
+        "registrant_id": customer.registrant,
+        "paymentMode": customer.paymentMode,
+        "chequeNo": customer.chequeNo,
+        "chequeDate": customer.chequeDate,
+        "bankName": customer.bankName,
+        "transactionNo": customer.transactionNo,
+        "payment_fee": customer.paidAmount,
+        "userId": "undefined",
+        "userType": "10",
+        "editfor": "",
+        "payment_label": customer.customerType,
+        "customer_type": customer.customerType,
+      };
+
+      Logger.warning("Request body: $body");
+      Logger.warning("Encoded body: ${jsonEncode(body)}");
+
+      final response = await http.post(Uri.parse(fullUrl),
+          body: jsonEncode(body),
+          headers: {"Content-Type": "application/json"});
+      Logger.success("fullUrl: $fullUrl");
+      Logger.success("status code : ${response.statusCode}");
+      Logger.success("API response: ${response.body}");
+    } catch (e) {
+      Logger.error("Error in apiAddCustomer: $e");
+      _error = "Error: $e";
     } finally {
       _isLoading = false;
       notifyListeners();

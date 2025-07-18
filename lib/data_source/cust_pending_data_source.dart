@@ -1,5 +1,6 @@
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -75,7 +76,7 @@ class MyrefCustPendingDataSource extends DataTableSource {
         case '3':
           return 'Inactive';
         default:
-          return 'Unknown';
+          return 'Pending';
       }
     }
 
@@ -86,7 +87,7 @@ class MyrefCustPendingDataSource extends DataTableSource {
         case '3':
           return Colors.red;
         default:
-          return Colors.grey;
+          return Colors.orange.shade800;
       }
     }
 
@@ -103,7 +104,7 @@ class MyrefCustPendingDataSource extends DataTableSource {
         DataCell(Text(pendingCustomer.name ?? "N/A")),
         DataCell(Text(pendingCustomer.taReferenceNo ?? "N/A")),
         DataCell(Text(pendingCustomer.taReferenceName ?? "N/A")),
-        DataCell(Text(pendingCustomer.registerDate ?? "N/A")),
+        DataCell(Text(formatDate(pendingCustomer.addedOn))),
         DataCell(
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -126,13 +127,13 @@ class MyrefCustPendingDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(_buildActionMenu()),
+        DataCell(_buildActionMenu(context, pendingCustomer)),
       ],
     );
   }
 
 // Action Menu Widget
-  Widget _buildActionMenu() {
+  Widget _buildActionMenu(context, PendingCustomer pendingCustomer) {
     return PopupMenuButton<String>(
       onSelected: (value) {
         // Handle menu actions
@@ -166,6 +167,17 @@ class MyrefCustPendingDataSource extends DataTableSource {
           child: ListTile(
             leading: Icon(Icons.edit, color: Colors.blueAccent),
             title: Text("Edit"),
+            onTap: () {
+              Logger.success(pendingCustomer.name!);
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddReferralCustomer(
+                            pendingCustomer: pendingCustomer,
+                            isEditMode: true,
+                          )));
+            },
           ),
         ),
         PopupMenuItem(

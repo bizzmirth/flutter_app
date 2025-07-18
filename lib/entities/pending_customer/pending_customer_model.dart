@@ -6,6 +6,9 @@ class PendingCustomer {
   Id? id = Isar.autoIncrement;
 
   String? caCustomerId;
+  String? caCustomerRefName;
+  String? cuRefId;
+  String? cuRefName;
   String? name;
   String? firstname;
   String? lastname;
@@ -66,6 +69,8 @@ class PendingCustomer {
     return PendingCustomer()
       ..id = int.tryParse(json['id']?.toString() ?? '')
       ..caCustomerId = json['ca_customer_id']
+      ..cuRefId = json['cu_ref_id']
+      ..cuRefName = json['cu_ref_name']
       ..firstname = json['firstname']
       ..lastname = json['lastname']
       ..name = "${json['firstname'] ?? ''} ${json['lastname'] ?? ''}".trim()

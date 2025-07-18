@@ -29,7 +29,6 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  // Navigate to the appropriate dashboard based on user type
   void _navigateToDashboard(BuildContext context, String userType) {
     switch (userType) {
       case "Admin":

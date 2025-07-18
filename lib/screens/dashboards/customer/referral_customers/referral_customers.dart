@@ -172,9 +172,15 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                 ),
               ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => AddReferralCustomer()));
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AddReferralCustomer()),
+            );
+
+            context.read<CustomerController>().apiGetRegisteredCustomers();
+            context.read<CustomerController>().apiGetPendingCustomers();
           },
           backgroundColor: const Color.fromARGB(255, 153, 198, 250),
           shape: RoundedRectangleBorder(
