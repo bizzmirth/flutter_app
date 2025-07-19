@@ -555,8 +555,8 @@ class _AddcustState extends State<AddcustPage> {
       isLoading = true;
       _refNoController.text = customer.taReferenceNo!;
       _refNameController.text = customer.taReferenceName!;
-      _firstNameController.text = customer.firstname!;
-      _lastNameController.text = customer.lastname!;
+      _firstNameController.text = customer.firstName!;
+      _lastNameController.text = customer.lastName!;
       _nomineeNameController.text = customer.nomineeName!;
       _nomineeRelationController.text = customer.nomineeRelation!;
       String countryCode = customer.countryCd!;

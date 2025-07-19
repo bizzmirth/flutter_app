@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
+import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
@@ -14,11 +15,13 @@ import 'package:provider/provider.dart';
 
 class AddReferralCustomer extends StatefulWidget {
   final PendingCustomer? pendingCustomer;
+  final RegisteredCustomer? registeredCustomer;
   final bool isViewMode;
   final bool isEditMode;
   const AddReferralCustomer(
       {super.key,
       this.pendingCustomer,
+      this.registeredCustomer,
       this.isViewMode = false,
       this.isEditMode = false});
 
@@ -191,18 +194,24 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     if (widget.pendingCustomer != null) {
       populatePendingReferralCustomer(widget.pendingCustomer!);
     }
+    if (widget.registeredCustomer != null) {
+      populateRegisteredCustomer(widget.registeredCustomer!);
+    }
     _loadCountry();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final customerController = context.read<CustomerController>();
       await customerController.getRegCustomerCount();
 
-      _customerRefIdController.text = customerController.userCustomerId ?? "";
-      _customerRefNameController.text =
-          customerController.customerRefrenceName ?? "";
+      if (!widget.isViewMode && !widget.isEditMode) {
+        _customerRefIdController.text = customerController.userCustomerId ?? "";
+        _customerRefNameController.text =
+            customerController.customerRefrenceName ?? "";
 
-      _taRefrenceIdController.text = customerController.userTaReferenceNo ?? "";
-      _taRefrenceNameController.text =
-          customerController.userTaRefrenceName ?? "";
+        _taRefrenceIdController.text =
+            customerController.userTaReferenceNo ?? "";
+        _taRefrenceNameController.text =
+            customerController.userTaRefrenceName ?? "";
+      }
     });
   }
 
@@ -339,16 +348,14 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       final String customerType;
       final String paidAmount;
 
-      // Handle file uploads (only upload if new files are selected)
       selectedFiles.forEach((key, value) {
         if (value != null) {
           String filePath;
 
-          // Check if it's a new file (File object) or existing URL (String)
           if (value is File) {
             filePath = value.path;
           } else {
-            filePath = value.toString(); // It's already a URL
+            filePath = value.toString();
           }
 
           switch (key) {
@@ -373,7 +380,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         }
       });
 
-      // Only upload new files (File objects, not existing URLs)
       if (selectedFiles["Profile Picture"] != null &&
           selectedFiles["Profile Picture"] is File) {
         await controller.uploadImage(
@@ -405,7 +411,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
             context, 'payment_proof', selectedFiles["Payment Proof"]!.path);
       }
 
-      // Handle payment mode data
       if (_selectedPaymentMode == "Cheque") {
         chequeNo = _chequeNoController.text;
         chequeDate = _chequeDateController.text;
@@ -414,7 +419,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         transactionId = _transactionIDController.text;
       }
 
-      // Handle payment type
       if (_selectedPayment == "Free") {
         customerType = "Free";
         paidAmount = "Free";
@@ -469,6 +473,158 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
       await controller.apiUpdateCustomer(updatedCustomer);
       // Navigator.pop(context);
+    } catch (e, s) {
+      Logger.error("Error updating form: $e, Stacktrace: $s");
+    }
+  }
+
+  Future<void> _updateRegisteredReferralCustomer() async {
+    try {
+      final controller =
+          Provider.of<CustomerController>(context, listen: false);
+      Map<String, String> documentPaths = {};
+      final String customerType;
+      final String paidAmount;
+
+      // Helper function to extract relative path from full URL or return as-is
+      String getRelativePath(dynamic value) {
+        if (value == null) return "";
+
+        String filePath;
+        if (value is File) {
+          filePath = value.path;
+        } else {
+          filePath = value.toString();
+        }
+
+        // If it's a full URL from existing data, extract just the filename part
+        if (filePath.startsWith("https://testca.uniqbizz.com/uploading/")) {
+          // Extract everything after "/uploading/"
+          return filePath.split("/uploading/").last;
+        }
+
+        return filePath;
+      }
+
+      selectedFiles.forEach((key, value) {
+        if (value != null) {
+          String relativePath = getRelativePath(value);
+
+          switch (key) {
+            case "Profile Picture":
+              documentPaths['profilePicture'] = relativePath;
+              break;
+            case "Aadhar Card":
+              documentPaths['adharCard'] = relativePath;
+              break;
+            case "Pan Card":
+              documentPaths['panCard'] = relativePath;
+              break;
+            case "Bank Passbook":
+              documentPaths['bankPassbook'] = relativePath;
+              break;
+            case "Voting Card":
+              documentPaths['votingCard'] = relativePath;
+              break;
+            case "Payment Proof":
+              documentPaths['paymentProof'] = relativePath;
+          }
+        }
+      });
+
+      // Only upload new files (File objects), not existing URLs
+      if (selectedFiles["Profile Picture"] != null &&
+          selectedFiles["Profile Picture"] is File) {
+        await controller.uploadImage(
+            context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+      }
+      if (selectedFiles["Aadhar Card"] != null &&
+          selectedFiles["Aadhar Card"] is File) {
+        await controller.uploadImage(
+            context, 'aadhar_card', selectedFiles["Aadhar Card"]!.path);
+      }
+      if (selectedFiles["Pan Card"] != null &&
+          selectedFiles["Pan Card"] is File) {
+        await controller.uploadImage(
+            context, 'pan_card', selectedFiles["Pan Card"]!.path);
+      }
+      if (selectedFiles["Voting Card"] != null &&
+          selectedFiles["Voting Card"] is File) {
+        await controller.uploadImage(
+            context, 'voting_card', selectedFiles["Voting Card"]!.path);
+      }
+      if (selectedFiles["Bank Passbook"] != null &&
+          selectedFiles["Bank Passbook"] is File) {
+        await controller.uploadImage(
+            context, 'passbook', selectedFiles["Bank Passbook"]!.path);
+      }
+      if (selectedFiles["Payment Proof"] != null &&
+          selectedFiles["Payment Proof"] is File) {
+        await controller.uploadImage(
+            context, 'payment_proof', selectedFiles["Payment Proof"]!.path);
+      }
+
+      if (_selectedPaymentMode == "Cheque") {
+        chequeNo = _chequeNoController.text;
+        chequeDate = _chequeDateController.text;
+        bankName = _bankNameController.text;
+      } else if (_selectedPaymentMode == "UPI/NEFT") {
+        transactionId = _transactionIDController.text;
+      }
+
+      if (_selectedPayment == "Free") {
+        customerType = "Free";
+        paidAmount = "Free";
+      } else if (_selectedPayment == "Prime: ₹ 10,000") {
+        customerType = "Prime";
+        paidAmount = "10,000";
+      } else if (_selectedPayment == "Premium: ₹ 30,000") {
+        customerType = "Premium";
+        paidAmount = "30,000";
+      } else {
+        customerType = "Premium Plus";
+        paidAmount = "35,000";
+      }
+
+      final int id = widget.registeredCustomer!.id;
+      final updatedCustomer = RegisteredCustomer()
+        ..id = id
+        ..taReferenceNo = _taRefrenceIdController.text
+        ..taReferenceName = _taRefrenceNameController.text
+        ..caCustomerId = _customerRefIdController.text
+        ..caCustomerName = _customerRefNameController.text
+        ..firstName = _firstNameController.text
+        ..lastName = _lastNameController.text
+        ..nomineeName = _nomineeNameController.text
+        ..nomineeRelation = _nomineeRelationController.text
+        ..email = _emailController.text
+        ..dob = _dateController.text
+        ..gender = _selectedGender
+        ..countryCd = _selectedCountryCode
+        ..phoneNumber = _phoneController.text
+        ..country = _selectedCountryId
+        ..state = _selectedStateId
+        ..city = _selectedCityId
+        ..pincode = _pincodeController.text
+        ..address = _addressController.text
+        ..profilePicture = documentPaths['profilePicture']
+        ..adharCard = documentPaths['adharCard']
+        ..panCard = documentPaths['panCard']
+        ..bankPassbook = documentPaths['bankPassbook']
+        ..votingCard = documentPaths['votingCard']
+        ..paymentProof = documentPaths['paymentProof']
+        ..registerBy = "10"
+        ..registrant = _customerRefIdController.text
+        ..paymentMode = _selectedPaymentMode
+        ..chequeNo = chequeNo
+        ..chequeDate = chequeDate
+        ..bankName = bankName
+        ..transactionNo = transactionId
+        ..paidAmount = paidAmount
+        ..customerType = customerType;
+
+      await controller.apiUpdateRegisteredCustomer(updatedCustomer);
+      Navigator.pop(context);
     } catch (e, s) {
       Logger.error("Error updating form: $e, Stacktrace: $s");
     }
@@ -632,6 +788,166 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     } catch (e, s) {
       Logger.error(
           "Error populating pending referral customer: $e, Stacktrace: $s");
+    }
+  }
+
+  void populateRegisteredCustomer(RegisteredCustomer customer) async {
+    try {
+      _taRefrenceIdController.text = customer.referenceNo ?? "";
+      _taRefrenceNameController.text = customer.taReferenceName ?? "";
+      _customerRefIdController.text = customer.caCustomerId ?? "";
+      _customerRefNameController.text = customer.registrant ?? "";
+      _firstNameController.text = customer.firstName ?? "";
+      _lastNameController.text = customer.lastName ?? "";
+      String countryCode = customer.countryCd!;
+      if (!countryCode.startsWith('+')) {
+        countryCode = '+$countryCode';
+      }
+      final allowedCodes = ["+91", "+1", "+44", "+61", "+971"];
+      if (allowedCodes.contains(countryCode)) {
+        _selectedCountryCode = countryCode;
+      } else {
+        _selectedCountryCode = '+91';
+      }
+      _phoneController.text = customer.phoneNumber ?? "";
+      _emailController.text = customer.email ?? "";
+      _dateController.text = customer.dob ?? "";
+      _selectedGender = normalizeGender(customer.gender!);
+      _addressController.text = customer.address ?? "";
+      _pincodeController.text = customer.pincode ?? "";
+      _chequeNoController.text = customer.chequeNo ?? "";
+      _chequeDateController.text = customer.chequeDate ?? "";
+      _bankNameController.text = customer.bankName ?? "";
+      _transactionIDController.text = customer.transactionNo ?? "";
+      _selectedPaymentMode = customer.paymentMode![0].toUpperCase() +
+          customer.paymentMode!.substring(1);
+
+      if (customer.paidAmount == "Free") {
+        _selectedPayment = "Free";
+      } else if (customer.paidAmount == "10000") {
+        _selectedPayment = "Prime: ₹ 10,000";
+      } else if (customer.paidAmount == "30000") {
+        _selectedPayment = "Premium: ₹ 30,000";
+      } else {
+        _selectedPayment = "Premium Plus: ₹ 35000";
+      }
+
+      if (customer.profilePicture != null) {
+        if (customer.profilePicture!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Profile Picture"] = customer.profilePicture!;
+        } else {
+          selectedFiles["Profile Picture"] =
+              "https://testca.uniqbizz.com/uploading/${customer.profilePicture!}";
+        }
+        Logger.success(selectedFiles["Profile Picture"]);
+      }
+
+      if (customer.adharCard != null) {
+        if (customer.adharCard!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Aadhar Card"] = customer.adharCard!;
+        } else {
+          selectedFiles["Aadhar Card"] =
+              "https://testca.uniqbizz.com/uploading/${customer.adharCard!}";
+        }
+        Logger.success(selectedFiles["Aadhar Card"]);
+      }
+
+      if (customer.panCard != null) {
+        if (customer.panCard!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Pan Card"] = customer.panCard!;
+        } else {
+          selectedFiles["Pan Card"] =
+              "https://testca.uniqbizz.com/uploading/${customer.panCard!}";
+        }
+        Logger.success(selectedFiles["Pan Card"]);
+      }
+
+      if (customer.bankPassbook != null) {
+        if (customer.bankPassbook!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Bank Passbook"] = customer.bankPassbook!;
+        } else {
+          selectedFiles["Bank Passbook"] =
+              "https://testca.uniqbizz.com/uploading/${customer.bankPassbook!}";
+        }
+        Logger.success(selectedFiles["Bank Passbook"]);
+      }
+
+      if (customer.votingCard != null) {
+        if (customer.votingCard!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Voting Card"] = customer.votingCard!;
+        } else {
+          selectedFiles["Voting Card"] =
+              "https://testca.uniqbizz.com/uploading/${customer.votingCard!}";
+        }
+        Logger.success(selectedFiles["Voting Card"]);
+      }
+
+      if (customer.paymentProof != null) {
+        if (customer.paymentProof!
+            .startsWith("https://testca.uniqbizz.com/uploading/")) {
+          selectedFiles["Payment Proof"] = customer.paymentProof!;
+        } else {
+          selectedFiles["Payment Proof"] =
+              "https://testca.uniqbizz.com/uploading/${customer.paymentProof!}";
+        }
+        Logger.success(selectedFiles["Payment Proof"]);
+      }
+
+      if (_countries.isEmpty) {
+        await _loadCountry();
+      }
+
+      final String countryId = customer.country!;
+      _selectedCountryId = countryId;
+
+      final countryObject = _countries.firstWhere(
+        (country) => country['id'].toString() == countryId,
+        orElse: () => {'country_name': '---- Select Country ----'},
+      );
+
+      setState(() {
+        _selectedCountry =
+            countryObject['country_name'] ?? '---- Select Country ----';
+        Logger.success(
+            "Set selected country to: $_selectedCountry with ID: $_selectedCountryId");
+      });
+
+      await _loadStates(_selectedCountryId);
+      final String stateId = customer.state!;
+      _selectedStateId = stateId;
+
+      final stateObject = _states.firstWhere(
+        (state) => state['id'].toString() == stateId,
+        orElse: () => {'state_name': '---- Select State ----'},
+      );
+
+      setState(() {
+        _selectedState = stateObject['state_name'] ?? '---- Select State ----';
+        Logger.success(
+            "Set selected state to: $_selectedState with ID: $_selectedStateId");
+      });
+
+      await _loadCities(_selectedStateId);
+      final String cityId = customer.city!;
+      _selectedCityId = cityId;
+
+      final cityObject = _cities.firstWhere(
+        (city) => city['id'].toString() == cityId,
+        orElse: () => {'city_name': '---- Select City -----'},
+      );
+
+      setState(() {
+        _selectedCity = cityObject['city_name'] ?? '---- Select City -----';
+        Logger.success(
+            "Set selected city $_selectedCity with ID: $_selectedCityId");
+      });
+    } catch (e, s) {
+      Logger.error("Error populating registered customer: $e, Stacktrace: $s");
     }
   }
 
@@ -810,12 +1126,19 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
   @override
   Widget build(BuildContext context) {
+    String appBarTitle = 'Add Referral Customer';
+
+    if (widget.isViewMode) {
+      appBarTitle = 'View Referral Customer';
+    } else if (widget.isEditMode) {
+      appBarTitle = 'Edit Referral Customer';
+    }
     return Consumer<CustomerController>(
         builder: (context, customerController, child) {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Add Referral Customer',
+            appBarTitle,
             style: GoogleFonts.poppins(
               fontSize: 22,
               fontWeight: FontWeight.w600,
@@ -1277,11 +1600,10 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                   if (widget.pendingCustomer != null) {
                                     _updatePendingReferralCustomer();
                                     // employeeController.updatePendingEmployees(pending);
+                                  } else if (widget.registeredCustomer !=
+                                      null) {
+                                    _updateRegisteredReferralCustomer();
                                   }
-
-                                  //  else if (widget. != null) {
-                                  //   updateRegisteredEmployee();
-                                  // }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,

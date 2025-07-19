@@ -37,7 +37,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            'View Referral Customersaa',
+            'View Referral Customers ',
             style: GoogleFonts.poppins(
               fontSize: 22,
               fontWeight: FontWeight.w600,
@@ -92,7 +92,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                               DataColumn(label: Text("Ref. Name")),
                               DataColumn(label: Text("Joining Date")),
                               DataColumn(label: Text("Status")),
-                              DataColumn(label: Text("Action"))
+                              // DataColumn(label: Text("Action"))
                             ],
                             source: MyrefCustPendingDataSource(
                                 customerController.pendingCustomers,
@@ -143,7 +143,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                             dataRowMinHeight: 40,
                             columns: [
                               DataColumn(label: Text("Image")),
-                              DataColumn(label: Text("ID")),
+                              DataColumn(label: Text("Customer ID")),
                               DataColumn(label: Text("Full Name")),
                               DataColumn(label: Text("Reg. ID")),
                               DataColumn(label: Text("Reg. Name")),
@@ -159,7 +159,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                             onRowsPerPageChanged: (value) {
                               if (value != null) {
                                 setState(() {
-                                  _rowsPerPage1 = value;
+                                  _rowsPerPage = value;
                                 });
                               }
                             },
@@ -179,8 +179,8 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                   builder: (context) => const AddReferralCustomer()),
             );
 
-            context.read<CustomerController>().apiGetRegisteredCustomers();
-            context.read<CustomerController>().apiGetPendingCustomers();
+            customerController.apiGetRegisteredCustomers();
+            customerController.apiGetPendingCustomers();
           },
           backgroundColor: const Color.fromARGB(255, 153, 198, 250),
           shape: RoundedRectangleBorder(

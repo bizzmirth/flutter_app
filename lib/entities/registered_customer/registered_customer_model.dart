@@ -7,9 +7,10 @@ class RegisteredCustomer {
   Id id = Isar.autoIncrement;
 
   String? caCustomerId;
+  String? caCustomerName;
   String? name;
-  String? firstname;
-  String? lastname;
+  String? firstName;
+  String? lastName;
   String? nomineeName;
   String? nomineeRelation;
   String? email;
@@ -31,10 +32,10 @@ class RegisteredCustomer {
   String? bankPassbook;
   String? votingCard;
   String? paymentProof;
-  String? checqueNo;
+  String? chequeNo;
   String? chequeDate;
-  String? bankDate;
-  String? transaction;
+  String? bankName;
+  String? transactionNo;
   String? userType;
   String? registrant;
   String? referenceNo;
@@ -56,8 +57,9 @@ class RegisteredCustomer {
     return RegisteredCustomer()
       ..id = int.tryParse(json['id']?.toString() ?? '') ?? Isar.autoIncrement
       ..caCustomerId = json['ca_customer_id']
-      ..firstname = json['firstname']
-      ..lastname = json['lastname']
+      ..caCustomerName = json['ca_customer_name']
+      ..firstName = json['firstname']
+      ..lastName = json['lastname']
       ..name = "${json['firstname'] ?? ''} ${json['lastname'] ?? ''}".trim()
       ..nomineeName = json['nominee_name']
       ..nomineeRelation = json['nominee_relation']
@@ -80,10 +82,10 @@ class RegisteredCustomer {
       ..bankPassbook = json['passbook']
       ..votingCard = json['voting_card']
       ..paymentProof = json['payment_proof']
-      ..checqueNo = json['cheque_no']
+      ..chequeNo = json['cheque_no']
       ..chequeDate = json['cheque_date']
-      ..bankDate = json['bank_name']
-      ..transaction = json['transaction_no']
+      ..bankName = json['bank_name']
+      ..transactionNo = json['transaction_no']
       ..userType = json['user_type']
       ..registrant = json['registrant']
       ..referenceNo = json['reference_no']
@@ -104,8 +106,8 @@ class RegisteredCustomer {
     return {
       'id': id.toString(),
       'ca_customer_id': caCustomerId,
-      'firstname': firstname,
-      'lastname': lastname,
+      'firstname': firstName,
+      'lastname': lastName,
       'name': name,
       'nominee_name': nomineeName,
       'nominee_relation': nomineeRelation,
@@ -128,10 +130,10 @@ class RegisteredCustomer {
       'passbook': bankPassbook,
       'voting_card': votingCard,
       'payment_proof': paymentProof,
-      'cheque_no': checqueNo,
+      'cheque_no': chequeNo,
       'cheque_date': chequeDate,
-      'bank_name': bankDate,
-      'transaction_no': transaction,
+      'bank_name': bankName,
+      'transaction_no': transactionNo,
       'user_type': userType,
       'registrant': registrant,
       'reference_no': referenceNo,

@@ -1,9 +1,12 @@
+import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyrefCustRegDataSource extends DataTableSource {
   final List<RegisteredCustomer> data;
@@ -99,7 +102,7 @@ class MyrefCustRegDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(Text(regCustomer.id.toString())),
+        DataCell(Text(regCustomer.caCustomerId!)),
         DataCell(Text(regCustomer.name ?? "N/A")),
         DataCell(Text(regCustomer.taReferenceNo ?? "N/A")),
         DataCell(Text(regCustomer.taReferenceName ?? "N/A")),
@@ -125,58 +128,70 @@ class MyrefCustRegDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(_buildActionMenu()),
+        DataCell(_buildActionMenu(context, regCustomer)),
       ],
     );
   }
 
 // Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-        switch (value) {
-          case "add_ref":
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddTAcustPage(isHidden: false),
-              ),
-            );
-            break;
-          case "edit":
-            break;
-          case "delete":
-            break;
-          default:
-            break;
-        }
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "add_ref",
-          child: ListTile(
-            leading: Icon(Icons.person_add_alt_1, color: Colors.blue),
-            title: Text("Add Ref"),
+  Widget _buildActionMenu(context, RegisteredCustomer regCustomer) {
+    final customerController =
+        Provider.of<CustomerController>(context, listen: false);
+    return Consumer<CustomerController>(builder: (context, controller, child) {
+      return PopupMenuButton<String>(
+        onSelected: (value) {
+          // Handle menu actions
+          switch (value) {
+            case "add_ref":
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddTAcustPage(isHidden: false),
+                ),
+              );
+              break;
+            case "edit":
+              break;
+            case "delete":
+              break;
+            default:
+              break;
+          }
+        },
+        itemBuilder: (BuildContext context) => [
+          PopupMenuItem(
+            value: "edit",
+            child: ListTile(
+              leading: Icon(Icons.edit, color: Colors.blueAccent),
+              title: Text("Edit"),
+              onTap: () async {
+                Navigator.pop(context);
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddReferralCustomer(
+                      registeredCustomer: regCustomer,
+                      isEditMode: true,
+                    ),
+                  ),
+                );
+
+                customerController.apiGetRegisteredCustomers();
+                customerController.apiGetPendingCustomers();
+              },
+            ),
           ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text("Edit"),
+          PopupMenuItem(
+            value: "delete",
+            child: ListTile(
+              leading: Icon(Icons.delete, color: Colors.red),
+              title: Text("Delete"),
+            ),
           ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
+        ],
+        icon: Icon(Icons.more_vert, color: Colors.black54),
+      );
+    });
   }
 
   @override

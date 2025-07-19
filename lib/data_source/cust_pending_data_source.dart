@@ -127,7 +127,7 @@ class MyrefCustPendingDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(_buildActionMenu(context, pendingCustomer)),
+        // DataCell(_buildActionMenu(context, pendingCustomer)),
       ],
     );
   }

@@ -470,7 +470,6 @@ class CustomerController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      // Extract path segments for files (handle both new uploads and existing URLs)
       final newProfilePic =
           customer.profilePicture?.contains('profile_pic/') == true
               ? extractPathSegment(customer.profilePicture!, 'profile_pic/')
@@ -549,6 +548,118 @@ class CustomerController extends ChangeNotifier {
         "payment_label": customer.customerType,
         "customer_type": customer.customerType,
         "updated_at": formattedDate,
+      };
+
+      Logger.warning("Update request body: $body");
+      Logger.warning("Encoded body: ${jsonEncode(body)}");
+
+      final response = await http.post(Uri.parse(fullUrl),
+          body: jsonEncode(body),
+          headers: {"Content-Type": "application/json"});
+
+      Logger.success("Update URL: $fullUrl");
+      Logger.success("Update status code: ${response.statusCode}");
+      Logger.success("Update API response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['status'] == 'success') {
+          Logger.success("Customer updated successfully");
+        } else {
+          Logger.error("Update failed: ${responseData['message']}");
+          _error = "Update failed: ${responseData['message']}";
+        }
+      } else {
+        Logger.error("Update failed with status code: ${response.statusCode}");
+        _error = "Update failed with status code: ${response.statusCode}";
+      }
+    } catch (e) {
+      Logger.error("Error in apiUpdateCustomer: $e");
+      _error = "Error: $e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiUpdateRegisteredCustomer(RegisteredCustomer customer) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final newProfilePic =
+          customer.profilePicture?.contains('profile_pic/') == true
+              ? extractPathSegment(customer.profilePicture!, 'profile_pic/')
+              : customer.profilePicture;
+
+      final newAdharCard = customer.adharCard?.contains('aadhar_card/') == true
+          ? extractPathSegment(customer.adharCard!, 'aadhar_card/')
+          : customer.adharCard;
+
+      final newPanCard = customer.panCard?.contains('pan_card/') == true
+          ? extractPathSegment(customer.panCard!, 'pan_card/')
+          : customer.panCard;
+
+      final newBankPassbook =
+          customer.bankPassbook?.contains('passbook/') == true
+              ? extractPathSegment(customer.bankPassbook!, 'passbook/')
+              : customer.bankPassbook;
+
+      final newVotingCard =
+          customer.votingCard?.contains('voting_card/') == true
+              ? extractPathSegment(customer.votingCard!, 'voting_card/')
+              : customer.votingCard;
+
+      final newPaymentProof =
+          customer.paymentProof?.contains('payment_proof') == true
+              ? extractPathSegment(customer.paymentProof ?? "", 'payment_proof')
+              : customer.paymentProof;
+
+      final fullUrl =
+          'https://testca.uniqbizz.com/api/customers/edit_customers_data.php';
+
+      final now = DateTime.now();
+      final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+      String oldDob = customer.dob ?? "";
+      DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(oldDob);
+      String newDob = DateFormat("yyyy-MM-dd").format(parsedDate);
+
+      final Map<String, dynamic> body = {
+        "ref_id": customer.referenceNo,
+        "id": customer.caCustomerId,
+        "firstname": customer.firstName,
+        "lastname": customer.lastName,
+        "email": customer.email,
+        "dob": newDob,
+        "gender": customer.gender,
+        "country_code": customer.countryCd,
+        "phone": customer.phoneNumber,
+        "country": customer.country,
+        "state": customer.state,
+        "city": customer.city,
+        "pincode": customer.pincode,
+        "address": customer.address,
+        "profile_pic": newProfilePic,
+        "aadhar_card": newAdharCard,
+        "pan_card": newPanCard,
+        "passbook": newBankPassbook,
+        "voting_card": newVotingCard,
+        "payment_proof": newPaymentProof,
+        "register_by": "10",
+        "registrant_id": customer.registrant,
+        "paymentMode": customer.paymentMode,
+        "chequeNo": customer.chequeNo,
+        "chequeDate": customer.chequeDate,
+        "bankName": customer.bankName,
+        "transactionNo": customer.transactionNo,
+        "payment_fee": customer.paidAmount,
+        "userId": customer.referenceNo,
+        "ta_reference_no": customer.taReferenceNo,
+        "userType": "10",
+        "editfor": "registered",
+        "payment_label": customer.customerType,
+        "customer_type": "undefined",
       };
 
       Logger.warning("Update request body: $body");
