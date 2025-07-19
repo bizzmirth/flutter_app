@@ -13,6 +13,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -37,16 +38,18 @@ class MyApp extends StatelessWidget {
             create: (_) => DesignationDepartmentController()),
         ChangeNotifierProvider(create: (_) => AdminCustomerController()),
       ],
-      child: MaterialApp(
-        title: 'UniqBizz',
-        theme: ThemeData(
-            primarySwatch: Colors.blue,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            textTheme: GoogleFonts.robotoTextTheme(
-              Theme.of(context).textTheme,
-            )),
-        home: HomePage(),
-        debugShowCheckedModeBanner: false,
+      child: ToastificationWrapper(
+        child: MaterialApp(
+          title: 'UniqBizz',
+          theme: ThemeData(
+              primarySwatch: Colors.blue,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              textTheme: GoogleFonts.robotoTextTheme(
+                Theme.of(context).textTheme,
+              )),
+          home: HomePage(),
+          debugShowCheckedModeBanner: false,
+        ),
       ),
     );
   }

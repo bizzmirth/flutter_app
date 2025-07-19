@@ -5,6 +5,7 @@ import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refer
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -687,6 +688,147 @@ class CustomerController extends ChangeNotifier {
       }
     } catch (e) {
       Logger.error("Error in apiUpdateCustomer: $e");
+      _error = "Error: $e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiDeleteCustomer(
+      BuildContext context, RegisteredCustomer customer) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final fullUrl =
+          "https://testca.uniqbizz.com/api/customers/delete_customers_data.php";
+
+      final Map<String, dynamic> body = {
+        "id": customer.id,
+        "fid": customer.taReferenceNo,
+        "refid": customer.caCustomerId,
+        "action": "registered"
+      };
+
+      final response =
+          await http.post(Uri.parse(fullUrl), body: jsonEncode(body));
+
+      Logger.success("Delete URL: $fullUrl");
+      Logger.success("Delete status code: ${response.statusCode}");
+      Logger.success("Delete API response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        if (responseData['status'] == 'success') {
+          await apiGetRegisteredCustomers();
+          Logger.success("Customer deleted successfully");
+
+          ToastHelper.showSuccessToast(
+            context: context,
+            title: "Success",
+            description: "Customer deleted successfully",
+          );
+        } else {
+          final errorMessage =
+              responseData['message'] ?? 'Unknown error occurred';
+          Logger.error("Delete failed: $errorMessage");
+          _error = "Delete failed: $errorMessage";
+
+          ToastHelper.showErrorToast(
+            context: context,
+            title: "Delete Failed",
+            description: errorMessage,
+          );
+        }
+      } else {
+        final errorMessage = "HTTP Error: ${response.statusCode}";
+        Logger.error(errorMessage);
+        _error = errorMessage;
+
+        ToastHelper.showErrorToast(
+          context: context,
+          title: "Network Error",
+          description: "Failed to delete customer. Please try again.",
+        );
+      }
+    } catch (e, s) {
+      Logger.error("Error in apiDeleteCustomer: $e\n$s");
+      _error = "Error: $e";
+
+      ToastHelper.showErrorToast(
+        context: context,
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+      );
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiRestoreCustomer(context, RegisteredCustomer customer) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final fullUrl =
+          "https://testca.uniqbizz.com/api/customers/delete_customers_data.php";
+
+      final Map<String, dynamic> body = {
+        "id": customer.id,
+        "fid": customer.taReferenceNo,
+        "refid": customer.caCustomerId,
+        "action": "deactivate"
+      };
+
+      final response =
+          await http.post(Uri.parse(fullUrl), body: jsonEncode(body));
+
+      Logger.success("Delete URL: $fullUrl");
+      Logger.success("Delete status code: ${response.statusCode}");
+      Logger.success("Delete API response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        if (responseData['status'] == 'success') {
+          await apiGetRegisteredCustomers();
+          Logger.success("Customer Restored successfully");
+
+          ToastHelper.showSuccessToast(
+            context: context,
+            title: "Success",
+            description: "Customer Restored successfully",
+          );
+        } else {
+          final errorMessage =
+              responseData['message'] ?? 'Unknown error occurred';
+          Logger.error("Restoring failed: $errorMessage");
+          _error = "Restoring failed: $errorMessage";
+
+          ToastHelper.showErrorToast(
+            context: context,
+            title: "Restoring Failed",
+            description: errorMessage,
+          );
+        }
+      } else {
+        final errorMessage = "HTTP Error: ${response.statusCode}";
+        Logger.error(errorMessage);
+        _error = errorMessage;
+
+        ToastHelper.showErrorToast(
+          context: context,
+          title: "Network Error",
+          description: "Failed to restore customer. Please try again.",
+        );
+      }
+    } catch (e, s) {
+      Logger.error("Error in apiRestoreCustomer: $e\n$s");
       _error = "Error: $e";
     } finally {
       _isLoading = false;

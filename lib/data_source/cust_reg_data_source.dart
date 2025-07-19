@@ -154,41 +154,70 @@ class MyrefCustRegDataSource extends DataTableSource {
               break;
             case "delete":
               break;
+            case "restore":
+              customerController.apiRestoreCustomer(controller, regCustomer);
+              break;
             default:
               break;
           }
         },
-        itemBuilder: (BuildContext context) => [
-          PopupMenuItem(
-            value: "edit",
-            child: ListTile(
-              leading: Icon(Icons.edit, color: Colors.blueAccent),
-              title: Text("Edit"),
-              onTap: () async {
-                Navigator.pop(context);
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddReferralCustomer(
-                      registeredCustomer: regCustomer,
-                      isEditMode: true,
-                    ),
-                  ),
-                );
+        itemBuilder: (BuildContext context) {
+          List<PopupMenuEntry<String>> menuItems = [];
 
-                customerController.apiGetRegisteredCustomers();
-                customerController.apiGetPendingCustomers();
-              },
-            ),
-          ),
-          PopupMenuItem(
-            value: "delete",
-            child: ListTile(
-              leading: Icon(Icons.delete, color: Colors.red),
-              title: Text("Delete"),
-            ),
-          ),
-        ],
+          if (regCustomer.status == "1") {
+            menuItems.addAll([
+              PopupMenuItem(
+                value: "edit",
+                child: ListTile(
+                  leading: Icon(Icons.edit, color: Colors.blueAccent),
+                  title: Text("Edit"),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddReferralCustomer(
+                          registeredCustomer: regCustomer,
+                          isEditMode: true,
+                        ),
+                      ),
+                    );
+
+                    customerController.apiGetRegisteredCustomers();
+                    customerController.apiGetPendingCustomers();
+                  },
+                ),
+              ),
+              PopupMenuItem(
+                value: "delete",
+                child: ListTile(
+                  leading: Icon(Icons.delete, color: Colors.red),
+                  title: Text("Delete"),
+                  onTap: () {
+                    Navigator.pop(context);
+                    customerController.apiDeleteCustomer(context, regCustomer);
+                  },
+                ),
+              ),
+            ]);
+          } else if (regCustomer.status == "3") {
+            menuItems.add(
+              PopupMenuItem(
+                value: "restore",
+                child: ListTile(
+                  leading: Icon(Icons.restore, color: Colors.green),
+                  title: Text("Restore"),
+                  onTap: () {
+                    Navigator.pop(context);
+                    customerController.apiRestoreCustomer(context, regCustomer);
+                  },
+                ),
+              ),
+            );
+          }
+
+          return menuItems;
+        },
         icon: Icon(Icons.more_vert, color: Colors.black54),
       );
     });
