@@ -170,7 +170,104 @@ final List<Map<String, dynamic>> orders = [
     "status": "Cancelled",
   },
 ];
-
+final List<Map<String, dynamic>> bookings = [
+  {
+    "bookingId": "BK001",
+    "customerName": "John Doe",
+    "packageName": "Goa Beach Paradise",
+    "amount": 25000.0,
+    "bookingDate": "15/01/2024",
+    "travelDate": "10/03/2024",
+  },
+  {
+    "bookingId": "BK002",
+    "customerName": "Jane Smith",
+    "packageName": "Kerala Backwaters",
+    "amount": 18500.0,
+    "bookingDate": "18/01/2024",
+    "travelDate": "25/02/2024",
+  },
+  {
+    "bookingId": "BK003",
+    "customerName": "Mike Johnson",
+    "packageName": "Rajasthan Royal Tour",
+    "amount": 35000.0,
+    "bookingDate": "20/01/2024",
+    "travelDate": "05/04/2024",
+  },
+  {
+    "bookingId": "BK004",
+    "customerName": "Sarah Wilson",
+    "packageName": "Himachal Adventure",
+    "amount": 22000.0,
+    "bookingDate": "22/01/2024",
+    "travelDate": "15/03/2024",
+  },
+  {
+    "bookingId": "BK005",
+    "customerName": "David Brown",
+    "packageName": "Mumbai City Break",
+    "amount": 12000.0,
+    "bookingDate": "25/01/2024",
+    "travelDate": "10/02/2024",
+  },
+  {
+    "bookingId": "BK006",
+    "customerName": "Lisa Anderson",
+    "packageName": "Andaman Islands",
+    "amount": 45000.0,
+    "bookingDate": "28/01/2024",
+    "travelDate": "20/05/2024",
+  },
+  {
+    "bookingId": "BK007",
+    "customerName": "Robert Taylor",
+    "packageName": "Golden Triangle",
+    "amount": 28000.0,
+    "bookingDate": "01/02/2024",
+    "travelDate": "25/03/2024",
+  },
+  {
+    "bookingId": "BK008",
+    "customerName": "Emily Davis",
+    "packageName": "South India Temple Tour",
+    "amount": 31000.0,
+    "bookingDate": "03/02/2024",
+    "travelDate": "12/04/2024",
+  },
+  {
+    "bookingId": "BK009",
+    "customerName": "Chris Miller",
+    "packageName": "Ladakh Expedition",
+    "amount": 52000.0,
+    "bookingDate": "05/02/2024",
+    "travelDate": "01/06/2024",
+  },
+  {
+    "bookingId": "BK010",
+    "customerName": "Amanda Clark",
+    "packageName": "Uttarakhand Pilgrimage",
+    "amount": 19500.0,
+    "bookingDate": "08/02/2024",
+    "travelDate": "30/03/2024",
+  },
+  {
+    "bookingId": "BK011",
+    "customerName": "Kevin White",
+    "packageName": "Northeast Explorer",
+    "amount": 38000.0,
+    "bookingDate": "10/02/2024",
+    "travelDate": "18/04/2024",
+  },
+  {
+    "bookingId": "BK012",
+    "customerName": "Rachel Green",
+    "packageName": "Karnataka Heritage",
+    "amount": 26500.0,
+    "bookingDate": "12/02/2024",
+    "travelDate": "08/03/2024",
+  }
+];
 // Dummy data for customers
 final List<Map<String, dynamic>> customersDummy = [
   {

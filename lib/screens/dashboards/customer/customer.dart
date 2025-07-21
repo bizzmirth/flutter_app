@@ -1,8 +1,11 @@
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
+import 'package:bizzmirth_app/data_source/current_booking_data_source.dart';
 import 'package:bizzmirth_app/data_source/cust_top_referral_customers.dart';
+import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
+import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -118,6 +121,32 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ViewCustomersPage()),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.people),
+                    title: Text('Top Up Wallet'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TopUpWalletPage(
+                                  title: "Top Up Wallet",
+                                )),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.people),
+                    title: Text('Referral Wallet'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TopUpWalletPage(
+                                  title: "Referral Wallet",
+                                )),
                       );
                     },
                   ),
@@ -247,7 +276,58 @@ class _CDashboardPageState extends State<CDashboardPage> {
                 ),
               ),
               SizedBox(height: 20),
-              _buildTopPerformersSection1(),
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Divider(thickness: 1, color: Colors.black26),
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          "Current Booking's",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    Divider(thickness: 1, color: Colors.black26),
+                    FilterBar(),
+                    Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: SizedBox(
+                        height: (_rowsPerPage * dataRowHeight) +
+                            headerHeight +
+                            paginationHeight,
+                        child: PaginatedDataTable(
+                          columns: [
+                            DataColumn(label: Text("Booking ID")),
+                            DataColumn(label: Text("Customer Name")),
+                            DataColumn(label: Text("Package Name")),
+                            DataColumn(label: Text("Amount")),
+                            DataColumn(label: Text("Booking Date")),
+                            DataColumn(label: Text("Travel Date")),
+                          ],
+                          source: CurrentBookingDataSource(bookings),
+                          rowsPerPage: _rowsPerPage,
+                          availableRowsPerPage: [5, 10, 15, 20, 25],
+                          onRowsPerPageChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _rowsPerPage = value;
+                              });
+                            }
+                          },
+                          arrowHeadColor: Colors.blue,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
         );

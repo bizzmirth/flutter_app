@@ -123,7 +123,9 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => TopUpWalletPage()),
+                            builder: (context) => TopUpWalletPage(
+                                  title: "Top Up Wallet",
+                                )),
                       );
                     },
                   ),

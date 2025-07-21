@@ -3,9 +3,13 @@ import 'dart:async';
 import 'package:bizzmirth_app/screens/dashboards/admin/approve_tc_payments_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/pending_transactions_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/transactions_history_page.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:flutter/material.dart';
 
 class TopUpWalletPage extends StatefulWidget {
+  final String title;
+  const TopUpWalletPage({super.key, required this.title});
+
   @override
   _TopUpWalletPageState createState() => _TopUpWalletPageState();
 }
@@ -16,6 +20,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
   List<Map<String, String>> _transactions = [];
   List<Map<String, String>> _pendingTransactions = [];
   late AnimationController _controller;
+  String? customerType;
 
   final TextEditingController _amountController = TextEditingController();
   String _selectedPaymentMode = "Credit Card";
@@ -29,10 +34,15 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
   @override
   void initState() {
     super.initState();
+    getSharedPrefData();
     _controller = AnimationController(
       duration: Duration(seconds: 1),
       vsync: this,
     );
+  }
+
+  void getSharedPrefData() async {
+    customerType = await SharedPrefHelper().getUserType();
   }
 
   void _addPendingTransaction() {
@@ -72,7 +82,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Topup Wallet', style: TextStyle(color: Colors.white)),
+        title: Text(widget.title, style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
@@ -241,28 +251,30 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
   Widget _buildNavigationButtons() {
     return Column(
       children: [
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ApprovePaymentsPage(
-                  pendingTransactions: _pendingTransactions,
-                  approveTransaction: _approveTransaction,
-                  rejectTransaction: _rejectTransaction,
+        customerType == "Admin"
+            ? ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ApprovePaymentsPage(
+                        pendingTransactions: _pendingTransactions,
+                        approveTransaction: _approveTransaction,
+                        rejectTransaction: _rejectTransaction,
+                      ),
+                    ),
+                  );
+                },
+                child: Text(
+                  "Approve Payments",
+                  style: TextStyle(
+                    color: Colors.blueAccent,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-            );
-          },
-          child: Text(
-            "Approve Payments",
-            style: TextStyle(
-              color: Colors.blueAccent,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+              )
+            : SizedBox(),
         SizedBox(height: 10),
         ElevatedButton(
           onPressed: () {
