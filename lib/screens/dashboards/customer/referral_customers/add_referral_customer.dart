@@ -6,6 +6,7 @@ import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.d
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -88,15 +89,28 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
   final GlobalKey<FormFieldState> _firstNameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _lastNameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _mobileKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _dobKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState<String>> _paymentFeeKey = GlobalKey();
 
   final GlobalKey<FormFieldState> _genderKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _emailKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _addressKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _pincodeKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _chequeNoKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _chequeDateKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _bankNameKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _transactionNoKey =
+      GlobalKey<FormFieldState>();
   final _countryKey = GlobalKey<FormFieldState>();
   final _stateKey = GlobalKey<FormFieldState>();
   final _cityKey = GlobalKey<FormFieldState>();
+  final GlobalKey _profilePictureKey = GlobalKey();
+  final GlobalKey _aadharCardKey = GlobalKey();
+  final GlobalKey _panCardKey = GlobalKey();
+  final GlobalKey _bankPassbookKey = GlobalKey();
+  final GlobalKey _votingCardKey = GlobalKey();
+  final GlobalKey _paymentProofKey = GlobalKey();
+  bool _showImageValidationErrors = false;
 
   String _selectedCountryCode = '+91';
 
@@ -217,11 +231,41 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
   Future<void> _submitForm() async {
     try {
+      // Reset image validation errors first
+      setState(() {
+        _showImageValidationErrors = false;
+      });
+
       final controller =
           Provider.of<CustomerController>(context, listen: false);
       Map<String, String> documentPaths = {};
       final String customerType;
       final String paidAmount;
+
+      // Validate form fields
+      final formState = _formKey.currentState;
+      bool isFormValid = formState != null && formState.validate();
+
+      // Validate images
+      bool areImagesValid = _validateImages();
+
+      // If either form or images are invalid, show errors and scroll to first error
+      if (!isFormValid || !areImagesValid) {
+        if (!areImagesValid) {
+          setState(() {
+            _showImageValidationErrors = true;
+          });
+        }
+
+        _scrollToFirstError();
+        ToastHelper.showErrorToast(
+            context: context,
+            title:
+                "Please fill all the required fields and upload required documents");
+        return;
+      }
+
+      // Build document paths map
       selectedFiles.forEach((key, value) {
         if (value != null) {
           String filePath = value.path;
@@ -247,6 +291,8 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
           }
         }
       });
+
+      // Upload images
       if (selectedFiles["Profile Picture"] != null) {
         await controller.uploadImage(
             context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
@@ -272,6 +318,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
             context, 'payment_proof', selectedFiles["Payment Proof"]!.path);
       }
 
+      // Handle payment mode specific data
       if (_selectedPaymentMode == "Cheque") {
         chequeNo = _chequeNoController.text;
         chequeDate = _chequeDateController.text;
@@ -280,6 +327,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         transactionId = _transactionIDController.text;
       }
 
+      // Determine customer type and paid amount
       if (_selectedPayment == "Free") {
         customerType = "Free";
         paidAmount = "Free";
@@ -294,6 +342,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         paidAmount = "35,000";
       }
 
+      // Create new customer object
       final newCustomer = PendingCustomer()
         ..taReferenceNo = _taRefrenceIdController.text
         ..taReferenceName = _taRefrenceNameController.text
@@ -327,17 +376,41 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         ..chequeDate = chequeDate
         ..bankName = bankName
         ..transactionNo = transactionId
-        ..paidAmount = paidAmount // payment fee
+        ..paidAmount = paidAmount
         ..customerType = customerType;
 
+      // Submit customer data
       await controller.apiAddCustomer(newCustomer);
-      // clearFormFields();
+      clearFormFields();
       Navigator.pop(context);
 
-      // userId = "undefined";
+      Logger.success("Adding customer: $newCustomer");
     } catch (e, s) {
       Logger.error("Error submitting form: $e, Stacktrace: $s");
     }
+  }
+
+  bool _validateImages() {
+    List<String> requiredImages = [
+      "Profile Picture",
+      "Aadhar Card",
+      "Pan Card",
+      "Bank Passbook",
+      "Voting Card"
+    ];
+
+    if (_selectedPayment != "Free") {
+      requiredImages.add("Payment Proof");
+    }
+
+    for (String imageType in requiredImages) {
+      if (selectedFiles[imageType] == null) {
+        Logger.error("Missing required image: $imageType");
+        return false;
+      }
+    }
+
+    return true;
   }
 
   Future<void> _updatePendingReferralCustomer() async {
@@ -628,6 +701,180 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     } catch (e, s) {
       Logger.error("Error updating form: $e, Stacktrace: $s");
     }
+  }
+
+  void _scrollToFirstError() {
+    final Map<String, GlobalKey<FormFieldState>> fieldKeys = {
+      'firstName': _firstNameKey,
+      'lastName': _lastNameKey,
+      'phoneNumber': _mobileKey,
+      'pincode': _pincodeKey,
+      'dateOfBirth': _dobKey,
+      'address': _addressKey
+    };
+
+    if (_selectedPaymentMode == "Cheque") {
+      fieldKeys.addAll({
+        'chequeNo': _chequeNoKey,
+        'chequeDate': _chequeDateKey,
+        'bankName': _bankNameKey,
+      });
+    } else if (_selectedPaymentMode == "UPI/NEFT") {
+      fieldKeys.addAll({
+        'transactionNo': _transactionNoKey,
+      });
+    }
+
+    for (final entry in fieldKeys.entries) {
+      final fieldState = entry.value.currentState;
+      if (fieldState != null && fieldState.hasError) {
+        Logger.error("Found error in field: ${entry.key}");
+        Scrollable.ensureVisible(
+          entry.value.currentContext!,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          alignment: 0.0,
+        );
+        return;
+      }
+    }
+    if (_selectedGender == "---- Select Gender ----") {
+      final RenderObject? renderObject =
+          _genderKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _genderKey.currentContext!,
+          duration: Duration(milliseconds: 500),
+          alignment: 0.0,
+        );
+        return;
+      }
+    }
+
+    if (_selectedCountry == "---- Select Country ----") {
+      final RenderObject? renderObject =
+          _countryKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _countryKey.currentContext!,
+          duration: Duration(milliseconds: 500),
+          alignment: 0.0,
+        );
+        return;
+      }
+    }
+    if (_selectedState == "---- Select State ----") {
+      final RenderObject? renderObject =
+          _stateKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _stateKey.currentContext!,
+          duration: Duration(milliseconds: 500),
+          alignment: 0.0,
+        );
+        return;
+      }
+    }
+
+    if (_selectedCity == "---- Select City ----") {
+      final RenderObject? renderObject =
+          _cityKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _cityKey.currentContext!,
+          duration: Duration(milliseconds: 500),
+          alignment: 0.0,
+        );
+        return;
+      }
+    }
+
+    final Map<String, GlobalKey> imageKeys = {
+      "Profile Picture": _profilePictureKey,
+      "Aadhar Card": _aadharCardKey,
+      "Pan Card": _panCardKey,
+      "Bank Passbook": _bankPassbookKey,
+      "Voting Card": _votingCardKey,
+    };
+
+    if (_selectedPayment != "Free") {
+      imageKeys["Payment Proof"] = _paymentProofKey;
+    }
+
+    for (final entry in imageKeys.entries) {
+      String imageType = entry.key;
+      GlobalKey imageKey = entry.value;
+
+      if (selectedFiles[imageType] == null) {
+        Logger.error("Missing required image: $imageType");
+
+        // Show validation errors
+        setState(() {
+          _showImageValidationErrors = true;
+        });
+
+        // Scroll to the missing image upload button
+        final RenderObject? renderObject =
+            imageKey.currentContext?.findRenderObject();
+        if (renderObject != null) {
+          Scrollable.ensureVisible(
+            imageKey.currentContext!,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            alignment: 0.0,
+          );
+          return;
+        }
+      }
+    }
+  }
+
+  void clearFormFields() {
+    _taRefrenceIdController.clear();
+    _taRefrenceNameController.clear();
+    _customerRefIdController.clear();
+    _customerRefNameController.clear();
+    _firstNameController.clear();
+    _lastNameController.clear();
+    _nomineeNameController.clear();
+    _nomineeRelationController.clear();
+    _emailController.clear();
+    _dateController.clear();
+    _phoneController.clear();
+    _pincodeController.clear();
+    _addressController.clear();
+
+    _chequeNoController.clear();
+    _chequeDateController.clear();
+    _bankNameController.clear();
+    _transactionIDController.clear();
+
+    setState(() {
+      _selectedGender = "---- Select Gender ----";
+      _selectedCountryCode = "+91";
+      _selectedCountry = "---- Select Country ----";
+      _selectedState = "---- Select State ----";
+      _selectedCity = "---- Select City ----";
+      _selectedPayment = "Free";
+      _selectedPaymentMode = "Cash";
+
+      _selectedCountryId = null;
+      _selectedStateId = null;
+      _selectedCityId = null;
+
+      selectedFiles.clear();
+
+      chequeNo = "";
+      chequeDate = "";
+      bankName = "";
+      transactionId = "";
+
+      _showImageValidationErrors = false;
+    });
+
+    _formKey.currentState?.reset();
+
+    Logger.info("Form fields cleared successfully");
   }
 
   void populatePendingReferralCustomer(PendingCustomer customer) async {
@@ -966,6 +1213,11 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       if (!await bizmirthDir.exists()) {
         await bizmirthDir.create();
       }
+      setState(() {
+        selectedFiles[fileType] = File(savedImagePath);
+        _showImageValidationErrors =
+            false; // Clear validation errors when user uploads
+      });
 
       String subFolderName;
       switch (fileType) {
@@ -1025,13 +1277,20 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       {int maxLines = 1,
       String? Function(String?)? validator,
       GlobalKey<FormFieldState>? fieldKey,
-      bool? forceReadOnly}) {
+      bool? forceReadOnly,
+      void Function(String)? onChanged}) {
     return TextFormField(
       key: fieldKey,
       readOnly: forceReadOnly ?? widget.isViewMode,
       maxLines: maxLines,
       validator: validator,
       controller: controller,
+      onChanged: onChanged ??
+          (value) {
+            if (fieldKey?.currentState?.hasError == true) {
+              fieldKey?.currentState?.validate();
+            }
+          },
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
@@ -1272,9 +1531,15 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 // Phone number text field
                                 SizedBox(width: 10),
                                 Expanded(
-                                  child: TextField(
+                                  child: TextFormField(
                                     controller: _phoneController,
                                     key: _mobileKey,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Phone Number is required";
+                                      }
+                                      return null;
+                                    },
                                     keyboardType: TextInputType.phone,
                                     maxLength: 10,
                                     style: TextStyle(
@@ -1326,6 +1591,13 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
+                              key: _dobKey,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Date of Birth is required";
+                                }
+                                return null;
+                              },
                               controller: _dateController,
                               readOnly:
                                   true, // Makes the TextFormField non-editable
@@ -1563,16 +1835,40 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                             ),
                           SizedBox(height: 10),
                           if (_selectedPaymentMode == "Cheque") ...{
-                            _buildTextField('Check No. *', _chequeNoController),
+                            _buildTextField('Cheque No. *', _chequeNoController,
+                                fieldKey: _chequeNoKey, validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Cheque No. is required";
+                              }
+                              return null;
+                            }),
                             SizedBox(height: 10),
                             _buildTextField(
-                                'Cheque  Date *', _chequeDateController),
+                                'Cheque  Date *', _chequeDateController,
+                                fieldKey: _chequeDateKey, validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Cheque Date is required";
+                              }
+                            }),
                             SizedBox(height: 10),
-                            _buildTextField('Bank Name *', _bankNameController),
+                            _buildTextField('Bank Name *', _bankNameController,
+                                fieldKey: _bankNameKey, validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Bank Date is required";
+                              }
+                              return null;
+                            }),
                             SizedBox(height: 10),
                           } else if (_selectedPaymentMode == "UPI/NEFT") ...{
                             _buildTextField(
-                                'Transaction No. *', _transactionIDController),
+                                'Transaction No. *', _transactionIDController,
+                                fieldKey: _transactionNoKey,
+                                validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Transaction No. is required";
+                              }
+                              return null;
+                            }),
                             SizedBox(height: 10),
                           },
                           SizedBox(height: 20),
@@ -1585,13 +1881,25 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                             ),
                           ),
                           SizedBox(height: 10),
-                          _buildUploadButton("Profile Picture"),
-                          _buildUploadButton("Aadhar Card"),
-                          _buildUploadButton("Pan Card"),
-                          _buildUploadButton("Bank Passbook"),
-                          _buildUploadButton("Voting Card"),
+                          _buildUploadButton("Profile Picture",
+                              showError: _showImageValidationErrors,
+                              uploadKey: _profilePictureKey),
+                          _buildUploadButton("Aadhar Card",
+                              showError: _showImageValidationErrors,
+                              uploadKey: _aadharCardKey),
+                          _buildUploadButton("Pan Card",
+                              showError: _showImageValidationErrors,
+                              uploadKey: _panCardKey),
+                          _buildUploadButton("Bank Passbook",
+                              showError: _showImageValidationErrors,
+                              uploadKey: _bankPassbookKey),
+                          _buildUploadButton("Voting Card",
+                              showError: _showImageValidationErrors,
+                              uploadKey: _votingCardKey),
                           if (_selectedPayment != "Free")
-                            _buildUploadButton("Payment Proof"),
+                            _buildUploadButton("Payment Proof",
+                                showError: _showImageValidationErrors,
+                                uploadKey: _paymentProofKey),
                           SizedBox(height: 20),
                           if (widget.isEditMode) ...[
                             Center(
@@ -1652,8 +1960,12 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     });
   }
 
-  Widget _buildUploadButton(String fileType) {
+  Widget _buildUploadButton(String fileType,
+      {bool showError = false, GlobalKey? uploadKey}) {
+    bool isRequired = fileType != "Payment Proof" || _selectedPayment != "Free";
+    bool hasError = showError && isRequired && selectedFiles[fileType] == null;
     return Padding(
+      key: uploadKey,
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         children: [
@@ -1786,6 +2098,14 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                 ),
               ),
             ),
+          if (hasError)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 8),
+              child: Text(
+                "Please Upload $fileType",
+                style: TextStyle(color: Colors.red.shade300, fontSize: 12),
+              ),
+            )
         ],
       ),
     );
