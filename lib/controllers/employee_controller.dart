@@ -185,7 +185,7 @@ class EmployeeController extends ChangeNotifier {
       // Convert the image bytes to a Base64 string
       return base64Encode(bytes);
     } catch (e) {
-      print("Error converting image to Base64: $e");
+      Logger.error("Error converting image to Base64: $e");
       return "";
     }
   }

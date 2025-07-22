@@ -97,7 +97,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         });
       } else {}
     } catch (e) {
-      print('Error loading departments: $e');
+      Logger.error('Error loading departments: $e');
     }
   }
 
@@ -125,7 +125,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         });
       }
     } catch (e) {
-      print('Error loading designations: $e');
+      Logger.error('Error loading designations: $e');
     }
   }
 
@@ -305,7 +305,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         _dojController.text = DateFormat('dd-MM-yyyy').format(dojDate);
       }
     } catch (e) {
-      print("Error parsing dates during form population: $e");
+      Logger.error("Error parsing dates during form population: $e");
       // Fallback to original values if parsing fails
       dobForApi = employee.dateOfBirth;
       dojForApi = employee.dateOfJoining;
@@ -675,7 +675,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   //       Logger.success("Picked file for $fileType: ${file.name}");
   //     }
   //   } catch (e) {
-  //     print("Error picking file: $e");
+  //     Logger.error("Error picking file: $e");
   //   }
   // }
 
@@ -1155,7 +1155,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       .format(pickedDate);
 
                                   // Log the date in yyyy-MM-dd format
-                                  print(
+                                  Logger.error(
                                       "Selected DOB (for API/logging): $dobForApi");
 
                                   // Set the display format in the text field
@@ -1232,7 +1232,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   }
                                 } catch (e) {
                                   // If parsing fails, use current date
-                                  print("Error parsing date: $e");
+                                  Logger.error("Error parsing date: $e");
                                   initialDate = DateTime.now();
                                 }
                               }
@@ -1250,7 +1250,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     DateFormat('dd-MM-yyyy').format(pickedDate);
                                 dojForApi =
                                     DateFormat('yyyy-MM-dd').format(pickedDate);
-                                print(
+                                Logger.error(
                                     "Selected DOJ (for API/logging): $dojForApi");
 
                                 setState(() {

@@ -161,7 +161,7 @@ class _AddbmState extends State<AddbmPage> {
         });
       }
     } catch (e) {
-      print('Error loading designations: $e');
+      Logger.error('Error loading designations: $e');
     }
   }
 

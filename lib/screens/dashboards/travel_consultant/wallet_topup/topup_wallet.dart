@@ -95,14 +95,47 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
             SizedBox(height: 20),
             _buildTopUpFields(),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _addPendingTransaction,
-              child: Text(
-                "Add Balance",
-                style: TextStyle(
-                  color: Colors.blueAccent,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+            Container(
+              width: 300,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blueAccent, Colors.purpleAccent],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blueAccent.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: _addPendingTransaction,
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add_circle_outline,
+                            color: Colors.white, size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          "Add Balance",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -197,8 +230,8 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
           tween: Tween<double>(begin: _balance - 50, end: _balance),
           builder: (context, value, child) {
             return Container(
-              width: 240, // Match Summary Card Width
-              height: 120, // Match Summary Card Height
+              width: 240,
+              height: 120,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 gradient: LinearGradient(
@@ -252,68 +285,162 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
     return Column(
       children: [
         customerType == "Admin"
-            ? ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ApprovePaymentsPage(
-                        pendingTransactions: _pendingTransactions,
-                        approveTransaction: _approveTransaction,
-                        rejectTransaction: _rejectTransaction,
+            ? Container(
+                // width: 300,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.blueAccent.withOpacity(0.8),
+                      Colors.purpleAccent.withOpacity(0.8)
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blueAccent.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ApprovePaymentsPage(
+                            pendingTransactions: _pendingTransactions,
+                            approveTransaction: _approveTransaction,
+                            rejectTransaction: _rejectTransaction,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.check_circle_outline,
+                              color: Colors.white, size: 18),
+                          SizedBox(width: 8),
+                          Text(
+                            "Approve Payments",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-                child: Text(
-                  "Approve Payments",
-                  style: TextStyle(
-                    color: Colors.blueAccent,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
                   ),
                 ),
               )
             : SizedBox(),
-        SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    TransactionHistoryPage(transactions: _transactions),
+        SizedBox(height: 12),
+        Container(
+          width: 300,
+          height: 48,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.blueAccent, width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 6,
+                offset: Offset(0, 2),
               ),
-            );
-          },
-          child: Text(
-            "View Transaction History",
-            style: TextStyle(
-              color: Colors.blueAccent,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        TransactionHistoryPage(transactions: _transactions),
+                  ),
+                );
+              },
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.history, color: Colors.blueAccent, size: 18),
+                    SizedBox(width: 8),
+                    Text(
+                      "View Transaction History",
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
-        SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => PendingTransactionsPage(
-                  pendingTransactions:
-                      _pendingTransactions, // Pass actual pending transactions
+        SizedBox(height: 12),
+        Container(
+          width: 300,
+          height: 48,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.blueAccent, width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PendingTransactionsPage(
+                      pendingTransactions: _pendingTransactions,
+                    ),
+                  ),
+                );
+              },
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.pending_actions,
+                        color: Colors.blueAccent, size: 18),
+                    SizedBox(width: 8),
+                    Text(
+                      "View Pending History",
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-          child: Text(
-            "View Pending History",
-            style: TextStyle(
-              color: Colors.blueAccent,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
             ),
           ),
         ),

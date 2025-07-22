@@ -120,7 +120,7 @@ class AdminCustomerController extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print('Error fetching consultants: $e');
+      Logger.error('Error fetching consultants: $e');
     }
   }
 

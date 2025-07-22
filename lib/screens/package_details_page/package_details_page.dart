@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
 import 'package:flutter/material.dart';
@@ -70,6 +71,18 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
   ];
 
   int currentIndex = 0;
+  String? customerType;
+
+  void getShredPrefData() async {
+    customerType = await SharedPrefHelper().getUserType();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getShredPrefData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +103,8 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
         SingleChildScrollView(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // Hero Image
             Container(
-              color: const Color.fromARGB(
-                  255, 236, 236, 236), // Light blue background
+              color: const Color.fromARGB(255, 236, 236, 236),
               child: Stack(
                 children: [
                   carousel_slider.CarouselSlider.builder(
@@ -423,6 +434,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               FloatingActionButton(
+                tooltip: "Whatsapp",
                 onPressed: () {
                   // Open WhatsApp chat
                 },
@@ -432,6 +444,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               ),
               SizedBox(height: 12),
               FloatingActionButton(
+                tooltip: "Share",
                 onPressed: () {
                   // Add share functionality
                 },
@@ -442,27 +455,28 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
             ],
           ),
         ),
-        Positioned(
-          bottom: 20, // Adjust as needed
-          left: MediaQuery.of(context).size.width * 0.2,
-          right: MediaQuery.of(context).size.width * 0.2,
-          child: ElevatedButton(
-            onPressed: () {
-              showBookingPopup(context);
-            },
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: const Color.fromARGB(255, 46, 122, 244),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+        if (customerType != 'Customer')
+          Positioned(
+            bottom: 20, // Adjust as needed
+            left: MediaQuery.of(context).size.width * 0.2,
+            right: MediaQuery.of(context).size.width * 0.2,
+            child: ElevatedButton(
+              onPressed: () {
+                showBookingPopup(context);
+              },
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: const Color.fromARGB(255, 46, 122, 244),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: Text(
+                "Enquire or Book Now",
+                style: TextStyle(fontSize: 16, color: Colors.white),
               ),
             ),
-            child: Text(
-              "Enquire or Book Now",
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ),
-        ),
+          )
       ]),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
@@ -36,12 +37,12 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
       final prefs = await SharedPreferences.getInstance();
       final departmentDataString = prefs.getString('departmentData');
 
-      print('Raw Department Data: $departmentDataString'); // Debug print
+      Logger.info('Raw Department Data: $departmentDataString'); // Debug print
 
       if (departmentDataString != null) {
         final List<dynamic> departmentData = json.decode(departmentDataString);
 
-        print('Parsed Department Data: $departmentData'); // Debug print
+        Logger.info('Parsed Department Data: $departmentData'); // Debug print
 
         setState(() {
           departments = departmentData
@@ -51,25 +52,23 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
                   })
               .toList();
 
-          print('Processed Departments: $departments'); // Debug print
-
-          // Set selected department for both view AND edit mode
+          Logger.info('Processed Departments: $departments');
           if (widget.initialDepartment != null) {
             selectedDepartment = widget.initialDepartment;
-            print(
+            Logger.info(
                 'Initial Department: ${widget.initialDepartment}'); // Debug print
           }
 
           isLoading = false;
         });
       } else {
-        print('No department data found in SharedPreferences');
+        Logger.error('No department data found in SharedPreferences');
         setState(() {
           isLoading = false;
         });
       }
     } catch (e) {
-      print('Error loading departments: $e');
+      Logger.error('Error loading departments: $e');
       setState(() {
         isLoading = false;
       });
@@ -110,8 +109,8 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
                   );
 
                   // Log the department ID
-                  print('Selected Department ID: ${selectedDept['id']}');
-                  print('Selected Department ID: ${selectedDept['id']}');
+                  Logger.info('Selected Department ID: ${selectedDept['id']}');
+                  Logger.info('Selected Department ID: ${selectedDept['id']}');
 
                   // Update the state and call the callback
                   setState(() {

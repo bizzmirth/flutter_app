@@ -81,7 +81,7 @@ class IsarService {
       });
       return updated;
     } catch (e) {
-      print("Error updating ${T.toString()}: $e");
+      Logger.error("Error updating ${T.toString()}: $e");
       return false;
     }
   }

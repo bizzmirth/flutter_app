@@ -125,7 +125,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.people),
+                    leading: Icon(Icons.account_balance_wallet),
                     title: Text('Top Up Wallet'),
                     onTap: () {
                       Navigator.push(
@@ -138,7 +138,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.people),
+                    leading: Icon(Icons.account_balance_wallet),
                     title: Text('Referral Wallet'),
                     onTap: () {
                       Navigator.push(
@@ -335,32 +335,32 @@ class _CDashboardPageState extends State<CDashboardPage> {
     );
   }
 
-  Widget _buildTopPerformersSection1() {
-    List<Map<String, dynamic>> departments = [
-      {"name": "Booking", "performers": _getDummyPerformers2()},
-    ];
+  // Widget _buildTopPerformersSection1() {
+  //   List<Map<String, dynamic>> departments = [
+  //     {"name": "Booking", "performers": _getDummyPerformers2()},
+  //   ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GridView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 1,
-            crossAxisSpacing: 2,
-            mainAxisSpacing: 13,
-            childAspectRatio: 1.7,
-          ),
-          itemCount: departments.length,
-          itemBuilder: (context, index) {
-            var dept = departments[index];
-            return _buildDepartmentCard1(dept["name"], dept["performers"]);
-          },
-        ),
-      ],
-    );
-  }
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       GridView.builder(
+  //         shrinkWrap: true,
+  //         physics: NeverScrollableScrollPhysics(),
+  //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+  //           crossAxisCount: 1,
+  //           crossAxisSpacing: 2,
+  //           mainAxisSpacing: 13,
+  //           childAspectRatio: 1.7,
+  //         ),
+  //         itemCount: departments.length,
+  //         itemBuilder: (context, index) {
+  //           var dept = departments[index];
+  //           return _buildDepartmentCard1(dept["name"], dept["performers"]);
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _drawerItem(
       BuildContext context, IconData icon, String text, Widget page,
@@ -378,175 +378,175 @@ class _CDashboardPageState extends State<CDashboardPage> {
     );
   }
 
-  Widget _buildDepartmentCard1(
-      String department, List<Map<String, String>> performers) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      elevation: 3,
-      child: Padding(
-        padding: EdgeInsets.all(25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    "Current $department's",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  height: 15,
-                )
-              ],
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 15,
-                ),
-                Text(
-                  " Booking ID",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 25,
-                ),
-                Text(
-                  " Customer Name",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 55,
-                ),
-                Text(
-                  "Package Name",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 25,
-                ),
-                Text(
-                  "Amount",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 25,
-                ),
-                Text(
-                  "Booking Date",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 15,
-                ),
-                Text(
-                  "Travel Date",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
-              ],
-            ),
-            SizedBox(height: 10),
-            Divider(),
-            Expanded(
-              child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: performers.length,
-                itemBuilder: (context, rank) {
-                  return Row(
-                    children: [
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Text(performers[rank]["bookingid"]!),
-                      SizedBox(
-                        width: 45,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width:
-                                120, // Set a fixed width to keep all names aligned
-                            child: Text(
-                              performers[rank]["name"]!,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                              overflow: TextOverflow
-                                  .ellipsis, // Ensures long names don't break layout
-                              maxLines: 1, // Keeps text on a single line
-                            ),
-                          ),
-                          Text(
-                            performers[rank]["custid"]!,
-                            style: TextStyle(color: Color(0xFF495057)),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        width: 50,
-                      ),
-                      Text(
-                        performers[rank]["pname"]!,
-                      ),
-                      SizedBox(
-                        width: 50,
-                      ),
-                      Text(
-                        "₹${performers[rank]["amt"]!}",
-                      ),
-                      SizedBox(
-                        width: 36,
-                      ),
-                      Text(
-                        performers[rank]["bdate"]!,
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        performers[rank]["tdate"]!,
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  null;
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, // White text
-                  backgroundColor:
-                      Color.fromARGB(255, 81, 131, 246), // Same blue as header
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  textStyle:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  elevation: 5, // Slight shadow for better UI feel
-                ),
-                child: Text('View More'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _buildDepartmentCard1(
+  //     String department, List<Map<String, String>> performers) {
+  //   return Card(
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  //     elevation: 3,
+  //     child: Padding(
+  //       padding: EdgeInsets.all(25),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Row(
+  //             children: [
+  //               Expanded(
+  //                 child: Text(
+  //                   "Current $department's",
+  //                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           SizedBox(
+  //             height: 5,
+  //           ),
+  //           Divider(),
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.end,
+  //             children: [
+  //               SizedBox(
+  //                 height: 15,
+  //               )
+  //             ],
+  //           ),
+  //           Row(
+  //             children: [
+  //               SizedBox(
+  //                 width: 15,
+  //               ),
+  //               Text(
+  //                 " Booking ID",
+  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+  //               ),
+  //               SizedBox(
+  //                 width: 25,
+  //               ),
+  //               Text(
+  //                 " Customer Name",
+  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+  //               ),
+  //               SizedBox(
+  //                 width: 55,
+  //               ),
+  //               Text(
+  //                 "Package Name",
+  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+  //               ),
+  //               SizedBox(
+  //                 width: 25,
+  //               ),
+  //               Text(
+  //                 "Amount",
+  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+  //               ),
+  //               SizedBox(
+  //                 width: 25,
+  //               ),
+  //               Text(
+  //                 "Booking Date",
+  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+  //               ),
+  //               SizedBox(
+  //                 width: 15,
+  //               ),
+  //               Text(
+  //                 "Travel Date",
+  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+  //               ),
+  //               Spacer(),
+  //             ],
+  //           ),
+  //           SizedBox(height: 10),
+  //           Divider(),
+  //           Expanded(
+  //             child: ListView.builder(
+  //               physics: NeverScrollableScrollPhysics(),
+  //               itemCount: performers.length,
+  //               itemBuilder: (context, rank) {
+  //                 return Row(
+  //                   children: [
+  //                     SizedBox(
+  //                       width: 15,
+  //                     ),
+  //                     Text(performers[rank]["bookingid"]!),
+  //                     SizedBox(
+  //                       width: 45,
+  //                     ),
+  //                     Column(
+  //                       crossAxisAlignment: CrossAxisAlignment.start,
+  //                       children: [
+  //                         SizedBox(
+  //                           width:
+  //                               120, // Set a fixed width to keep all names aligned
+  //                           child: Text(
+  //                             performers[rank]["name"]!,
+  //                             style: TextStyle(fontWeight: FontWeight.bold),
+  //                             overflow: TextOverflow
+  //                                 .ellipsis, // Ensures long names don't break layout
+  //                             maxLines: 1, // Keeps text on a single line
+  //                           ),
+  //                         ),
+  //                         Text(
+  //                           performers[rank]["custid"]!,
+  //                           style: TextStyle(color: Color(0xFF495057)),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     SizedBox(
+  //                       width: 50,
+  //                     ),
+  //                     Text(
+  //                       performers[rank]["pname"]!,
+  //                     ),
+  //                     SizedBox(
+  //                       width: 50,
+  //                     ),
+  //                     Text(
+  //                       "₹${performers[rank]["amt"]!}",
+  //                     ),
+  //                     SizedBox(
+  //                       width: 36,
+  //                     ),
+  //                     Text(
+  //                       performers[rank]["bdate"]!,
+  //                     ),
+  //                     SizedBox(
+  //                       width: 20,
+  //                     ),
+  //                     Text(
+  //                       performers[rank]["tdate"]!,
+  //                     ),
+  //                   ],
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //           Center(
+  //             child: ElevatedButton(
+  //               onPressed: () {
+  //                 null;
+  //               },
+  //               style: ElevatedButton.styleFrom(
+  //                 foregroundColor: Colors.white, // White text
+  //                 backgroundColor:
+  //                     Color.fromARGB(255, 81, 131, 246), // Same blue as header
+  //                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+  //                 textStyle:
+  //                     TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(25),
+  //                 ),
+  //                 elevation: 5, // Slight shadow for better UI feel
+  //               ),
+  //               child: Text('View More'),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildHeader() {
     return Text(
@@ -559,54 +559,4 @@ class _CDashboardPageState extends State<CDashboardPage> {
       ),
     );
   }
-}
-
-List<Map<String, String>> _getDummyPerformers2() {
-  return [
-    {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
-    },
-    {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
-    },
-    {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
-    },
-    {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
-    },
-    {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
-    },
-  ];
 }
