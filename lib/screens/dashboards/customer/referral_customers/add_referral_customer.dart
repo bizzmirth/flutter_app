@@ -231,7 +231,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
   Future<void> _submitForm() async {
     try {
-      // Reset image validation errors first
       setState(() {
         _showImageValidationErrors = false;
       });
@@ -242,14 +241,11 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       final String customerType;
       final String paidAmount;
 
-      // Validate form fields
       final formState = _formKey.currentState;
       bool isFormValid = formState != null && formState.validate();
 
-      // Validate images
       bool areImagesValid = _validateImages();
 
-      // If either form or images are invalid, show errors and scroll to first error
       if (!isFormValid || !areImagesValid) {
         if (!areImagesValid) {
           setState(() {
@@ -265,7 +261,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         return;
       }
 
-      // Build document paths map
       selectedFiles.forEach((key, value) {
         if (value != null) {
           String filePath = value.path;
@@ -292,7 +287,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         }
       });
 
-      // Upload images
       if (selectedFiles["Profile Picture"] != null) {
         await controller.uploadImage(
             context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
@@ -318,7 +312,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
             context, 'payment_proof', selectedFiles["Payment Proof"]!.path);
       }
 
-      // Handle payment mode specific data
       if (_selectedPaymentMode == "Cheque") {
         chequeNo = _chequeNoController.text;
         chequeDate = _chequeDateController.text;
@@ -327,7 +320,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         transactionId = _transactionIDController.text;
       }
 
-      // Determine customer type and paid amount
       if (_selectedPayment == "Free") {
         customerType = "Free";
         paidAmount = "Free";
@@ -341,8 +333,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         customerType = "Premium Plus";
         paidAmount = "35,000";
       }
-
-      // Create new customer object
       final newCustomer = PendingCustomer()
         ..taReferenceNo = _taRefrenceIdController.text
         ..taReferenceName = _taRefrenceNameController.text
@@ -379,7 +369,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         ..paidAmount = paidAmount
         ..customerType = customerType;
 
-      // Submit customer data
       await controller.apiAddCustomer(newCustomer);
       clearFormFields();
       Navigator.pop(context);

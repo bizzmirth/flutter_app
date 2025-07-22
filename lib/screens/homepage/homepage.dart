@@ -11,7 +11,6 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,7 +26,6 @@ class _HomePageState extends State<HomePage> {
   final SharedPrefHelper _sharedPrefHelper = SharedPrefHelper();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchEmployeeType();
   }
@@ -85,15 +83,15 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: SideNavDrawer(), // ✅ Added Side Navigation Drawer
+      drawer: SideNavDrawer(),
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 81, 131, 246),
         title: Text(
           'Bizzmirth Holidays Pvt. Ltd.',
           style: GoogleFonts.poppins(
-            fontSize: 24, // Increased font size for better readability
-            fontWeight: FontWeight.w700, // Bold weight for prominence
-            color: Colors.white, // White font color for contrast
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
           ),
           overflow: TextOverflow.ellipsis,
         ),

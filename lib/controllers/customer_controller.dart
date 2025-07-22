@@ -41,7 +41,6 @@ class CustomerController extends ChangeNotifier {
   String? get userCustomerId => _userCustomerId;
   String? get customerRefrenceName => _customerRefrenceName;
   String? get userTaReferenceNo => _userTaReferenceNo;
-
   String? get userTaRefrenceName => _userTaRefrenceName;
 
   void clearError() {
@@ -80,6 +79,7 @@ class CustomerController extends ChangeNotifier {
                   '${customer['firstname']} ${customer['lastname']}';
               _userRegDate = customer['register_date'];
               _userTaRefrenceName = customer['ta_reference_name'];
+              _userTaReferenceNo = customer['ta_reference_no'];
               await SharedPrefHelper().saveCurrentUserCustId(_userCustomerId!);
               await SharedPrefHelper().saveCurrentUserRegDate(_userRegDate!);
               Logger.success(

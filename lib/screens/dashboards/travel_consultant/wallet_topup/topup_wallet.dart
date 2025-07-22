@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/approve_tc_payments_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/pending_transactions_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/transactions_history_page.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TopUpWalletPage extends StatefulWidget {
   final String title;
@@ -35,6 +37,9 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
   void initState() {
     super.initState();
     getSharedPrefData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CustomerController>().getRegCustomerCount();
+    });
     _controller = AnimationController(
       duration: Duration(seconds: 1),
       vsync: this,
@@ -93,7 +98,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
           children: [
             _buildAnimatedWallet(),
             SizedBox(height: 20),
-            _buildTopUpFields(),
+            _buildTopUpFields(context),
             SizedBox(height: 20),
             Container(
               width: 300,
@@ -147,13 +152,15 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
     );
   }
 
-  Widget _buildTopUpFields() {
+  Widget _buildTopUpFields(context) {
+    final controller = Provider.of<CustomerController>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildReadOnlyField("TA Reference ID", "TA12345"),
+        _buildReadOnlyField("TA Reference ID", controller.userTaReferenceNo!),
         SizedBox(height: 10),
-        _buildReadOnlyField("TA Reference Name", "John Doe"),
+        _buildReadOnlyField(
+            "TA Reference Name", controller.userTaRefrenceName!),
         SizedBox(height: 10),
         _buildAmountField(),
         SizedBox(height: 10),
