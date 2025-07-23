@@ -71,4 +71,9 @@ class SharedPrefHelper {
     await prefs.remove(_userEmailKey);
     await prefs.remove(_userTypeKey);
   }
+
+  Future<void> clearUserDataType() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user_data_type');
+  }
 }

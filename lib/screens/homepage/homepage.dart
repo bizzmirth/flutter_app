@@ -24,37 +24,93 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = true;
   String error = '';
   final SharedPrefHelper _sharedPrefHelper = SharedPrefHelper();
+
   @override
   void initState() {
     super.initState();
-    fetchEmployeeType();
+    loadUserTypes();
   }
 
-  Future<void> fetchEmployeeType() async {
+  Future<void> loadUserTypes() async {
     try {
+      final String? storedData =
+          await _sharedPrefHelper.getUserDataType('user_data_type');
+
+      if (storedData != null && storedData.isNotEmpty) {
+        Logger.info("Loading user types from SharedPreferences");
+        final jsonData = json.decode(storedData);
+        final userTypeResponse = UserTypeResponse.fromJson(jsonData);
+
+        setState(() {
+          userTypes = userTypeResponse.data;
+          isLoading = false;
+        });
+
+        Logger.success(
+            "User types loaded from cache: ${userTypes.length} items");
+      } else {
+        Logger.info("No cached data found, fetching from API");
+        await fetchEmployeeTypeFromAPI();
+      }
+    } catch (e) {
+      Logger.error("Error loading user types: $e");
+      await fetchEmployeeTypeFromAPI();
+    }
+  }
+
+  Future<void> fetchEmployeeTypeFromAPI() async {
+    try {
+      setState(() {
+        isLoading = true;
+        error = '';
+      });
+
       final response = await http
           .get(Uri.parse('https://testca.uniqbizz.com/api/user_type'));
 
       if (response.statusCode == 200) {
-        Logger.info("response from user type api: ${response.body}");
+        Logger.info("Response from user type API: ${response.body}");
         final jsonData = json.decode(response.body);
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
         await _sharedPrefHelper.saveUserDataType(response.body);
+        Logger.success("User types saved to SharedPreferences");
 
         setState(() {
           userTypes = userTypeResponse.data;
+          isLoading = false;
         });
       } else {
-        error = 'Failed to load user types. Status: ${response.statusCode}';
-        Logger.error("Else Condition::error fetching users");
+        setState(() {
+          error = 'Failed to load user types. Status: ${response.statusCode}';
+          isLoading = false;
+        });
+        Logger.error("API Error: Status ${response.statusCode}");
       }
     } catch (e) {
-      Logger.error("error fetching users $e");
+      Logger.error("Error fetching user types from API: $e");
       setState(() {
         error = 'Error fetching user types: $e';
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> refreshUserTypes() async {
+    Logger.info("Force refreshing user types from API");
+    await fetchEmployeeTypeFromAPI();
+  }
+
+  Future<void> clearCachedUserTypes() async {
+    try {
+      await _sharedPrefHelper.clearUserDataType();
+      setState(() {
+        userTypes = [];
+        isLoading = true;
+      });
+      Logger.info("Cached user types cleared");
+    } catch (e) {
+      Logger.error("Error clearing cached user types: $e");
     }
   }
 
@@ -82,6 +138,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // double deviceWidth = MediaQuery.of(context).size.width;
+    // Logger.info("Device Width: $deviceWidth pixels");
     return Scaffold(
       drawer: SideNavDrawer(),
       appBar: AppBar(
@@ -96,18 +154,51 @@ class _HomePageState extends State<HomePage> {
           overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: Colors.white),
+            onPressed: refreshUserTypes,
+            tooltip: 'Refresh Data',
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            HeaderSection(),
-            CarouselSection(),
-            TopSellingDestinations(),
-            TopSellingPackages(),
-            FooterSection(),
-          ],
-        ),
-      ),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : error.isNotEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Error: $error',
+                        style: TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: refreshUserTypes,
+                        child: Text('Retry'),
+                      ),
+                    ],
+                  ),
+                )
+              : RefreshIndicator(
+                  onRefresh: refreshUserTypes,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        HeaderSection(),
+                        CarouselSection(),
+                        TopSellingDestinations(),
+                        TopSellingPackages(),
+                        FooterSection(),
+                      ],
+                    ),
+                  ),
+                ),
     );
   }
 }
