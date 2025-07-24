@@ -155,11 +155,11 @@ class _HomePageState extends State<HomePage> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: Icon(Icons.refresh, color: Colors.white),
-            onPressed: refreshUserTypes,
-            tooltip: 'Refresh Data',
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.refresh, color: Colors.white),
+          //   onPressed: refreshUserTypes,
+          //   tooltip: 'Refresh Data',
+          // ),
         ],
       ),
       body: isLoading

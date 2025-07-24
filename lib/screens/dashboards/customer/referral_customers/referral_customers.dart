@@ -69,7 +69,10 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                         ),
                       ),
                       Divider(thickness: 1, color: Colors.black26),
-                      FilterBar(),
+                      FilterBar(
+                        userCount: customerController.pendingCustomers.length
+                            .toString(),
+                      ),
 
                       // Paginated Table for Pending List
                       Card(
@@ -126,7 +129,10 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
                       // MyEmployeeRegDataSource
 
-                      FilterBar(),
+                      FilterBar(
+                        userCount: customerController.registeredCustomers.length
+                            .toString(),
+                      ),
 
                       // Paginated Table for Pending List
                       Card(

@@ -7,10 +7,12 @@ import 'package:bizzmirth_app/entities/registered_employee/registered_employee_m
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/book_now_page/book_now_page.dart';
+import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -189,57 +191,89 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
   }
 
   Widget _buildCard(SummaryCardData data) {
+    bool isWalletCard = data.title.contains('WALLET');
+
     return Flexible(
-      child: AnimatedContainer(
-        duration: Duration(seconds: 1),
-        curve: Curves.easeInOut,
-        height: 120,
-        width: 240,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          gradient: LinearGradient(
-            colors: [
-              colors[_currentColorIndex].withOpacity(0.8),
-              colors[(_currentColorIndex + 1) % colors.length].withOpacity(0.8),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(data.icon, size: 35, color: Colors.white),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      data.title,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+      child: GestureDetector(
+        onTap: isWalletCard
+            ? () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WalletDetailsPage(),
                   ),
-                ],
-              ),
-              Spacer(),
-              Text(
-                data.value,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                );
+              }
+            : null,
+        child: AnimatedContainer(
+          duration: Duration(seconds: 1),
+          curve: Curves.easeInOut,
+          height: 120,
+          width: 240,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: [
+                colors[_currentColorIndex].withOpacity(0.8),
+                colors[(_currentColorIndex + 1) % colors.length]
+                    .withOpacity(0.8),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            // Add subtle shadow for clickable effect
+            boxShadow: isWalletCard
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(data.icon, size: 35, color: Colors.white),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        data.title,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    // Add tap indicator for wallet card
+                    if (isWalletCard)
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Colors.white.withOpacity(0.7),
+                      ),
+                  ],
                 ),
-              ),
-            ],
+                Spacer(),
+                Text(
+                  data.value,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1036,10 +1070,165 @@ String capitalize(String input) {
 }
 
 class FilterBar extends StatefulWidget {
-  const FilterBar({super.key});
+  final String? userCount;
+  const FilterBar({super.key, this.userCount});
 
   @override
   _FilterBarState createState() => _FilterBarState();
+}
+
+class _FilterBarState extends State<FilterBar> {
+  TextEditingController searchController = TextEditingController();
+  DateTime? fromDate;
+  DateTime? toDate;
+
+  int countUsers = 100; // Example count
+
+  String? fromDateError;
+  String? toDateError;
+
+  Future<void> _selectDate(BuildContext context, bool isFromDate) async {
+    DateTime initialDate = isFromDate
+        ? fromDate ?? DateTime.now()
+        : toDate ?? fromDate ?? DateTime.now();
+
+    DateTime firstDate =
+        isFromDate ? DateTime(2000) : fromDate ?? DateTime(2000);
+    DateTime lastDate = isFromDate ? toDate ?? DateTime(2101) : DateTime(2101);
+
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        if (isFromDate) {
+          if (toDate != null && pickedDate.isAfter(toDate!)) {
+            fromDateError = "From Date can't be after To Date";
+          } else {
+            fromDate = pickedDate;
+            fromDateError = null;
+          }
+        } else {
+          if (fromDate != null && pickedDate.isBefore(fromDate!)) {
+            toDateError = "To Date can't be before From Date";
+          } else {
+            toDate = pickedDate;
+            toDateError = null;
+          }
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String totalUsers = widget.userCount ?? "100";
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(10), // Rounded corners
+        ),
+        padding:
+            EdgeInsets.symmetric(horizontal: 6, vertical: 6), // Light padding
+
+        child: Row(
+          children: [
+            SizedBox(width: 15),
+            // Search Bar
+            Expanded(
+              flex: 2,
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: "Search...",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                    borderSide: BorderSide.none, // No border line
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                ),
+              ),
+            ),
+
+            SizedBox(width: 10),
+
+            // From Date Picker
+            Expanded(
+              flex: 1,
+              child: GestureDetector(
+                onTap: () => _selectDate(context, true),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                  ),
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    fromDate == null
+                        ? "From Date"
+                        : DateFormat.yMMMd().format(fromDate!),
+                    style: TextStyle(color: Colors.black54),
+                  ),
+                ),
+              ),
+            ),
+
+            Text("  --  "),
+
+            // To Date Picker
+            Expanded(
+              flex: 1,
+              child: GestureDetector(
+                onTap: () => _selectDate(context, false),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                  ),
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    toDate == null
+                        ? "To Date"
+                        : DateFormat.yMMMd().format(toDate!),
+                    style: TextStyle(color: Colors.black54),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(width: 10),
+
+            // Count Users
+            Expanded(
+              flex: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10), // Rounded corners
+                ),
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Text("Users: $totalUsers"),
+              ),
+            ),
+
+            SizedBox(width: 16),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 Future<String?> getDepartmentNameById(String departmentId) async {
@@ -1167,159 +1356,6 @@ class _ValidationTarget {
     required this.key,
     required this.hasError,
   });
-}
-
-class _FilterBarState extends State<FilterBar> {
-  TextEditingController searchController = TextEditingController();
-  DateTime? fromDate;
-  DateTime? toDate;
-
-  int countUsers = 100; // Example count
-
-  String? fromDateError;
-  String? toDateError;
-
-  Future<void> _selectDate(BuildContext context, bool isFromDate) async {
-    DateTime initialDate = isFromDate
-        ? fromDate ?? DateTime.now()
-        : toDate ?? fromDate ?? DateTime.now();
-
-    DateTime firstDate =
-        isFromDate ? DateTime(2000) : fromDate ?? DateTime(2000);
-    DateTime lastDate = isFromDate ? toDate ?? DateTime(2101) : DateTime(2101);
-
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
-    );
-
-    if (pickedDate != null) {
-      setState(() {
-        if (isFromDate) {
-          if (toDate != null && pickedDate.isAfter(toDate!)) {
-            fromDateError = "From Date can't be after To Date";
-          } else {
-            fromDate = pickedDate;
-            fromDateError = null;
-          }
-        } else {
-          if (fromDate != null && pickedDate.isBefore(fromDate!)) {
-            toDateError = "To Date can't be before From Date";
-          } else {
-            toDate = pickedDate;
-            toDateError = null;
-          }
-        }
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(10), // Rounded corners
-        ),
-        padding:
-            EdgeInsets.symmetric(horizontal: 6, vertical: 6), // Light padding
-
-        child: Row(
-          children: [
-            SizedBox(width: 15),
-            // Search Bar
-            Expanded(
-              flex: 2,
-              child: TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  hintText: "Search...",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                    borderSide: BorderSide.none, // No border line
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                ),
-              ),
-            ),
-
-            SizedBox(width: 10),
-
-            // From Date Picker
-            Expanded(
-              flex: 1,
-              child: GestureDetector(
-                onTap: () => _selectDate(context, true),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    fromDate == null
-                        ? "From Date"
-                        : DateFormat.yMMMd().format(fromDate!),
-                    style: TextStyle(color: Colors.black54),
-                  ),
-                ),
-              ),
-            ),
-
-            Text("  --  "),
-
-            // To Date Picker
-            Expanded(
-              flex: 1,
-              child: GestureDetector(
-                onTap: () => _selectDate(context, false),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    toDate == null
-                        ? "To Date"
-                        : DateFormat.yMMMd().format(toDate!),
-                    style: TextStyle(color: Colors.black54),
-                  ),
-                ),
-              ),
-            ),
-
-            SizedBox(width: 10),
-
-            // Count Users
-            Expanded(
-              flex: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10), // Rounded corners
-                ),
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Text("Users: $countUsers"),
-              ),
-            ),
-
-            SizedBox(width: 16),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 // filter bar

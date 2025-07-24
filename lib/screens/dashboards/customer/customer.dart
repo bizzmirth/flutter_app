@@ -5,10 +5,10 @@ import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
-import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -126,27 +126,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
                   ),
                   ListTile(
                     leading: Icon(Icons.account_balance_wallet),
-                    title: Text('Top Up Wallet'),
+                    title: Text('My Wallet'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => TopUpWalletPage(
-                                  title: "Top Up Wallet",
-                                )),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.account_balance_wallet),
-                    title: Text('Referral Wallet'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TopUpWalletPage(
-                                  title: "Referral Wallet",
-                                )),
+                            builder: (context) => WalletDetailsPage()),
                       );
                     },
                   ),
@@ -237,7 +222,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                     ),
                     Divider(thickness: 1, color: Colors.black26),
-                    FilterBar(),
+                    FilterBar(
+                      userCount:
+                          contrller.topCustomerRefererals.length.toString(),
+                    ),
                     Card(
                       elevation: 5,
                       shape: RoundedRectangleBorder(
