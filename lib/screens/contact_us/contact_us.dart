@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/google_maps_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,11 +31,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
       appBar: AppBar(
         title: Text(
           'Contact Us',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -57,11 +54,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
               // Title
               Text(
                 "Let's Connect!",
-                style: GoogleFonts.poppins(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                style: Appwidget.poppinsHeadline(),
               ),
               const SizedBox(height: 10),
 

@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class WalletDetailsPage extends StatefulWidget {
   const WalletDetailsPage({super.key});
@@ -45,11 +45,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
       appBar: AppBar(
         title: Text(
           'My Wallet',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

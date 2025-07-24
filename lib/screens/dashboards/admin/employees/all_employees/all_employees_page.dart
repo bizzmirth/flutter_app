@@ -7,10 +7,10 @@ import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.d
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/add_employees.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class AllEmployeesPage extends StatefulWidget {
@@ -101,14 +101,7 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
     final controller = Provider.of<EmployeeController>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'All Employees',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+        title: Text('All Employees', style: Appwidget.poppinsAppBarTitle()),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
         elevation: 0,

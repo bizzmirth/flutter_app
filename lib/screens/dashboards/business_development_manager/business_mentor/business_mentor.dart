@@ -1,8 +1,8 @@
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_development_manager/business_mentor/add_business_mentor.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ViewBusinessMentorPage extends StatefulWidget {
   const ViewBusinessMentorPage({super.key});
@@ -12,8 +12,8 @@ class ViewBusinessMentorPage extends StatefulWidget {
 }
 
 class _ViewBusinessMentorPageState extends State<ViewBusinessMentorPage> {
-  int _rowsPerPage = 5; // Default rows per page
-  int _rowsPerPage1 = 5; // Default rows per page
+  int _rowsPerPage = 5;
+  int _rowsPerPage1 = 5;
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
@@ -24,11 +24,7 @@ class _ViewBusinessMentorPageState extends State<ViewBusinessMentorPage> {
       appBar: AppBar(
         title: Text(
           'View Business Mentors',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

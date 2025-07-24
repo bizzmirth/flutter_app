@@ -1,7 +1,7 @@
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/packages/category/add_category.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -22,11 +22,7 @@ class _CategoryPageState extends State<CategoryPage> {
       appBar: AppBar(
         title: Text(
           'Manage Categories',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

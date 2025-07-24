@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:bizzmirth_app/models/user_type_mode.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/carousel_section.dart';
 import 'package:bizzmirth_app/screens/homepage/drawer/sidenav_drawer.dart';
 import 'package:bizzmirth_app/widgets/footer_section.dart';
@@ -9,7 +10,6 @@ import 'package:bizzmirth_app/widgets/top_selling_destinations.dart';
 import 'package:bizzmirth_app/widgets/top_selling_packages.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -146,11 +146,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color.fromARGB(255, 81, 131, 246),
         title: Text(
           'Bizzmirth Holidays Pvt. Ltd.',
-          style: GoogleFonts.poppins(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
           overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,

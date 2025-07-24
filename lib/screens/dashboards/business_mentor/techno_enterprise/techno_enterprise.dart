@@ -5,9 +5,9 @@ import 'package:bizzmirth_app/entities/pending_techno_enterprise/pending_techno_
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_mentor/techno_enterprise/add_techno_enterprise.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ViewTEPage extends StatefulWidget {
   const ViewTEPage({super.key});
@@ -54,14 +54,8 @@ class _ViewTEPageState extends State<ViewTEPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'View Techno Enterprise',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+        title: Text('View Techno Enterprise',
+            style: Appwidget.poppinsAppBarTitle()),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
         elevation: 0,

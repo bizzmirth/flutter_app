@@ -1,6 +1,6 @@
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AmenitiesPage extends StatefulWidget {
   const AmenitiesPage({super.key});
@@ -24,11 +24,7 @@ class _AmenitiesPageState extends State<AmenitiesPage> {
       appBar: AppBar(
         title: Text(
           'Amenities',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

@@ -16,6 +16,7 @@ import 'package:bizzmirth_app/screens/dashboards/admin/techno_enterprise/techno_
 import 'package:bizzmirth_app/screens/dashboards/admin/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -251,11 +252,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       appBar: AppBar(
         title: Text(
           'Admin Dashboard',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

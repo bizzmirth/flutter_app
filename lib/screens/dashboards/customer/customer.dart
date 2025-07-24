@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_produ
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
 import 'package:flutter/material.dart';
@@ -41,11 +42,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
       appBar: AppBar(
         title: Text(
           'Customer Dashboard',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -192,7 +189,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       icon: Icons.calendar_today),
                   SummaryCardData(
                       title: 'MY WALLET',
-                      value: '₹ 2000',
+                      value: '',
                       icon: Icons.account_balance_wallet),
                 ],
               ),
@@ -240,8 +237,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             DataColumn(label: Text("Rank")),
                             DataColumn(label: Text("Profile Picture")),
                             DataColumn(label: Text("Full Name")),
-                            DataColumn(label: Text("Joining Date")),
-                            DataColumn(label: Text("Count")),
+                            DataColumn(label: Text("Date Reg")),
+                            DataColumn(label: Text("Total CU Ref")),
                             DataColumn(label: Text("Status")),
                             DataColumn(label: Text("Active/Inactive")),
                           ],

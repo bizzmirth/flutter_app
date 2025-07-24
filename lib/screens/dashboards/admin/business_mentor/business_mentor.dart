@@ -6,11 +6,10 @@ import 'package:bizzmirth_app/entities/pending_business_mentor/pending_business_
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/business_mentor/add_business_mentor.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class BusinessMentorPage extends StatefulWidget {
   const BusinessMentorPage({super.key});
@@ -79,17 +78,11 @@ class _BusinessMentorPageState extends State<BusinessMentorPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller =
-        Provider.of<AdminBusniessMentorController>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Business Mentorsss',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

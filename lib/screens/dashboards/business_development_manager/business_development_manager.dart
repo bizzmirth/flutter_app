@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/screens/dashboards/business_development_manager/te
 import 'package:bizzmirth_app/screens/dashboards/business_development_manager/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,11 +26,7 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
       appBar: AppBar(
         title: Text(
           'Business Development Manager Dashboard',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

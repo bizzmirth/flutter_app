@@ -1,14 +1,13 @@
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class AddTcPage extends StatefulWidget {
   const AddTcPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _AddTcPageState createState() => _AddTcPageState();
 }
 
@@ -45,7 +44,7 @@ class _AddTcPageState extends State<AddTcPage> {
 
   void _removeFile(String fileType) {
     setState(() {
-      selectedFiles[fileType] = null; // 🔥 Remove selected file
+      selectedFiles[fileType] = null;
     });
   }
 
@@ -55,10 +54,8 @@ class _AddTcPageState extends State<AddTcPage> {
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        // ignore: deprecated_member_use
         labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
         filled: true,
-        // ignore: deprecated_member_use
         fillColor: Colors.white.withOpacity(0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -112,11 +109,7 @@ class _AddTcPageState extends State<AddTcPage> {
       appBar: AppBar(
         title: Text(
           'Add Travel Consultant',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

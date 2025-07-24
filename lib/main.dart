@@ -8,6 +8,7 @@ import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -4848,11 +4849,7 @@ class _ViewPackagePageState extends State<ViewPackagePage> {
       appBar: AppBar(
         title: Text(
           'Packages',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -5056,11 +5053,7 @@ class _AddTAcustPageState extends State<AddTAcustPage> {
       appBar: AppBar(
         title: Text(
           'Add Customer',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -5589,11 +5582,7 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
       appBar: AppBar(
         title: Text(
           'Enquiry Form',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -5616,11 +5605,7 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
               // Title
               Text(
                 "Enquiry/Quotation Form",
-                style: GoogleFonts.poppins(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                style: Appwidget.poppinsHeadline(),
               ),
               const SizedBox(height: 10),
               Row(

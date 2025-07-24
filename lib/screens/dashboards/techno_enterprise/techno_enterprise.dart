@@ -6,6 +6,7 @@ import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/payouts/produ
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/payouts/te_payouts/te_payouts.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,11 +25,7 @@ class _TEDashboardPageState extends State<TEDashboardPage> {
       appBar: AppBar(
         title: Text(
           'Techno Enterprise Dashboard',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

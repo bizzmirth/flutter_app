@@ -176,9 +176,9 @@ class MyDesigDataSource extends DataTableSource {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
-              SizedBox(height: 10), // 🔥 Add spacing
+              SizedBox(height: 10),
               SizedBox(
-                height: 50, // 🔥 Increase TextBox height
+                height: 50,
                 child: TextField(
                   controller: nameController,
                   readOnly: isViewMode,

@@ -1,6 +1,6 @@
 import 'package:bizzmirth_app/data_source/travel_consultant_product_markup_data_source.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ProductMarkupPage extends StatefulWidget {
   const ProductMarkupPage({super.key});
@@ -21,11 +21,7 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
       appBar: AppBar(
         title: Text(
           'Product Markup',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

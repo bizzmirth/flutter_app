@@ -1,6 +1,6 @@
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class PackageMarkupPage extends StatefulWidget {
   const PackageMarkupPage({super.key});
@@ -10,8 +10,8 @@ class PackageMarkupPage extends StatefulWidget {
 }
 
 class _PackageMarkupPageState extends State<PackageMarkupPage> {
-  int _rowsPerPage = 5; // Default rows per page
-  int _rowsPerPage1 = 5; // Default rows per page
+  int _rowsPerPage = 5;
+  int _rowsPerPage1 = 5;
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
@@ -22,11 +22,7 @@ class _PackageMarkupPageState extends State<PackageMarkupPage> {
       appBar: AppBar(
         title: Text(
           'Package Markup',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
