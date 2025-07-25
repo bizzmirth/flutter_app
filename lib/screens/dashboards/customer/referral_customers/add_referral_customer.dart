@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
@@ -1863,11 +1864,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                           SizedBox(height: 20),
                           Text(
                             "Attachments",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                            style: Appwidget.normalSubTitle(),
                           ),
                           SizedBox(height: 10),
                           _buildUploadButton("Profile Picture",

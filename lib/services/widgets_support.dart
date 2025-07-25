@@ -14,4 +14,12 @@ class Appwidget {
     return GoogleFonts.poppins(
         fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white);
   }
+
+  static TextStyle normalSubTitle() {
+    return TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      color: Colors.white,
+    );
+  }
 }

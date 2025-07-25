@@ -276,11 +276,7 @@ class _AddTcPageState extends State<AddTcPage> {
                   SizedBox(height: 20),
                   Text(
                     "Attachments",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: Appwidget.normalSubTitle(),
                   ),
                   SizedBox(height: 10),
                   _buildUploadButton("Profile Picture"),
