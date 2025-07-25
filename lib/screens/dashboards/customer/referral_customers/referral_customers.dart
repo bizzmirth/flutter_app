@@ -2,10 +2,11 @@ import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_pending_data_source.dart';
 import 'package:bizzmirth_app/data_source/cust_reg_data_source.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../widgets/filter_bar.dart';
 
 class ViewCustomersPage extends StatefulWidget {
   const ViewCustomersPage({super.key});

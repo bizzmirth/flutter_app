@@ -1,10 +1,8 @@
 import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
 import 'package:bizzmirth_app/data_source/admin_cust_pending_data_source.dart';
 import 'package:bizzmirth_app/data_source/admin_cust_registered_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/customer/add_customer.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
-import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
