@@ -109,6 +109,6 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/Bizzmirth.png"
+  image_path: "assets/bizzmirth_app_logo_padded.png"
   adaptive_icon_background: "#FFFFFF" # White background
-  adaptive_icon_foreground: "assets/Bizzmirth.png"
+  adaptive_icon_foreground: "assets/bizzmirth_app_logo_padded.png"

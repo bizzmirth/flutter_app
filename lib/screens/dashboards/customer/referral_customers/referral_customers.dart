@@ -133,6 +133,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                       FilterBar(
                         userCount: customerController.registeredCustomers.length
                             .toString(),
+                        userList: customerController.registeredCustomers,
                       ),
 
                       // Paginated Table for Pending List

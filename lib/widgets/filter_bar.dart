@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class FilterBar extends StatefulWidget {
+  final List? userList;
   final String? userCount;
-  const FilterBar({super.key, this.userCount});
+  const FilterBar({super.key, this.userCount, this.userList});
 
   @override
   _FilterBarState createState() => _FilterBarState();
