@@ -4,7 +4,18 @@ import 'package:intl/intl.dart';
 class FilterBar extends StatefulWidget {
   final List? userList;
   final String? userCount;
-  const FilterBar({super.key, this.userCount, this.userList});
+  final Function(String)? onSearchChanged;
+  final Function(DateTime?, DateTime?)? onDateRangeChanged;
+  final Function()? onClearFilters;
+
+  const FilterBar({
+    super.key,
+    this.userCount,
+    this.userList,
+    this.onSearchChanged,
+    this.onDateRangeChanged,
+    this.onClearFilters,
+  });
 
   @override
   _FilterBarState createState() => _FilterBarState();
@@ -14,11 +25,19 @@ class _FilterBarState extends State<FilterBar> {
   TextEditingController searchController = TextEditingController();
   DateTime? fromDate;
   DateTime? toDate;
-
-  int countUsers = 100; // Example count
-
   String? fromDateError;
   String? toDateError;
+
+  @override
+  void initState() {
+    super.initState();
+    // Listen to search changes and call the callback
+    searchController.addListener(() {
+      if (widget.onSearchChanged != null) {
+        widget.onSearchChanged!(searchController.text);
+      }
+    });
+  }
 
   Future<void> _selectDate(BuildContext context, bool isFromDate) async {
     DateTime initialDate = isFromDate
@@ -44,6 +63,10 @@ class _FilterBarState extends State<FilterBar> {
           } else {
             fromDate = pickedDate;
             fromDateError = null;
+            // Call the callback with updated date range
+            if (widget.onDateRangeChanged != null) {
+              widget.onDateRangeChanged!(fromDate, toDate);
+            }
           }
         } else {
           if (fromDate != null && pickedDate.isBefore(fromDate!)) {
@@ -51,115 +74,180 @@ class _FilterBarState extends State<FilterBar> {
           } else {
             toDate = pickedDate;
             toDateError = null;
+            // Call the callback with updated date range
+            if (widget.onDateRangeChanged != null) {
+              widget.onDateRangeChanged!(fromDate, toDate);
+            }
           }
         }
       });
     }
   }
 
+  void _clearFilters() {
+    setState(() {
+      searchController.clear();
+      fromDate = null;
+      toDate = null;
+      fromDateError = null;
+      toDateError = null;
+    });
+
+    // Call the clear callback
+    if (widget.onClearFilters != null) {
+      widget.onClearFilters!();
+    }
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    String totalUsers = widget.userCount ?? "100";
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(10), // Rounded corners
+    String totalUsers = widget.userCount ?? "0";
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+            child: Row(
+              children: [
+                SizedBox(width: 15),
+                // Search Bar
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                      hintText: "Search...",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                  ),
+                ),
+
+                SizedBox(width: 10),
+
+                // From Date Picker
+                Expanded(
+                  flex: 1,
+                  child: GestureDetector(
+                    onTap: () => _selectDate(context, true),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: fromDateError != null
+                            ? Border.all(color: Colors.red, width: 1)
+                            : null,
+                      ),
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        fromDate == null
+                            ? "From Date"
+                            : DateFormat.yMMMd().format(fromDate!),
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                    ),
+                  ),
+                ),
+
+                Text("  --  "),
+
+                // To Date Picker
+                Expanded(
+                  flex: 1,
+                  child: GestureDetector(
+                    onTap: () => _selectDate(context, false),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: toDateError != null
+                            ? Border.all(color: Colors.red, width: 1)
+                            : null,
+                      ),
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        toDate == null
+                            ? "To Date"
+                            : DateFormat.yMMMd().format(toDate!),
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(width: 10),
+
+                // Count Users
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Text("Users: $totalUsers"),
+                  ),
+                ),
+
+                SizedBox(width: 10),
+
+                // Clear Filters Button
+                IconButton(
+                  onPressed: _clearFilters,
+                  icon: Icon(Icons.clear, color: Colors.red),
+                  tooltip: "Clear Filters",
+                ),
+
+                SizedBox(width: 16),
+              ],
+            ),
+          ),
         ),
-        padding:
-            EdgeInsets.symmetric(horizontal: 6, vertical: 6), // Light padding
 
-        child: Row(
-          children: [
-            SizedBox(width: 15),
-            // Search Bar
-            Expanded(
-              flex: 2,
-              child: TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  hintText: "Search...",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                    borderSide: BorderSide.none, // No border line
+        // Error Messages
+        if (fromDateError != null || toDateError != null)
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            child: Row(
+              children: [
+                if (fromDateError != null)
+                  Text(
+                    fromDateError!,
+                    style: TextStyle(color: Colors.red, fontSize: 12),
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                ),
-              ),
+                if (fromDateError != null && toDateError != null)
+                  Text(" | ", style: TextStyle(color: Colors.red)),
+                if (toDateError != null)
+                  Text(
+                    toDateError!,
+                    style: TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+              ],
             ),
-
-            SizedBox(width: 10),
-
-            // From Date Picker
-            Expanded(
-              flex: 1,
-              child: GestureDetector(
-                onTap: () => _selectDate(context, true),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    fromDate == null
-                        ? "From Date"
-                        : DateFormat.yMMMd().format(fromDate!),
-                    style: TextStyle(color: Colors.black54),
-                  ),
-                ),
-              ),
-            ),
-
-            Text("  --  "),
-
-            // To Date Picker
-            Expanded(
-              flex: 1,
-              child: GestureDetector(
-                onTap: () => _selectDate(context, false),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    toDate == null
-                        ? "To Date"
-                        : DateFormat.yMMMd().format(toDate!),
-                    style: TextStyle(color: Colors.black54),
-                  ),
-                ),
-              ),
-            ),
-
-            SizedBox(width: 10),
-
-            // Count Users
-            Expanded(
-              flex: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10), // Rounded corners
-                ),
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Text("Users: $totalUsers"),
-              ),
-            ),
-
-            SizedBox(width: 16),
-          ],
-        ),
-      ),
+          ),
+      ],
     );
   }
 }
