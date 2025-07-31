@@ -184,7 +184,7 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: widget.cardData.map((data) => _buildCard(data)).toList(),
     );
   }
@@ -192,86 +192,89 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
   Widget _buildCard(SummaryCardData data) {
     bool isWalletCard = data.title.contains('WALLET');
 
-    return Flexible(
-      child: GestureDetector(
-        onTap: isWalletCard
-            ? () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WalletDetailsPage(),
-                  ),
-                );
-              }
-            : null,
-        child: AnimatedContainer(
-          duration: Duration(seconds: 1),
-          curve: Curves.easeInOut,
-          height: 120,
-          width: 240,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            gradient: LinearGradient(
-              colors: [
-                colors[_currentColorIndex].withOpacity(0.8),
-                colors[(_currentColorIndex + 1) % colors.length]
-                    .withOpacity(0.8),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return Container(
+      margin: EdgeInsets.only(left: 12),
+      child: Flexible(
+        child: GestureDetector(
+          onTap: isWalletCard
+              ? () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WalletDetailsPage(),
+                    ),
+                  );
+                }
+              : null,
+          child: AnimatedContainer(
+            duration: Duration(seconds: 1),
+            curve: Curves.easeInOut,
+            height: 120,
+            width: 240,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: [
+                  colors[_currentColorIndex].withOpacity(0.8),
+                  colors[(_currentColorIndex + 1) % colors.length]
+                      .withOpacity(0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              // Add subtle shadow for clickable effect
+              boxShadow: isWalletCard
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ]
+                  : null,
             ),
-            // Add subtle shadow for clickable effect
-            boxShadow: isWalletCard
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(data.icon, size: 35, color: Colors.white),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        data.title,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+            child: Padding(
+              padding: EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(data.icon, size: 35, color: Colors.white),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          data.title,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    // Add tap indicator for wallet card
-                    if (isWalletCard)
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: Colors.white.withOpacity(0.7),
-                      ),
-                  ],
-                ),
-                Spacer(),
-                Text(
-                  data.value,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                      // Add tap indicator for wallet card
+                      if (isWalletCard)
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: Colors.white.withOpacity(0.7),
+                        ),
+                    ],
                   ),
-                ),
-              ],
+                  Spacer(),
+                  Text(
+                    data.value,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/data_source/current_booking_data_source.dart';
 import 'package:bizzmirth_app/data_source/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_referral_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
@@ -40,6 +41,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final contrller = context.watch<CustomerController>();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -123,17 +125,18 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       );
                     },
                   ),
-                  ListTile(
-                    leading: Icon(Icons.account_balance_wallet),
-                    title: Text('My Wallet'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => WalletDetailsPage()),
-                      );
-                    },
-                  ),
+                  if (contrller.customerType != 'Free')
+                    ListTile(
+                      leading: Icon(Icons.account_balance_wallet),
+                      title: Text('My Wallet'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => WalletDetailsPage()),
+                        );
+                      },
+                    ),
                   ExpansionTile(
                     title: const Text("Payouts"),
                     leading: const Icon(Icons.payment),
@@ -145,6 +148,16 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           CustomerReferralPayouts(),
                           padding: true),
                     ],
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.history),
+                    title: Text('Order History'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => OrderHistory()),
+                      );
+                    },
                   ),
                   const Divider(),
                   Padding(
@@ -192,10 +205,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       title: 'TOTAL BOOKING',
                       value: '9',
                       icon: Icons.calendar_today),
-                  SummaryCardData(
-                      title: 'MY WALLET',
-                      value: '',
-                      icon: Icons.account_balance_wallet),
+                  if (contrller.customerType != 'Free')
+                    SummaryCardData(
+                        title: 'MY WALLET',
+                        value: '',
+                        icon: Icons.account_balance_wallet),
                 ],
               ),
               SizedBox(height: 20),

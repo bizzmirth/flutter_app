@@ -484,8 +484,10 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style:
-                  const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              )),
           Text(date, style: const TextStyle(fontSize: 14, color: Colors.grey)),
           const SizedBox(height: 8),
           Row(
@@ -501,7 +503,9 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                     color: statusColor, borderRadius: BorderRadius.circular(4)),
                 child: Text(status,
                     style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.bold)),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
               ),
             ],
           ),

@@ -7,6 +7,9 @@ import 'package:bizzmirth_app/controllers/designation_department_controller.dart
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
+import 'package:bizzmirth_app/screens/dashboards/admin/admin_dashboard.dart';
+import 'package:bizzmirth_app/screens/dashboards/admin/packages/order_history/order_history.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -82,12 +85,12 @@ final List<Map<String, dynamic>> orders = [
   },
   {
     "profilePicture": "https://randomuser.me/api/portraits/men/2.jpg",
-    "id": "2", // Changed from "Id" to "id"
-    "name": "Pandurang Naik", // Changed from "Name" to "name"
-    "phone": "9876543210", // Changed from "Phone/Email" to "phone"
+    "id": "2",
+    "name": "Pandurang Naik",
+    "phone": "9876543210",
     "phone1": "Pandurang Naik",
     "design": "BM",
-    "jd": "15/03/2021", // Changed from "JD" to "jd"
+    "jd": "15/03/2021",
     "status": "Pending",
   },
   {

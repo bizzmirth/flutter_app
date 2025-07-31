@@ -714,7 +714,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   children: [
                     TextSpan(text: "Payment made towards the "),
                     TextSpan(
-                      text: "${transaction.title}",
+                      text: transaction.title,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(text: " paid amount "),
@@ -724,7 +724,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ),
                     TextSpan(text: " towards "),
                     TextSpan(
-                      text: "${transaction.whom}",
+                      text: transaction.whom,
                     ),
                     TextSpan(text: " via "),
                     TextSpan(

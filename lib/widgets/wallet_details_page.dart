@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:flutter/material.dart';
 
@@ -20,9 +21,12 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
   int _currentColorIndex = 0;
   Timer? _timer;
 
+  String? _customerType;
+
   @override
   void initState() {
     super.initState();
+    getCustomerType();
     _timer = Timer.periodic(Duration(seconds: 2), (timer) {
       if (mounted) {
         setState(() {
@@ -30,6 +34,10 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
         });
       }
     });
+  }
+
+  void getCustomerType() async {
+    _customerType = await SharedPrefHelper().getCustomerType();
   }
 
   @override
@@ -131,40 +139,77 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
             // Wallet Options
             Row(
               children: [
-                Expanded(
-                  child: _buildWalletOptionCard(
-                    title: 'TOP UP\nWALLET',
-                    amount: '₹ 1,200',
-                    icon: Icons.add_circle_outline,
-                    onTap: () {
-                      // Navigate to top up wallet page
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TopUpWalletPage(
-                                  title: "Top Up Wallet",
-                                )),
-                      );
-                    },
+                if (_customerType == 'Prime' && _customerType == 'Premium')
+                  Expanded(
+                    child: _buildWalletOptionCard(
+                      title: 'Redeemable\nWALLET',
+                      amount: '₹ 1,200',
+                      icon: Icons.add_circle_outline,
+                      onTap: () {
+                        // Navigate to top up wallet page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TopUpWalletPage(
+                                    title: "Top Up Wallet",
+                                  )),
+                        );
+                      },
+                    ),
+                  )
+                else ...[
+                  Expanded(
+                    child: _buildWalletOptionCard(
+                      title: 'Redeemable\nWALLET',
+                      amount: '₹ 1,200',
+                      icon: Icons.add_circle_outline,
+                      onTap: () {
+                        // Navigate to top up wallet page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TopUpWalletPage(
+                                    title: "Top Up Wallet",
+                                  )),
+                        );
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: _buildWalletOptionCard(
-                    title: 'REFERRAL\nWALLET',
-                    amount: '₹ 800',
-                    icon: Icons.people_outline,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TopUpWalletPage(
-                                  title: "Referral Wallet",
-                                )),
-                      );
-                    },
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: _buildWalletOptionCard(
+                      title: 'Bookings\nWALLET',
+                      amount: '₹ 800',
+                      icon: Icons.people_outline,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TopUpWalletPage(
+                                    title: "Referral Wallet",
+                                  )),
+                        );
+                      },
+                    ),
                   ),
-                ),
+                ],
+                // SizedBox(width: 12),
+                // Expanded(
+                //   child: _buildWalletOptionCard(
+                //     title: 'Bookings\nWALLET',
+                //     amount: '₹ 800',
+                //     icon: Icons.people_outline,
+                //     onTap: () {
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //             builder: (context) => TopUpWalletPage(
+                //                   title: "Referral Wallet",
+                //                 )),
+                //       );
+                //     },
+                //   ),
+                // ),
               ],
             ),
 

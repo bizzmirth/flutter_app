@@ -18,6 +18,7 @@ class CustomerController extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   String? _userCustomerId;
+  String? _customerType;
   String? _customerRefrenceName;
   String? _userTaReferenceNo;
   String? _userTaRefrenceName;
@@ -27,6 +28,7 @@ class CustomerController extends ChangeNotifier {
   final List<RegisteredCustomer> _registeredCustomers = [];
   final List<PendingCustomer> _pendingCustomers = [];
   List<PendingCustomer> get pendingCustomers => _pendingCustomers;
+  String? get customerType => _customerType;
   List<RegisteredCustomer> get registeredCustomers => _registeredCustomers;
   List<double> _chartData = [];
   List<double> get chartData => _chartData;
@@ -80,11 +82,14 @@ class CustomerController extends ChangeNotifier {
               _userRegDate = customer['register_date'];
               _userTaRefrenceName = customer['ta_reference_name'];
               _userTaReferenceNo = customer['ta_reference_no'];
+              _customerType = customer['customer_type'];
+              await SharedPrefHelper().saveCustomerType(_customerType!);
               await SharedPrefHelper().saveCurrentUserCustId(_userCustomerId!);
               await SharedPrefHelper().saveCurrentUserRegDate(_userRegDate!);
               Logger.success(
                   "Found user with ca_customer_id: $_userCustomerId");
               Logger.success("User's ta_reference_no: $_userTaReferenceNo");
+              Logger.success("Customer type: $_customerType");
               break;
             }
           }
