@@ -405,8 +405,6 @@ class CustomerController extends ChangeNotifier {
       final fullUrl =
           'https://testca.uniqbizz.com/api/customers/add_customers_data.php';
 
-      final now = DateTime.now();
-      final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
       String oldDob = customer.dob ?? "";
       DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(oldDob);
       String newDob = DateFormat("yyyy-MM-dd").format(parsedDate);
@@ -625,8 +623,6 @@ class CustomerController extends ChangeNotifier {
       final fullUrl =
           'https://testca.uniqbizz.com/api/customers/edit_customers_data.php';
 
-      final now = DateTime.now();
-      final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
       String oldDob = customer.dob ?? "";
       DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(oldDob);
       String newDob = DateFormat("yyyy-MM-dd").format(parsedDate);

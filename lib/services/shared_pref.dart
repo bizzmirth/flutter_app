@@ -78,9 +78,12 @@ class SharedPrefHelper {
     await prefs.clear();
   }
 
-  Future<void> removeUserEmailAndType() async {
+  Future<void> removeDetails() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_userEmailKey);
+    await prefs.remove(_currentUserRegDate);
+    await prefs.remove(_customerTypeKey);
+    await prefs.remove(_currUserCustId);
     await prefs.remove(_userTypeKey);
   }
 

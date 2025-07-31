@@ -185,97 +185,96 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
-      children: widget.cardData.map((data) => _buildCard(data)).toList(),
+      children: widget.cardData
+          .map((data) => Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12.0),
+                  child: _buildCard(data),
+                ),
+              ))
+          .toList(),
     );
   }
 
   Widget _buildCard(SummaryCardData data) {
     bool isWalletCard = data.title.contains('WALLET');
 
-    return Container(
-      margin: EdgeInsets.only(left: 12),
-      child: Flexible(
-        child: GestureDetector(
-          onTap: isWalletCard
-              ? () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WalletDetailsPage(),
-                    ),
-                  );
-                }
+    return GestureDetector(
+      onTap: isWalletCard
+          ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WalletDetailsPage(),
+                ),
+              );
+            }
+          : null,
+      child: AnimatedContainer(
+        duration: Duration(seconds: 1),
+        curve: Curves.easeInOut,
+        height: 120,
+        width: 240,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            colors: [
+              colors[_currentColorIndex].withOpacity(0.8),
+              colors[(_currentColorIndex + 1) % colors.length].withOpacity(0.8),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: isWalletCard
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ]
               : null,
-          child: AnimatedContainer(
-            duration: Duration(seconds: 1),
-            curve: Curves.easeInOut,
-            height: 120,
-            width: 240,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: LinearGradient(
-                colors: [
-                  colors[_currentColorIndex].withOpacity(0.8),
-                  colors[(_currentColorIndex + 1) % colors.length]
-                      .withOpacity(0.8),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              // Add subtle shadow for clickable effect
-              boxShadow: isWalletCard
-                  ? [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(data.icon, size: 35, color: Colors.white),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          data.title,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                  Icon(data.icon, size: 35, color: Colors.white),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      data.title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      // Add tap indicator for wallet card
-                      if (isWalletCard)
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: Colors.white.withOpacity(0.7),
-                        ),
-                    ],
-                  ),
-                  Spacer(),
-                  Text(
-                    data.value,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  if (isWalletCard)
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Colors.white.withOpacity(0.7),
+                    ),
                 ],
               ),
-            ),
+              Spacer(),
+              Text(
+                data.value,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -284,278 +283,6 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
 }
 
 // linechart
-class ImprovedLineChart extends StatefulWidget {
-  const ImprovedLineChart({super.key});
-
-  @override
-  _ImprovedLineChartState createState() => _ImprovedLineChartState();
-}
-
-class _ImprovedLineChartState extends State<ImprovedLineChart> {
-  String? selectedYear;
-  List<String> availableYears = [];
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadAvailableYears();
-  }
-
-  Future<void> _loadAvailableYears() async {
-    try {
-      String? regDate = await SharedPrefHelper().getCurrentUserRegDate();
-
-      List<String> dateParts = regDate!.split('-');
-      int registrationYear = int.parse(dateParts[2]);
-      int currentYear = DateTime.now().year;
-
-      List<String> years = [];
-      for (int year = registrationYear; year <= currentYear; year++) {
-        years.add(year.toString());
-      }
-
-      setState(() {
-        availableYears = years;
-        selectedYear = currentYear.toString();
-        isLoading = false;
-      });
-
-      if (mounted) {
-        final customerController =
-            Provider.of<CustomerController>(context, listen: false);
-        await customerController.apiGetChartData(selectedYear!);
-      }
-    } catch (e) {
-      Logger.error('Error loading registration date: $e');
-      setState(() {
-        availableYears = [DateTime.now().year.toString()];
-        selectedYear = DateTime.now().year.toString();
-        isLoading = false;
-      });
-    }
-  }
-
-  String getMonthName(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return months[month - 1];
-  }
-
-  // Helper method to get maximum month to display
-  int getMaxMonth() {
-    if (selectedYear == null) return 12;
-
-    int currentYear = DateTime.now().year;
-    int currentMonth = DateTime.now().month;
-    int selectedYearInt = int.parse(selectedYear!);
-
-    // If selected year is current year, show only up to current month
-    if (selectedYearInt == currentYear) {
-      return currentMonth;
-    }
-
-    // If selected year is past year, show all 12 months
-    return 12;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final customerController = Provider.of<CustomerController>(context);
-    final chartData = customerController.getChartSpots();
-    final maxMonth = getMaxMonth();
-
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 3,
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: customerController.isLoading
-            ? SizedBox(
-                width: double.infinity,
-                height: 400,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.blueAccent,
-                  ),
-                ),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Performance Overview",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      Spacer(),
-                      isLoading
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 4),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                                color: Colors.white,
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: selectedYear,
-                                  hint: Text("Select Year"),
-                                  items: availableYears.map((String year) {
-                                    return DropdownMenuItem<String>(
-                                      value: year,
-                                      child: Text(year),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) async {
-                                    setState(() {
-                                      selectedYear = newValue;
-                                      isLoading = true;
-                                    });
-
-                                    await customerController
-                                        .apiGetChartData(selectedYear!);
-
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                  },
-                                  icon: Icon(Icons.arrow_drop_down,
-                                      color: Colors.grey),
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 14),
-                                ),
-                              ),
-                            ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  AspectRatio(
-                    aspectRatio: 1.8,
-                    child: LineChart(
-                      LineChartData(
-                        minX: 1,
-                        maxX: maxMonth.toDouble(),
-                        minY: 0,
-                        maxY: chartData.isNotEmpty
-                            ? chartData
-                                    .map((e) => e.y)
-                                    .reduce((a, b) => a > b ? a : b) +
-                                2
-                            : 10,
-                        gridData: FlGridData(
-                          show: true,
-                          drawVerticalLine: true,
-                          verticalInterval: 1,
-                          horizontalInterval: 2,
-                        ),
-                        titlesData: FlTitlesData(
-                          leftTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 40,
-                              interval: 2,
-                              getTitlesWidget: (value, _) => Padding(
-                                padding: EdgeInsets.only(right: 18.0),
-                                child: Text(
-                                  value.toInt().toString(),
-                                  style: TextStyle(fontSize: 12),
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ),
-                          ),
-                          rightTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              interval: 1,
-                              getTitlesWidget: (value, _) {
-                                // Only show month labels up to maxMonth
-                                if (value.toInt() <= maxMonth) {
-                                  return Padding(
-                                    padding: EdgeInsets.only(top: 6.0),
-                                    child: Text(
-                                      getMonthName(value.toInt()),
-                                      style: TextStyle(fontSize: 12),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  );
-                                }
-                                return SizedBox.shrink();
-                              },
-                            ),
-                          ),
-                          topTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                        ),
-                        borderData: FlBorderData(
-                          show: true,
-                          border: Border.all(color: Colors.grey, width: 0.5),
-                        ),
-                        lineBarsData: [
-                          LineChartBarData(
-                            spots: chartData,
-                            isCurved: false,
-                            color: Colors.blueAccent,
-                            barWidth: 4,
-                            isStrokeCapRound: true,
-                            belowBarData: BarAreaData(
-                              show: true,
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.blue.withOpacity(0.3),
-                                  Colors.transparent,
-                                ],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
-                            ),
-                            dotData: FlDotData(
-                              show: true,
-                              getDotPainter: (spot, percent, barData, index) =>
-                                  FlDotCirclePainter(
-                                radius: 4,
-                                color: const Color.fromARGB(255, 29, 153, 255),
-                                strokeColor: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-      ),
-    );
-  }
-}
 
 //progress tracker card
 class ProgressTrackerCard extends StatelessWidget {

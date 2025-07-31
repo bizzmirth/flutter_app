@@ -211,7 +211,7 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
   }
 
   void _handleLogout() async {
-    await SharedPrefHelper().removeUserEmailAndType();
+    await SharedPrefHelper().removeDetails();
     setState(() {
       userType = '';
     });

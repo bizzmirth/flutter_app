@@ -374,7 +374,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ),
                       title: Text("Log Out"),
                       onTap: () {
-                        SharedPrefHelper().removeUserEmailAndType();
+                        SharedPrefHelper().removeDetails();
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),

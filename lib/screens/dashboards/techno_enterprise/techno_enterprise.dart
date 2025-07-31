@@ -8,6 +8,7 @@ import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -150,7 +151,7 @@ class _TEDashboardPageState extends State<TEDashboardPage> {
                       ),
                       title: Text("Log Out"),
                       onTap: () {
-                        SharedPrefHelper().removeUserEmailAndType();
+                        SharedPrefHelper().removeDetails();
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),
