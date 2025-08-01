@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ImprovedLineChart extends StatefulWidget {
-  const ImprovedLineChart({super.key});
+  final String? initialYear;
+  const ImprovedLineChart({super.key, this.initialYear});
 
   @override
   _ImprovedLineChartState createState() => _ImprovedLineChartState();
@@ -18,6 +19,8 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
   String? selectedYear;
   List<String> availableYears = [];
   bool isLoading = true;
+  bool hasError = false;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -27,12 +30,49 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
 
   Future<void> _loadAvailableYears() async {
     try {
+      setState(() {
+        isLoading = true;
+        hasError = false;
+        errorMessage = null;
+      });
+      final customerController =
+          Provider.of<CustomerController>(context, listen: false);
+      if (customerController.isLoading) {
+        await Future.delayed(Duration(milliseconds: 500));
+      }
+
       String? regDate = await SharedPrefHelper().getCurrentUserRegDate();
 
-      List<String> dateParts = regDate!.split('-');
-      int registrationYear = int.parse(dateParts[2]);
-      int currentYear = DateTime.now().year;
+      Logger.warning(
+          "Registration date from SharedPref: $regDate. Registration date from Parent ${customerController.userRegDate}");
+      if (regDate == null || regDate.isEmpty) {
+        Logger.info(
+            'Registration date not available yet, using current year as fallback');
+        int currentYear = DateTime.now().year;
+        setState(() {
+          availableYears = [currentYear.toString()];
+          selectedYear = currentYear.toString();
+          isLoading = false;
+        });
+        if (mounted) {
+          await customerController.apiGetChartData(selectedYear!);
+        }
+        return;
+      }
+      List<String> dateParts = regDate.split('-');
+      if (dateParts.length != 3) {
+        throw Exception(
+            'Invalid date format: $regDate. Expected format: DD-MM-YYYY or YYYY-MM-DD');
+      }
 
+      int registrationYear;
+      if (dateParts[0].length == 4) {
+        registrationYear = int.parse(dateParts[0]);
+      } else {
+        registrationYear = int.parse(dateParts[2]);
+      }
+
+      int currentYear = DateTime.now().year;
       List<String> years = [];
       for (int year = registrationYear; year <= currentYear; year++) {
         years.add(year.toString());
@@ -44,19 +84,36 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
         isLoading = false;
       });
 
-      if (mounted) {
-        final customerController =
-            Provider.of<CustomerController>(context, listen: false);
-        await customerController.apiGetChartData(selectedYear!);
-      }
+      await customerController.apiGetChartData(selectedYear!);
     } catch (e) {
       Logger.error('Error loading registration date: $e');
+
       setState(() {
+        hasError = true;
+        errorMessage = 'Failed to load chart data: ${e.toString()}';
+        // Fallback to current year
         availableYears = [DateTime.now().year.toString()];
         selectedYear = DateTime.now().year.toString();
         isLoading = false;
       });
+
+      // Still try to load chart data with fallback year
+      if (mounted) {
+        try {
+          final customerController =
+              Provider.of<CustomerController>(context, listen: false);
+          await customerController.apiGetChartData(selectedYear!);
+        } catch (chartError) {
+          Logger.error(
+              'Error loading chart data with fallback year: $chartError');
+        }
+      }
     }
+  }
+
+  // Method to retry loading when user data becomes available
+  Future<void> _retryLoadAvailableYears() async {
+    await _loadAvailableYears();
   }
 
   String getMonthName(int month) {
@@ -96,85 +153,117 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
 
   @override
   Widget build(BuildContext context) {
-    final customerController =
-        Provider.of<CustomerController>(context, listen: false);
-    final chartData = customerController.getChartSpots();
-    final maxMonth = getMaxMonth();
+    return Consumer<CustomerController>(
+      builder: (context, customerController, child) {
+        final chartData = customerController.getChartSpots();
+        final maxMonth = getMaxMonth();
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 3,
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: customerController.isLoading
-            ? SizedBox(
-                width: double.infinity,
-                height: 400,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.blueAccent,
-                  ),
-                ),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Performance Overview",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+        return Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          elevation: 3,
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "Performance Overview",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Spacer(),
+                    if (hasError)
+                      IconButton(
+                        icon: Icon(Icons.refresh, color: Colors.orange),
+                        onPressed: _retryLoadAvailableYears,
+                        tooltip: 'Retry loading data',
                       ),
-                      Spacer(),
-                      isLoading
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 4),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                                color: Colors.white,
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: selectedYear,
-                                  hint: Text("Select Year"),
-                                  items: availableYears.map((String year) {
-                                    return DropdownMenuItem<String>(
-                                      value: year,
-                                      child: Text(year),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) async {
-                                    setState(() {
-                                      selectedYear = newValue;
-                                      isLoading = true;
-                                    });
+                    if (isLoading)
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    else if (availableYears.isNotEmpty)
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: selectedYear,
+                            hint: Text("Select Year"),
+                            items: availableYears.map((String year) {
+                              return DropdownMenuItem<String>(
+                                value: year,
+                                child: Text(year),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) async {
+                              setState(() {
+                                selectedYear = newValue;
+                              });
 
-                                    await customerController
-                                        .apiGetChartData(selectedYear!);
+                              if (selectedYear != null) {
+                                await customerController
+                                    .apiGetChartData(selectedYear!);
+                              }
+                            },
+                            icon:
+                                Icon(Icons.arrow_drop_down, color: Colors.grey),
+                            style: TextStyle(color: Colors.black, fontSize: 14),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                SizedBox(height: 10),
 
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                  },
-                                  icon: Icon(Icons.arrow_drop_down,
-                                      color: Colors.grey),
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 14),
-                                ),
-                              ),
-                            ),
-                    ],
+                // Show error message if there's an error
+                if (hasError && errorMessage != null)
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    margin: EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.orange.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.warning, color: Colors.orange, size: 20),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Using fallback data. ${errorMessage!}',
+                            style: TextStyle(
+                                color: Colors.orange.shade800, fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 10),
+
+                // Chart area
+                if (customerController.isLoading)
+                  SizedBox(
+                    width: double.infinity,
+                    height: 400,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                  )
+                else
                   AspectRatio(
                     aspectRatio: 1.8,
                     child: LineChart(
@@ -274,9 +363,11 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                       ),
                     ),
                   ),
-                ],
-              ),
-      ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

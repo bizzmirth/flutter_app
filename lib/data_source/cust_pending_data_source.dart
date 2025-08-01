@@ -1,6 +1,4 @@
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
-import 'package:bizzmirth_app/main.dart';
-import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -133,64 +131,64 @@ class MyrefCustPendingDataSource extends DataTableSource {
   }
 
 // Action Menu Widget
-  Widget _buildActionMenu(context, PendingCustomer pendingCustomer) {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-        switch (value) {
-          case "add_ref":
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddTAcustPage(isHidden: false),
-              ),
-            );
-            break;
-          case "edit":
-            break;
-          case "delete":
-            break;
-          default:
-            break;
-        }
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "add_ref",
-          child: ListTile(
-            leading: Icon(Icons.person_add_alt_1, color: Colors.blue),
-            title: Text("Add Ref"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text("Edit"),
-            onTap: () {
-              Logger.success(pendingCustomer.name!);
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AddReferralCustomer(
-                            pendingCustomer: pendingCustomer,
-                            isEditMode: true,
-                          )));
-            },
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
+  // Widget _buildActionMenu(context, PendingCustomer pendingCustomer) {
+  //   return PopupMenuButton<String>(
+  //     onSelected: (value) {
+  //       // Handle menu actions
+  //       switch (value) {
+  //         case "add_ref":
+  //           Navigator.push(
+  //             context,
+  //             MaterialPageRoute(
+  //               builder: (context) => AddTAcustPage(isHidden: false),
+  //             ),
+  //           );
+  //           break;
+  //         case "edit":
+  //           break;
+  //         case "delete":
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //     },
+  //     itemBuilder: (BuildContext context) => [
+  //       PopupMenuItem(
+  //         value: "add_ref",
+  //         child: ListTile(
+  //           leading: Icon(Icons.person_add_alt_1, color: Colors.blue),
+  //           title: Text("Add Ref"),
+  //         ),
+  //       ),
+  //       PopupMenuItem(
+  //         value: "edit",
+  //         child: ListTile(
+  //           leading: Icon(Icons.edit, color: Colors.blueAccent),
+  //           title: Text("Edit"),
+  //           onTap: () {
+  //             Logger.success(pendingCustomer.name!);
+  //             Navigator.pop(context);
+  //             Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                     builder: (context) => AddReferralCustomer(
+  //                           pendingCustomer: pendingCustomer,
+  //                           isEditMode: true,
+  //                         )));
+  //           },
+  //         ),
+  //       ),
+  //       PopupMenuItem(
+  //         value: "delete",
+  //         child: ListTile(
+  //           leading: Icon(Icons.delete, color: Colors.red),
+  //           title: Text("Delete"),
+  //         ),
+  //       ),
+  //     ],
+  //     icon: Icon(Icons.more_vert, color: Colors.black54),
+  //   );
+  // }
 
   @override
   int get rowCount => data.length;

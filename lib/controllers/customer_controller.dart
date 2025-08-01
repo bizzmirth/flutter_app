@@ -34,6 +34,7 @@ class CustomerController extends ChangeNotifier {
   List<double> get chartData => _chartData;
   String? _selectedYear;
   String? get selectedYear => _selectedYear;
+  String? get userRegDate => _userRegDate;
 
   List<TopCustomerRefereralModel> get topCustomerRefererals =>
       _topCustomerRefererals;
@@ -47,6 +48,11 @@ class CustomerController extends ChangeNotifier {
 
   void clearError() {
     _error = null;
+    notifyListeners();
+  }
+
+  void setUserRegDate(String regDate) {
+    _userRegDate = regDate;
     notifyListeners();
   }
 
@@ -90,6 +96,7 @@ class CustomerController extends ChangeNotifier {
                   "Found user with ca_customer_id: $_userCustomerId");
               Logger.success("User's ta_reference_no: $_userTaReferenceNo");
               Logger.success("Customer type: $_customerType");
+              Logger.success("Registration date: $_userRegDate");
               break;
             }
           }

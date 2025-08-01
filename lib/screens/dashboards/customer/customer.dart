@@ -9,6 +9,7 @@ import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
@@ -30,19 +31,200 @@ class _CDashboardPageState extends State<CDashboardPage> {
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
   String customerType = '';
+
+  // Add these state variables to track initialization
+  bool _isDashboardInitialized = false;
+  bool _isInitializing = false;
+  String? _cachedRegDate;
+
   @override
   void initState() {
     super.initState();
-    getCustomerType();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CustomerController>().getRegCustomerCount();
-      context.read<CustomerController>().apiGetTopCustomerRefererals();
-    });
+    _initializeDashboardData();
   }
 
-  void getCustomerType() async {
-    customerType = await SharedPrefHelper().getCustomerType() ?? '';
-    setState(() {});
+  Future<void> _initializeDashboardData() async {
+    if (_isInitializing) return;
+
+    setState(() {
+      _isInitializing = true;
+    });
+
+    try {
+      await getCustomerType();
+
+      final customerController = context.read<CustomerController>();
+
+      int attempts = 0;
+      while (customerController.isLoading && attempts < 20) {
+        await Future.delayed(Duration(milliseconds: 100));
+        attempts++;
+      }
+
+      String? regDate = await _getRegistrationDate(customerController);
+
+      if (regDate != null && regDate.isNotEmpty) {
+        _cachedRegDate = regDate;
+        if (customerController.userRegDate == null ||
+            customerController.userRegDate!.isEmpty) {
+          customerController
+              .setUserRegDate(regDate); // Add this method to your controller
+        }
+      }
+
+      // Load all required data
+      await Future.wait([
+        customerController.getRegCustomerCount(),
+        customerController.apiGetTopCustomerRefererals(),
+        if (_cachedRegDate != null)
+          customerController.apiGetChartData(DateTime.now().year.toString()),
+      ]);
+
+      if (mounted) {
+        setState(() {
+          _isDashboardInitialized = true;
+          _isInitializing = false;
+        });
+      }
+    } catch (e) {
+      Logger.error('Error initializing dashboard: $e');
+      if (mounted) {
+        setState(() {
+          _isDashboardInitialized = true;
+          _isInitializing = false;
+        });
+      }
+    }
+  }
+
+  Future<String?> _getRegistrationDate(CustomerController controller) async {
+    if (controller.userRegDate != null && controller.userRegDate!.isNotEmpty) {
+      Logger.info('Using reg date from controller: ${controller.userRegDate}');
+      return controller.userRegDate;
+    }
+
+    String? sharedPrefDate = await SharedPrefHelper().getCurrentUserRegDate();
+    if (sharedPrefDate != null && sharedPrefDate.isNotEmpty) {
+      Logger.info('Using reg date from SharedPref: $sharedPrefDate');
+      return sharedPrefDate;
+    }
+
+    Logger.warning('No registration date found in controller or SharedPref');
+    return null;
+  }
+
+  Future<void> getCustomerType() async {
+    try {
+      customerType = await SharedPrefHelper().getCustomerType() ?? '';
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      Logger.error('Error getting customer type: $e');
+    }
+  }
+
+  Future<void> _refreshDashboard() async {
+    setState(() {
+      _isDashboardInitialized = false;
+    });
+    await _initializeDashboardData();
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(50.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              color: Colors.blueAccent,
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Loading Dashboard...',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Please wait while we fetch your data',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[500],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _drawerItem(
+      BuildContext context, IconData icon, String title, Widget destination,
+      {bool padding = false}) {
+    return Padding(
+      padding: padding ? const EdgeInsets.only(left: 16.0) : EdgeInsets.zero,
+      child: ListTile(
+        leading: Icon(icon),
+        title: Text(title),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => destination),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blueAccent, Colors.lightBlue],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.dashboard, color: Colors.white, size: 30),
+          SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Dashboard Overview',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'Welcome back! Here\'s your performance summary',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+          Spacer(),
+          IconButton(
+            onPressed: _refreshDashboard,
+            icon: Icon(Icons.refresh, color: Colors.white),
+            tooltip: 'Refresh Dashboard',
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -102,11 +284,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     leading: Icon(Icons.dashboard),
                     title: Text('Dashboard'),
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CDashboardPage()),
-                      );
+                      Navigator.pop(
+                          context); // Just close drawer if already on dashboard
                     },
                   ),
                   ListTile(
@@ -166,10 +345,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                   ),
                   const Divider(),
                   Padding(
-                    padding: false
-                        // ignore: dead_code
-                        ? const EdgeInsets.only(left: 16.0)
-                        : EdgeInsets.zero,
+                    padding: EdgeInsets.zero,
                     child: ListTile(
                       leading: Icon(
                         Icons.power_settings_new_rounded,
@@ -192,380 +368,136 @@ class _CDashboardPageState extends State<CDashboardPage> {
           ],
         ),
       ),
-      body: Consumer<CustomerController>(builder: (context, contrller, child) {
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              SizedBox(height: 20),
-              CustomAnimatedSummaryCards(
-                cardData: [
-                  SummaryCardData(
-                      title: 'REFERRAL CUSTOMER REGISTERED',
-                      value: '${contrller.regCustomerCount}',
-                      icon: Icons.people),
-                  SummaryCardData(
-                      title: 'TOTAL BOOKING',
-                      value: '9',
-                      icon: Icons.calendar_today),
-                  if (contrller.customerType != 'Free')
-                    SummaryCardData(
-                        title: 'MY WALLET',
-                        value: '',
-                        icon: Icons.account_balance_wallet),
-                ],
-              ),
-              SizedBox(height: 20),
-              ProgressTrackerCard(
-                totalSteps: 10,
-                currentStep: contrller.regCustomerCount,
-                message: "Keep going! You're doing great!",
-                progressColor: Colors.blueAccent,
-              ),
-              SizedBox(height: 20),
-              ImprovedLineChart(),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Divider(thickness: 1, color: Colors.black26),
-                    Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Text(
-                          "Top Customers Refereral",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+      body: _isInitializing
+          ? _buildLoadingState()
+          : Consumer<CustomerController>(
+              builder: (context, controller, child) {
+                // Only rebuild specific parts when needed
+                return SingleChildScrollView(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // _buildHeader(),
+                      SizedBox(height: 20),
+
+                      // Summary Cards - only rebuild when specific data changes
+                      CustomAnimatedSummaryCards(
+                        cardData: [
+                          SummaryCardData(
+                              title: 'REFERRAL CUSTOMER REGISTERED',
+                              value: '${controller.regCustomerCount}',
+                              icon: Icons.people),
+                          SummaryCardData(
+                              title: 'TOTAL BOOKING',
+                              value: '9',
+                              icon: Icons.calendar_today),
+                          if (controller.customerType != 'Free')
+                            SummaryCardData(
+                                title: 'MY WALLET',
+                                value: '',
+                                icon: Icons.account_balance_wallet),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+
+                      // Progress Tracker
+                      ProgressTrackerCard(
+                        totalSteps: 10,
+                        currentStep: controller.regCustomerCount,
+                        message: "Keep going! You're doing great!",
+                        progressColor: Colors.blueAccent,
+                      ),
+                      SizedBox(height: 20),
+
+                      // Chart - only show when dashboard is initialized
+                      if (_isDashboardInitialized)
+                        ImprovedLineChart(
+                          initialYear: _cachedRegDate ?? controller.userRegDate,
+                          key: ValueKey(
+                              'chart_${_cachedRegDate ?? controller.userRegDate}'),
+                        )
+                      else
+                        Container(
+                          height: 300,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(height: 16),
+                                Text('Loading chart data...'),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Divider(thickness: 1, color: Colors.black26),
-                    FilterBar(
-                      userCount:
-                          contrller.topCustomerRefererals.length.toString(),
-                    ),
-                    Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: SizedBox(
-                        height: (_rowsPerPage * dataRowHeight) +
-                            headerHeight +
-                            paginationHeight,
-                        child: PaginatedDataTable(
-                          columns: [
-                            DataColumn(label: Text("Rank")),
-                            DataColumn(label: Text("Profile Picture")),
-                            DataColumn(label: Text("Full Name")),
-                            DataColumn(label: Text("Date Reg")),
-                            DataColumn(label: Text("Total CU Ref")),
-                            DataColumn(label: Text("Status")),
-                            DataColumn(label: Text("Active/Inactive")),
+                      SizedBox(height: 20),
+
+                      // Top Customers Table
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            Divider(thickness: 1, color: Colors.black26),
+                            Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                child: Text(
+                                  "Top Customers Referral",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            Divider(thickness: 1, color: Colors.black26),
+                            FilterBar(
+                              userCount: controller.topCustomerRefererals.length
+                                  .toString(),
+                            ),
+                            Card(
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: SizedBox(
+                                height: (_rowsPerPage * dataRowHeight) +
+                                    headerHeight +
+                                    paginationHeight,
+                                child: PaginatedDataTable(
+                                  columns: [
+                                    DataColumn(label: Text("Rank")),
+                                    DataColumn(label: Text("Profile Picture")),
+                                    DataColumn(label: Text("Full Name")),
+                                    DataColumn(label: Text("Date Reg")),
+                                    DataColumn(label: Text("Total CU Ref")),
+                                    DataColumn(label: Text("Status")),
+                                    DataColumn(label: Text("Active/Inactive")),
+                                  ],
+                                  source: CustTopReferralCustomers(
+                                      customers:
+                                          controller.topCustomerRefererals),
+                                  rowsPerPage: _rowsPerPage,
+                                  availableRowsPerPage: [5, 10, 15, 20, 25],
+                                  onRowsPerPageChanged: (value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _rowsPerPage = value;
+                                      });
+                                    }
+                                  },
+                                  arrowHeadColor: Colors.blue,
+                                ),
+                              ),
+                            )
                           ],
-                          source: CustTopReferralCustomers(
-                              customers: contrller.topCustomerRefererals),
-                          rowsPerPage: _rowsPerPage,
-                          availableRowsPerPage: [5, 10, 15, 20, 25],
-                          onRowsPerPageChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _rowsPerPage = value;
-                              });
-                            }
-                          },
-                          arrowHeadColor: Colors.blue,
                         ),
                       ),
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              // Padding(
-              //   padding: EdgeInsets.all(16.0),
-              //   child: Column(
-              //     children: [
-              //       Divider(thickness: 1, color: Colors.black26),
-              //       Center(
-              //         child: Padding(
-              //           padding: EdgeInsets.symmetric(vertical: 10),
-              //           child: Text(
-              //             "Current Booking's",
-              //             style: TextStyle(
-              //                 fontSize: 16, fontWeight: FontWeight.bold),
-              //           ),
-              //         ),
-              //       ),
-              //       Divider(thickness: 1, color: Colors.black26),
-              //       FilterBar(),
-              //       Card(
-              //         elevation: 5,
-              //         shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(12),
-              //         ),
-              //         child: SizedBox(
-              //           height: (_rowsPerPage * dataRowHeight) +
-              //               headerHeight +
-              //               paginationHeight,
-              //           child: PaginatedDataTable(
-              //             columns: [
-              //               DataColumn(label: Text("Booking ID")),
-              //               DataColumn(label: Text("Customer Name")),
-              //               DataColumn(label: Text("Package Name")),
-              //               DataColumn(label: Text("Amount")),
-              //               DataColumn(label: Text("Booking Date")),
-              //               DataColumn(label: Text("Travel Date")),
-              //             ],
-              //             source: CurrentBookingDataSource(bookings),
-              //             rowsPerPage: _rowsPerPage,
-              //             availableRowsPerPage: [5, 10, 15, 20, 25],
-              //             onRowsPerPageChanged: (value) {
-              //               if (value != null) {
-              //                 setState(() {
-              //                   _rowsPerPage = value;
-              //                 });
-              //               }
-              //             },
-              //             arrowHeadColor: Colors.blue,
-              //           ),
-              //         ),
-              //       )
-              //     ],
-              //   ),
-              // ),
-            ],
-          ),
-        );
-      }),
-    );
-  }
-
-  // Widget _buildTopPerformersSection1() {
-  //   List<Map<String, dynamic>> departments = [
-  //     {"name": "Booking", "performers": _getDummyPerformers2()},
-  //   ];
-
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       GridView.builder(
-  //         shrinkWrap: true,
-  //         physics: NeverScrollableScrollPhysics(),
-  //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-  //           crossAxisCount: 1,
-  //           crossAxisSpacing: 2,
-  //           mainAxisSpacing: 13,
-  //           childAspectRatio: 1.7,
-  //         ),
-  //         itemCount: departments.length,
-  //         itemBuilder: (context, index) {
-  //           var dept = departments[index];
-  //           return _buildDepartmentCard1(dept["name"], dept["performers"]);
-  //         },
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  Widget _drawerItem(
-      BuildContext context, IconData icon, String text, Widget page,
-      {bool padding = false}) {
-    return Padding(
-      padding: padding ? const EdgeInsets.only(left: 16.0) : EdgeInsets.zero,
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(text),
-        onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => page));
-        },
-      ),
-    );
-  }
-
-  // Widget _buildDepartmentCard1(
-  //     String department, List<Map<String, String>> performers) {
-  //   return Card(
-  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-  //     elevation: 3,
-  //     child: Padding(
-  //       padding: EdgeInsets.all(25),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Row(
-  //             children: [
-  //               Expanded(
-  //                 child: Text(
-  //                   "Current $department's",
-  //                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //           SizedBox(
-  //             height: 5,
-  //           ),
-  //           Divider(),
-  //           Row(
-  //             mainAxisAlignment: MainAxisAlignment.end,
-  //             children: [
-  //               SizedBox(
-  //                 height: 15,
-  //               )
-  //             ],
-  //           ),
-  //           Row(
-  //             children: [
-  //               SizedBox(
-  //                 width: 15,
-  //               ),
-  //               Text(
-  //                 " Booking ID",
-  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-  //               ),
-  //               SizedBox(
-  //                 width: 25,
-  //               ),
-  //               Text(
-  //                 " Customer Name",
-  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-  //               ),
-  //               SizedBox(
-  //                 width: 55,
-  //               ),
-  //               Text(
-  //                 "Package Name",
-  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-  //               ),
-  //               SizedBox(
-  //                 width: 25,
-  //               ),
-  //               Text(
-  //                 "Amount",
-  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-  //               ),
-  //               SizedBox(
-  //                 width: 25,
-  //               ),
-  //               Text(
-  //                 "Booking Date",
-  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-  //               ),
-  //               SizedBox(
-  //                 width: 15,
-  //               ),
-  //               Text(
-  //                 "Travel Date",
-  //                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-  //               ),
-  //               Spacer(),
-  //             ],
-  //           ),
-  //           SizedBox(height: 10),
-  //           Divider(),
-  //           Expanded(
-  //             child: ListView.builder(
-  //               physics: NeverScrollableScrollPhysics(),
-  //               itemCount: performers.length,
-  //               itemBuilder: (context, rank) {
-  //                 return Row(
-  //                   children: [
-  //                     SizedBox(
-  //                       width: 15,
-  //                     ),
-  //                     Text(performers[rank]["bookingid"]!),
-  //                     SizedBox(
-  //                       width: 45,
-  //                     ),
-  //                     Column(
-  //                       crossAxisAlignment: CrossAxisAlignment.start,
-  //                       children: [
-  //                         SizedBox(
-  //                           width:
-  //                               120, // Set a fixed width to keep all names aligned
-  //                           child: Text(
-  //                             performers[rank]["name"]!,
-  //                             style: TextStyle(fontWeight: FontWeight.bold),
-  //                             overflow: TextOverflow
-  //                                 .ellipsis, // Ensures long names don't break layout
-  //                             maxLines: 1, // Keeps text on a single line
-  //                           ),
-  //                         ),
-  //                         Text(
-  //                           performers[rank]["custid"]!,
-  //                           style: TextStyle(color: Color(0xFF495057)),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     SizedBox(
-  //                       width: 50,
-  //                     ),
-  //                     Text(
-  //                       performers[rank]["pname"]!,
-  //                     ),
-  //                     SizedBox(
-  //                       width: 50,
-  //                     ),
-  //                     Text(
-  //                       "₹${performers[rank]["amt"]!}",
-  //                     ),
-  //                     SizedBox(
-  //                       width: 36,
-  //                     ),
-  //                     Text(
-  //                       performers[rank]["bdate"]!,
-  //                     ),
-  //                     SizedBox(
-  //                       width: 20,
-  //                     ),
-  //                     Text(
-  //                       performers[rank]["tdate"]!,
-  //                     ),
-  //                   ],
-  //                 );
-  //               },
-  //             ),
-  //           ),
-  //           Center(
-  //             child: ElevatedButton(
-  //               onPressed: () {
-  //                 null;
-  //               },
-  //               style: ElevatedButton.styleFrom(
-  //                 foregroundColor: Colors.white, // White text
-  //                 backgroundColor:
-  //                     Color.fromARGB(255, 81, 131, 246), // Same blue as header
-  //                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-  //                 textStyle:
-  //                     TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-  //                 shape: RoundedRectangleBorder(
-  //                   borderRadius: BorderRadius.circular(25),
-  //                 ),
-  //                 elevation: 5, // Slight shadow for better UI feel
-  //               ),
-  //               child: Text('View More'),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  Widget _buildHeader() {
-    return Text(
-      "Welcome, User!",
-      style: GoogleFonts.lato(
-        fontSize: 22,
-        fontWeight: FontWeight.w700,
-        color: Colors.black,
-        letterSpacing: 0.2,
-      ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }
