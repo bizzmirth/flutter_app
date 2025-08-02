@@ -23,6 +23,11 @@ class CustomerController extends ChangeNotifier {
   String? _userTaReferenceNo;
   String? _userTaRefrenceName;
   String? _userRegDate;
+  bool _isCheckingEmail = false;
+  String? _emailError;
+
+  bool get isCheckingEmail => _isCheckingEmail;
+  String? get emailError => _emailError;
   final List<TopCustomerRefereralModel> _topCustomerRefererals = [];
 
   final List<RegisteredCustomer> _registeredCustomers = [];
@@ -53,6 +58,47 @@ class CustomerController extends ChangeNotifier {
 
   void setUserRegDate(String regDate) {
     _userRegDate = regDate;
+    notifyListeners();
+  }
+
+  Future<void> checkEmail(String email) async {
+    if (email.isEmpty) {
+      _emailError = 'Please enter your email';
+      notifyListeners();
+      return;
+    }
+
+    _isCheckingEmail = true;
+    notifyListeners();
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://testca.uniqbizz.com/api/customers/valid_email.php'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _emailError = data['status'] == true ? data['message'] : null;
+      } else {
+        _emailError = 'Failed to validate email';
+      }
+    } catch (e) {
+      _emailError = 'Error connecting to server $e';
+      Logger.error("Error checking email: $e");
+    }
+
+    _isCheckingEmail = false;
+    notifyListeners();
+  }
+
+  void clearEmailError() {
+    _emailError = null;
     notifyListeners();
   }
 

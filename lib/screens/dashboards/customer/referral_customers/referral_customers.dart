@@ -4,8 +4,8 @@ import 'package:bizzmirth_app/data_source/cust_reg_data_source.dart';
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -283,11 +283,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
         appBar: AppBar(
           title: Text(
             'View Referral Customers',
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
+            style: Appwidget.poppinsAppBarTitle(),
           ),
           centerTitle: true,
           backgroundColor: Colors.blueAccent,

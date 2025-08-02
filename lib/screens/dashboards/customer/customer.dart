@@ -32,7 +32,6 @@ class _CDashboardPageState extends State<CDashboardPage> {
   static const double paginationHeight = 60.0;
   String customerType = '';
 
-  // Add these state variables to track initialization
   bool _isDashboardInitialized = false;
   bool _isInitializing = false;
   String? _cachedRegDate;
@@ -67,12 +66,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
         _cachedRegDate = regDate;
         if (customerController.userRegDate == null ||
             customerController.userRegDate!.isEmpty) {
-          customerController
-              .setUserRegDate(regDate); // Add this method to your controller
+          customerController.setUserRegDate(regDate);
         }
       }
 
-      // Load all required data
       await Future.wait([
         customerController.getRegCustomerCount(),
         customerController.apiGetTopCustomerRefererals(),
@@ -124,12 +121,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
     }
   }
 
-  Future<void> _refreshDashboard() async {
-    setState(() {
-      _isDashboardInitialized = false;
-    });
-    await _initializeDashboardData();
-  }
+  // Future<void> _refreshDashboard() async {
+  //   setState(() {
+  //     _isDashboardInitialized = false;
+  //   });
+  //   await _initializeDashboardData();
+  // }
 
   Widget _buildLoadingState() {
     return Center(
@@ -181,51 +178,51 @@ class _CDashboardPageState extends State<CDashboardPage> {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blueAccent, Colors.lightBlue],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.dashboard, color: Colors.white, size: 30),
-          SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Dashboard Overview',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                'Welcome back! Here\'s your performance summary',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          Spacer(),
-          IconButton(
-            onPressed: _refreshDashboard,
-            icon: Icon(Icons.refresh, color: Colors.white),
-            tooltip: 'Refresh Dashboard',
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildHeader() {
+  //   return Container(
+  //     padding: EdgeInsets.all(16),
+  //     decoration: BoxDecoration(
+  //       gradient: LinearGradient(
+  //         colors: [Colors.blueAccent, Colors.lightBlue],
+  //         begin: Alignment.topLeft,
+  //         end: Alignment.bottomRight,
+  //       ),
+  //       borderRadius: BorderRadius.circular(12),
+  //     ),
+  //     child: Row(
+  //       children: [
+  //         Icon(Icons.dashboard, color: Colors.white, size: 30),
+  //         SizedBox(width: 16),
+  //         Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text(
+  //               'Dashboard Overview',
+  //               style: TextStyle(
+  //                 color: Colors.white,
+  //                 fontSize: 20,
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //             Text(
+  //               'Welcome back! Here\'s your performance summary',
+  //               style: TextStyle(
+  //                 color: Colors.white70,
+  //                 fontSize: 14,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         Spacer(),
+  //         IconButton(
+  //           onPressed: _refreshDashboard,
+  //           icon: Icon(Icons.refresh, color: Colors.white),
+  //           tooltip: 'Refresh Dashboard',
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -381,7 +378,6 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       // _buildHeader(),
                       SizedBox(height: 20),
 
-                      // Summary Cards - only rebuild when specific data changes
                       CustomAnimatedSummaryCards(
                         cardData: [
                           SummaryCardData(
@@ -401,7 +397,6 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                       SizedBox(height: 20),
 
-                      // Progress Tracker
                       ProgressTrackerCard(
                         totalSteps: 10,
                         currentStep: controller.regCustomerCount,
@@ -410,7 +405,6 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                       SizedBox(height: 20),
 
-                      // Chart - only show when dashboard is initialized
                       if (_isDashboardInitialized)
                         ImprovedLineChart(
                           initialYear: _cachedRegDate ?? controller.userRegDate,
@@ -433,7 +427,6 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         ),
                       SizedBox(height: 20),
 
-                      // Top Customers Table
                       Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(

@@ -206,7 +206,7 @@ class _FilterBarState extends State<FilterBar> {
                     ),
                     alignment: Alignment.center,
                     padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text("Users: $totalUsers"),
+                    child: Text("Count: $totalUsers"),
                   ),
                 ),
 

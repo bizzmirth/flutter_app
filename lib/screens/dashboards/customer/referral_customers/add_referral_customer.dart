@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
@@ -10,7 +11,6 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -78,6 +78,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
   String chequeDate = "";
   String bankName = "";
   String transactionId = "";
+  Timer? _debounce;
 
   final GlobalKey<FormFieldState> _customerRefrenceIdKey =
       GlobalKey<FormFieldState>();
@@ -1388,11 +1389,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         appBar: AppBar(
           title: Text(
             appBarTitle,
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
+            style: Appwidget.poppinsAppBarTitle(),
           ),
           centerTitle: true,
           backgroundColor: Colors.blueAccent,
@@ -1553,13 +1550,39 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                             ),
                           ),
                           SizedBox(height: 15),
-                          _buildTextField('Email *', _emailController,
-                              fieldKey: _emailKey, validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your email name';
-                            }
-                            return null;
-                          }),
+                          _buildTextField(
+                            'Email *',
+                            _emailController,
+                            fieldKey: _emailKey,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your email';
+                              }
+                              return customerController.emailError;
+                            },
+                            onChanged: (value) {
+                              if (_debounce?.isActive ?? false) {
+                                _debounce!.cancel();
+                              }
+                              _debounce = Timer(
+                                  const Duration(milliseconds: 500), () async {
+                                await customerController.checkEmail(value);
+                                _emailKey.currentState?.validate();
+
+                                // Show toast if email exists
+                                if (customerController.emailError != null &&
+                                    customerController.emailError!
+                                        .toLowerCase()
+                                        .contains("exists")) {
+                                  ToastHelper.showWarningToast(
+                                    context: context,
+                                    title: "Email Error",
+                                    description: customerController.emailError!,
+                                  );
+                                }
+                              });
+                            },
+                          ),
                           SizedBox(height: 15),
                           _buildDropdown(
                               'Gender *',
@@ -1839,6 +1862,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                               if (value == null || value.isEmpty) {
                                 return "Cheque Date is required";
                               }
+                              return null;
                             }),
                             SizedBox(height: 10),
                             _buildTextField('Bank Name *', _bankNameController,

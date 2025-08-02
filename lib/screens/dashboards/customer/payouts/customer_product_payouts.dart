@@ -1,9 +1,13 @@
+import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_product_payout_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class CustProductPayoutsPage extends StatefulWidget {
   const CustProductPayoutsPage({super.key});
@@ -18,6 +22,19 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+
+  @override
+  void initState() {
+    super.initState();
+    getAllData();
+  }
+
+  void getAllData() async {
+    final controller =
+        Provider.of<CustProductPayoutController>(context, listen: false);
+    final userId = await SharedPrefHelper().getCurrentUserCustId();
+    controller.allPayouts(userId);
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
@@ -44,325 +61,272 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.9,
-            height: MediaQuery.of(context).size.height * 0.8,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header with close button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      payoutType,
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.close),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Payout summary cards
-                Row(
-                  children: [
-                    // Left card - Payout amount
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              payoutType,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Text(
-                                  amount,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.shade100,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: const Text(
-                                    'Paid',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.green,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              date,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
+          child: SingleChildScrollView(
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.8,
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header with close button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        payoutType,
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.close),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
 
-                    // Right card - User details
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'ID: $userId',
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                  ),
+                  // Payout summary cards
+                  Row(
+                    children: [
+                      // Left card - Payout amount
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                payoutType,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
                                 ),
-                                const SizedBox(width: 8),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Name: $userName',
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.circular(4),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              const SizedBox(height: 8),
+                              Row(
                                 children: [
                                   Text(
-                                    'Name: $userName',
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Rs.',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey.shade600,
-                                        ),
-                                      ),
-                                      SizedBox(width: 5),
-                                      Text(
-                                        amount.replaceAll('Rs. ', ''),
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-
-                // Table section
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Show entries and search
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              const Text('Show '),
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: DropdownButton<int>(
-                                  value: 10,
-                                  underline: const SizedBox(),
-                                  items: [5, 10, 15, 20, 25]
-                                      .map((e) => DropdownMenuItem(
-                                            value: e,
-                                            child: Text(e.toString()),
-                                          ))
-                                      .toList(),
-                                  onChanged: (value) {
-                                    // Handle rows per page change
-                                  },
-                                ),
-                              ),
-                              const Text(' entries'),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Text('Search: '),
-                              SizedBox(
-                                width: 200,
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(4),
+                                    amount,
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    contentPadding: const EdgeInsets.symmetric(
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
                                       horizontal: 8,
                                       vertical: 4,
                                     ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.shade100,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      'Paid',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
+                                      ),
+                                    ),
                                   ),
+                                ],
+                              ),
+                              Text(
+                                date,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
                                 ),
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(width: 16),
 
-                      // Paginated Data Table
+                      // Right card - User details
                       Expanded(
-                          child: payoutDataSource.isEmpty
-                              ? Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.inbox_outlined,
-                                        size: 64,
-                                        color: Colors.grey.shade400,
+                        flex: 1,
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.black),
+                                        borderRadius: BorderRadius.circular(4),
                                       ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        "No data available in table",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.grey.shade600,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      )
-                                    ],
+                                      child: Text(
+                                        'ID: $userId',
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ),
                                   ),
-                                )
-                              : SingleChildScrollView(
-                                  child: PaginatedDataTable(
-                                      header: null,
-                                      rowsPerPage: 10,
-                                      availableRowsPerPage: const [
-                                        5,
-                                        10,
-                                        15,
-                                        20,
-                                        25
+                                  const SizedBox(width: 8),
+                                ],
+                              ),
+                              SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.black),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        'Name: $userName',
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Name: $userName',
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Rs.',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                        SizedBox(width: 5),
+                                        Text(
+                                          amount.replaceAll('Rs. ', ''),
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       ],
-                                      onRowsPerPageChanged: (value) {
-                                        // Handle rows per page change
-                                      },
-                                      columns: const [
-                                        DataColumn(label: Text('Date')),
-                                        DataColumn(
-                                            label: Text('Payout Details')),
-                                        DataColumn(label: Text('Amount')),
-                                        DataColumn(label: Text('TDS')),
-                                        DataColumn(
-                                            label: Text('Total Payable')),
-                                        DataColumn(label: Text('Remark')),
-                                      ],
-                                      source: payoutDataSource),
-                                ))
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 30),
 
-                // Close button
-                const SizedBox(height: 16),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
+                  // Table section
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Show entries and search
+
+                        // Paginated Data Table
+                        Divider(thickness: 1, color: Colors.black26),
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              "Previous Payouts:",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        Divider(thickness: 1, color: Colors.black26),
+                        FilterBar(),
+                        Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: SizedBox(
+                            height: (_rowsPerPage * dataRowHeight) +
+                                headerHeight +
+                                paginationHeight,
+                            child: PaginatedDataTable(
+                              columnSpacing: 50,
+                              dataRowMinHeight: 40,
+                              columns: [
+                                DataColumn(label: Text("Date")),
+                                DataColumn(label: Text("Payout Details")),
+                                DataColumn(label: Text("Amount")),
+                                DataColumn(label: Text("TDS")),
+                                DataColumn(label: Text("Total Payable")),
+                                DataColumn(label: Text("Remarks")),
+                              ],
+                              source: payoutDataSource,
+                              rowsPerPage: _rowsPerPage,
+                              availableRowsPerPage: [5, 10, 15, 20, 25],
+                              onRowsPerPageChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _rowsPerPage = value;
+                                  });
+                                }
+                              },
+                              arrowHeadColor: Colors.blue,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    child: const Text('Close'),
                   ),
-                ),
-              ],
+
+                  // Close button
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                      child: const Text('Close'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -376,11 +340,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
         appBar: AppBar(
           title: Text(
             'Product Payouts',
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
+            style: Appwidget.poppinsAppBarTitle(),
           ),
           centerTitle: true,
           backgroundColor: Colors.blueAccent,
@@ -432,7 +392,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                   ),
                 ),
                 Divider(thickness: 1, color: Colors.black26),
-                FilterBar2(),
+                FilterBar(),
                 Card(
                   elevation: 5,
                   shape: RoundedRectangleBorder(

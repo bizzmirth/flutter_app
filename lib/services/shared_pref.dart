@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefHelper {
@@ -85,6 +86,7 @@ class SharedPrefHelper {
     await prefs.remove(_customerTypeKey);
     await prefs.remove(_currUserCustId);
     await prefs.remove(_userTypeKey);
+    Logger.warning("message: User details removed from shared preferences");
   }
 
   Future<void> clearUserDataType() async {

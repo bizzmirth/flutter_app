@@ -1,7 +1,7 @@
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class BCHPayoutsPage extends StatefulWidget {
@@ -38,11 +38,7 @@ class _BCHPayoutsPageState extends State<BCHPayoutsPage> {
         appBar: AppBar(
           title: Text(
             'T.E Recruitment Payouts',
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
+            style: Appwidget.poppinsAppBarTitle(),
           ),
           centerTitle: true,
           backgroundColor: Colors.blueAccent,

@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 
 class PayoutDataSource extends DataTableSource {
   final List<CustProductPayoutsModel> _data = [
-    // CustProductPayoutsModel(
-    //     date: '2025-06-15',
-    //     payoutDetails: 'Product Commission - Electronics',
-    //     amount: 2500.0,
-    //     tds: 250.0,
-    //     totalPayable: 2250.0,
-    //     remark: 'Completed'),
-    // CustProductPayoutsModel(
-    //     date: '2025-06-22',
-    //     payoutDetails: 'Product Commission - Fashion',
-    //     amount: 1800.0,
-    //     tds: 180.0,
-    //     totalPayable: 1620.0,
-    //     remark: 'Processing'),
+    CustProductPayoutsModel(
+        date: '2025-06-15',
+        payoutDetails: 'Product Commission - Electronics',
+        amount: 2500.0,
+        tds: 250.0,
+        totalPayable: 2250.0,
+        remark: 'Completed'),
+    CustProductPayoutsModel(
+        date: '2025-06-22',
+        payoutDetails: 'Product Commission - Fashion',
+        amount: 1800.0,
+        tds: 180.0,
+        totalPayable: 1620.0,
+        remark: 'Processing'),
   ];
 
   @override

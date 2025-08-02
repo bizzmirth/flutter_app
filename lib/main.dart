@@ -2,17 +2,22 @@ import 'dart:async';
 import 'dart:io';
 import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart';
 import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
+import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/screens/login_page/login.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:local_session_timeout/local_session_timeout.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -24,8 +29,79 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  MyApp({super.key});
+
+  // Global navigator key
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final sessionStateStream = StreamController<SessionState>();
+  late SessionConfig sessionConfig;
+  StreamSubscription<SessionTimeoutState>? _sessionSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    sessionConfig = SessionConfig(
+      invalidateSessionForAppLostFocus: const Duration(minutes: 30),
+      invalidateSessionForUserInactivity: const Duration(minutes: 30),
+    );
+
+    // Listen to session timeout events
+    _sessionSubscription =
+        sessionConfig.stream.listen((SessionTimeoutState timeoutEvent) {
+      sessionStateStream.add(SessionState.stopListening);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final currentContext = MyApp.navigatorKey.currentContext;
+        if (currentContext != null && mounted) {
+          _handleSessionTimeout(currentContext, timeoutEvent);
+        }
+      });
+    });
+  }
+
+  void _handleSessionTimeout(
+      BuildContext context, SessionTimeoutState timeoutEvent) async {
+    if (timeoutEvent == SessionTimeoutState.userInactivityTimeout) {
+      final sharedPrefHelper = SharedPrefHelper();
+      Logger.warning("User inactivity timeout triggered");
+      ToastHelper.showErrorToast(
+        context: context,
+        title: "Session Expired",
+        description:
+            "You have been inactive for too long. Please log in again.",
+        alignment: Alignment.bottomCenter,
+      );
+      await sharedPrefHelper.removeDetails();
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        (Route<dynamic> route) => false,
+      );
+    } else if (timeoutEvent == SessionTimeoutState.appFocusTimeout) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        (Route<dynamic> route) => false,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _sessionSubscription?.cancel();
+    sessionStateStream.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +114,26 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
             create: (_) => DesignationDepartmentController()),
         ChangeNotifierProvider(create: (_) => AdminCustomerController()),
+        ChangeNotifierProvider(create: (_) => CustProductPayoutController()),
       ],
       child: ToastificationWrapper(
-        child: MaterialApp(
-          title: 'UniqBizz',
-          theme: ThemeData(
+        child: SessionTimeoutManager(
+          // userActivityDebounceDuration: const Duration(seconds: 1),
+          sessionConfig: sessionConfig,
+          // sessionStateStream: sessionStateStream.stream,
+          child: MaterialApp(
+            navigatorKey: MyApp.navigatorKey,
+            title: 'UniqBizz',
+            theme: ThemeData(
               primarySwatch: Colors.blue,
               visualDensity: VisualDensity.adaptivePlatformDensity,
               textTheme: GoogleFonts.robotoTextTheme(
                 Theme.of(context).textTheme,
-              )),
-          home: HomePage(),
-          debugShowCheckedModeBanner: false,
+              ),
+            ),
+            home: HomePage(),
+            debugShowCheckedModeBanner: false,
+          ),
         ),
       ),
     );
