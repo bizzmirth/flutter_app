@@ -1,6 +1,6 @@
 import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
+import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
 import 'package:bizzmirth_app/data_source/cust_product_payout_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -26,14 +26,16 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   @override
   void initState() {
     super.initState();
-    getAllData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getAllData();
+    });
   }
 
   void getAllData() async {
     final controller =
         Provider.of<CustProductPayoutController>(context, listen: false);
     final userId = await SharedPrefHelper().getCurrentUserCustId();
-    controller.allPayouts(userId);
+    controller.getAllPayouts(userId);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -336,103 +338,121 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Product Payouts',
-            style: Appwidget.poppinsAppBarTitle(),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.blueAccent,
-          elevation: 0,
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Divider(thickness: 1, color: Colors.black26),
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      "Payouts:",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                Divider(thickness: 1, color: Colors.black26),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                        child: payoutCard("Previous Payout", "January, 2025",
-                            "Rs. 0/-", "Paid", Colors.green.shade100)),
-                    const SizedBox(width: 16),
-                    Expanded(
-                        child: payoutCard("Next Payout", "February, 2025",
-                            "Rs. 0/-", "Pending", Colors.orange.shade100)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                totalPayoutCard(),
-                const SizedBox(height: 50),
-                Divider(thickness: 1, color: Colors.black26),
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      "All Payouts:",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                Divider(thickness: 1, color: Colors.black26),
-                FilterBar(),
-                Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: SizedBox(
-                    height: (_rowsPerPage * dataRowHeight) +
-                        headerHeight +
-                        paginationHeight,
-                    child: PaginatedDataTable(
-                      columnSpacing: 50,
-                      dataRowMinHeight: 40,
-                      columns: [
-                        DataColumn(label: Text("Date")),
-                        DataColumn(label: Text("Payout Details")),
-                        DataColumn(label: Text("Product Payout")),
-                        DataColumn(label: Text("Total")),
-                        DataColumn(label: Text("TDS")),
-                        DataColumn(label: Text("Total Payable")),
-                        DataColumn(label: Text("Remarks")),
-                      ],
-                      source:
-                          MyTEProductionPayoutDataSource(TErecruitmentpayout),
-                      rowsPerPage: _rowsPerPage,
-                      availableRowsPerPage: [5, 10, 15, 20, 25],
-                      onRowsPerPageChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _rowsPerPage = value;
-                          });
-                        }
-                      },
-                      arrowHeadColor: Colors.blue,
-                    ),
-                  ),
-                ),
-              ],
+    final controller =
+        Provider.of<CustProductPayoutController>(context, listen: false);
+    return Consumer<CustProductPayoutController>(
+        builder: (context, controller, child) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'Product Payoutsas',
+              style: Appwidget.poppinsAppBarTitle(),
             ),
+            centerTitle: true,
+            backgroundColor: Colors.blueAccent,
+            elevation: 0,
           ),
-        ));
+          body: controller.isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Divider(thickness: 1, color: Colors.black26),
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              "Payouts:",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        Divider(thickness: 1, color: Colors.black26),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: payoutCard(
+                                    "Previous Payout",
+                                    "January, 2025",
+                                    "Rs. 0/-",
+                                    "Paid",
+                                    Colors.green.shade100)),
+                            const SizedBox(width: 16),
+                            Expanded(
+                                child: payoutCard(
+                                    "Next Payout",
+                                    "February, 2025",
+                                    "Rs. 0/-",
+                                    "Pending",
+                                    Colors.orange.shade100)),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        totalPayoutCard(),
+                        const SizedBox(height: 50),
+                        Divider(thickness: 1, color: Colors.black26),
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              "All Payouts:",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        Divider(thickness: 1, color: Colors.black26),
+                        FilterBar(
+                          userCount: controller.allPayouts.length.toString(),
+                        ),
+                        Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: SizedBox(
+                            height: (_rowsPerPage * dataRowHeight) +
+                                headerHeight +
+                                paginationHeight,
+                            child: PaginatedDataTable(
+                              columnSpacing: 50,
+                              dataRowMinHeight: 40,
+                              columns: [
+                                DataColumn(label: Text("Date")),
+                                DataColumn(label: Text("Payout Details")),
+                                DataColumn(label: Text("Total")),
+                                DataColumn(label: Text("TDS")),
+                                DataColumn(label: Text("Total Payable")),
+                                DataColumn(label: Text("Remarks")),
+                              ],
+                              source: MyTEProductionPayoutDataSource(
+                                  controller.allPayouts),
+                              rowsPerPage: _rowsPerPage,
+                              availableRowsPerPage: [5, 10, 15, 20, 25],
+                              onRowsPerPageChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _rowsPerPage = value;
+                                  });
+                                }
+                              },
+                              arrowHeadColor: Colors.blue,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ));
+    });
   }
 
   Widget payoutCard(String title, String date, String amount, String status,
