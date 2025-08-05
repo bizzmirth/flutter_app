@@ -457,30 +457,43 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                 height: (_rowsPerPage * dataRowHeight) +
                                     headerHeight +
                                     paginationHeight,
-                                child: PaginatedDataTable(
-                                  columns: [
-                                    DataColumn(label: Text("Rank")),
-                                    DataColumn(label: Text("Profile Picture")),
-                                    DataColumn(label: Text("Full Name")),
-                                    DataColumn(label: Text("Date Reg")),
-                                    DataColumn(label: Text("Total CU Ref")),
-                                    DataColumn(label: Text("Status")),
-                                    DataColumn(label: Text("Active/Inactive")),
-                                  ],
-                                  source: CustTopReferralCustomers(
-                                      customers:
-                                          controller.topCustomerRefererals),
-                                  rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: [5, 10, 15, 20, 25],
-                                  onRowsPerPageChanged: (value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        _rowsPerPage = value;
-                                      });
-                                    }
-                                  },
-                                  arrowHeadColor: Colors.blue,
-                                ),
+                                child: controller.isLoading
+                                    ? Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : PaginatedDataTable(
+                                        columns: [
+                                          DataColumn(label: Text("Rank")),
+                                          DataColumn(
+                                              label: Text("Profile Picture")),
+                                          DataColumn(label: Text("Full Name")),
+                                          DataColumn(label: Text("Date Reg")),
+                                          DataColumn(
+                                              label: Text("Total CU Ref")),
+                                          DataColumn(label: Text("Status")),
+                                          DataColumn(
+                                              label: Text("Active/Inactive")),
+                                        ],
+                                        source: CustTopReferralCustomers(
+                                            customers: controller
+                                                .topCustomerRefererals),
+                                        rowsPerPage: _rowsPerPage,
+                                        availableRowsPerPage: [
+                                          5,
+                                          10,
+                                          15,
+                                          20,
+                                          25
+                                        ],
+                                        onRowsPerPageChanged: (value) {
+                                          if (value != null) {
+                                            setState(() {
+                                              _rowsPerPage = value;
+                                            });
+                                          }
+                                        },
+                                        arrowHeadColor: Colors.blue,
+                                      ),
                               ),
                             )
                           ],

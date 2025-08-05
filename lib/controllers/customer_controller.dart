@@ -61,6 +61,11 @@ class CustomerController extends ChangeNotifier {
     notifyListeners();
   }
 
+  set setUserCustomerId(String? value) {
+    _userCustomerId = value;
+    notifyListeners();
+  }
+
   Future<void> checkEmail(String email) async {
     if (email.isEmpty) {
       _emailError = 'Please enter your email';
@@ -138,6 +143,8 @@ class CustomerController extends ChangeNotifier {
               await SharedPrefHelper().saveCustomerType(_customerType!);
               await SharedPrefHelper().saveCurrentUserCustId(_userCustomerId!);
               await SharedPrefHelper().saveCurrentUserRegDate(_userRegDate!);
+              setUserCustomerId = _userCustomerId;
+
               Logger.success(
                   "Found user with ca_customer_id: $_userCustomerId");
               Logger.success("User's ta_reference_no: $_userTaReferenceNo");
@@ -268,7 +275,9 @@ class CustomerController extends ChangeNotifier {
       final String url =
           'https://testca.uniqbizz.com/api/dashboard/top_customer_refereral.php';
 
-      final Map<String, dynamic> body = {"userId": userId};
+      final Map<String, dynamic> body = {"userId": _userCustomerId ?? userId};
+      Logger.warning(
+          "user id from setter : $_userCustomerId and userId from shared prefs: $userId");
       final response = await http.post(Uri.parse(url), body: jsonEncode(body));
 
       if (response.statusCode == 200) {
