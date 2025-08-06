@@ -36,6 +36,41 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
         Provider.of<CustProductPayoutController>(context, listen: false);
     final userId = await SharedPrefHelper().getCurrentUserCustId();
     controller.getAllPayouts(userId);
+    controller.apiGetPreviousPayouts();
+    controller.apiGetNextMonthPayouts();
+    controller.apiGetTotalPayouts();
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(50.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              color: Colors.blueAccent,
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Loading Product Payouts...',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Please wait while we fetch your data',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[500],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -50,6 +85,27 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
         selectedDate = DateFormat("MMMM, yyyy").format(picked);
       });
     }
+  }
+
+  String getMonthName(String? monthNumber) {
+    if (monthNumber == null) return '';
+
+    const monthNames = {
+      '01': 'January',
+      '02': 'February',
+      '03': 'March',
+      '04': 'April',
+      '05': 'May',
+      '06': 'June',
+      '07': 'July',
+      '08': 'August',
+      '09': 'September',
+      '10': 'October',
+      '11': 'November',
+      '12': 'December',
+    };
+
+    return monthNames[monthNumber] ?? '';
   }
 
   void showPayoutDialog(BuildContext context, String payoutType, String date,
@@ -338,14 +394,12 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller =
-        Provider.of<CustProductPayoutController>(context, listen: false);
     return Consumer<CustProductPayoutController>(
         builder: (context, controller, child) {
       return Scaffold(
           appBar: AppBar(
             title: Text(
-              'Product Payoutsas',
+              'Product Payouts',
               style: Appwidget.poppinsAppBarTitle(),
             ),
             centerTitle: true,
@@ -353,9 +407,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
             elevation: 0,
           ),
           body: controller.isLoading
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
+              ? _buildLoadingState()
               : SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -381,22 +433,22 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                             Expanded(
                                 child: payoutCard(
                                     "Previous Payout",
-                                    "January, 2025",
-                                    "Rs. 0/-",
+                                    "${getMonthName(controller.prevMonth)}, ${controller.year}",
+                                    "Rs. ${controller.previousMonthPayout}/-",
                                     "Paid",
                                     Colors.green.shade100)),
                             const SizedBox(width: 16),
                             Expanded(
                                 child: payoutCard(
                                     "Next Payout",
-                                    "February, 2025",
-                                    "Rs. 0/-",
+                                    "${getMonthName(controller.nextMonth)}, ${controller.year}",
+                                    "Rs. ${controller.nextMonthPayout}/-",
                                     "Pending",
                                     Colors.orange.shade100)),
                           ],
                         ),
                         const SizedBox(height: 16),
-                        totalPayoutCard(),
+                        totalPayoutCard(controller.totalPayout ?? "0.00"),
                         const SizedBox(height: 50),
                         Divider(thickness: 1, color: Colors.black26),
                         Center(
@@ -422,30 +474,34 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                             height: (_rowsPerPage * dataRowHeight) +
                                 headerHeight +
                                 paginationHeight,
-                            child: PaginatedDataTable(
-                              columnSpacing: 50,
-                              dataRowMinHeight: 40,
-                              columns: [
-                                DataColumn(label: Text("Date")),
-                                DataColumn(label: Text("Payout Details")),
-                                DataColumn(label: Text("Total")),
-                                DataColumn(label: Text("TDS")),
-                                DataColumn(label: Text("Total Payable")),
-                                DataColumn(label: Text("Remarks")),
-                              ],
-                              source: MyTEProductionPayoutDataSource(
-                                  controller.allPayouts),
-                              rowsPerPage: _rowsPerPage,
-                              availableRowsPerPage: [5, 10, 15, 20, 25],
-                              onRowsPerPageChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _rowsPerPage = value;
-                                  });
-                                }
-                              },
-                              arrowHeadColor: Colors.blue,
-                            ),
+                            child: controller.isLoading
+                                ? Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : PaginatedDataTable(
+                                    columnSpacing: 50,
+                                    dataRowMinHeight: 40,
+                                    columns: [
+                                      DataColumn(label: Text("Date")),
+                                      DataColumn(label: Text("Payout Details")),
+                                      DataColumn(label: Text("Total")),
+                                      DataColumn(label: Text("TDS")),
+                                      DataColumn(label: Text("Total Payable")),
+                                      DataColumn(label: Text("Remarks")),
+                                    ],
+                                    source: MyTEProductionPayoutDataSource(
+                                        controller.allPayouts),
+                                    rowsPerPage: _rowsPerPage,
+                                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                                    onRowsPerPageChanged: (value) {
+                                      if (value != null) {
+                                        setState(() {
+                                          _rowsPerPage = value;
+                                        });
+                                      }
+                                    },
+                                    arrowHeadColor: Colors.blue,
+                                  ),
                           ),
                         ),
                       ],
@@ -523,7 +579,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
     );
   }
 
-  Widget totalPayoutCard() {
+  Widget totalPayoutCard(String? totalPayout) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -535,8 +591,9 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
               const Text("Total Payout",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
-              const Text("Rs. 0/-",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text("Rs. $totalPayout/-",
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -547,8 +604,8 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                       'Total Payout',
                       selectedDate,
                       'Rs. 0/-',
-                      'CU240001', // Replace with actual user ID
-                      'Harbhajan Naik', // Replace with actual user name
+                      'CU240001',
+                      'Harbhajan Naik',
                     ),
                     child: const Text(
                       "View Payout",

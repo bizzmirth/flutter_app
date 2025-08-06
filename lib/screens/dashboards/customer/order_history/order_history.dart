@@ -1,4 +1,7 @@
+import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -15,6 +18,20 @@ class _OrderHistoryState extends State<OrderHistory> {
   int selectedDay = 28;
   DateTime _selectedDate = DateTime.now();
   final Map<DateTime, List<Map<String, Object>>> _tasks = {};
+
+  String selectedFilter = "All"; // Default selected filter
+  int _rowsPerPage = 5;
+  static const double dataRowHeight = 50.0;
+  static const double headerHeight = 56.0;
+  static const double paginationHeight = 60.0;
+
+  final List<String> filterOptions = [
+    "All",
+    "Pending",
+    "Booked",
+    "Canceled",
+    "Refund"
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +57,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: _buildStatCard(
+                      child: buildStatCard(
                         icon: Icons.hourglass_empty,
                         value: "0",
                         label: "Pending Booking",
@@ -50,7 +67,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildStatCard(
+                      child: buildStatCard(
                         icon: Icons.check_circle,
                         value: "2",
                         label: "Completed Booking",
@@ -66,7 +83,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: _buildStatCard(
+                      child: buildStatCard(
                         icon: Icons.hourglass_empty,
                         value: "₹9953.54",
                         label: "Pending Payment",
@@ -76,7 +93,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildStatCard(
+                      child: buildStatCard(
                         icon: Icons.check_circle,
                         value: "₹9780.3",
                         label: "Completed Payment",
@@ -130,14 +147,11 @@ class _OrderHistoryState extends State<OrderHistory> {
                                         day.year, day.month, day.day)] ??
                                     [])
                                 .map((event) {
-                              if (event is Map<String, Object>) {
-                                return {
-                                  "name": event["name"]?.toString() ??
-                                      "Unnamed Event",
-                                  "type": event["type"]?.toString() ?? "other",
-                                };
-                              }
-                              return {"name": "Invalid Event", "type": "other"};
+                              return {
+                                "name": event["name"]?.toString() ??
+                                    "Unnamed Event",
+                                "type": event["type"]?.toString() ?? "other",
+                              };
                             }).toList();
                           },
                           calendarStyle: CalendarStyle(
@@ -265,178 +279,54 @@ class _OrderHistoryState extends State<OrderHistory> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Filter Tabs
-                    Wrap(
-                      spacing: 16,
-                      children: [
-                        _buildFilterTab("All", true),
-                        _buildFilterTab("Pending", false),
-                        _buildFilterTab("Booked", false),
-                        _buildFilterTab("Canceled", false),
-                        _buildFilterTab("Refund", false),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Date Range Picker
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6366F1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.calendar_today,
-                              color: Colors.white, size: 16),
-                          SizedBox(width: 8),
-                          Text(
-                            "July 2, 2025 - July 31, 2025",
-                            style: TextStyle(color: Colors.white, fontSize: 12),
-                          ),
-                          SizedBox(width: 8),
-                          Icon(Icons.keyboard_arrow_down,
-                              color: Colors.white, size: 16),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Show entries and Search
                     Row(
-                      children: [
-                        const Text("Show 10 entries",
-                            style: TextStyle(fontSize: 14)),
-                        const Spacer(),
-                        SizedBox(
-                          width: 150,
-                          height: 32,
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: "Search...",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              isDense: true,
-                            ),
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ],
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: filterOptions
+                          .map((filter) =>
+                              _buildFilterTab(filter, selectedFilter == filter))
+                          .toList(),
                     ),
-                    const SizedBox(height: 16),
 
-                    // Data Table
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        columns: const [
-                          DataColumn(label: Text('Sr. No.')),
-                          DataColumn(label: Text('Booking ID')),
-                          DataColumn(label: Text('Tour Date')),
-                          DataColumn(label: Text('Package Name')),
-                          DataColumn(label: Text('Customer')),
-                          DataColumn(label: Text('Travel Consultant')),
-                          DataColumn(label: Text('Payment Status')),
-                          DataColumn(label: Text('Status')),
-                          DataColumn(label: Text('Action')),
-                        ],
-                        rows: [
-                          DataRow(cells: [
-                            const DataCell(Text('1')),
-                            const DataCell(Text('2025600023')),
-                            const DataCell(Text('2025-06-14')),
-                            const DataCell(Text('Shimla Manali')),
-                            const DataCell(Text('Harbhajan Naik')),
-                            const DataCell(Text('Travel Agent 1')),
-                            DataCell(
-                                _buildStatusChip('Completed', Colors.green)),
-                            DataCell(
-                                _buildStatusChip('Completed', Colors.green)),
-                            DataCell(
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon:
-                                        const Icon(Icons.visibility, size: 16),
-                                    onPressed: () {},
-                                    color: Colors.blue,
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.edit, size: 16),
-                                    onPressed: () {},
-                                    color: Colors.green,
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete, size: 16),
-                                    onPressed: () {},
-                                    color: Colors.red,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ]),
-                          DataRow(cells: [
-                            const DataCell(Text('2')),
-                            const DataCell(Text('2025400003')),
-                            const DataCell(Text('2025-04-22')),
-                            const DataCell(Text('Goa 4N5D')),
-                            const DataCell(Text('Harbhajan Naik')),
-                            const DataCell(Text('Travel Agent 2')),
-                            DataCell(
-                                _buildStatusChip('Completed', Colors.green)),
-                            DataCell(
-                                _buildStatusChip('Completed', Colors.green)),
-                            DataCell(
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon:
-                                        const Icon(Icons.visibility, size: 16),
-                                    onPressed: () {},
-                                    color: Colors.blue,
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.edit, size: 16),
-                                    onPressed: () {},
-                                    color: Colors.green,
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete, size: 16),
-                                    onPressed: () {},
-                                    color: Colors.red,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ]),
-                        ],
+                    // DateFilterWidget(),
+                    const SizedBox(height: 8),
+                    Divider(thickness: 1, color: Colors.black26),
+                    FilterBar(),
+                    Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Pagination
-                    Row(
-                      children: [
-                        const Text("Showing 1 to 2 of 2 entries",
-                            style: TextStyle(fontSize: 14, color: Colors.grey)),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            _buildPaginationButton("Previous", false),
-                            const SizedBox(width: 4),
-                            _buildPaginationButton("1", true),
-                            const SizedBox(width: 4),
-                            _buildPaginationButton("Next", false),
+                      child: SizedBox(
+                        height: (_rowsPerPage * dataRowHeight) +
+                            headerHeight +
+                            paginationHeight,
+                        child: PaginatedDataTable(
+                          columnSpacing: 35,
+                          dataRowMinHeight: 40,
+                          columns: [
+                            DataColumn(label: Text("Image")),
+                            DataColumn(label: Text("ID")),
+                            DataColumn(label: Text("Full Name")),
+                            DataColumn(label: Text("Ref. ID")),
+                            DataColumn(label: Text("Ref. Name")),
+                            DataColumn(label: Text("Joining Date")),
+                            DataColumn(label: Text("Status")),
+                            DataColumn(label: Text("Action"))
                           ],
+                          source: ViewMyBMDataSource(ordersBM),
+                          rowsPerPage: _rowsPerPage,
+                          availableRowsPerPage: [5, 10, 15, 20, 25],
+                          onRowsPerPageChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _rowsPerPage = value;
+                              });
+                            }
+                          },
+                          arrowHeadColor: Colors.blue,
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -449,188 +339,33 @@ class _OrderHistoryState extends State<OrderHistory> {
     );
   }
 
-  Widget _buildStatusChip(String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color == Colors.green
-            ? Colors.green.shade100
-            : Colors.orange.shade100,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 12,
-          color: color == Colors.green
-              ? Colors.green.shade700
-              : Colors.orange.shade700,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTableRow(
-    String srNo,
-    String bookingId,
-    String tourDate,
-    String packageName,
-    String customer,
-    String travelConsultant,
-    String paymentStatus,
-    String status, {
-    required bool isEven,
-  }) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      decoration: BoxDecoration(
-        color: isEven ? Colors.grey.shade50 : Colors.white,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Text(srNo, style: TextStyle(fontSize: 13)),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(bookingId, style: TextStyle(fontSize: 13)),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(tourDate, style: TextStyle(fontSize: 13)),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(packageName, style: TextStyle(fontSize: 13)),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(customer, style: TextStyle(fontSize: 13)),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(travelConsultant, style: TextStyle(fontSize: 13)),
-          ),
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: paymentStatus == "Completed"
-                    ? Colors.green.shade100
-                    : Colors.orange.shade100,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                paymentStatus,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: paymentStatus == "Completed"
-                      ? Colors.green.shade700
-                      : Colors.orange.shade700,
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: status == "Completed"
-                    ? Colors.green.shade100
-                    : Colors.orange.shade100,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                status,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: status == "Completed"
-                      ? Colors.green.shade700
-                      : Colors.orange.shade700,
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.visibility, size: 16, color: Colors.blue),
-                SizedBox(width: 8),
-                Icon(Icons.edit, size: 16, color: Colors.green),
-                SizedBox(width: 8),
-                Icon(Icons.delete, size: 16, color: Colors.red),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTableHeader(String text) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-              color: Colors.grey.shade700,
-            ),
-          ),
-        ),
-        Icon(Icons.unfold_more, size: 16, color: Colors.grey.shade400),
-      ],
-    );
-  }
-
-  Widget _buildPaginationButton(String text, bool isActive) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: isActive ? Color(0xFF6366F1) : Colors.transparent,
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: isActive ? Colors.white : Colors.grey.shade600,
-          fontSize: 14,
-        ),
-      ),
-    );
-  }
-
   Widget _buildFilterTab(String text, bool isSelected) {
-    return Container(
-      margin: EdgeInsets.only(right: 16),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: isSelected ? Color(0xFF6366F1) : Colors.transparent,
-            width: 2,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedFilter = text;
+        });
+        // Add your filter logic here
+        // _handleFilterChange(text);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected ? const Color(0xFF6366F1) : Colors.transparent,
+              width: 2,
+            ),
           ),
         ),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: isSelected ? Color(0xFF6366F1) : Colors.grey.shade600,
-          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-          fontSize: 14,
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? const Color(0xFF6366F1) : Colors.grey.shade600,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            fontSize: 14,
+          ),
         ),
       ),
     );
@@ -805,66 +540,7 @@ class _OrderHistoryState extends State<OrderHistory> {
     }
   }
 
-  Widget _buildUpcomingTasks() {
-    return ListView(
-      children: [
-        Text("Nothing to display", style: TextStyle(color: Colors.grey[600])),
-      ],
-    );
-  }
-
   bool isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
-  }
-
-  Widget _buildStatCard({
-    required IconData icon,
-    required String value,
-    required String label,
-    required Color backgroundColor,
-    required Color iconColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            icon,
-            color: iconColor,
-            size: 24,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.black54,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

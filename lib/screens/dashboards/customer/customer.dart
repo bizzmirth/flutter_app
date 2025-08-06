@@ -10,10 +10,12 @@ import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -121,6 +123,62 @@ class _CDashboardPageState extends State<CDashboardPage> {
     }
   }
 
+  Future<bool> _showExitDialog() async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false, // Prevents dismissing by tapping outside
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              title: const Row(
+                children: [
+                  Icon(Icons.exit_to_app, color: Colors.orange),
+                  SizedBox(width: 10),
+                  Text('Exit App'),
+                ],
+              ),
+              content: const Text(
+                'Are you sure you want to exit the app?',
+                style: TextStyle(fontSize: 16),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pop(false); // Return false (don't exit)
+                  },
+                  child: const Text(
+                    'No',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true); // Return true (exit)
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Yes',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Return false if dialog is dismissed without selection
+  }
+
   // Future<void> _refreshDashboard() async {
   //   setState(() {
   //     _isDashboardInitialized = false;
@@ -226,284 +284,303 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Customer Dashboard',
-          style: Appwidget.poppinsAppBarTitle(),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+
+        // Show the exit dialog and wait for user response
+        final shouldExit = await _showExitDialog();
+
+        if (shouldExit) {
+          // Exit the app
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Customer Dashboard',
+            style: Appwidget.poppinsAppBarTitle(),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.blueAccent,
+          elevation: 0,
         ),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        elevation: 0,
-      ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              color: Color.fromARGB(255, 81, 131, 246),
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: AssetImage('assets/user_image.jpg'),
-                      radius: 30,
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Welcome, Customer!",
-                      style: GoogleFonts.roboto(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+        drawer: Drawer(
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                color: Color.fromARGB(255, 81, 131, 246),
+                padding:
+                    EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: AssetImage('assets/user_image.jpg'),
+                        radius: 30,
                       ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Welcome, Customer!",
+                        style: GoogleFonts.roboto(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "Manage everything efficiently",
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    SizedBox(height: 10),
+                    ListTile(
+                      leading: Icon(Icons.dashboard),
+                      title: Text('Dashboard'),
+                      onTap: () {
+                        Navigator.pop(
+                            context); // Just close drawer if already on dashboard
+                      },
                     ),
-                    Text(
-                      "Manage everything efficiently",
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        color: Colors.white70,
+                    ListTile(
+                      leading: Icon(Icons.home),
+                      title: Text('Home Page'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.people),
+                      title: Text('Referral Customers'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ViewCustomersPage()),
+                        );
+                      },
+                    ),
+                    if (customerType != 'Free')
+                      ListTile(
+                        leading: Icon(Icons.account_balance_wallet),
+                        title: Text('My Wallet'),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WalletDetailsPage()),
+                          );
+                        },
+                      ),
+                    ExpansionTile(
+                      title: const Text("Payouts"),
+                      leading: const Icon(Icons.payment),
+                      children: [
+                        _drawerItem(context, Icons.inventory_2,
+                            "Product Payout", CustProductPayoutsPage(),
+                            padding: true),
+                        _drawerItem(context, Icons.people_alt,
+                            "Referral Payout", CustomerReferralPayouts(),
+                            padding: true),
+                      ],
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.history),
+                      title: Text('Order History'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OrderHistory()),
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.power_settings_new_rounded,
+                          color: Colors.red,
+                        ),
+                        title: Text("Log Out"),
+                        onTap: () async {
+                          SharedPrefHelper().removeDetails();
+                          await Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomePage()),
+                            (Route<dynamic> route) => false,
+                          );
+                        },
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  SizedBox(height: 10),
-                  ListTile(
-                    leading: Icon(Icons.dashboard),
-                    title: Text('Dashboard'),
-                    onTap: () {
-                      Navigator.pop(
-                          context); // Just close drawer if already on dashboard
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.home),
-                    title: Text('Home Page'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.people),
-                    title: Text('Referral Customers'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ViewCustomersPage()),
-                      );
-                    },
-                  ),
-                  if (customerType != 'Free')
-                    ListTile(
-                      leading: Icon(Icons.account_balance_wallet),
-                      title: Text('My Wallet'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => WalletDetailsPage()),
-                        );
-                      },
-                    ),
-                  ExpansionTile(
-                    title: const Text("Payouts"),
-                    leading: const Icon(Icons.payment),
-                    children: [
-                      _drawerItem(context, Icons.inventory_2, "Product Payout",
-                          CustProductPayoutsPage(),
-                          padding: true),
-                      _drawerItem(context, Icons.people_alt, "Referral Payout",
-                          CustomerReferralPayouts(),
-                          padding: true),
-                    ],
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.history),
-                    title: Text('Order History'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => OrderHistory()),
-                      );
-                    },
-                  ),
-                  const Divider(),
-                  Padding(
-                    padding: EdgeInsets.zero,
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.power_settings_new_rounded,
-                        color: Colors.red,
-                      ),
-                      title: Text("Log Out"),
-                      onTap: () async {
-                        SharedPrefHelper().removeDetails();
-                        await Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
-                          (Route<dynamic> route) => false,
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      body: _isInitializing
-          ? _buildLoadingState()
-          : Consumer<CustomerController>(
-              builder: (context, controller, child) {
-                // Only rebuild specific parts when needed
-                return SingleChildScrollView(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // _buildHeader(),
-                      SizedBox(height: 20),
+        body: _isInitializing
+            ? _buildLoadingState()
+            : Consumer<CustomerController>(
+                builder: (context, controller, child) {
+                  // Only rebuild specific parts when needed
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // _buildHeader(),
+                        SizedBox(height: 20),
 
-                      CustomAnimatedSummaryCards(
-                        cardData: [
-                          SummaryCardData(
-                              title: 'REFERRAL CUSTOMER REGISTERED',
-                              value: '${controller.regCustomerCount}',
-                              icon: Icons.people),
-                          SummaryCardData(
-                              title: 'TOTAL BOOKING',
-                              value: '9',
-                              icon: Icons.calendar_today),
-                          if (controller.customerType != 'Free')
+                        CustomAnimatedSummaryCards(
+                          cardData: [
                             SummaryCardData(
-                                title: 'MY WALLET',
-                                value: '',
-                                icon: Icons.account_balance_wallet),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-
-                      ProgressTrackerCard(
-                        totalSteps: 10,
-                        currentStep: controller.regCustomerCount,
-                        message: "Keep going! You're doing great!",
-                        progressColor: Colors.blueAccent,
-                      ),
-                      SizedBox(height: 20),
-
-                      if (_isDashboardInitialized)
-                        ImprovedLineChart(
-                          initialYear: _cachedRegDate ?? controller.userRegDate,
-                          key: ValueKey(
-                              'chart_${_cachedRegDate ?? controller.userRegDate}'),
-                        )
-                      else
-                        Container(
-                          height: 300,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(),
-                                SizedBox(height: 16),
-                                Text('Loading chart data...'),
-                              ],
-                            ),
-                          ),
-                        ),
-                      SizedBox(height: 20),
-
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            Divider(thickness: 1, color: Colors.black26),
-                            Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 10),
-                                child: Text(
-                                  "Top Customers Referral",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-                            Divider(thickness: 1, color: Colors.black26),
-                            FilterBar(
-                              userCount: controller.topCustomerRefererals.length
-                                  .toString(),
-                            ),
-                            Card(
-                              elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: SizedBox(
-                                height: (_rowsPerPage * dataRowHeight) +
-                                    headerHeight +
-                                    paginationHeight,
-                                child: controller.isLoading
-                                    ? Center(
-                                        child: CircularProgressIndicator(),
-                                      )
-                                    : PaginatedDataTable(
-                                        columns: [
-                                          DataColumn(label: Text("Rank")),
-                                          DataColumn(
-                                              label: Text("Profile Picture")),
-                                          DataColumn(label: Text("Full Name")),
-                                          DataColumn(label: Text("Date Reg")),
-                                          DataColumn(
-                                              label: Text("Total CU Ref")),
-                                          DataColumn(label: Text("Status")),
-                                          DataColumn(
-                                              label: Text("Active/Inactive")),
-                                        ],
-                                        source: CustTopReferralCustomers(
-                                            customers: controller
-                                                .topCustomerRefererals),
-                                        rowsPerPage: _rowsPerPage,
-                                        availableRowsPerPage: [
-                                          5,
-                                          10,
-                                          15,
-                                          20,
-                                          25
-                                        ],
-                                        onRowsPerPageChanged: (value) {
-                                          if (value != null) {
-                                            setState(() {
-                                              _rowsPerPage = value;
-                                            });
-                                          }
-                                        },
-                                        arrowHeadColor: Colors.blue,
-                                      ),
-                              ),
-                            )
+                                title: 'REFERRAL CUSTOMER REGISTERED',
+                                value: '${controller.regCustomerCount}',
+                                icon: Icons.people),
+                            SummaryCardData(
+                                title: 'TOTAL BOOKING',
+                                value: '9',
+                                icon: Icons.calendar_today),
+                            if (controller.customerType != 'Free')
+                              SummaryCardData(
+                                  title: 'MY WALLET',
+                                  value: '',
+                                  icon: Icons.account_balance_wallet),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                        SizedBox(height: 20),
+
+                        ProgressTrackerCard(
+                          totalSteps: 10,
+                          currentStep: controller.regCustomerCount,
+                          message: "Keep going! You're doing great!",
+                          progressColor: Colors.blueAccent,
+                        ),
+                        SizedBox(height: 20),
+
+                        if (_isDashboardInitialized)
+                          ImprovedLineChart(
+                            initialYear:
+                                _cachedRegDate ?? controller.userRegDate,
+                            key: ValueKey(
+                                'chart_${_cachedRegDate ?? controller.userRegDate}'),
+                          )
+                        else
+                          Container(
+                            height: 300,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(),
+                                  SizedBox(height: 16),
+                                  Text('Loading chart data...'),
+                                ],
+                              ),
+                            ),
+                          ),
+                        SizedBox(height: 20),
+
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Divider(thickness: 1, color: Colors.black26),
+                              Center(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: Text(
+                                    "Top Customers Referral",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                              Divider(thickness: 1, color: Colors.black26),
+                              FilterBar(
+                                userCount: controller
+                                    .topCustomerRefererals.length
+                                    .toString(),
+                              ),
+                              Card(
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: SizedBox(
+                                  height: (_rowsPerPage * dataRowHeight) +
+                                      headerHeight +
+                                      paginationHeight,
+                                  child: controller.isLoading
+                                      ? Center(
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : PaginatedDataTable(
+                                          columns: [
+                                            DataColumn(label: Text("Rank")),
+                                            DataColumn(
+                                                label: Text("Profile Picture")),
+                                            DataColumn(
+                                                label: Text("Full Name")),
+                                            DataColumn(label: Text("Date Reg")),
+                                            DataColumn(
+                                                label: Text("Total CU Ref")),
+                                            DataColumn(label: Text("Status")),
+                                            DataColumn(
+                                                label: Text("Active/Inactive")),
+                                          ],
+                                          source: CustTopReferralCustomers(
+                                              customers: controller
+                                                  .topCustomerRefererals),
+                                          rowsPerPage: _rowsPerPage,
+                                          availableRowsPerPage: [
+                                            5,
+                                            10,
+                                            15,
+                                            20,
+                                            25
+                                          ],
+                                          onRowsPerPageChanged: (value) {
+                                            if (value != null) {
+                                              setState(() {
+                                                _rowsPerPage = value;
+                                              });
+                                            }
+                                          },
+                                          arrowHeadColor: Colors.blue,
+                                        ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+      ),
     );
   }
 }

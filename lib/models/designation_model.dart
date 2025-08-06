@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Designation {
   final String id;
   final String desgName;

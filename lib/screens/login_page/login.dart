@@ -38,10 +38,10 @@ class _LoginPageState extends State<LoginPage> {
         );
         break;
       case "Customer":
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const CDashboardPage()),
-        );
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const CDashboardPage()),
+            (Route<dynamic> route) => false);
         break;
       case "Travel Consultant":
         Navigator.push(
@@ -128,24 +128,20 @@ class _LoginPageState extends State<LoginPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Detect if the device is a tablet (assumed if width > 600)
     final bool isTablet = screenWidth > 600;
 
-    // Adjust padding dynamically based on device type & orientation
     final double outerHorizontalPadding = isTablet
-        ? (isPortrait ? 190 : 380) // Tablet padding
+        ? (isPortrait ? 190 : 380)
         : (isPortrait
-            ? 30 // Portrait padding for phone
+            ? 30
             : screenWidth > screenHeight
-                ? 40 // Landscape padding for phones
-                : 80); // Fallback padding for landscape if the condition fails
+                ? 40
+                : 80);
 
     final double outerVerticalPadding = isPortrait ? 50 : 30;
     final double innerHorizontalPadding = isTablet
         ? (isPortrait ? 50 : 60)
-        : (screenWidth > screenHeight
-            ? 40
-            : 30); // Adjust inner padding in landscape
+        : (screenWidth > screenHeight ? 40 : 30);
     final controller = Provider.of<LoginController>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,

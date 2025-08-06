@@ -164,9 +164,11 @@ class LoginController extends ChangeNotifier {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         String userType = responseData["user_type"];
+        String userId = responseData["user_id"];
 
         await _sharedPrefHelper.saveUserType(userType);
         await _sharedPrefHelper.saveUserEmail(email);
+        await _sharedPrefHelper.saveCurrentUserCustId(userId);
 
         Logger.success("Login Successful ${response.body}");
         Logger.info("User Type from response: $userType");
