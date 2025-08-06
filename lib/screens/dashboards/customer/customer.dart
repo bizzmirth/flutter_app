@@ -10,6 +10,7 @@ import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/widgets/coupons_tracker.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
@@ -470,12 +471,15 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         ),
                         SizedBox(height: 20),
 
-                        ProgressTrackerCard(
-                          totalSteps: 10,
-                          currentStep: controller.regCustomerCount,
-                          message: "Keep going! You're doing great!",
-                          progressColor: Colors.blueAccent,
-                        ),
+                        CouponProgressBar(
+                            currentStep: 4), // Change currentStep dynamically
+
+                        // ProgressTrackerCard(
+                        //   totalSteps: 10,
+                        //   currentStep: controller.regCustomerCount,
+                        //   message: "Keep going! You're doing great!",
+                        //   progressColor: Colors.blueAccent,
+                        // ),
                         SizedBox(height: 20),
 
                         if (_isDashboardInitialized)
