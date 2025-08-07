@@ -120,7 +120,10 @@ class LoginController extends ChangeNotifier {
         isLoading = false;
         notifyListeners();
         ToastHelper.showInfoToast(
-            context: context, title: "Login Failed", description: errorMessage);
+          context: context,
+          title: "Login Failed",
+          description: errorMessage,
+        );
         return {"success": false, "message": errorMessage};
       }
 
@@ -129,9 +132,10 @@ class LoginController extends ChangeNotifier {
         isLoading = false;
         notifyListeners();
         ToastHelper.showInfoToast(
-            context: context,
-            title: "Login Failed",
-            description: "Please enter all the fields.");
+          context: context,
+          title: "Login Failed",
+          description: "Please enter all the fields.",
+        );
         return {"success": false, "message": errorMessage};
       }
 
@@ -140,9 +144,10 @@ class LoginController extends ChangeNotifier {
         isLoading = false;
         notifyListeners();
         ToastHelper.showInfoToast(
-            context: context,
-            title: "Login Failed",
-            description: "Please enter all the fields.");
+          context: context,
+          title: "Login Failed",
+          description: "Please enter all the fields.",
+        );
         return {"success": false, "message": errorMessage};
       }
 
@@ -156,37 +161,50 @@ class LoginController extends ChangeNotifier {
       final body = jsonEncode({
         'user_type_id': selectedUserTypeId,
         'username': email,
-        'password': password
+        'password': password,
       });
 
       final response = await http.post(url, headers: headers, body: body);
+      Logger.success("Login response: ${response.body}");
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        String userType = responseData["user_type"];
-        String userId = responseData["user_id"];
+        final Map responseData = json.decode(response.body);
+        Logger.success("Response Data: $responseData");
 
-        await _sharedPrefHelper.saveUserType(userType);
-        await _sharedPrefHelper.saveUserEmail(email);
-        await _sharedPrefHelper.saveCurrentUserCustId(userId);
+        if (responseData["status"] == 1) {
+          // success
+          String userType = responseData["user_type"];
+          String userId = responseData["user_id"];
 
-        Logger.success("Login Successful ${response.body}");
-        Logger.info("User Type from response: $userType");
+          await _sharedPrefHelper.saveUserType(userType);
+          await _sharedPrefHelper.saveUserEmail(email);
+          await _sharedPrefHelper.saveCurrentUserCustId(userId);
 
-        isLoading = false;
-        clearFormFields();
-        notifyListeners();
-        Logger.success("Login response ${response.body}");
+          isLoading = false;
+          clearFormFields();
+          notifyListeners();
 
-        return {"status": true, "user_type": userType, "data": responseData};
+          return {"status": true, "user_type": userType, "data": responseData};
+        } else {
+          // failure from API
+          errorMessage = responseData["message"] ?? "Login failed";
+          isLoading = false;
+          notifyListeners();
+          return {"success": false, "message": errorMessage};
+        }
       } else {
-        Logger.error("Login Failed: ${response.body}");
-        errorMessage = "Login failed. Please check your credentials.";
+        errorMessage = "Server error: ${response.statusCode}";
         isLoading = false;
         notifyListeners();
         ToastHelper.showErrorToast(
-            context: context, title: "Login Failed", description: errorMessage);
-        return {"success": false, "message": errorMessage};
+          context: context,
+          title: "Login Failed",
+          description: errorMessage,
+        );
+        return {
+          "success": false,
+          "message": errorMessage
+        }; // 👈 now always returns
       }
     } catch (e) {
       Logger.error("Error: ${e.toString()}");
@@ -194,7 +212,10 @@ class LoginController extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
       ToastHelper.showErrorToast(
-          context: context, title: "Login Failed", description: errorMessage);
+        context: context,
+        title: "Login Failed",
+        description: errorMessage,
+      );
       return {"success": false, "message": errorMessage};
     }
   }

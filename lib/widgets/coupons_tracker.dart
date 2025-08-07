@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 class CouponProgressBar extends StatefulWidget {
   final int currentStep;
   final int totalSteps;
+  final ConfettiController confettiController; // <-- Passed from parent
 
   const CouponProgressBar({
     super.key,
     required this.currentStep,
+    required this.confettiController,
     this.totalSteps = 4,
   });
 
@@ -20,14 +22,11 @@ class CouponProgressBar extends StatefulWidget {
 
 class _CouponProgressBarState extends State<CouponProgressBar>
     with TickerProviderStateMixin {
-  late ConfettiController _confettiController;
   int displayedStep = 0;
 
   @override
   void initState() {
     super.initState();
-    _confettiController =
-        ConfettiController(duration: const Duration(seconds: 3));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _animateProgress();
     });
@@ -43,19 +42,12 @@ class _CouponProgressBarState extends State<CouponProgressBar>
 
   void _animateProgress() async {
     for (int i = displayedStep; i < widget.currentStep; i++) {
-      // strictly less than
       await Future.delayed(const Duration(milliseconds: 800));
       setState(() => displayedStep = i + 1);
       if (displayedStep == widget.totalSteps) {
-        _confettiController.play();
+        widget.confettiController.play(); // <-- Use widget.confettiController
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _confettiController.dispose();
-    super.dispose();
   }
 
   @override
@@ -152,20 +144,6 @@ class _CouponProgressBarState extends State<CouponProgressBar>
           ),
         ),
         const SizedBox(height: 30),
-
-        // Confetti
-        SizedBox(
-          height: 0,
-          child: ConfettiWidget(
-            confettiController: _confettiController,
-            blastDirectionality: BlastDirectionality.explosive,
-            emissionFrequency: 0.05,
-            numberOfParticles: 30,
-            maxBlastForce: 20,
-            minBlastForce: 5,
-            gravity: 0.2,
-          ),
-        ),
 
         // Cards
         SizedBox(

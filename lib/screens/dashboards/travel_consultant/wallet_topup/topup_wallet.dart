@@ -157,10 +157,11 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildReadOnlyField("TA Reference ID", controller.userTaReferenceNo!),
+        _buildReadOnlyField(
+            "TA Reference ID", controller.userTaReferenceNo ?? ""),
         SizedBox(height: 10),
         _buildReadOnlyField(
-            "TA Reference Name", controller.userTaRefrenceName!),
+            "TA Reference Name", controller.userTaRefrenceName ?? ""),
         SizedBox(height: 10),
         _buildAmountField(),
         SizedBox(height: 10),
@@ -220,14 +221,14 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
 
   Widget _buildAnimatedWallet() {
     List<Color> colors = [Colors.blueAccent, Colors.purpleAccent];
-    int _currentColorIndex = 0;
+    int currentColorIndex = 0;
 
     return StatefulBuilder(
       builder: (context, setState) {
         Timer.periodic(Duration(seconds: 60000), (timer) {
           if (mounted) {
             setState(() {
-              _currentColorIndex = (_currentColorIndex + 1) % colors.length;
+              currentColorIndex = (currentColorIndex + 1) % colors.length;
             });
           }
         });
@@ -243,8 +244,8 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                 borderRadius: BorderRadius.circular(12),
                 gradient: LinearGradient(
                   colors: [
-                    colors[_currentColorIndex].withOpacity(0.8),
-                    colors[(_currentColorIndex + 1) % colors.length]
+                    colors[currentColorIndex].withOpacity(0.8),
+                    colors[(currentColorIndex + 1) % colors.length]
                         .withOpacity(0.8),
                   ],
                   begin: Alignment.topLeft,
@@ -293,7 +294,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
       children: [
         customerType == "Admin"
             ? Container(
-                // width: 300,
+                width: 300,
                 height: 48,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(

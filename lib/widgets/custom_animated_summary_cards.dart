@@ -34,17 +34,37 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
     });
   }
 
+  List<List<SummaryCardData>> _chunkCards(
+      List<SummaryCardData> cards, int size) {
+    List<List<SummaryCardData>> chunks = [];
+    for (var i = 0; i < cards.length; i += size) {
+      int end = (i + size < cards.length) ? i + size : cards.length;
+      chunks.add(cards.sublist(i, end));
+    }
+    return chunks;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: widget.cardData
-          .map((data) => Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  child: _buildCard(data),
-                ),
-              ))
+    List<List<SummaryCardData>> rows = _chunkCards(widget.cardData, 2);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: rows
+          .map(
+            (row) => Row(
+              children: row
+                  .map(
+                    (data) => Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: _buildCard(data),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          )
           .toList(),
     );
   }
@@ -96,8 +116,8 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(data.icon, size: 35, color: Colors.white),
-                  SizedBox(width: 8),
+                  // Icon(data.icon, size: 35, color: Colors.white),
+                  // SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       data.title,
@@ -118,15 +138,35 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
                     ),
                 ],
               ),
-              Spacer(),
-              Text(
-                data.value,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(
+                    data.icon,
+                    color: Colors.white,
+                  ),
+                  Spacer(),
+                  Text(
+                    data.value,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Text(
+                    "This Month",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Spacer(),
+                  Text("2", style: TextStyle(color: Colors.white))
+                ],
+              )
             ],
           ),
         ),

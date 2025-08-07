@@ -1,0 +1,163 @@
+import 'package:bizzmirth_app/widgets/enhanced_progress_tracker.dart';
+import 'package:flutter/material.dart';
+
+class ReferralTrackerCard extends StatelessWidget {
+  final int totalSteps;
+  final int currentStep;
+  final Color progressColor;
+  final IconData? goalIcon;
+
+  const ReferralTrackerCard({
+    super.key,
+    required this.totalSteps,
+    required this.currentStep,
+    this.progressColor = Colors.blueAccent,
+    this.goalIcon,
+  });
+
+  String getMessage() {
+    if (currentStep >= 1 && currentStep <= 3) {
+      return "You're off to a great start! Keep referring friends.";
+    } else if (currentStep >= 4 && currentStep <= 6) {
+      return "Awesome! You're halfway there, keep going!";
+    } else if (currentStep >= 7 && currentStep <= 9) {
+      return "Almost there! Just a few more to go.";
+    } else if (currentStep == 10) {
+      return "Congratulations! You've completed your referral journey and unlocked the Europe Trip!";
+    }
+    return "";
+  }
+
+  String getGoals() {
+    if (currentStep == 10) {
+      return "Europe Trip Unlocked 🎉";
+    } else {
+      return "Unlock the Europe Trip";
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white,
+            progressColor.withOpacity(0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: progressColor.withOpacity(0.15),
+            blurRadius: 20,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with progress percentage
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 4),
+                    Text(
+                      '${currentStep}/${totalSteps} Referrals Unlocked!',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: progressColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${((currentStep / totalSteps) * 100).toInt()}%',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: progressColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 24),
+
+            // Enhanced Progress Tracker
+            EnhancedProgressTracker(
+              totalSteps: totalSteps,
+              currentStep: currentStep,
+              goal: getGoals(),
+              progressColor: progressColor,
+              goalIcon: goalIcon,
+            ),
+
+            SizedBox(height: 20),
+
+            // Message with better styling
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+              decoration: BoxDecoration(
+                color: currentStep >= totalSteps
+                    ? Colors.green.withOpacity(0.1)
+                    : progressColor.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(
+                  color: currentStep >= totalSteps
+                      ? Colors.green.withOpacity(0.3)
+                      : progressColor.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    currentStep >= totalSteps
+                        ? Icons.celebration
+                        : Icons.trending_up,
+                    color: currentStep >= totalSteps
+                        ? Colors.green
+                        : progressColor,
+                    size: 20,
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      getMessage(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: currentStep >= totalSteps
+                            ? Colors.green.shade700
+                            : Colors.grey[700],
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

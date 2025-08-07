@@ -76,22 +76,25 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _handleLogin(BuildContext context) async {
+  Future _handleLogin(BuildContext context) async {
     final controller = Provider.of<LoginController>(context, listen: false);
     final result = await controller.loginUser(context);
 
-    if (result["status"]) {
+    if (result["status"] == true) {
       ToastHelper.showSuccessToast(
-          context: context,
-          title: "Login Successful",
-          description: "Welcome back!");
+        context: context,
+        title: "Login Successful",
+        description: "Welcome back!",
+      );
+
       if (!context.mounted) return;
       _navigateToDashboard(context, result["user_type"]);
     } else {
       ToastHelper.showErrorToast(
-          context: context,
-          title: "Login Failed",
-          description: result["message"] ?? "An error occurred during login.");
+        context: context,
+        title: "Login Failed",
+        description: result["message"] ?? "An error occurred during login.",
+      );
     }
   }
 
@@ -179,7 +182,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 1),
 
-                    // Login Card with Dynamic Padding
                     Form(
                       key: _loginFormKey,
                       child: Container(
