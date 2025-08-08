@@ -87,6 +87,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
       await Future.wait([
         customerController.getRegCustomerCount(),
+        customerController.getDashboardStatCounts(),
         customerController.apiGetTopCustomerRefererals(),
         if (_cachedRegDate != null)
           customerController.apiGetChartData(DateTime.now().year.toString()),
@@ -468,23 +469,27 @@ class _CDashboardPageState extends State<CDashboardPage> {
                               cardData: [
                                 SummaryCardData(
                                     title: 'Registered Customers',
-                                    value: '${controller.regCustomerCount}',
-                                    thisMonthValue: "1",
+                                    value: controller.registerCustomerTotal!,
+                                    thisMonthValue:
+                                        controller.registerCustomerThisMonth,
                                     icon: Icons.people),
                                 SummaryCardData(
                                     title: 'Completed Tours',
-                                    value: '9',
-                                    thisMonthValue: "0",
+                                    value: controller.completedTourTotal!,
+                                    thisMonthValue:
+                                        controller.completedTourThisMonth,
                                     icon: Icons.map_outlined),
                                 SummaryCardData(
                                     title: 'Upcoming Tours',
-                                    value: '${controller.regCustomerCount}',
-                                    thisMonthValue: "4",
+                                    value: controller.upcomingTourTotal!,
+                                    thisMonthValue:
+                                        controller.upcomingTourThisMonth,
                                     icon: Icons.history),
                                 SummaryCardData(
                                     title: 'Commision Earned',
-                                    value: '${controller.regCustomerCount}',
-                                    thisMonthValue: "7",
+                                    value: controller.commisionEarnedTotal!,
+                                    thisMonthValue:
+                                        controller.pendingCommissionTotal,
                                     icon: Icons.money),
                               ],
                             ),
@@ -492,12 +497,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             PremiumSelectCard(),
                             SizedBox(height: 20),
                             CouponProgressBar(
-                                currentStep: 0,
+                                currentStep: 4,
                                 confettiController: _confettiController),
                             SizedBox(height: 16),
                             ReferralTrackerCard(
                               totalSteps: 10,
-                              currentStep: 2,
+                              currentStep: 10,
                               progressColor: Colors.green,
                             ),
                             buildTripOrRefundNote(1),
@@ -510,7 +515,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                     'chart_${_cachedRegDate ?? controller.userRegDate}'),
                               )
                             else
-                              Container(
+                              SizedBox(
                                 height: 300,
                                 child: Center(
                                   child: Column(

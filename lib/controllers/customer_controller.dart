@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 
 class CustomerController extends ChangeNotifier {
+  final String _baseUrl = 'https://testca.uniqbizz.com/api';
   int _regCustomerCount = 0;
   bool _isLoading = false;
   String? _error;
@@ -23,6 +24,16 @@ class CustomerController extends ChangeNotifier {
   String? _userTaReferenceNo;
   String? _userTaRefrenceName;
   String? _userRegDate;
+  String? _registerCustomerTotal;
+  String? _completedTourTotal;
+  String? _upcomingTourTotal;
+  String? _commisionEarnedTotal;
+  String? _pendingCommissionTotal;
+
+  String? _registerCustomerThisMonth;
+  String? _completedTourThisMonth;
+  String? _upcomingTourThisMonth;
+
   bool _isCheckingEmail = false;
   String? _emailError;
 
@@ -30,6 +41,14 @@ class CustomerController extends ChangeNotifier {
   String? get emailError => _emailError;
   final List<TopCustomerRefereralModel> _topCustomerRefererals = [];
 
+  String? get registerCustomerTotal => _registerCustomerTotal;
+  String? get completedTourTotal => _completedTourTotal;
+  String? get upcomingTourTotal => _upcomingTourTotal;
+  String? get commisionEarnedTotal => _commisionEarnedTotal;
+  String? get pendingCommissionTotal => _pendingCommissionTotal;
+  String? get registerCustomerThisMonth => _registerCustomerThisMonth;
+  String? get completedTourThisMonth => _completedTourThisMonth;
+  String? get upcomingTourThisMonth => _upcomingTourThisMonth;
   final List<RegisteredCustomer> _registeredCustomers = [];
   final List<PendingCustomer> _pendingCustomers = [];
   List<PendingCustomer> get pendingCustomers => _pendingCustomers;
@@ -117,8 +136,7 @@ class CustomerController extends ChangeNotifier {
       Logger.success("the stored email is $email");
 
       final response = await http.get(
-        Uri.parse(
-            'https://testca.uniqbizz.com/api/customers/customers.php?action=registered_cust'),
+        Uri.parse('$_baseUrl/customers/customers.php?action=registered_cust'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -182,6 +200,61 @@ class CustomerController extends ChangeNotifier {
     } catch (e) {
       Logger.error("Error in getRegCustomerCount: $e");
       _regCustomerCount = 0;
+      _error = "Error: $e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> getDashboardStatCounts() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      final String fullUrl = "$_baseUrl/customers/dashboard_counts.php";
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final Map<String, dynamic> body = {
+        "userId": userId,
+      };
+      final encodeBody = json.encode(body);
+
+      Logger.warning("Request body for dashboard counts: $body");
+      final response = await http.post(Uri.parse(fullUrl),
+          body: encodeBody, headers: {"Content-Type": "application/json"});
+      Logger.success("Dashboard counts response: ${response.body}");
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        if (responseData['status'] == true && responseData['data'] != null) {
+          final data = responseData['data'];
+
+          _registerCustomerTotal =
+              data['registered_customers']['total'].toString();
+          _registerCustomerThisMonth =
+              data['registered_customers']['this_month'].toString();
+
+          _completedTourTotal = data['completed_tours']['total'].toString();
+          _completedTourThisMonth =
+              data['completed_tours']['this_month'].toString();
+
+          _upcomingTourTotal = data['upcoming_tours']['total'].toString();
+          _upcomingTourThisMonth =
+              data['upcoming_tours']['this_month'].toString();
+
+          _commisionEarnedTotal =
+              data['commission_earned']['confirmed'].toString();
+          _pendingCommissionTotal =
+              data['commission_earned']['pending'].toString();
+        } else {
+          _error = "No data found";
+          Logger.error("API responded with no data ${responseData['message']}");
+        }
+      } else {
+        _error = 'HTTP Error: ${response.statusCode}';
+        Logger.error("HTTP Error: ${response.statusCode}");
+      }
+    } catch (e, s) {
+      Logger.error("Error in getDashboardData: $e\n Stacktree: $s");
       _error = "Error: $e";
     } finally {
       _isLoading = false;

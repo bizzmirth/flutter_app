@@ -81,7 +81,7 @@ class MyDesigDataSource extends DataTableSource {
                 onTap: () {
                   Logger.success("View Designation ${desgination.id}");
                   Navigator.pop(context);
-                  Adddesignation(context,
+                  addDesignation(context,
                       designation: desgination, isViewMode: true);
                 },
               ),
@@ -94,7 +94,7 @@ class MyDesigDataSource extends DataTableSource {
                 onTap: () {
                   Logger.success("Edit Designation ${desgination.id}");
                   Navigator.pop(context);
-                  Adddesignation(context,
+                  addDesignation(context,
                       designation: desgination, isEditMode: true);
                 },
               ),
@@ -132,7 +132,7 @@ class MyDesigDataSource extends DataTableSource {
     );
   }
 
-  void Adddesignation(BuildContext context,
+  void addDesignation(BuildContext context,
       {Designation? designation,
       bool isViewMode = false,
       bool isEditMode = false}) {
@@ -140,7 +140,6 @@ class MyDesigDataSource extends DataTableSource {
         TextEditingController(text: designation?.desgName ?? '');
     final DesignationDepartmentController controller =
         DesignationDepartmentController();
-    String? selectedDepartment = designation?.deptName;
     String? selectedDepartmentId = designation?.deptId;
 
     var title = "";
@@ -201,7 +200,6 @@ class MyDesigDataSource extends DataTableSource {
                 initialDepartmentId: selectedDepartmentId,
                 onDepartmentSelected: (selectedDept) {
                   selectedDepartmentId = selectedDept?['id'];
-                  selectedDepartment = selectedDept?['name'];
                 },
               ),
             ],
