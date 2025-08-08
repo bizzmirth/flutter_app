@@ -51,7 +51,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
 
     _pulseAnimation = Tween<double>(
       begin: 1.0,
-      end: 1.2,
+      end: 0.5,
     ).animate(CurvedAnimation(
       parent: _pulseController,
       curve: Curves.easeInOut,

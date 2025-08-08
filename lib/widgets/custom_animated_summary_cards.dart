@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
@@ -11,7 +10,8 @@ class CustomAnimatedSummaryCards extends StatefulWidget {
   const CustomAnimatedSummaryCards({super.key, required this.cardData});
 
   @override
-  _AnimatedSummaryCardsState createState() => _AnimatedSummaryCardsState();
+  State<CustomAnimatedSummaryCards> createState() =>
+      _AnimatedSummaryCardsState();
 }
 
 class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
@@ -71,6 +71,7 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
 
   Widget _buildCard(SummaryCardData data) {
     bool isWalletCard = data.title.contains('WALLET');
+    bool isCommissionCard = data.title.contains('Commision Earned');
 
     return GestureDetector(
       onTap: isWalletCard
@@ -160,7 +161,7 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
               Row(
                 children: [
                   Text(
-                    "This Month",
+                    isCommissionCard ? "Pending" : "This Month",
                     style: TextStyle(color: Colors.white),
                   ),
                   Spacer(),

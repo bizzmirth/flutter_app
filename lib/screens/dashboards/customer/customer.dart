@@ -469,30 +469,35 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                 SummaryCardData(
                                     title: 'Registered Customers',
                                     value: '${controller.regCustomerCount}',
+                                    thisMonthValue: "1",
                                     icon: Icons.people),
                                 SummaryCardData(
                                     title: 'Completed Tours',
                                     value: '9',
+                                    thisMonthValue: "0",
                                     icon: Icons.map_outlined),
                                 SummaryCardData(
                                     title: 'Upcoming Tours',
                                     value: '${controller.regCustomerCount}',
+                                    thisMonthValue: "4",
                                     icon: Icons.history),
                                 SummaryCardData(
                                     title: 'Commision Earned',
                                     value: '${controller.regCustomerCount}',
+                                    thisMonthValue: "7",
                                     icon: Icons.money),
                               ],
                             ),
                             SizedBox(height: 20),
                             PremiumSelectCard(),
+                            SizedBox(height: 20),
                             CouponProgressBar(
                                 currentStep: 0,
                                 confettiController: _confettiController),
                             SizedBox(height: 16),
                             ReferralTrackerCard(
                               totalSteps: 10,
-                              currentStep: 10,
+                              currentStep: 2,
                               progressColor: Colors.green,
                             ),
                             buildTripOrRefundNote(1),

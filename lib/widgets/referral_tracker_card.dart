@@ -1,5 +1,6 @@
 import 'package:bizzmirth_app/widgets/enhanced_progress_tracker.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ReferralTrackerCard extends StatelessWidget {
   final int totalSteps;
@@ -71,11 +72,11 @@ class ReferralTrackerCard extends StatelessWidget {
                   children: [
                     SizedBox(height: 4),
                     Text(
-                      '${currentStep}/${totalSteps} Referrals Unlocked!',
-                      style: TextStyle(
-                        fontSize: 20,
+                      '$currentStep/$totalSteps Referrals Unlocked!',
+                      style: GoogleFonts.poppins(
+                        fontSize: 21,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
+                        // color: Colors.green,
                       ),
                     ),
                   ],
