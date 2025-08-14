@@ -11,7 +11,6 @@ class CustProductPayoutController extends ChangeNotifier {
   String? _error;
 
   String? _prevMonth;
-  final List<CustProductPayoutModel> _allPayouts = [];
   String? _nextMonth;
   String? _year;
   String? _totalPayout;
@@ -27,7 +26,18 @@ class CustProductPayoutController extends ChangeNotifier {
   String? get nextMonthPayout => _nextMonthPayout;
   String? get totalPayout => _totalPayout;
 
+  final List<CustProductPayoutModel> _allPayouts = [];
   List<CustProductPayoutModel> get allPayouts => _allPayouts;
+
+  final List<CustProductPayoutModel> _previousMonthAllPayouts = [];
+  List<CustProductPayoutModel> get previousMonthAllPayouts =>
+      _previousMonthAllPayouts;
+
+  final List<CustProductPayoutModel> _nextMonthAllPayouts = [];
+  List<CustProductPayoutModel> get nextMonthAllPayouts => _nextMonthAllPayouts;
+
+  final List<CustProductPayoutModel> _totalAllPayouts = [];
+  List<CustProductPayoutModel> get totalAllPayouts => _totalAllPayouts;
 
   void getAllPayouts(userId) async {
     _isLoading = true;
@@ -36,17 +46,17 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_all_payouts.php";
+          "https://testca.uniqbizz.com/api/payouts/product_payouts/customer_all_payouts.php";
 
-      final Map<String, dynamic> body = {
-        "userId": userId,
-      };
+      final Map body = {"userId": userId, "userType": "10"};
       Logger.warning("Fetching all payouts for userId: $userId");
-      final response = await http.post(Uri.parse(fullUrl),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode(body));
+
+      final response = await http.post(
+        Uri.parse(fullUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
       Logger.success("Response from all payout: ${response.body}");
 
       if (response.statusCode == 200) {
@@ -54,8 +64,10 @@ class CustProductPayoutController extends ChangeNotifier {
         final data = jsonDecode(response.body);
         Logger.success("Data fetched successfully: $data");
 
-        if (data['status'] == true && data['data'] is List) {
-          final List<dynamic> payoutList = data['data'];
+        // Updated status check
+        if (data['status']?.toString().toLowerCase() == 'success' &&
+            data['payouts'] is List) {
+          final List payoutList = data['payouts'];
 
           for (var payoutJson in payoutList) {
             try {
@@ -94,9 +106,6 @@ class CustProductPayoutController extends ChangeNotifier {
       final fullUrl =
           "https://testca.uniqbizz.com/api/payouts/product_payouts/customer_payouts.php";
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final now = DateTime.now();
-      final currentMonth = now.month.toString().padLeft(2, '0'); // "08"
-      final currentYear = now.year.toString();
       final Map<String, dynamic> body = {
         "action": "previous",
         "userId": userId,
@@ -106,30 +115,62 @@ class CustProductPayoutController extends ChangeNotifier {
       Logger.warning("Previous Payout Request Body: $encodeBody");
 
       final response = await http.post(Uri.parse(fullUrl),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: encodeBody);
+          headers: {'Content-Type': 'application/json'}, body: encodeBody);
 
       Logger.success("Response from previous payouts: ${response.body}");
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
+
         if (responseData['status'] == 'success' &&
             responseData['data'] != null) {
           final data = responseData['data'];
           Logger.success("Data fetched successfully: $data");
-          _prevMonth = currentMonth;
-          _year = currentYear;
+
+          // Clear and populate basic data
+          _previousMonthAllPayouts.clear();
+          _prevMonth = data['period'];
           _previousMonthPayout = data['totalPayable']?.toString();
+
+          // Handle transactions
+          if (data['transactions'] is List) {
+            final transactions = data['transactions'] as List;
+
+            if (transactions.isEmpty) {
+              Logger.warning("No transactions found for previous month");
+            } else {
+              Logger.info("Processing ${transactions.length} transactions");
+
+              for (var transaction in transactions) {
+                try {
+                  final payout = CustProductPayoutModel.fromJson(transaction);
+                  _previousMonthAllPayouts.add(payout);
+                } catch (e, s) {
+                  Logger.error("Error parsing payout transaction: $e");
+                  Logger.error("Transaction data: $transaction");
+                  Logger.error("StackTrace: $s");
+                }
+              }
+            }
+
+            // Log final count after processing all transactions
+            Logger.success(
+                "Successfully processed ${_previousMonthAllPayouts.length} payout transactions");
+          } else {
+            Logger.warning("Transactions field is not a list or is missing");
+          }
         } else {
           Logger.error("API returned unsuccessful status or no data");
+          Logger.error("Response status: ${responseData['status']}");
           _error = "No payout data available for the previous month.";
         }
+      } else {
+        Logger.error("HTTP Error: ${response.statusCode}");
+        _error = "Server error. Please try again later.";
       }
     } catch (e, s) {
-      Logger.error(
-          "Error fetching previous payouts: Error: $e, StackTrace: $s");
+      Logger.error("Error fetching previous payouts: $e");
+      Logger.error("StackTrace: $s");
       _error = "Failed to fetch previous payouts. Please try again later.";
     } finally {
       _isLoading = false;
@@ -146,9 +187,6 @@ class CustProductPayoutController extends ChangeNotifier {
       final fullUrl =
           "https://testca.uniqbizz.com/api/payouts/product_payouts/customer_payouts.php";
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final now = DateTime.now();
-      final nextMonth = (now.month).toString().padLeft(2, '0');
-      final nextYear = (now.year + (now.month == 12 ? 1 : 0)).toString();
       final Map<String, dynamic> body = {
         "action": "next",
         "userId": userId,
@@ -158,30 +196,68 @@ class CustProductPayoutController extends ChangeNotifier {
       Logger.warning("Next Month Payout Request Body: $encodeBody");
 
       final response = await http.post(Uri.parse(fullUrl),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: encodeBody);
+          headers: {'Content-Type': 'application/json'}, body: encodeBody);
 
       Logger.success("Response from next month payouts: ${response.body}");
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
+
         if (responseData['status'] == 'success' &&
             responseData['data'] != null) {
           final data = responseData['data'];
           Logger.success("Data fetched successfully: $data");
-          _nextMonth = nextMonth;
-          _year = nextYear;
+
+          // Clear and populate basic data
+          _nextMonthAllPayouts.clear();
+          _nextMonth = data['period'];
           _nextMonthPayout = data['totalPayable']?.toString();
+
+          // Handle transactions
+          if (data['transactions'] is List) {
+            final transactions = data['transactions'] as List;
+
+            if (transactions.isEmpty) {
+              Logger.warning("No transactions found for next month");
+            } else {
+              Logger.info(
+                  "Processing ${transactions.length} transactions for next month");
+
+              for (var transaction in transactions) {
+                try {
+                  final payout = CustProductPayoutModel.fromJson(transaction);
+                  _nextMonthAllPayouts.add(payout);
+                } catch (e, s) {
+                  Logger.error(
+                      "Error parsing next month payout transaction: $e");
+                  Logger.error("Transaction data: $transaction");
+                  Logger.error("StackTrace: $s");
+                  // Continue processing other transactions even if one fails
+                }
+              }
+            }
+
+            // Log final count after processing all transactions
+            Logger.success(
+                "Successfully processed ${_nextMonthAllPayouts.length} next month payout transactions");
+          } else {
+            Logger.warning(
+                "Transactions field is not a list or is missing for next month");
+          }
         } else {
-          Logger.error("API returned unsuccessful status or no data");
+          Logger.error(
+              "API returned unsuccessful status or no data for next month");
+          Logger.error("Response status: ${responseData['status']}");
           _error = "No payout data available for next month.";
         }
+      } else {
+        Logger.error(
+            "HTTP Error for next month payouts: ${response.statusCode}");
+        _error = "Server error. Please try again later.";
       }
     } catch (e, s) {
-      Logger.error(
-          "Error fetching next month payouts: Error: $e, StackTrace: $s");
+      Logger.error("Error fetching next month payouts: $e");
+      Logger.error("StackTrace: $s");
       _error = "Failed to fetch next month payouts. Please try again later.";
     } finally {
       _isLoading = false;
@@ -204,22 +280,69 @@ class CustProductPayoutController extends ChangeNotifier {
         "userType": "10"
       };
       final encodeBody = jsonEncode(body);
-      final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
+      Logger.warning("Total Payouts Request Body: $encodeBody");
+
+      final response = await http.post(Uri.parse(fullUrl),
+          headers: {
+            'Content-Type': 'application/json'
+          }, // Added missing headers
+          body: encodeBody);
+
       Logger.success("Response from total payouts: ${response.body}");
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        Logger.success(
-            "Data fetched successfully for all payouts: $responseData");
 
         if (responseData['status'] == 'success' &&
             responseData['data'] != null) {
           final data = responseData['data'];
+          Logger.success("Data fetched successfully for all payouts: $data");
+
+          // Clear and populate basic data - Fix: using correct list name
+          _totalAllPayouts
+              .clear(); // Changed from _allPayouts to _totalAllPayouts
           _totalPayout = data['totalAmount']?.toString() ?? '0';
+
+          // Handle transactions
+          if (data['transactions'] is List) {
+            final transactions = data['transactions'] as List;
+
+            if (transactions.isEmpty) {
+              Logger.warning("No transactions found for total payouts");
+            } else {
+              Logger.info(
+                  "Processing ${transactions.length} total payout transactions");
+
+              for (var transaction in transactions) {
+                try {
+                  final payout = CustProductPayoutModel.fromJson(transaction);
+                  _totalAllPayouts.add(
+                      payout); // Changed from _allPayouts to _totalAllPayouts
+                } catch (e, s) {
+                  Logger.error("Error parsing total payout transaction: $e");
+                  Logger.error("Transaction data: $transaction");
+                  Logger.error("StackTrace: $s");
+                  // Continue processing other transactions even if one fails
+                }
+              }
+            }
+
+            // Log final count after processing all transactions
+            Logger.success(
+                "Successfully processed ${_totalAllPayouts.length} total payout transactions");
+          } else {
+            Logger.warning(
+                "Transactions field is not a list or is missing for total payouts");
+          }
         } else {
-          Logger.error("API returned unsuccessful status or no data");
+          Logger.error(
+              "API returned unsuccessful status or no data for total payouts");
+          Logger.error("Response status: ${responseData['status']}");
           _error = "No total payout data available.";
         }
+      } else {
+        Logger.error("HTTP Error for total payouts: ${response.statusCode}");
+        _error = "Server error. Please try again later.";
       }
     } catch (e, s) {
       Logger.error("Error fetching total payouts: Error: $e, StackTrace: $s");

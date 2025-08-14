@@ -1,6 +1,7 @@
 class CustProductPayoutModel {
   final String date;
   final String payoutDetails;
+  final String message;
   final String amount;
   final String tds;
   final String totalPayable;
@@ -9,6 +10,7 @@ class CustProductPayoutModel {
   CustProductPayoutModel({
     required this.date,
     required this.payoutDetails,
+    required this.message,
     required this.amount,
     required this.tds,
     required this.totalPayable,
@@ -19,9 +21,11 @@ class CustProductPayoutModel {
     return CustProductPayoutModel(
       date: json['date']?.toString() ?? '',
       payoutDetails: json['payout_details']?.toString() ?? '',
+      message: json['message']?.toString() ?? "",
       amount: json['amount']?.toString() ?? '',
       tds: json['tds']?.toString() ?? '',
-      totalPayable: json['total_payable']?.toString() ?? '',
+      totalPayable:
+          (json['total_payable'] ?? json['totalPayable'])?.toString() ?? '',
       status: json['status']?.toString() ?? '',
     );
   }

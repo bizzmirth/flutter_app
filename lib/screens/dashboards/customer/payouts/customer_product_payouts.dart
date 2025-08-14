@@ -1,7 +1,7 @@
 import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
-import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
+import 'package:bizzmirth_app/data_source/cust_product_all_payout_data_source.dart';
 import 'package:bizzmirth_app/data_source/cust_product_payout_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/models/cust_product_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -23,6 +23,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+  late String? userId;
 
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   void getAllData() async {
     final controller =
         Provider.of<CustProductPayoutController>(context, listen: false);
-    final userId = await SharedPrefHelper().getCurrentUserCustId();
+    userId = await SharedPrefHelper().getCurrentUserCustId();
     controller.getAllPayouts(userId);
     controller.apiGetPreviousPayouts();
     controller.apiGetNextMonthPayouts();
@@ -109,9 +110,34 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
     return monthNames[monthNumber] ?? '';
   }
 
-  void showPayoutDialog(BuildContext context, String payoutType, String date,
-      String amount, String userId, String userName) {
-    final payoutDataSource = PayoutDataSource();
+  void showPayoutDialog(
+      BuildContext context,
+      String payoutType,
+      String date,
+      String amount,
+      String userId,
+      String userName,
+      CustProductPayoutController controller) {
+    List<CustProductPayoutModel> getPayoutList() {
+      switch (payoutType.toLowerCase()) {
+        case 'previous payout':
+        case 'previous payouts':
+          return controller.previousMonthAllPayouts;
+        case 'next payout':
+        case 'next payouts':
+        case 'next month payout':
+        case 'next month payouts':
+          return controller.nextMonthAllPayouts;
+        case 'total payout':
+        case 'total payouts':
+        case 'all payouts':
+          return controller.totalAllPayouts;
+        default:
+          // Default to total payouts if type doesn't match
+          return controller.totalAllPayouts;
+      }
+    }
+
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -321,7 +347,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
-                              "Previous Payouts:",
+                              payoutType,
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
@@ -349,7 +375,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                 DataColumn(label: Text("Total Payable")),
                                 DataColumn(label: Text("Remarks")),
                               ],
-                              source: payoutDataSource,
+                              source: PayoutDataSource(getPayoutList()),
                               rowsPerPage: _rowsPerPage,
                               availableRowsPerPage: [5, 10, 15, 20, 25],
                               onRowsPerPageChanged: (value) {
@@ -396,8 +422,8 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<CustProductPayoutController>(
-        builder: (context, controller, child) {
-      return Scaffold(
+      builder: (context, controller, child) {
+        return Scaffold(
           appBar: AppBar(
             title: Text(
               'Product Payouts',
@@ -434,22 +460,25 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                             Expanded(
                                 child: payoutCard(
                                     "Previous Payout",
-                                    "${getMonthName(controller.prevMonth)}, ${controller.year}",
+                                    controller.prevMonth!,
                                     "Rs. ${controller.previousMonthPayout}/-",
                                     "Paid",
-                                    Colors.green.shade100)),
+                                    Colors.green.shade100,
+                                    controller)),
                             const SizedBox(width: 16),
                             Expanded(
                                 child: payoutCard(
                                     "Next Payout",
-                                    "${getMonthName(controller.nextMonth)}, ${controller.year}",
+                                    controller.nextMonth ?? "",
                                     "Rs. ${controller.nextMonthPayout}/-",
                                     "Pending",
-                                    Colors.orange.shade100)),
+                                    Colors.orange.shade100,
+                                    controller)),
                           ],
                         ),
                         const SizedBox(height: 16),
-                        totalPayoutCard(controller.totalPayout ?? "0.00"),
+                        totalPayoutCard(
+                            controller.totalPayout ?? "0.00", controller),
                         const SizedBox(height: 50),
                         Divider(thickness: 1, color: Colors.black26),
                         Center(
@@ -488,8 +517,8 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                       DataColumn(label: Text("Total Payable")),
                                       DataColumn(label: Text("Remarks")),
                                     ],
-                                    source: MyTEProductionPayoutDataSource(
-                                        dummyPayoutData),
+                                    source: CustProductAllPayoutDataSource(
+                                        controller.allPayouts),
                                     rowsPerPage: _rowsPerPage,
                                     availableRowsPerPage: [5, 10, 15, 20, 25],
                                     onRowsPerPageChanged: (value) {
@@ -506,12 +535,14 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                       ],
                     ),
                   ),
-                ));
-    });
+                ),
+        );
+      },
+    );
   }
 
   Widget payoutCard(String title, String date, String amount, String status,
-      Color statusColor) {
+      Color statusColor, CustProductPayoutController controller) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -549,14 +580,8 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
-                onTap: () => showPayoutDialog(
-                  context,
-                  title,
-                  date,
-                  amount,
-                  'CU240001', // Replace with actual user ID
-                  'Harbhajan Naik', // Replace with actual user name
-                ),
+                onTap: () => showPayoutDialog(context, title, date, amount,
+                    userId!, 'Harbhajan Naik', controller),
                 child: const Text(
                   "View Payout",
                   style: TextStyle(
@@ -578,7 +603,8 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
     );
   }
 
-  Widget totalPayoutCard(String? totalPayout) {
+  Widget totalPayoutCard(
+      String? totalPayout, CustProductPayoutController controller) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -599,13 +625,13 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                 children: [
                   GestureDetector(
                     onTap: () => showPayoutDialog(
-                      context,
-                      'Total Payout',
-                      selectedDate,
-                      'Rs. 0/-',
-                      'CU240001',
-                      'Harbhajan Naik',
-                    ),
+                        context,
+                        'Total Payout',
+                        selectedDate,
+                        totalPayout!,
+                        userId!,
+                        'Harbhajan Naik',
+                        controller),
                     child: const Text(
                       "View Payout",
                       style: TextStyle(

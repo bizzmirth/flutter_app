@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/controllers/cust_referral_payout_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
 import 'package:bizzmirth_app/data_source/cust_product_payout_data_source.dart';
+import 'package:bizzmirth_app/models/cust_product_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -80,7 +81,28 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
 
   void showPayoutDialog(BuildContext context, String payoutType, String date,
       String amount, String userId, String userName) {
-    final payoutDataSource = PayoutDataSource();
+    final List<CustProductPayoutModel> referralPayout = [
+      CustProductPayoutModel(
+        date: '2025-08-10',
+        payoutDetails: 'Referral Bonus - Product X',
+        message: 'Payout for successful referral of Product X',
+        amount: '5000',
+        tds: '500',
+        totalPayable: '4500',
+        status: 'Completed',
+      ),
+      CustProductPayoutModel(
+        date: '2025-08-12',
+        payoutDetails: 'Referral Bonus - Product Y',
+        message: 'Payout for successful referral of Product Y',
+        amount: '3000',
+        tds: '300',
+        totalPayable: '2700',
+        status: 'Pending',
+      ),
+    ];
+
+    final payoutDataSource = PayoutDataSource(referralPayout);
     showDialog(
       context: context,
       barrierDismissible: true,
