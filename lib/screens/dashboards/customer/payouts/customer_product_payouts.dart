@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
 import 'package:bizzmirth_app/data_source/cust_product_payout_data_source.dart';
+import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -462,9 +463,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                           ),
                         ),
                         Divider(thickness: 1, color: Colors.black26),
-                        FilterBar(
-                          userCount: controller.allPayouts.length.toString(),
-                        ),
+                        FilterBar(),
                         Card(
                           elevation: 5,
                           shape: RoundedRectangleBorder(
@@ -490,7 +489,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                       DataColumn(label: Text("Remarks")),
                                     ],
                                     source: MyTEProductionPayoutDataSource(
-                                        controller.allPayouts),
+                                        dummyPayoutData),
                                     rowsPerPage: _rowsPerPage,
                                     availableRowsPerPage: [5, 10, 15, 20, 25],
                                     onRowsPerPageChanged: (value) {

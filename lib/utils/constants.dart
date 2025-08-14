@@ -1267,3 +1267,430 @@ Widget buildTripOrRefundNote(int usedCoupons) {
     ),
   );
 }
+
+Widget _buildCouponsTab(bool isTablet) {
+  // Sample data for demonstration - replace with actual data
+  final List<Map<String, dynamic>> allCoupons = [
+    {
+      'code': 'SAVE20',
+      'name': 'Summer Sale',
+      'amount': '₹200',
+      'date': '15/07/24',
+      'expiryDate': '31/08/24',
+      'status': 'Active',
+    },
+    {
+      'code': 'WELCOME10',
+      'name': 'Welcome Offer',
+      'amount': '₹150',
+      'date': '01/08/24',
+      'expiryDate': '30/09/24',
+      'status': 'Active',
+    },
+    {
+      'code': 'EXPIRED50',
+      'name': 'Mega Discount',
+      'amount': '₹500',
+      'date': '01/06/24',
+      'expiryDate': '30/06/24',
+      'status': 'Expired',
+    },
+    {
+      'code': 'NEW30',
+      'name': 'New User Special',
+      'amount': '₹300',
+      'date': '10/08/24',
+      'expiryDate': '31/12/24',
+      'status': 'Active',
+    },
+    {
+      'code': 'FESTIVAL25',
+      'name': 'Festival Bonus',
+      'amount': '₹250',
+      'date': '20/08/24',
+      'expiryDate': '15/09/24',
+      'status': 'Active',
+    },
+    {
+      'code': 'OLDUSER',
+      'name': 'Loyalty Reward',
+      'amount': '₹100',
+      'date': '01/07/24',
+      'expiryDate': '31/07/24',
+      'status': 'Expired',
+    },
+  ];
+
+  // Pagination state - in a real app, these would be managed by StatefulWidget or provider
+  int currentPage = 0; // Change this to test different pages
+  int itemsPerPage = 3; // Adjust based on your needs
+  bool hasData = allCoupons.isNotEmpty; // Set to false to see empty state
+
+  // Calculate pagination
+  int totalPages = hasData ? (allCoupons.length / itemsPerPage).ceil() : 0;
+  int startIndex = currentPage * itemsPerPage;
+  int endIndex = (startIndex + itemsPerPage).clamp(0, allCoupons.length);
+  List<Map<String, dynamic>> currentPageCoupons =
+      hasData ? allCoupons.sublist(startIndex, endIndex) : [];
+
+  return Padding(
+    padding: EdgeInsets.all(isTablet ? 24 : 16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!hasData) ...[
+          Text(
+            'No Coupons Available',
+            style: TextStyle(
+              fontSize: isTablet ? 18 : 16,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: isTablet ? 32 : 24),
+        ],
+
+        if (hasData) ...[
+          // Page info and total count
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Coupons (${allCoupons.length} total)',
+                style: TextStyle(
+                  fontSize: isTablet ? 18 : 16,
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                'Page ${currentPage + 1} of $totalPages',
+                style: TextStyle(
+                  fontSize: isTablet ? 14 : 12,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: isTablet ? 20 : 16),
+        ],
+
+        // Table Header
+        Container(
+          padding: EdgeInsets.all(isTablet ? 16 : 12),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(8),
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey[300]!,
+                width: 1,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
+                  'Coupon Code',
+                  style: TextStyle(
+                    fontSize: isTablet ? 14 : 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  'Coupon',
+                  style: TextStyle(
+                    fontSize: isTablet ? 14 : 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  'Amount',
+                  style: TextStyle(
+                    fontSize: isTablet ? 14 : 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ),
+              if (isTablet) ...[
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'Date',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'Expiry',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ),
+              ],
+              Expanded(
+                flex: 1,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Status',
+                      style: TextStyle(
+                        fontSize: isTablet ? 14 : 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.sort,
+                      color: Colors.grey[400],
+                      size: isTablet ? 16 : 14,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Table Content
+        Expanded(
+          child: hasData
+              ? Column(
+                  children: [
+                    // Data Rows
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: currentPageCoupons.length,
+                        itemBuilder: (context, index) {
+                          final coupon = currentPageCoupons[index];
+                          final isExpired = coupon['status'] == 'Expired';
+
+                          return Container(
+                            padding: EdgeInsets.all(isTablet ? 16 : 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Colors.grey[200]!,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    coupon['code'],
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 13 : 11,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey[800],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    coupon['name'],
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 13 : 11,
+                                      color: Colors.grey[700],
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    coupon['amount'],
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 13 : 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.green[600],
+                                    ),
+                                  ),
+                                ),
+                                if (isTablet) ...[
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      coupon['date'],
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      coupon['expiryDate'],
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isExpired
+                                          ? Colors.red[50]
+                                          : Colors.green[50],
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      coupon['status'],
+                                      style: TextStyle(
+                                        fontSize: isTablet ? 12 : 10,
+                                        fontWeight: FontWeight.w500,
+                                        color: isExpired
+                                            ? Colors.red[600]
+                                            : Colors.green[600],
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                    // Pagination Controls
+                    if (totalPages > 1)
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Previous Button
+                            IconButton(
+                              onPressed: currentPage > 0
+                                  ? () {
+                                      // In a real app: setState(() => currentPage--);
+                                      print(
+                                          'Previous page: ${currentPage - 1}');
+                                    }
+                                  : null,
+                              icon: Icon(
+                                Icons.chevron_left,
+                                color: currentPage > 0
+                                    ? Colors.blue[600]
+                                    : Colors.grey[400],
+                              ),
+                            ),
+
+                            // Page Numbers
+                            ...List.generate(totalPages, (index) {
+                              bool isCurrentPage = index == currentPage;
+                              return GestureDetector(
+                                onTap: () {
+                                  // In a real app: setState(() => currentPage = index);
+                                  print('Go to page: $index');
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 4),
+                                  padding: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: isCurrentPage
+                                        ? Colors.blue[600]
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    '${index + 1}',
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 14 : 12,
+                                      fontWeight: isCurrentPage
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                      color: isCurrentPage
+                                          ? Colors.white
+                                          : Colors.grey[600],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+
+                            // Next Button
+                            IconButton(
+                              onPressed: currentPage < totalPages - 1
+                                  ? () {
+                                      // In a real app: setState(() => currentPage++);
+                                      print('Next page: ${currentPage + 1}');
+                                    }
+                                  : null,
+                              icon: Icon(
+                                Icons.chevron_right,
+                                color: currentPage < totalPages - 1
+                                    ? Colors.blue[600]
+                                    : Colors.grey[400],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                )
+              : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.local_offer_outlined,
+                        size: isTablet ? 64 : 48,
+                        color: Colors.grey[300],
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'No coupons available at the moment',
+                        style: TextStyle(
+                          fontSize: isTablet ? 16 : 14,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+        ),
+      ],
+    ),
+  );
+}

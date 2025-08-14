@@ -5,6 +5,7 @@ import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.d
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/widgets/loader_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,7 @@ class ViewCustomersPage extends StatefulWidget {
 }
 
 class _ViewCustomersPageState extends State<ViewCustomersPage> {
+  bool showLoader = true;
   int _rowsPerPage = 5;
   int _rowsPerPage1 = 5;
   static const double dataRowHeight = 50.0;
@@ -38,6 +40,15 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(const Duration(seconds: 8), () {
+      if (mounted) {
+        setState(() {
+          showLoader = false;
+        });
+      }
+    });
+
     searchController.addListener(_applyFilters);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final customerController = context.read<CustomerController>();
@@ -265,6 +276,22 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
     super.dispose();
   }
 
+  void navigateWithLoader(BuildContext context, Widget nextPage) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AppLoader(),
+    );
+
+    Future.delayed(const Duration(seconds: 7), () {
+      Navigator.pop(context); // close loader
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => nextPage),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<CustomerController>(
@@ -289,10 +316,8 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           backgroundColor: Colors.blueAccent,
           elevation: 0,
         ),
-        body: customerController.isLoading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
+        body: (showLoader)
+            ? const AppLoader()
             : SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),

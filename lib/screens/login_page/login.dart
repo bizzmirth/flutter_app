@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/widgets/loader_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,6 +30,22 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  void navigateWithLoader(BuildContext context, Widget nextPage) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AppLoader(),
+    );
+
+    Future.delayed(const Duration(seconds: 7), () {
+      Navigator.pop(context); // close loader
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => nextPage),
+      );
+    });
+  }
+
   void _navigateToDashboard(BuildContext context, String userType) {
     switch (userType) {
       case "Admin":
@@ -38,10 +55,7 @@ class _LoginPageState extends State<LoginPage> {
         );
         break;
       case "Customer":
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const CDashboardPage()),
-            (Route<dynamic> route) => false);
+        navigateWithLoader(context, const CDashboardPage());
         break;
       case "Travel Consultant":
         Navigator.push(

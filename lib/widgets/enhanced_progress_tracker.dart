@@ -278,7 +278,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                               )
                             : null,
                         color: isGoalReached ? null : Colors.grey[100],
-                        borderRadius: BorderRadius.circular(25),
+                        borderRadius: BorderRadius.circular(13),
                         border: Border.all(
                           color: isGoalReached
                               ? Colors.transparent
@@ -303,8 +303,9 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                                 (isGoalReached
                                     ? Icons.star
                                     : Icons.star_outline),
-                            color:
-                                isGoalReached ? Colors.white : Colors.grey[500],
+                            color: isGoalReached
+                                ? Colors.white
+                                : Colors.green[600],
                             size: 18,
                           ),
                           SizedBox(width: 6),
@@ -315,7 +316,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                               fontWeight: FontWeight.bold,
                               color: isGoalReached
                                   ? Colors.white
-                                  : Colors.grey[600],
+                                  : Colors.green[600],
                             ),
                           ),
                         ],

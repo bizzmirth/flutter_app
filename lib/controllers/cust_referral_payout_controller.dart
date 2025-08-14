@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -78,6 +79,120 @@ class CustReferralPayoutController extends ChangeNotifier {
     } catch (e, s) {
       Logger.error("Error fetching payouts: Error: $e, StackTrace: $s");
       _error = "Failed to fetch payouts. Please try again later.";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void apiGetPreviousMonthPayouts() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final fullUrl =
+          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_prev_payouts.php";
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final now = DateTime.now();
+      final prevMonth =
+          (now.month == 1 ? 12 : now.month - 1).toString().padLeft(2, '0');
+      final currentYear = now.year.toString();
+      final Map<String, dynamic> body = {
+        "userId": userId,
+        "month": prevMonth,
+        "year": currentYear
+      };
+      final encodeBody = jsonEncode(body);
+      Logger.warning("Fetching previous month payouts for userId: $encodeBody");
+      final response = await http.post(Uri.parse(fullUrl),
+          headers: {"Content-Type": "application/json"}, body: encodeBody);
+      Logger.success("Response from previous month payouts: ${response.body}");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final summary = data['summary'];
+        _prevMonth = prevMonth;
+        _year = currentYear;
+        _previousMonthPayout = summary['total_payout']?.toString();
+      }
+    } catch (e, s) {
+      Logger.error(
+          "Error fetching previous payouts: Error: $e, StackTrace: $s");
+      _error = "Failed to fetch previous payouts. Error: $e, Stacktree: $s.";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void apiGetNextMonthPayouts() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final fullUrl =
+          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_next_payouts.php";
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final now = DateTime.now();
+      final nextMonth = (now.month % 12 + 1).toString().padLeft(2, '0');
+      final currentYear = now.year.toString();
+      final Map<String, dynamic> body = {
+        "userId": userId,
+        "month": nextMonth,
+        "year": currentYear
+      };
+      final encodeBody = jsonEncode(body);
+      Logger.warning("Fetching next month payouts for userId: $encodeBody");
+      final response = await http.post(Uri.parse(fullUrl),
+          headers: {"Content-Type": "application/json"}, body: encodeBody);
+      Logger.success("Response from next month payouts: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final summary = data['data'];
+        _nextMonth = nextMonth;
+        _year = currentYear;
+        _nextMonthPayout = summary['total_payout']?.toString();
+      }
+    } catch (e, s) {
+      Logger.error(
+          "Error fetching next month payouts: Error: $e, StackTrace: $s");
+      _error = "Failed to fetch next month payouts. Error: $e, Stacktree: $s.";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void apiGetTotalPayouts() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final fullUrl =
+          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_total_payouts.php";
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final Map<String, dynamic> body = {
+        "userId": userId,
+      };
+      final encodeBody = jsonEncode(body);
+      Logger.warning("Fetching total payouts for userId: $encodeBody");
+      final response = await http.post(Uri.parse(fullUrl),
+          headers: {"Content-Type": "application/json"}, body: encodeBody);
+      Logger.success("Response from total payouts: ${response.body}");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        Logger.success("Data fetched successfully: $data");
+        _totalPayout = data['total_payout']?.toString();
+      } else {
+        Logger.error("Failed to fetch total payouts: ${response.statusCode}");
+        _error = "Failed to fetch total payouts. Please try again later.";
+      }
+    } catch (e, s) {
+      Logger.error("Error fetching total payouts: Error: $e, StackTrace: $s");
+      _error = "Failed to fetch total payouts. Please try again later.";
     } finally {
       _isLoading = false;
       notifyListeners();

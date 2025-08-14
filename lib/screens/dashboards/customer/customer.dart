@@ -6,6 +6,7 @@ import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_produ
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_referral_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -432,6 +433,22 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       padding: EdgeInsets.zero,
                       child: ListTile(
                         leading: Icon(
+                          Icons.person,
+                        ),
+                        title: Text("Profile Page"),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfilePage()),
+                          );
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: ListTile(
+                        leading: Icon(
                           Icons.power_settings_new_rounded,
                           color: Colors.red,
                         ),
@@ -464,6 +481,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            PremiumSelectCard(),
                             SizedBox(height: 20),
                             CustomAnimatedSummaryCards(
                               cardData: [
@@ -494,8 +512,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                               ],
                             ),
                             SizedBox(height: 20),
-                            PremiumSelectCard(),
-                            SizedBox(height: 20),
+                            // SizedBox(height: 20),
                             CouponProgressBar(
                                 currentStep: 4,
                                 confettiController: _confettiController),

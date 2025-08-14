@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart';
 import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
+import 'package:bizzmirth_app/controllers/cust_referral_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
-import 'package:bizzmirth_app/models/cust_product_payout_model.dart';
+import 'package:bizzmirth_app/controllers/profile_controller.dart';
+import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
@@ -116,6 +118,8 @@ class _MyAppState extends State<MyApp> {
             create: (_) => DesignationDepartmentController()),
         ChangeNotifierProvider(create: (_) => AdminCustomerController()),
         ChangeNotifierProvider(create: (_) => CustProductPayoutController()),
+        ChangeNotifierProvider(create: (_) => CustReferralPayoutController()),
+        ChangeNotifierProvider(create: (_) => ProfileController()),
       ],
       child: ToastificationWrapper(
         child: SessionTimeoutManager(
@@ -4444,16 +4448,16 @@ class MyTCRegDataSource extends DataTableSource {
 }
 
 var dummyPayoutData = [
-  CustProductPayoutModel(
+  CustReferralPayoutModel(
     date: "2025-07-14",
     payoutDetails:
-        "Niranjan Gaowkar (ID: CU250048) has earned ₹250 for referring Dhanraj Sahu (ID: CU250049) as a Level 1 referrer.",
+        "Niranjan asdGaowkar (ID: CU250048) has earned ₹250 for referring Dhanraj Sahu (ID: CU250049) as a Level 1 referrer.",
     amount: "250",
     tds: "5",
     totalPayable: "245",
     status: "Pending",
   ),
-  CustProductPayoutModel(
+  CustReferralPayoutModel(
     date: "2025-07-14",
     payoutDetails:
         "Niranjan Gaowkar (ID: CU250048) has gained 250 booking points for referring Dhanraj Sahu (ID: CU250049) as a Level 1 referrer.",
@@ -4461,60 +4465,6 @@ var dummyPayoutData = [
     tds: "NA",
     totalPayable: "250",
     status: "Credited",
-  ),
-  CustProductPayoutModel(
-    date: "2025-07-10",
-    payoutDetails:
-        "Niranjan Gaowkar (ID: CU250048) has earned ₹750 for referring Ranjan Bhole (ID: CU250051) as a Level 1 referrer.",
-    amount: "750",
-    tds: "15",
-    totalPayable: "735",
-    status: "Pending",
-  ),
-  CustProductPayoutModel(
-    date: "2025-07-10",
-    payoutDetails:
-        "Niranjan Gaowkar (ID: CU250048) has gained 750 booking points for referring Ranjan Bhole (ID: CU250051) as a Level 1 referrer.",
-    amount: "750",
-    tds: "NA",
-    totalPayable: "750",
-    status: "Credited",
-  ),
-  CustProductPayoutModel(
-    date: "2025-07-10",
-    payoutDetails:
-        "Niranjan Gaowkar (ID: CU250048) has earned ₹250 for referring Deeraj Pande (ID: CU250050) as a Level 1 referrer.",
-    amount: "250",
-    tds: "5",
-    totalPayable: "245",
-    status: "Pending",
-  ),
-  CustProductPayoutModel(
-    date: "2025-07-10",
-    payoutDetails:
-        "Niranjan Gaowkar (ID: CU250048) has gained 250 booking points for referring Deeraj Pande (ID: CU250050) as a Level 1 referrer.",
-    amount: "250",
-    tds: "NA",
-    totalPayable: "250",
-    status: "Credited",
-  ),
-  CustProductPayoutModel(
-    date: "2025-07-08",
-    payoutDetails:
-        "Niranjan Gaowkar (ID: CU250048) has earned ₹500 for product commission from ABC Product Sale.",
-    amount: "500",
-    tds: "10",
-    totalPayable: "490",
-    status: "Approved",
-  ),
-  CustProductPayoutModel(
-    date: "2025-07-05",
-    payoutDetails:
-        "Niranjan Gaowkar (ID: CU250048) has earned ₹1000 for Level 2 referrer bonus from XYZ Customer.",
-    amount: "1000",
-    tds: "20",
-    totalPayable: "980",
-    status: "Processing",
   ),
 ];
 

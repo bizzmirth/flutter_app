@@ -10,15 +10,16 @@ class CustProductPayoutController extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
-  bool get isLoading => _isLoading;
-  String? get error => _error;
   String? _prevMonth;
+  final List<CustProductPayoutModel> _allPayouts = [];
   String? _nextMonth;
   String? _year;
   String? _totalPayout;
   String? _previousMonthPayout;
   String? _nextMonthPayout;
 
+  bool get isLoading => _isLoading;
+  String? get error => _error;
   String? get prevMonth => _prevMonth;
   String? get nextMonth => _nextMonth;
   String? get year => _year;
@@ -26,7 +27,6 @@ class CustProductPayoutController extends ChangeNotifier {
   String? get nextMonthPayout => _nextMonthPayout;
   String? get totalPayout => _totalPayout;
 
-  final List<CustProductPayoutModel> _allPayouts = [];
   List<CustProductPayoutModel> get allPayouts => _allPayouts;
 
   void getAllPayouts(userId) async {
@@ -92,15 +92,15 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_prev_payouts.php";
+          "https://testca.uniqbizz.com/api/payouts/product_payouts/customer_payouts.php";
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final now = DateTime.now();
       final currentMonth = now.month.toString().padLeft(2, '0'); // "08"
       final currentYear = now.year.toString();
       final Map<String, dynamic> body = {
+        "action": "previous",
         "userId": userId,
-        "month": currentMonth,
-        "year": currentYear
+        "userType": "10"
       };
       final encodeBody = jsonEncode(body);
       Logger.warning("Previous Payout Request Body: $encodeBody");
@@ -114,12 +114,18 @@ class CustProductPayoutController extends ChangeNotifier {
       Logger.success("Response from previous payouts: ${response.body}");
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final summary = data['summary'];
-        Logger.success("Data fetched successfully: $data");
-        _prevMonth = currentMonth;
-        _year = currentYear;
-        _previousMonthPayout = summary['total_payout']?.toString();
+        final responseData = jsonDecode(response.body);
+        if (responseData['status'] == 'success' &&
+            responseData['data'] != null) {
+          final data = responseData['data'];
+          Logger.success("Data fetched successfully: $data");
+          _prevMonth = currentMonth;
+          _year = currentYear;
+          _previousMonthPayout = data['totalPayable']?.toString();
+        } else {
+          Logger.error("API returned unsuccessful status or no data");
+          _error = "No payout data available for the previous month.";
+        }
       }
     } catch (e, s) {
       Logger.error(
@@ -138,15 +144,15 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_next_payouts.php";
+          "https://testca.uniqbizz.com/api/payouts/product_payouts/customer_payouts.php";
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final now = DateTime.now();
-      final nextMonth = (now.month % 12 + 1).toString().padLeft(2, '0');
+      final nextMonth = (now.month).toString().padLeft(2, '0');
       final nextYear = (now.year + (now.month == 12 ? 1 : 0)).toString();
       final Map<String, dynamic> body = {
+        "action": "next",
         "userId": userId,
-        "month": nextMonth,
-        "year": nextYear
+        "userType": "10",
       };
       final encodeBody = jsonEncode(body);
       Logger.warning("Next Month Payout Request Body: $encodeBody");
@@ -160,12 +166,18 @@ class CustProductPayoutController extends ChangeNotifier {
       Logger.success("Response from next month payouts: ${response.body}");
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final summary = data['data'];
-        Logger.success("Data fetched successfully: $data");
-        _nextMonth = nextMonth;
-        _year = nextYear;
-        _nextMonthPayout = summary['total_payout']?.toString();
+        final responseData = jsonDecode(response.body);
+        if (responseData['status'] == 'success' &&
+            responseData['data'] != null) {
+          final data = responseData['data'];
+          Logger.success("Data fetched successfully: $data");
+          _nextMonth = nextMonth;
+          _year = nextYear;
+          _nextMonthPayout = data['totalPayable']?.toString();
+        } else {
+          Logger.error("API returned unsuccessful status or no data");
+          _error = "No payout data available for next month.";
+        }
       }
     } catch (e, s) {
       Logger.error(
@@ -184,17 +196,30 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_total_payouts.php";
+          "https://testca.uniqbizz.com/api/payouts/product_payouts/customer_payouts.php";
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final Map<String, dynamic> body = {"userId": userId};
+      final Map<String, dynamic> body = {
+        "action": "total",
+        "userId": userId,
+        "userType": "10"
+      };
       final encodeBody = jsonEncode(body);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success("Response from total payouts: ${response.body}");
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        Logger.success("Data fetched successfully for all payouts: $data");
-        _totalPayout = data['total_payout']?.toString();
+        final responseData = jsonDecode(response.body);
+        Logger.success(
+            "Data fetched successfully for all payouts: $responseData");
+
+        if (responseData['status'] == 'success' &&
+            responseData['data'] != null) {
+          final data = responseData['data'];
+          _totalPayout = data['totalAmount']?.toString() ?? '0';
+        } else {
+          Logger.error("API returned unsuccessful status or no data");
+          _error = "No total payout data available.";
+        }
       }
     } catch (e, s) {
       Logger.error("Error fetching total payouts: Error: $e, StackTrace: $s");

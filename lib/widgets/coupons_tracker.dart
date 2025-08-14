@@ -189,7 +189,6 @@ class _CouponProgressBarState extends State<CouponProgressBar>
     );
   }
 
-  // Locked card with blur & shimmer
   Widget _lockedCard(bool isFinal) {
     return Container(
       key: const ValueKey("locked"),
