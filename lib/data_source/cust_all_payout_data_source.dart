@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 // this data source is used to display the product payout details of pevious, next total and all payouts.
 
-class MyTEProductionPayoutDataSource extends DataTableSource {
+class CustReferenceAllPayoutDataSource extends DataTableSource {
   final List<CustReferralPayoutModel> data;
-  MyTEProductionPayoutDataSource(this.data);
+  CustReferenceAllPayoutDataSource(this.data);
 
   @override
   DataRow? getRow(int index) {

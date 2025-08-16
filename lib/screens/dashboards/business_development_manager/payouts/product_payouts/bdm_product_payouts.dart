@@ -113,7 +113,7 @@ class _BDMProductPayoutsPageState extends State<BDMProductPayoutsPage> {
                         DataColumn(label: Text("Total Payable")),
                         DataColumn(label: Text("Remarks")),
                       ],
-                      source: MyTEProductionPayoutDataSource(dummyPayoutData),
+                      source: CustReferenceAllPayoutDataSource(dummyPayoutData),
                       rowsPerPage: _rowsPerPage,
                       availableRowsPerPage: [5, 10, 15, 20, 25],
                       onRowsPerPageChanged: (value) {

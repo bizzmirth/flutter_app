@@ -144,6 +144,55 @@ class ProfileController extends ChangeNotifier {
     }
   }
 
+  Future<void> apiGetUserDetails() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      const String fullUrl =
+          "https://testca.uniqbizz.com/api/customers/profile_page.php";
+
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final Map<String, dynamic> body = {"userId": userId, "userType": "10"};
+
+      final response = await http.post(
+        Uri.parse(fullUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      Logger.success("Response from User Details API: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+
+        if (decoded['status'] == 'success') {
+          final basicInfo = decoded['data']['basic_info'];
+
+          // Only populate user name and profile pic
+          _firstName = basicInfo['first_name'];
+          _lastName = basicInfo['last_name'];
+          _profilePic = _formatUrl(basicInfo['profile_pic']);
+
+          Logger.success(
+              "User Details loaded successfully - Name: $_firstName $_lastName, Profile Pic: $_profilePic");
+        } else {
+          _errorMessage = decoded['message'] ?? "Unknown error occurred.";
+        }
+      } else {
+        _errorMessage =
+            "Failed to fetch user details. Status: ${response.statusCode}";
+      }
+    } catch (e, s) {
+      _errorMessage = "Failed to fetch user details. ${e.toString()}";
+      Logger.error("Error in apiGetUserDetails: $e, Stack trace: $s");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   void getCouponDetails() async {
     _isLoading = true;
     _errorMessage = null;

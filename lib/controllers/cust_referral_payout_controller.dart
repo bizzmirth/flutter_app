@@ -29,6 +29,16 @@ class CustReferralPayoutController extends ChangeNotifier {
   final List<CustReferralPayoutModel> _allPayouts = [];
   List<CustReferralPayoutModel> get allPayouts => _allPayouts;
 
+  final List<CustReferralPayoutModel> __previousMonthAllPayouts = [];
+  List<CustReferralPayoutModel> get previousMonthAllPayouts =>
+      __previousMonthAllPayouts;
+
+  final List<CustReferralPayoutModel> _nextMonthAllPayouts = [];
+  List<CustReferralPayoutModel> get nextMonthAllPayouts => _nextMonthAllPayouts;
+
+  final List<CustReferralPayoutModel> _totalAllPayouts = [];
+  List<CustReferralPayoutModel> get totalAllPayouts => _totalAllPayouts;
+
   void getAllPayouts(userId) async {
     _isLoading = true;
     _error = null;
@@ -111,9 +121,27 @@ class CustReferralPayoutController extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final summary = data['summary'];
+        final payoutsData = data['data'] as List<dynamic>?;
         _prevMonth = prevMonth;
         _year = currentYear;
         _previousMonthPayout = summary['total_payout']?.toString();
+
+        __previousMonthAllPayouts.clear();
+
+        if (payoutsData != null && payoutsData.isNotEmpty) {
+          for (var payoutJson in payoutsData) {
+            try {
+              final payoutModel = CustReferralPayoutModel.fromJson(payoutJson);
+              __previousMonthAllPayouts.add(payoutModel);
+            } catch (e) {
+              Logger.error("Error parsing payout model: $e");
+            }
+          }
+          Logger.success(
+              "Successfully populated previous all payouts ${__previousMonthAllPayouts.length} payout records");
+        } else {
+          Logger.warning("No payout data found in response");
+        }
       }
     } catch (e, s) {
       Logger.error(
@@ -150,10 +178,27 @@ class CustReferralPayoutController extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final summary = data['data'];
+        final payoutData = data['data'];
         _nextMonth = nextMonth;
         _year = currentYear;
-        _nextMonthPayout = summary['total_payout']?.toString();
+        _nextMonthPayout = payoutData['total_payout']?.toString();
+        final payoutRecords = payoutData['records'] as List<dynamic>?;
+        _nextMonthAllPayouts.clear();
+
+        if (payoutRecords != null && payoutRecords.isNotEmpty) {
+          for (var payoutJson in payoutRecords) {
+            try {
+              final payoutModel = CustReferralPayoutModel.fromJson(payoutJson);
+              _nextMonthAllPayouts.add(payoutModel);
+            } catch (e) {
+              Logger.error("Error parsing next month payout model: $e");
+            }
+          }
+          Logger.success(
+              "Successfully populated next moth payouts ${_nextMonthAllPayouts.length} next month payout records");
+        } else {
+          Logger.info("No next month payout records found in response");
+        }
       }
     } catch (e, s) {
       Logger.error(
@@ -184,8 +229,23 @@ class CustReferralPayoutController extends ChangeNotifier {
       Logger.success("Response from total payouts: ${response.body}");
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        Logger.success("Data fetched successfully: $data");
+        final payoutRecords = data['records'] as List<dynamic>?;
+
         _totalPayout = data['total_payout']?.toString();
+
+        _totalAllPayouts.clear();
+        if (payoutRecords != null) {
+          for (var payoutJson in payoutRecords) {
+            try {
+              final payoutModel = CustReferralPayoutModel.fromJson(payoutJson);
+              _totalAllPayouts.add(payoutModel);
+            } catch (e) {
+              Logger.error("Error parsing total payout model: $e");
+            }
+          }
+        }
+        Logger.success(
+            "Successfully populated total payout ${_totalAllPayouts.length} total payout records");
       } else {
         Logger.error("Failed to fetch total payouts: ${response.statusCode}");
         _error = "Failed to fetch total payouts. Please try again later.";

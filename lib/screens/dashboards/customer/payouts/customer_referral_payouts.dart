@@ -1,9 +1,9 @@
 import 'package:bizzmirth_app/controllers/cust_referral_payout_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
-import 'package:bizzmirth_app/data_source/cust_product_payout_data_source.dart';
-import 'package:bizzmirth_app/models/cust_product_payout_model.dart';
+import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,7 +11,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class CustomerReferralPayouts extends StatefulWidget {
-  const CustomerReferralPayouts({super.key});
+  final String? username;
+  const CustomerReferralPayouts({super.key, this.username});
 
   @override
   State<CustomerReferralPayouts> createState() =>
@@ -79,30 +80,35 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
     return monthNames[monthNumber] ?? '';
   }
 
-  void showPayoutDialog(BuildContext context, String payoutType, String date,
-      String amount, String userId, String userName) {
-    final List<CustProductPayoutModel> referralPayout = [
-      CustProductPayoutModel(
-        date: '2025-08-10',
-        payoutDetails: 'Referral Bonus - Product X',
-        message: 'Payout for successful referral of Product X',
-        amount: '5000',
-        tds: '500',
-        totalPayable: '4500',
-        status: 'Completed',
-      ),
-      CustProductPayoutModel(
-        date: '2025-08-12',
-        payoutDetails: 'Referral Bonus - Product Y',
-        message: 'Payout for successful referral of Product Y',
-        amount: '3000',
-        tds: '300',
-        totalPayable: '2700',
-        status: 'Pending',
-      ),
-    ];
+  void showPayoutDialog(
+      BuildContext context,
+      String payoutType,
+      String date,
+      String amount,
+      String userId,
+      String userName,
+      CustReferralPayoutController controller) {
+    List<CustReferralPayoutModel> getPayoutList() {
+      switch (payoutType.toLowerCase()) {
+        case 'previous payouts':
+        case 'previous payout':
+          return controller.previousMonthAllPayouts;
+        case 'next payout':
+        case 'next payouts':
+        case 'next month payout':
+        case 'next month payouts':
+          return controller.nextMonthAllPayouts;
+        case 'total payout':
+        case 'total payouts':
+        case 'all payouts':
+          return controller.totalAllPayouts;
+        default:
+          // Default to total payouts if type doesn't match
+          return controller.totalAllPayouts;
+      }
+    }
 
-    final payoutDataSource = PayoutDataSource(referralPayout);
+    // final payoutDataSource = PayoutDataSource(referralPayout);
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -312,7 +318,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
-                              "Previous Payouts:",
+                              payoutType,
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
@@ -340,7 +346,8 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                 DataColumn(label: Text("Total Payable")),
                                 DataColumn(label: Text("Remarks")),
                               ],
-                              source: payoutDataSource,
+                              source: CustReferenceAllPayoutDataSource(
+                                  getPayoutList()),
                               rowsPerPage: _rowsPerPage,
                               availableRowsPerPage: [5, 10, 15, 20, 25],
                               onRowsPerPageChanged: (value) {
@@ -420,6 +427,12 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
   Widget build(BuildContext context) {
     return Consumer<CustReferralPayoutController>(
       builder: (context, controller, child) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final screenWidth = MediaQuery.of(context).size.width;
+          final screenHeight = MediaQuery.of(context).size.height;
+          Logger.info(
+              "Screen dimensions - Width: $screenWidth, Height: $screenHeight");
+        });
         return Scaffold(
           appBar: AppBar(
             title: Text(
@@ -460,7 +473,8 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                     "${getMonthName(controller.prevMonth)}, ${controller.year}",
                                     "Rs. ${controller.previousMonthPayout}/-",
                                     "Paid",
-                                    Colors.green.shade100)),
+                                    Colors.green.shade100,
+                                    controller)),
                             const SizedBox(width: 16),
                             Expanded(
                                 child: payoutCard(
@@ -468,11 +482,12 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                     "${getMonthName(controller.nextMonth)}, ${controller.year}",
                                     "Rs. ${controller.nextMonthPayout}/-",
                                     "Pending",
-                                    Colors.orange.shade100)),
+                                    Colors.orange.shade100,
+                                    controller)),
                           ],
                         ),
                         const SizedBox(height: 16),
-                        totalPayoutCard(controller.totalPayout),
+                        totalPayoutCard(controller.totalPayout, controller),
                         const SizedBox(height: 50),
                         Divider(thickness: 1, color: Colors.black26),
                         Center(
@@ -509,7 +524,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                 DataColumn(label: Text("TDS")),
                                 DataColumn(label: Text("Remarks")),
                               ],
-                              source: MyTEProductionPayoutDataSource(
+                              source: CustReferenceAllPayoutDataSource(
                                   controller.allPayouts),
                               rowsPerPage: _rowsPerPage,
                               availableRowsPerPage: [5, 10, 15, 20, 25],
@@ -534,7 +549,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
   }
 
   Widget payoutCard(String title, String date, String amount, String status,
-      Color statusColor) {
+      Color statusColor, CustReferralPayoutController controller) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -568,8 +583,8 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
-                onTap: () => showPayoutDialog(
-                    context, title, date, amount, userId!, "userName"),
+                onTap: () => showPayoutDialog(context, title, date, amount,
+                    userId!, widget.username ?? "", controller),
                 child: const Text(
                   "View Payout",
                   style: TextStyle(
@@ -591,7 +606,8 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
     );
   }
 
-  Widget totalPayoutCard(String? totalPayout) {
+  Widget totalPayoutCard(
+      String? totalPayout, CustReferralPayoutController controller) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -611,13 +627,13 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                 children: [
                   GestureDetector(
                     onTap: () => showPayoutDialog(
-                      context,
-                      'Total Payout',
-                      selectedDate,
-                      'Rs. 0/-',
-                      'CU240001',
-                      'Harbhajan Naik',
-                    ),
+                        context,
+                        'Total Payout',
+                        selectedDate,
+                        'Rs. $totalPayout/-',
+                        userId!,
+                        widget.username ?? "",
+                        controller),
                     child: const Text(
                       "View Payout",
                       style: TextStyle(

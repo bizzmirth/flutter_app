@@ -298,12 +298,9 @@ class CustProductPayoutController extends ChangeNotifier {
           final data = responseData['data'];
           Logger.success("Data fetched successfully for all payouts: $data");
 
-          // Clear and populate basic data - Fix: using correct list name
-          _totalAllPayouts
-              .clear(); // Changed from _allPayouts to _totalAllPayouts
+          _totalAllPayouts.clear();
           _totalPayout = data['totalAmount']?.toString() ?? '0';
 
-          // Handle transactions
           if (data['transactions'] is List) {
             final transactions = data['transactions'] as List;
 
@@ -327,7 +324,6 @@ class CustProductPayoutController extends ChangeNotifier {
               }
             }
 
-            // Log final count after processing all transactions
             Logger.success(
                 "Successfully processed ${_totalAllPayouts.length} total payout transactions");
           } else {

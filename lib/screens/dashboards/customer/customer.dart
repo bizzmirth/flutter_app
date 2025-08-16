@@ -1,4 +1,5 @@
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
+import 'package:bizzmirth_app/controllers/profile_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_history.dart';
@@ -18,6 +19,7 @@ import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
 import 'package:bizzmirth_app/widgets/user_type_widget.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -69,6 +71,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
       await getCustomerType();
 
       final customerController = context.read<CustomerController>();
+      final profileController = context.read<ProfileController>();
 
       int attempts = 0;
       while (customerController.isLoading && attempts < 20) {
@@ -90,6 +93,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
         customerController.getRegCustomerCount(),
         customerController.getDashboardStatCounts(),
         customerController.apiGetTopCustomerRefererals(),
+        profileController.apiGetUserDetails(),
         if (_cachedRegDate != null)
           customerController.apiGetChartData(DateTime.now().year.toString()),
       ]);
@@ -299,6 +303,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final profileController =
+        Provider.of<ProfileController>(context, listen: false);
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
@@ -330,32 +336,51 @@ class _CDashboardPageState extends State<CDashboardPage> {
                 color: Color.fromARGB(255, 81, 131, 246),
                 padding:
                     EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: AssetImage('assets/user_image.jpg'),
-                        radius: 30,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Welcome, Customer!",
-                        style: GoogleFonts.roboto(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => ProfilePage()));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: profileController.profilePic ?? "",
+                          imageBuilder: (context, imageProvider) =>
+                              CircleAvatar(
+                            backgroundImage: imageProvider,
+                            radius: 30,
+                          ),
+                          placeholder: (context, url) => const CircleAvatar(
+                            radius: 30,
+                            child: CircularProgressIndicator(strokeWidth: 1.5),
+                          ),
+                          errorWidget: (context, url, error) => CircleAvatar(
+                            backgroundImage:
+                                const AssetImage("assets/default_profile.png"),
+                            radius: 30,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "Manage everything efficiently",
-                        style: GoogleFonts.roboto(
-                          fontSize: 14,
-                          color: Colors.white70,
+                        SizedBox(height: 10),
+                        Text(
+                          "Welcome, ${profileController.firstName}!",
+                          style: GoogleFonts.roboto(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                        Text(
+                          "Manage everything efficiently",
+                          style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -409,11 +434,22 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       title: const Text("Payouts"),
                       leading: const Icon(Icons.payment),
                       children: [
-                        _drawerItem(context, Icons.inventory_2,
-                            "Product Payout", CustProductPayoutsPage(),
+                        _drawerItem(
+                            context,
+                            Icons.inventory_2,
+                            "Product Payout",
+                            CustProductPayoutsPage(
+                              userName:
+                                  "${profileController.firstName} ${profileController.lastName}",
+                            ),
                             padding: true),
-                        _drawerItem(context, Icons.people_alt,
-                            "Referral Payout", CustomerReferralPayouts(),
+                        _drawerItem(
+                            context,
+                            Icons.people_alt,
+                            "Referral Payout",
+                            CustomerReferralPayouts(
+                                username:
+                                    "${profileController.firstName} ${profileController.lastName}"),
                             padding: true),
                       ],
                     ),

@@ -11,7 +11,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class CustProductPayoutsPage extends StatefulWidget {
-  const CustProductPayoutsPage({super.key});
+  final String? userName;
+  const CustProductPayoutsPage({super.key, this.userName});
 
   @override
   State<CustProductPayoutsPage> createState() => _CustProductPayoutsPageState();
@@ -460,7 +461,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                             Expanded(
                                 child: payoutCard(
                                     "Previous Payout",
-                                    controller.prevMonth!,
+                                    controller.prevMonth ?? "",
                                     "Rs. ${controller.previousMonthPayout}/-",
                                     "Paid",
                                     Colors.green.shade100,
@@ -581,7 +582,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
             children: [
               GestureDetector(
                 onTap: () => showPayoutDialog(context, title, date, amount,
-                    userId!, 'Harbhajan Naik', controller),
+                    userId!, widget.userName ?? "", controller),
                 child: const Text(
                   "View Payout",
                   style: TextStyle(
@@ -630,7 +631,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                         selectedDate,
                         totalPayout!,
                         userId!,
-                        'Harbhajan Naik',
+                        widget.userName ?? "",
                         controller),
                     child: const Text(
                       "View Payout",
