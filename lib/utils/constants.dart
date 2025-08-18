@@ -1604,7 +1604,7 @@ Widget _buildCouponsTab(bool isTablet) {
                               onPressed: currentPage > 0
                                   ? () {
                                       // In a real app: setState(() => currentPage--);
-                                      print(
+                                      Logger.warning(
                                           'Previous page: ${currentPage - 1}');
                                     }
                                   : null,
@@ -1622,7 +1622,7 @@ Widget _buildCouponsTab(bool isTablet) {
                               return GestureDetector(
                                 onTap: () {
                                   // In a real app: setState(() => currentPage = index);
-                                  print('Go to page: $index');
+                                  Logger.warning('Go to page: $index');
                                 },
                                 child: Container(
                                   margin: EdgeInsets.symmetric(horizontal: 4),
@@ -1654,7 +1654,8 @@ Widget _buildCouponsTab(bool isTablet) {
                               onPressed: currentPage < totalPages - 1
                                   ? () {
                                       // In a real app: setState(() => currentPage++);
-                                      print('Next page: ${currentPage + 1}');
+                                      Logger.warning(
+                                          'Next page: ${currentPage + 1}');
                                     }
                                   : null,
                               icon: Icon(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart';
 import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
+import 'package:bizzmirth_app/controllers/cust_order_history_controller.dart';
 import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/cust_referral_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/cust_wallet_controller.dart';
@@ -122,6 +123,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => CustReferralPayoutController()),
         ChangeNotifierProvider(create: (_) => ProfileController()),
         ChangeNotifierProvider(create: (_) => CustWalletController()),
+        ChangeNotifierProvider(create: (_) => CustOrderHistoryController()),
       ],
       child: ToastificationWrapper(
         child: SessionTimeoutManager(

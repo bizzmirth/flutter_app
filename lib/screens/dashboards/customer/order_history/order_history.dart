@@ -1,8 +1,10 @@
+import 'package:bizzmirth_app/controllers/cust_order_history_controller.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class OrderHistory extends StatefulWidget {
@@ -19,7 +21,7 @@ class _OrderHistoryState extends State<OrderHistory> {
   DateTime _selectedDate = DateTime.now();
   final Map<DateTime, List<Map<String, Object>>> _tasks = {};
 
-  String selectedFilter = "All"; // Default selected filter
+  String selectedFilter = "All";
   int _rowsPerPage = 5;
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
@@ -34,309 +36,327 @@ class _OrderHistoryState extends State<OrderHistory> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getOrderHistoryData();
+    });
+  }
+
+  void getOrderHistoryData() async {
+    final controller =
+        Provider.of<CustOrderHistoryController>(context, listen: false);
+    controller.apiGetStatCount();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Order History',
-          style: Appwidget.poppinsAppBarTitle(),
+    return Consumer<CustOrderHistoryController>(
+        builder: (context, controller, child) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Order History',
+            style: Appwidget.poppinsAppBarTitle(),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.blueAccent,
+          elevation: 0,
         ),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ======= 1. Top 4 Cards =======
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: buildStatCard(
-                        icon: Icons.hourglass_empty,
-                        value: "0",
-                        label: "Pending Booking",
-                        backgroundColor: const Color(0xFFE8E5FF),
-                        iconColor: const Color(0xFF6B46C1),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: buildStatCard(
-                        icon: Icons.check_circle,
-                        value: "2",
-                        label: "Completed Booking",
-                        backgroundColor: const Color(0xFFE8E5FF),
-                        iconColor: const Color(0xFF10B981),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: buildStatCard(
-                        icon: Icons.hourglass_empty,
-                        value: "₹9953.54",
-                        label: "Pending Payment",
-                        backgroundColor: const Color(0xFFE8E5FF),
-                        iconColor: const Color(0xFF6B46C1),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: buildStatCard(
-                        icon: Icons.check_circle,
-                        value: "₹9780.3",
-                        label: "Completed Payment",
-                        backgroundColor: const Color(0xFFE8E5FF),
-                        iconColor: const Color(0xFF10B981),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              Divider(thickness: 1, color: Colors.black26),
-
-              // ======= 2. Calendar =======
-              SizedBox(
-                height: 420,
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 420,
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black12, blurRadius: 4)
-                        ],
-                      ),
-                      child: GestureDetector(
-                        onLongPressStart: (details) {
-                          _showRemoveEventDialog(_selectedDate);
-                        },
-                        child: TableCalendar(
-                          focusedDay: _selectedDate,
-                          firstDay: DateTime.utc(2020, 1, 1),
-                          lastDay: DateTime.utc(2030, 12, 31),
-                          calendarFormat: CalendarFormat.month,
-                          availableCalendarFormats: const {
-                            CalendarFormat.month: 'Month',
-                          },
-                          onDaySelected: (selectedDay, focusedDay) {
-                            setState(() {
-                              _selectedDate = selectedDay;
-                            });
-                            _showAddTaskDialog(selectedDate: selectedDay);
-                          },
-                          selectedDayPredicate: (day) =>
-                              isSameDay(day, _selectedDate),
-                          eventLoader: (day) {
-                            return (_tasks[DateTime(
-                                        day.year, day.month, day.day)] ??
-                                    [])
-                                .map((event) {
-                              return {
-                                "name": event["name"]?.toString() ??
-                                    "Unnamed Event",
-                                "type": event["type"]?.toString() ?? "other",
-                              };
-                            }).toList();
-                          },
-                          calendarStyle: CalendarStyle(
-                            todayDecoration: BoxDecoration(
-                              color: Colors.blueAccent.withOpacity(0.5),
-                              shape: BoxShape.circle,
-                            ),
-                            selectedDecoration: BoxDecoration(
-                              color: Colors.blueAccent,
-                              shape: BoxShape.circle,
-                            ),
-                            markersMaxCount: 3,
-                          ),
-                          calendarBuilders: CalendarBuilders(
-                            markerBuilder: (context, date, events) {
-                              if (events.isNotEmpty) {
-                                return Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: events.map((event) {
-                                    return Container(
-                                      width: 8,
-                                      height: 8,
-                                      margin:
-                                          EdgeInsets.symmetric(horizontal: 1),
-                                      decoration: BoxDecoration(
-                                        color: event is Map<String, Object>
-                                            ? _getEventColor(
-                                                event["type"]?.toString() ??
-                                                    "other")
-                                            : Colors.grey,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    );
-                                  }).toList(),
-                                );
-                              }
-                              return SizedBox.shrink();
-                            },
-                          ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: buildStatCard(
+                          icon: Icons.hourglass_empty,
+                          value: controller.pendingBookingCount ?? "",
+                          label: "Pending Booking",
+                          backgroundColor: const Color(0xFFE8E5FF),
+                          iconColor: const Color(0xFF6B46C1),
                         ),
                       ),
-                    ),
-
-                    // Today button
-                    Positioned(
-                      top: 20,
-                      right: 70,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedDate = DateTime.now();
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 1),
-                          backgroundColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: buildStatCard(
+                          icon: Icons.check_circle,
+                          value: controller.completedBookingCount ?? "",
+                          label: "Completed Booking",
+                          backgroundColor: const Color(0xFFE8E5FF),
+                          iconColor: const Color(0xFF10B981),
                         ),
-                        child: Text("Today",
-                            style: TextStyle(color: Colors.white)),
                       ),
-                    ),
-
-                    // Add event button
-                    Positioned(
-                      bottom: 10,
-                      right: 10,
-                      child: FloatingActionButton(
-                        onPressed: () {
-                          _showManualAddEventDialog();
-                        },
-                        backgroundColor: Colors.blue,
-                        mini: true,
-                        child: Icon(Icons.add, color: Colors.white),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: buildStatCard(
+                          icon: Icons.hourglass_empty,
+                          value:
+                              "₹${double.tryParse(controller.pendingPaymentAmt ?? "0")?.toStringAsFixed(2)}",
+                          label: "Pending Payment",
+                          backgroundColor: const Color(0xFFE8E5FF),
+                          iconColor: const Color(0xFF6B46C1),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              Divider(thickness: 1, color: Colors.black26),
-
-              // ======= 3. Recent Bookings =======
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Recent Bookings",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 10),
-                    Divider(thickness: 1),
-                    SizedBox(
-                      height: 350, // Adjust as needed
-                      child: _buildRecentBookings(),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Bookings Table Section
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: filterOptions
-                          .map((filter) =>
-                              _buildFilterTab(filter, selectedFilter == filter))
-                          .toList(),
-                    ),
-
-                    // DateFilterWidget(),
-                    const SizedBox(height: 8),
-                    Divider(thickness: 1, color: Colors.black26),
-                    FilterBar(),
-                    Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: buildStatCard(
+                          icon: Icons.check_circle,
+                          value:
+                              "₹${double.tryParse(controller.completedPaymentAmt ?? '0')?.toStringAsFixed(2)}",
+                          label: "Completed Payment",
+                          backgroundColor: const Color(0xFFE8E5FF),
+                          iconColor: const Color(0xFF10B981),
+                        ),
                       ),
-                      child: SizedBox(
-                        height: (_rowsPerPage * dataRowHeight) +
-                            headerHeight +
-                            paginationHeight,
-                        child: PaginatedDataTable(
-                          columnSpacing: 35,
-                          dataRowMinHeight: 40,
-                          columns: [
-                            DataColumn(label: Text("Image")),
-                            DataColumn(label: Text("ID")),
-                            DataColumn(label: Text("Full Name")),
-                            DataColumn(label: Text("Ref. ID")),
-                            DataColumn(label: Text("Ref. Name")),
-                            DataColumn(label: Text("Joining Date")),
-                            DataColumn(label: Text("Status")),
-                            DataColumn(label: Text("Action"))
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Divider(thickness: 1, color: Colors.black26),
+
+                // ======= 2. Calendar =======
+                SizedBox(
+                  height: 420,
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 420,
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(color: Colors.black12, blurRadius: 4)
                           ],
-                          source: ViewMyBMDataSource(ordersBM),
-                          rowsPerPage: _rowsPerPage,
-                          availableRowsPerPage: [5, 10, 15, 20, 25],
-                          onRowsPerPageChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _rowsPerPage = value;
-                              });
-                            }
+                        ),
+                        child: GestureDetector(
+                          onLongPressStart: (details) {
+                            _showRemoveEventDialog(_selectedDate);
                           },
-                          arrowHeadColor: Colors.blue,
+                          child: TableCalendar(
+                            focusedDay: _selectedDate,
+                            firstDay: DateTime.utc(2020, 1, 1),
+                            lastDay: DateTime.utc(2030, 12, 31),
+                            calendarFormat: CalendarFormat.month,
+                            availableCalendarFormats: const {
+                              CalendarFormat.month: 'Month',
+                            },
+                            onDaySelected: (selectedDay, focusedDay) {
+                              setState(() {
+                                _selectedDate = selectedDay;
+                              });
+                              _showAddTaskDialog(selectedDate: selectedDay);
+                            },
+                            selectedDayPredicate: (day) =>
+                                isSameDay(day, _selectedDate),
+                            eventLoader: (day) {
+                              return (_tasks[DateTime(
+                                          day.year, day.month, day.day)] ??
+                                      [])
+                                  .map((event) {
+                                return {
+                                  "name": event["name"]?.toString() ??
+                                      "Unnamed Event",
+                                  "type": event["type"]?.toString() ?? "other",
+                                };
+                              }).toList();
+                            },
+                            calendarStyle: CalendarStyle(
+                              todayDecoration: BoxDecoration(
+                                color: Colors.blueAccent.withOpacity(0.5),
+                                shape: BoxShape.circle,
+                              ),
+                              selectedDecoration: BoxDecoration(
+                                color: Colors.blueAccent,
+                                shape: BoxShape.circle,
+                              ),
+                              markersMaxCount: 3,
+                            ),
+                            calendarBuilders: CalendarBuilders(
+                              markerBuilder: (context, date, events) {
+                                if (events.isNotEmpty) {
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: events.map((event) {
+                                      return Container(
+                                        width: 8,
+                                        height: 8,
+                                        margin:
+                                            EdgeInsets.symmetric(horizontal: 1),
+                                        decoration: BoxDecoration(
+                                          color: event is Map<String, Object>
+                                              ? _getEventColor(
+                                                  event["type"]?.toString() ??
+                                                      "other")
+                                              : Colors.grey,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  );
+                                }
+                                return SizedBox.shrink();
+                              },
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+
+                      // Today button
+                      Positioned(
+                        top: 20,
+                        right: 70,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedDate = DateTime.now();
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 1),
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text("Today",
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+
+                      // Add event button
+                      Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: FloatingActionButton(
+                          onPressed: () {
+                            _showManualAddEventDialog();
+                          },
+                          backgroundColor: Colors.blue,
+                          mini: true,
+                          child: Icon(Icons.add, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-            ],
+                const SizedBox(height: 20),
+                Divider(thickness: 1, color: Colors.black26),
+
+                // ======= 3. Recent Bookings =======
+                Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Recent Bookings",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 10),
+                      Divider(thickness: 1),
+                      SizedBox(
+                        height: 350, // Adjust as needed
+                        child: _buildRecentBookings(),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Bookings Table Section
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: filterOptions
+                            .map((filter) => _buildFilterTab(
+                                filter, selectedFilter == filter))
+                            .toList(),
+                      ),
+
+                      // DateFilterWidget(),
+                      const SizedBox(height: 8),
+                      Divider(thickness: 1, color: Colors.black26),
+                      FilterBar(),
+                      Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: SizedBox(
+                          height: (_rowsPerPage * dataRowHeight) +
+                              headerHeight +
+                              paginationHeight,
+                          child: PaginatedDataTable(
+                            columnSpacing: 35,
+                            dataRowMinHeight: 40,
+                            columns: [
+                              DataColumn(label: Text("Image")),
+                              DataColumn(label: Text("ID")),
+                              DataColumn(label: Text("Full Name")),
+                              DataColumn(label: Text("Ref. ID")),
+                              DataColumn(label: Text("Ref. Name")),
+                              DataColumn(label: Text("Joining Date")),
+                              DataColumn(label: Text("Status")),
+                              DataColumn(label: Text("Action"))
+                            ],
+                            source: ViewMyBMDataSource(ordersBM),
+                            rowsPerPage: _rowsPerPage,
+                            availableRowsPerPage: [5, 10, 15, 20, 25],
+                            onRowsPerPageChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _rowsPerPage = value;
+                                });
+                              }
+                            },
+                            arrowHeadColor: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildFilterTab(String text, bool isSelected) {

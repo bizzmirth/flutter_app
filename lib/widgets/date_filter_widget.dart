@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 
 class DateFilterWidget extends StatefulWidget {
@@ -102,7 +103,7 @@ class _DateFilterWidgetState extends State<DateFilterWidget> {
             setState(() {
               isDropdownOpen = false;
             });
-            print("Custom Range selected - implement date picker");
+            Logger.info("Custom Range selected - implement date picker");
           }
         },
         child: Container(

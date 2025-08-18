@@ -5,6 +5,7 @@ import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.d
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/loader_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -138,7 +139,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                 matchesDateRange = false;
               }
             } catch (e) {
-              print(
+              Logger.error(
                   "Error parsing pending customer date: ${customer.registerDate} - $e");
               if (fromDate != null || toDate != null) {
                 matchesDateRange = false;
@@ -242,7 +243,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                 matchesDateRange = false;
               }
             } catch (e) {
-              print("Error parsing date: ${customer.registerDate} - $e");
+              Logger.error("Error parsing date: ${customer.registerDate} - $e");
               if (fromDate != null || toDate != null) {
                 matchesDateRange = false;
               }
