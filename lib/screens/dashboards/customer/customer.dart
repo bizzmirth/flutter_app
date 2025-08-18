@@ -134,6 +134,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Future<void> getCustomerType() async {
     try {
       customerType = await SharedPrefHelper().getCustomerType() ?? '';
+      Logger.success("customer type: $customerType");
       if (mounted) {
         setState(() {});
       }

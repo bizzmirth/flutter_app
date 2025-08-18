@@ -1,19 +1,48 @@
+import 'package:bizzmirth_app/models/cust_booking_wallet_history_model.dart';
 import 'package:flutter/material.dart';
 
 class CustBookingPointsDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
+  final List<CustBookingWalletHistory> data;
 
   CustBookingPointsDataSource(this.data);
+
+  Color _getStatusColor(String status) {
+    String statusText = status.toLowerCase();
+    switch (statusText) {
+      case "credited":
+        return Colors.green;
+      case "not approved":
+        return Colors.grey;
+      case "pending":
+        return Colors.orange;
+      case "cancelled":
+        return Colors.red;
+      default:
+        return Colors.yellowAccent;
+    }
+  }
+
   @override
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
     final item = data[index];
     return DataRow(cells: [
       DataCell(Text((index + 1).toString())),
-      DataCell(Text(item['name'] ?? '')),
-      DataCell(Text(item['phone']?.toString() ?? '')),
-      DataCell(Text(item['phone1'] ?? '')),
-      DataCell(Text(item['design'] ?? '')),
+      DataCell(
+        Text(item.message!),
+      ),
+      DataCell(Text(item.amount ?? '')),
+      DataCell(Text(item.date ?? '')),
+      DataCell(Container(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: _getStatusColor(item.status!),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            item.status ?? '',
+            style: TextStyle(color: Colors.white),
+          ))),
     ]);
   }
 

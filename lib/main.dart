@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart'
 import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/cust_referral_payout_controller.dart';
+import 'package:bizzmirth_app/controllers/cust_wallet_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
@@ -120,6 +121,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => CustProductPayoutController()),
         ChangeNotifierProvider(create: (_) => CustReferralPayoutController()),
         ChangeNotifierProvider(create: (_) => ProfileController()),
+        ChangeNotifierProvider(create: (_) => CustWalletController()),
       ],
       child: ToastificationWrapper(
         child: SessionTimeoutManager(
