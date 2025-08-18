@@ -76,12 +76,12 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      contactInfo(Icons.phone, "+123 456 7890"),
+                      contactInfo(Icons.phone, "+91 8010892265 / 0832-2438989"),
                       divider(),
-                      contactInfo(Icons.email, "support@bizzmirth.com"),
+                      contactInfo(Icons.email, "support@uniqbizz.com"),
                       divider(),
                       contactInfo(Icons.location_on,
-                          "123 Bizzmirth Lane, City, Country"),
+                          "304 - 306, Dempo Towers, Patto Plaza Panaji - Goa - 403001"),
                     ],
                   ),
                 ),

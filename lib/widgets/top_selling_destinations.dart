@@ -81,10 +81,9 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations> {
           Text(
             'Explore Our Best Selling Destinations',
             style: GoogleFonts.poppins(
-              fontSize: 26, // Increased font size for better readability
-              fontWeight: FontWeight.w700, // Bold weight for prominence
-              color: const Color.fromARGB(
-                  255, 0, 0, 0), // White font color for contrast
+              fontSize: 26,
+              fontWeight: FontWeight.w700,
+              color: const Color.fromARGB(255, 0, 0, 0),
             ),
           ),
           const SizedBox(height: 16),

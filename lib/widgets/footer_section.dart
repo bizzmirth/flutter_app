@@ -29,7 +29,7 @@ class FooterSection extends StatelessWidget {
             children: [
               Icon(Icons.email, color: Colors.white, size: 28),
               SizedBox(width: 12),
-              Text('support@bizzmirth.com',
+              Text('support@uniqbizz.com',
                   style: TextStyle(color: Colors.white, fontSize: 18)),
             ],
           ),
@@ -39,7 +39,7 @@ class FooterSection extends StatelessWidget {
             children: [
               Icon(Icons.phone, color: Colors.white, size: 28),
               SizedBox(width: 12),
-              Text('+123 456 7890',
+              Text("+91 8010892265 / 0832-2438989",
                   style: TextStyle(color: Colors.white, fontSize: 18)),
             ],
           ),
@@ -49,7 +49,7 @@ class FooterSection extends StatelessWidget {
             children: [
               Icon(Icons.location_on, color: Colors.white, size: 28),
               SizedBox(width: 12),
-              Text('123 Bizzmirth Lane, City, Country',
+              Text("304 - 306, Dempo Towers, Patto Plaza Panaji - Goa - 403001",
                   style: TextStyle(color: Colors.white, fontSize: 18)),
             ],
           ),

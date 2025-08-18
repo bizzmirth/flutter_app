@@ -11,6 +11,7 @@ import 'package:bizzmirth_app/controllers/designation_department_controller.dart
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
 import 'package:bizzmirth_app/controllers/profile_controller.dart';
+import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
@@ -124,6 +125,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => ProfileController()),
         ChangeNotifierProvider(create: (_) => CustWalletController()),
         ChangeNotifierProvider(create: (_) => CustOrderHistoryController()),
+        ChangeNotifierProvider(create: (_) => TourPackagesController()),
       ],
       child: ToastificationWrapper(
         child: SessionTimeoutManager(
