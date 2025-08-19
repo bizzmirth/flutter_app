@@ -358,71 +358,95 @@ void showBookingPopup(BuildContext context) {
   showDialog(
     context: context,
     builder: (context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.info_outline, size: 40, color: Colors.blueAccent),
-            SizedBox(height: 10),
-            Text(
-              'Need More Info or Ready to Book?',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                  fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-        content: Text(
-          'Would you like to enquire more about this package or proceed to booking?',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.poppins(fontSize: 14),
-        ),
-        actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(width: 65),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  'Close',
-                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.red),
-                ),
-              ),
-              SizedBox(width: 65),
-              TextButton(
-                onPressed: () async {
-                  await _handleUserAction(context, 'enquire');
-                },
-                child: Text(
-                  'Submit Your Query',
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final bool isTablet = constraints.maxWidth > 600;
+
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            title: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.info_outline, size: 40, color: Colors.blueAccent),
+                SizedBox(height: 10),
+                Text(
+                  'Need More Info or Ready to Book?',
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.orange),
+                      fontSize: isTablet ? 20 : 18,
+                      fontWeight: FontWeight.w600),
                 ),
-              ),
-              SizedBox(width: 65),
-              ElevatedButton(
-                onPressed: () async {
-                  await _handleUserAction(context, 'book');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+              ],
+            ),
+            content: Text(
+              'Would you like to enquire more about this package or proceed to booking?',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(fontSize: isTablet ? 16 : 14),
+            ),
+            actions: [
+              if (isTablet)
+                // Your original tablet layout
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Close',
+                          style: GoogleFonts.poppins(color: Colors.red)),
+                    ),
+                    SizedBox(width: 16),
+                    TextButton(
+                      onPressed: () => _handleUserAction(context, 'enquire'),
+                      child: Text('Submit Your Query',
+                          style: GoogleFonts.poppins(color: Colors.orange)),
+                    ),
+                    SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: () => _handleUserAction(context, 'book'),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green),
+                      child: Text('Book Now',
+                          style: GoogleFonts.poppins(color: Colors.white)),
+                    ),
+                  ],
+                )
+              else
+                // Phone layout
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => _handleUserAction(context, 'book'),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green),
+                        child: Text('Book Now'),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('Close',
+                              style: GoogleFonts.poppins(color: Colors.red)),
+                        ),
+                        TextButton(
+                          onPressed: () =>
+                              _handleUserAction(context, 'enquire'),
+                          child: Text('Submit Query',
+                              style: GoogleFonts.poppins(color: Colors.orange)),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                child: Text(
-                  'Book Now',
-                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
-                ),
-              ),
             ],
-          ),
-        ],
+          );
+        },
       );
     },
   );

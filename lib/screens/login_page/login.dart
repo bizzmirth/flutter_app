@@ -138,28 +138,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildTabletLayout(BuildContext context, LoginController controller) {
+    final screenWidth = MediaQuery.of(context).size.width;
     final isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
-    final bool isTablet = screenWidth > 600;
-
-    final double outerHorizontalPadding = isTablet
-        ? (isPortrait ? 190 : 380)
-        : (isPortrait
-            ? 30
-            : screenWidth > screenHeight
-                ? 40
-                : 80);
-
-    final double outerVerticalPadding = isPortrait ? 50 : 30;
-    final double innerHorizontalPadding = isTablet
-        ? (isPortrait ? 50 : 60)
-        : (screenWidth > screenHeight ? 40 : 30);
-    final controller = Provider.of<LoginController>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -183,8 +166,8 @@ class _LoginPageState extends State<LoginPage> {
             child: SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: outerHorizontalPadding, // ✅ Dynamic padding
-                  vertical: outerVerticalPadding,
+                  horizontal: isPortrait ? 190 : 380,
+                  vertical: 50,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -199,12 +182,9 @@ class _LoginPageState extends State<LoginPage> {
                     Form(
                       key: _loginFormKey,
                       child: Container(
-                        width: screenWidth < 600
-                            ? screenWidth * 0.8
-                            : screenWidth * 0.6, // Adjust width
-                        padding: EdgeInsets.symmetric(
-                            horizontal: innerHorizontalPadding,
-                            vertical: 30), // ✅ Dynamic inner padding
+                        width: screenWidth * 0.6,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50, vertical: 30),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(15),
@@ -243,16 +223,6 @@ class _LoginPageState extends State<LoginPage> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return "Please enter your email";
-                              //   }
-                              //   if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
-                              //     return "Enter a valid email address";
-                              //   }
-                              //   return null;
-                              // },  usee this when we start using email for login
                             ),
                             const SizedBox(height: 20),
 
@@ -285,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // ✅ Remember Me Checkbox
+                                // Remember Me Checkbox
                                 Row(
                                   children: [
                                     Checkbox(
@@ -297,19 +267,15 @@ class _LoginPageState extends State<LoginPage> {
                                   ],
                                 ),
 
-                                // ✅ Forgot Password Button
+                                // Forgot Password Button
                                 TextButton(
                                   onPressed: () {
                                     // Navigate to Forgot Password Page (Placeholder)
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                                    // );
                                   },
                                   child: const Text(
                                     "Forgot Password?",
                                     style: TextStyle(
-                                      color: Colors.blue, // Matches theme
+                                      color: Colors.blue,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -352,7 +318,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
-                        fontWeight: FontWeight.w600, // Made it a bit bolder
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     Image.asset(
@@ -367,5 +333,224 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildPhoneLayout(BuildContext context, LoginController controller) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Container(
+        // Use a Container with decoration for the background
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/tokyo.jpg"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Stack(
+          children: [
+            // Dark Overlay
+            Positioned.fill(
+              child: Container(color: Colors.black.withOpacity(0.5)),
+            ),
+
+            // Login Content
+            SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        SizedBox(height: 160),
+                        // App Logo
+                        Image.asset(
+                          "assets/uniqbizz.png",
+                          height: 40,
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Form(
+                          key: _loginFormKey,
+                          child: Column(
+                            children: [
+                              _buildCustomDropdown(
+                                'Users *',
+                                controller.userTypeNames,
+                              ),
+                              const SizedBox(height: 10),
+                              if (controller.errorMessage != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Text(
+                                    controller.errorMessage!,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              // Email Input
+                              TextFormField(
+                                controller: controller.emailController,
+                                decoration: InputDecoration(
+                                  labelText: 'Email',
+                                  prefixIcon: const Icon(Icons.email,
+                                      color: Colors.blue),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 15),
+
+                              // Password Input
+                              TextFormField(
+                                controller: controller.passwordController,
+                                obscureText: controller.obscurePassword,
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  prefixIcon: const Icon(Icons.lock,
+                                      color: Colors.blue),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      controller.obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.grey,
+                                    ),
+                                    onPressed: () =>
+                                        controller.togglePasswordVisibility(),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+
+                              // Remember Me
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Remember Me Checkbox
+                                  Row(
+                                    children: [
+                                      Checkbox(
+                                        value: controller.rememberMe,
+                                        onChanged: (value) =>
+                                            controller.toggleRememberMe(value!),
+                                      ),
+                                      const Text("Remember Me"),
+                                    ],
+                                  ),
+
+                                  // Forgot Password Button
+                                  TextButton(
+                                    onPressed: () {
+                                      // Navigate to Forgot Password Page (Placeholder)
+                                    },
+                                    child: const Text(
+                                      "Forgot Password?",
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 15),
+
+                              // Login Button
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: controller.isLoading
+                                      ? null
+                                      : () => _handleLogin(context),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 81, 131, 246),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Login',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color:
+                                            Color.fromARGB(255, 255, 255, 255)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 60, top: 10),
+                      child: Column(
+                        children: [
+                          // Footer Text
+                          Text(
+                            "© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 10),
+                          Image.asset(
+                            "assets/bizz_logo.png",
+                            height: 70,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Provider.of<LoginController>(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Use 600 as the breakpoint between phone and tablet
+    if (screenWidth > 600) {
+      return _buildTabletLayout(context, controller);
+    } else {
+      return _buildPhoneLayout(context, controller);
+    }
   }
 }

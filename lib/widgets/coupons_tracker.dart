@@ -7,13 +7,15 @@ import 'package:flutter/material.dart';
 class CouponProgressBar extends StatefulWidget {
   final int currentStep;
   final int totalSteps;
-  final ConfettiController confettiController; // <-- Passed from parent
+  final ConfettiController confettiController;
+  final double scaleFactor; // Add a scale factor parameter
 
   const CouponProgressBar({
     super.key,
     required this.currentStep,
     required this.confettiController,
     this.totalSteps = 4,
+    this.scaleFactor = 1.0, // Default to normal size
   });
 
   @override
@@ -45,7 +47,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
       await Future.delayed(const Duration(milliseconds: 800));
       setState(() => displayedStep = i + 1);
       if (displayedStep == widget.totalSteps) {
-        widget.confettiController.play(); // <-- Use widget.confettiController
+        widget.confettiController.play();
       }
     }
   }
@@ -60,29 +62,42 @@ class _CouponProgressBarState extends State<CouponProgressBar>
       totalSteps = displayedStep;
     }
 
+    // Apply scale factor to various dimensions
+    final double scaledPadding = 16.0 * widget.scaleFactor;
+    final double progressBarHeight = 12.0 * widget.scaleFactor;
+    final double indicatorSize = 22.0 * widget.scaleFactor;
+    final double cardHeight = 200.0 * widget.scaleFactor;
+    final double cardWidth = 220.0 * widget.scaleFactor;
+    final double iconSize = 50.0 * widget.scaleFactor;
+    final double fontSize = 18.0 * widget.scaleFactor;
+    final double smallFontSize = 14.0 * widget.scaleFactor;
+
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: EdgeInsets.only(bottom: scaledPadding),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            padding: EdgeInsets.symmetric(
+              horizontal: scaledPadding,
+              vertical: 6 * widget.scaleFactor,
+            ),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 colors: [Colors.blueAccent, Colors.purpleAccent],
               ),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20 * widget.scaleFactor),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black12,
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
+                  blurRadius: 4 * widget.scaleFactor,
+                  offset: Offset(0, 2 * widget.scaleFactor),
                 ),
               ],
             ),
             child: Text(
               "Coupons Unlocked: $totalSteps / ${widget.totalSteps - 1}",
               style: TextStyle(
-                fontSize: 14,
+                fontSize: smallFontSize,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -92,7 +107,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
 
         // Progress bar with moving indicator
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20 * widget.scaleFactor),
           child: TweenAnimationBuilder<double>(
             tween: Tween<double>(begin: 0, end: progress),
             duration: const Duration(milliseconds: 1200),
@@ -102,37 +117,46 @@ class _CouponProgressBarState extends State<CouponProgressBar>
                 alignment: Alignment.centerLeft,
                 children: [
                   Container(
-                    height: 12,
+                    height: progressBarHeight,
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius:
+                          BorderRadius.circular(20 * widget.scaleFactor),
                     ),
                   ),
                   Container(
-                    height: 12,
-                    width: (MediaQuery.of(context).size.width - 40) * value,
+                    height: progressBarHeight,
+                    width: (MediaQuery.of(context).size.width -
+                            40 * widget.scaleFactor) *
+                        value,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Colors.blueAccent, Colors.purpleAccent],
                       ),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius:
+                          BorderRadius.circular(20 * widget.scaleFactor),
                     ),
                   ),
                   Positioned(
-                    left: (MediaQuery.of(context).size.width - 40) * value - 8,
+                    left: (MediaQuery.of(context).size.width -
+                                40 * widget.scaleFactor) *
+                            value -
+                        (indicatorSize / 2),
                     child: Container(
-                      height: 22,
-                      width: 22,
+                      height: indicatorSize,
+                      width: indicatorSize,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.white,
-                        border:
-                            Border.all(color: Colors.purpleAccent, width: 3),
+                        border: Border.all(
+                          color: Colors.purpleAccent,
+                          width: 3 * widget.scaleFactor,
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.purpleAccent.withOpacity(0.4),
-                            blurRadius: 6,
-                            spreadRadius: 1,
+                            blurRadius: 6 * widget.scaleFactor,
+                            spreadRadius: 1 * widget.scaleFactor,
                           ),
                         ],
                       ),
@@ -143,22 +167,18 @@ class _CouponProgressBarState extends State<CouponProgressBar>
             },
           ),
         ),
-        const SizedBox(height: 30),
+        SizedBox(height: 30 * widget.scaleFactor),
 
         // Cards
         SizedBox(
-          height: 200,
+          height: cardHeight,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: scaledPadding),
             itemCount: widget.totalSteps,
             itemBuilder: (context, index) {
-              bool isUnlocked = index <
-                  displayedStep; // correct: if displayedStep = 1 → only index 0 is unlocked
-
-              bool isCurrent =
-                  index == displayedStep - 1; // the one currently unlocking
-
+              bool isUnlocked = index < displayedStep;
+              bool isCurrent = index == displayedStep - 1;
               bool isFinal = index == widget.totalSteps - 1;
 
               return AnimatedSwitcher(
@@ -179,8 +199,9 @@ class _CouponProgressBarState extends State<CouponProgressBar>
                   );
                 },
                 child: isUnlocked || isCurrent
-                    ? _unlockedCard(index, isFinal)
-                    : _lockedCard(isFinal),
+                    ? _unlockedCard(
+                        index, isFinal, cardWidth, iconSize, fontSize)
+                    : _lockedCard(isFinal, cardWidth, iconSize),
               );
             },
           ),
@@ -189,13 +210,13 @@ class _CouponProgressBarState extends State<CouponProgressBar>
     );
   }
 
-  Widget _lockedCard(bool isFinal) {
+  Widget _lockedCard(bool isFinal, double cardWidth, double iconSize) {
     return Container(
       key: const ValueKey("locked"),
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      width: 220,
+      margin: EdgeInsets.symmetric(horizontal: 8 * widget.scaleFactor),
+      width: cardWidth,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20 * widget.scaleFactor),
         gradient: isFinal
             ? const LinearGradient(
                 colors: [Colors.amber, Colors.orange],
@@ -209,17 +230,20 @@ class _CouponProgressBarState extends State<CouponProgressBar>
               ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20 * widget.scaleFactor),
         child: Stack(
           children: [
             BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              filter: ImageFilter.blur(
+                sigmaX: 4 * widget.scaleFactor,
+                sigmaY: 4 * widget.scaleFactor,
+              ),
               child: Container(color: Colors.white.withOpacity(0.05)),
             ),
             Center(
               child: Icon(
                 Icons.lock_outline,
-                size: 55,
+                size: iconSize,
                 color: isFinal ? Colors.amber[700] : Colors.white,
               ),
             ),
@@ -229,35 +253,35 @@ class _CouponProgressBarState extends State<CouponProgressBar>
     );
   }
 
-  // Unlocked card with content & gradient
-  Widget _unlockedCard(int index, bool isFinal) {
+  Widget _unlockedCard(int index, bool isFinal, double cardWidth,
+      double iconSize, double fontSize) {
     List<List<Color>> gradients = [
-      [Color(0xFF6A8DFF), Color(0xFF8AB4FF)], // Calm blue
-      [Color(0xFF9B6BFF), Color(0xFFC29DFF)], // Soft purple
-      [Color(0xFF5ABF8A), Color(0xFF89E3B6)], // Fresh green
+      [const Color(0xFF6A8DFF), const Color(0xFF8AB4FF)], // Calm blue
+      [const Color(0xFF9B6BFF), const Color(0xFFC29DFF)], // Soft purple
+      [const Color(0xFF5ABF8A), const Color(0xFF89E3B6)], // Fresh green
     ];
 
     List<Color> gradient = gradients[index % 3];
 
     return Container(
       key: const ValueKey("unlocked"),
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      width: 220,
+      margin: EdgeInsets.symmetric(horizontal: 8 * widget.scaleFactor),
+      width: cardWidth,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isFinal
-              ? [Color(0xFFF5C76D), Color(0xFFFFE29D)] // Rich gold
+              ? [const Color(0xFFF5C76D), const Color(0xFFFFE29D)] // Rich gold
               : gradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20 * widget.scaleFactor),
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
-            blurRadius: 12,
-            spreadRadius: 1,
-            offset: const Offset(0, 4),
+            blurRadius: 12 * widget.scaleFactor,
+            spreadRadius: 1 * widget.scaleFactor,
+            offset: Offset(0, 4 * widget.scaleFactor),
           ),
         ],
       ),
@@ -266,7 +290,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
         children: [
           // Icon with circular background
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16 * widget.scaleFactor),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
               shape: BoxShape.circle,
@@ -279,35 +303,38 @@ class _CouponProgressBarState extends State<CouponProgressBar>
                       : index == 1
                           ? Icons.card_giftcard
                           : Icons.discount),
-              size: 50,
+              size: iconSize,
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10 * widget.scaleFactor),
           Text(
             isFinal ? "Unlock your Europe trip" : "Coupon ${index + 1}",
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: fontSize,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
           if (!isFinal)
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
+              padding: EdgeInsets.only(top: 8.0 * widget.scaleFactor),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 12 * widget.scaleFactor,
+                  vertical: 4 * widget.scaleFactor,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12 * widget.scaleFactor),
                 ),
-                child: const Text(
+                child: Text(
                   "Used",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    fontSize: fontSize * 0.7,
                   ),
                 ),
               ),

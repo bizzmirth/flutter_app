@@ -551,8 +551,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             SizedBox(height: 20),
                             // SizedBox(height: 20),
                             CouponProgressBar(
-                                currentStep: 4,
-                                confettiController: _confettiController),
+                              currentStep: 4,
+                              confettiController: _confettiController,
+                              scaleFactor: 0.7,
+                            ),
                             SizedBox(height: 16),
                             ReferralTrackerCard(
                               totalSteps: 10,
