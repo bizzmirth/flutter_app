@@ -14,11 +14,11 @@ class TopPackagesPage extends StatefulWidget {
 }
 
 class _TopPackagesPageState extends State<TopPackagesPage> {
-  String? selectedTripDuration; // Trip duration filter
-  final double _minPrice = 0;
-  final double _maxPrice = 50000;
-  RangeValues _currentRange = const RangeValues(0, 50000);
-  List<String> selectedHotelStars = []; // Hotel stars filter
+  String? selectedTripDuration;
+  final double _minPrice = 1000;
+  final double _maxPrice = 150000;
+  RangeValues _currentRange = const RangeValues(1000, 150000);
+  List<String> selectedHotelStars = [];
 
   @override
   void initState() {
@@ -291,7 +291,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                         itemBuilder: (context, index) {
                           final pkg = controller.tourPackages[index];
                           final imageUrl =
-                              "https://testca.uniqbizz.com/${pkg.image}";
+                              "https://ca.uniqbizz.com/${pkg.image}";
 
                           return Card(
                             elevation: 4,
@@ -312,10 +312,77 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                                     fit: BoxFit.cover,
                                     height: 150,
                                     width: double.infinity,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      // ✅ Show loader while image is loading
+                                      if (loadingProgress == null) {
+                                        // Image has loaded successfully
+                                        return child;
+                                      }
+
+                                      // Show loading indicator with progress
+                                      return Container(
+                                        height: 150,
+                                        width: double.infinity,
+                                        color: Colors.grey.shade100,
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                        Color>(Colors.blue),
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes!
+                                                    : null,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                'Loading...',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey.shade600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                     errorBuilder:
                                         (context, error, stackTrace) =>
-                                            const Icon(Icons.broken_image,
-                                                size: 100, color: Colors.grey),
+                                            Container(
+                                      height: 150,
+                                      width: double.infinity,
+                                      color: Colors.grey.shade200,
+                                      child: const Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.broken_image,
+                                            size: 50,
+                                            color: Colors.grey,
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            'Image failed to load',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 Padding(
