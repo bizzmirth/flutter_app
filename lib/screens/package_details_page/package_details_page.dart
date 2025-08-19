@@ -2,6 +2,9 @@ import 'dart:ui';
 
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/widgets/info_row.dart';
+import 'package:bizzmirth_app/widgets/price_row.dart';
 import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -36,37 +39,49 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
       "day": "Day 1",
       "title": "Arrival & Welcome",
       "details":
-          "Arrive at the picturesque starting destination and be greeted with a warm welcome. Transfer to your hotel and enjoy a relaxing evening. Get a brief overview of the itinerary and enjoy a delicious welcome dinner."
+          "Arrive at the picturesque starting destination and be greeted with a warm welcome. Transfer to your hotel and enjoy a relaxing evening. Get a brief overview of the itinerary and enjoy a delicious welcome dinner.",
+      "meal": "sadd",
+      "transport": "private"
     },
     {
       "day": "Day 2",
       "title": "Scenic Exploration & Local Culture",
       "details":
-          "Kick off your journey with a visit to iconic cultural sites and scenic viewpoints. Explore vibrant local markets and interact with locals to get a taste of the region's culture."
+          "Kick off your journey with a visit to iconic cultural sites and scenic viewpoints. Explore vibrant local markets and interact with locals to get a taste of the region's culture.",
+      "meal": "sadd",
+      "transport": "private"
     },
     {
       "day": "Day 3",
       "title": "Adventure Day – Trekking & Outdoor Fun",
       "details":
-          "Embrace adventure with a guided trek through lush trails, leading to mesmerizing viewpoints. Soak in the beauty of waterfalls and rivers along the way."
+          "Embrace adventure with a guided trek through lush trails, leading to mesmerizing viewpoints. Soak in the beauty of waterfalls and rivers along the way.",
+      "meal": "sadd",
+      "transport": "private"
     },
     {
       "day": "Day 4",
       "title": "Relaxation & Spa",
       "details":
-          "Unwind with a full day of relaxation. Enjoy spa treatments or yoga sessions at the resort, followed by an evening cruise on a serene lake."
+          "Unwind with a full day of relaxation. Enjoy spa treatments or yoga sessions at the resort, followed by an evening cruise on a serene lake.",
+      "meal": "sadd",
+      "transport": "private"
     },
     {
       "day": "Day 5",
       "title": "Local Villages & Culinary Delights",
       "details":
-          "Experience rural charm by visiting local villages. Learn about traditional crafts, farming, and cuisine. Engage in a fun cooking class to make regional delicacies."
+          "Experience rural charm by visiting local villages. Learn about traditional crafts, farming, and cuisine. Engage in a fun cooking class to make regional delicacies.",
+      "meal": "sadd",
+      "transport": "private"
     },
     {
       "day": "Day 6",
       "title": "Farewell & Departure",
       "details":
-          "Enjoy a leisurely breakfast before checking out. Take a scenic route back to the departure point and bid farewell with beautiful memories to cherish."
+          "Enjoy a leisurely breakfast before checking out. Take a scenic route back to the departure point and bid farewell with beautiful memories to cherish.",
+      "meal": "sadd",
+      "transport": "private"
     },
   ];
 
@@ -82,6 +97,37 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
   void initState() {
     super.initState();
     getShredPrefData();
+  }
+
+  /// Reusable Card widget
+  Widget _buildInfoCard({required String title, required String content}) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              content,
+              style: GoogleFonts.poppins(fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -166,50 +212,67 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
             SizedBox(height: 8),
             // Location and Duration
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 8),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.location_on, color: Colors.teal),
-                  SizedBox(width: 5),
-                  Text(
-                    'Bangkok, Thailand',
-                    style: GoogleFonts.poppins(fontSize: 16),
-                  ),
-                  Spacer(),
-                  Icon(Icons.timer, color: Colors.teal),
-                  SizedBox(width: 5),
-                  Text(
-                    '3 Days 2 Nights',
-                    style: GoogleFonts.poppins(fontSize: 16),
-                  ),
+                  // Left side (Info Items)
+                  Expanded(
+                    child: Wrap(
+                      alignment:
+                          WrapAlignment.start, // ✅ keeps items left aligned
+                      spacing: 16, // horizontal space between items
+                      runSpacing: 8, // vertical space when wrapped
+                      children: const [
+                        InfoRow(
+                          icon: Icons.location_on,
+                          iconColor: Colors.teal,
+                          text: 'Bangkok, Thailand',
+                        ),
+                        InfoRow(
+                          icon: Icons.timer,
+                          iconColor: Colors.teal,
+                          text: '3 Days 2 Nights',
+                        ),
+                        InfoRow(
+                          icon: Icons.landscape,
+                          iconColor: Colors.teal,
+                          text: 'Private',
+                        ),
+                        InfoRow(
+                          icon: Icons.directions_car,
+                          iconColor: Colors.teal,
+                          text: 'Car, Volvo Bus',
+                        ),
+                        InfoRow(
+                          icon: Icons.hotel,
+                          iconColor: Colors.teal,
+                          text: "Double",
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
+
             Divider(thickness: 1, height: 32),
-            // Price Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Starting From:',
-                    style: GoogleFonts.poppins(
-                        fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    '₹451/-',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                    ),
-                  ),
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                PriceRow(
+                  label: 'Starting From:',
+                  price: '',
+                ),
+                PriceRow(
+                    label: 'Per Adult Price:',
+                    price: '₹8,107.5/-',
+                    icon: Icons.person),
+                PriceRow(
+                    label: 'Per Child Price:',
+                    price: '₹6,127.5/-',
+                    icon: Icons.child_care),
+              ],
             ),
             Divider(thickness: 1, height: 32),
             // About Section
@@ -242,75 +305,63 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
             Divider(thickness: 1, height: 32),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Included',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              '- Welcome Breakfast\n'
-                              '- All Entry Tickets of Hopping Destinations\n'
-                              '- Lunch Platter\n'
-                              '- Evening Snacks\n'
-                              '- First Aid Kit (In case of emergency)',
-                              style: GoogleFonts.poppins(fontSize: 14),
-                            ),
-                          ],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  bool isSmallScreen = constraints.maxWidth < 600; // breakpoint
+
+                  if (isSmallScreen) {
+                    return Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: _buildInfoCard(
+                            title: 'Included',
+                            content: '- Welcome Breakfast\n'
+                                '- All Entry Tickets of Hopping Destinations\n'
+                                '- Lunch Platter\n'
+                                '- Evening Snacks\n'
+                                '- First Aid Kit (In case of emergency)',
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Excluded',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              '- Personal expenses\n'
-                              '- Anything else that isn\'t mentioned on Inclusions\n'
-                              '- Additional Service',
-                              style: GoogleFonts.poppins(fontSize: 14),
-                            ),
-                          ],
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: _buildInfoCard(
+                            title: 'Excluded',
+                            content: '- Personal expenses\n'
+                                '- Anything else that isn\'t mentioned on Inclusions\n'
+                                '- Additional Service',
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ],
+                      ],
+                    );
+                  } else {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _buildInfoCard(
+                            title: 'Included',
+                            content: '- Welcome Breakfast\n'
+                                '- All Entry Tickets of Hopping Destinations\n'
+                                '- Lunch Platter\n'
+                                '- Evening Snacks\n'
+                                '- First Aid Kit (In case of emergency)',
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildInfoCard(
+                            title: 'Excluded',
+                            content: '- Personal expenses\n'
+                                '- Anything else that isn\'t mentioned on Inclusions\n'
+                                '- Additional Service',
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                },
               ),
             ),
 
@@ -343,31 +394,82 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: ExpansionTile(
-                      tilePadding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      title: Text(
-                        "${item['day']} : ${item['title']}",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                        dividerColor:
+                            Colors.transparent, // ✅ removes extra lines
                       ),
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.blueAccent,
-                        child: Text(
-                          item['day']!.split(' ')[1],
-                          style: TextStyle(color: Colors.white),
+                      child: ExpansionTile(
+                        tilePadding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        title: Text(
+                          "${item['day']} : ${item['title']}",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
-                      ),
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.blueAccent,
                           child: Text(
-                            item['details']!,
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[700]),
+                            item['day']!.split(' ')[1],
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
-                      ],
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              item['details']!,
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.grey[700]),
+                            ),
+                          ),
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.vertical(
+                                bottom: Radius.circular(12),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 14),
+                                    children: [
+                                      TextSpan(
+                                        text: "Meal: ",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(text: item['meal'] ?? "N/A"),
+                                    ],
+                                  ),
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 14),
+                                    children: [
+                                      TextSpan(
+                                        text: "Transport: ",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text: item['transport'] ?? "N/A"),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -400,29 +502,29 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
             ),
             Divider(thickness: 1, height: 32),
 
-            // Policies Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Policies',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.teal.shade900,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    ' Cancellation & Refund Policy \n Payment Policy \n Rescheduling Policy \n Health & Safety Policy \n Inclusion & Exclusion Policy \n Child & Senior Policy \n Code of Conduct Policy',
-                    style: GoogleFonts.poppins(fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
-            Divider(thickness: 1, height: 32),
+            // // Policies Section
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Text(
+            //         'Policies',
+            //         style: GoogleFonts.poppins(
+            //           fontSize: 18,
+            //           fontWeight: FontWeight.w600,
+            //           color: Colors.teal.shade900,
+            //         ),
+            //       ),
+            //       SizedBox(height: 8),
+            //       Text(
+            //         ' Cancellation & Refund Policy \n Payment Policy \n Rescheduling Policy \n Health & Safety Policy \n Inclusion & Exclusion Policy \n Child & Senior Policy \n Code of Conduct Policy',
+            //         style: GoogleFonts.poppins(fontSize: 14),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // Divider(thickness: 1, height: 32),
             SizedBox(height: 100),
           ]),
         ),
@@ -458,8 +560,8 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
         if (customerType != 'Customer')
           Positioned(
             bottom: 20, // Adjust as needed
-            left: MediaQuery.of(context).size.width * 0.2,
-            right: MediaQuery.of(context).size.width * 0.2,
+            left: MediaQuery.of(context).size.width * 0.25,
+            right: MediaQuery.of(context).size.width * 0.25,
             child: ElevatedButton(
               onPressed: () {
                 showBookingPopup(context);
@@ -473,6 +575,32 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               ),
               child: Text(
                 "Enquire or Book Now",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ),
+        if (customerType == 'Customer')
+          Positioned(
+            bottom: 20, // Adjust as needed
+            left: MediaQuery.of(context).size.width * 0.25,
+            right: MediaQuery.of(context).size.width * 0.25,
+            child: ElevatedButton(
+              onPressed: () {
+                ToastHelper.showInfoToast(
+                    context: context,
+                    title:
+                        "Kindly Contact Your Travel Consultant to request Quotation Details");
+              },
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: const Color.fromARGB(
+                    255, 46, 122, 244), // Orange color for customer
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: Text(
+                "Request Quotation",
                 style: TextStyle(fontSize: 16, color: Colors.white),
               ),
             ),

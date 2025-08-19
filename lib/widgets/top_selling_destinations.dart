@@ -204,9 +204,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations> {
                         ),
                       );
                     },
-                    // placeholder: (context, url) => const Center(
-                    //   child: CircularProgressIndicator(strokeWidth: 1.5),
-                    // ),
+                    // pla 
                   )
                 : Container(
                     height: 100,

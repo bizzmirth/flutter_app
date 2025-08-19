@@ -129,23 +129,35 @@ class _MyAppState extends State<MyApp> {
       ],
       child: ToastificationWrapper(
         child: SessionTimeoutManager(
-          // userActivityDebounceDuration: const Duration(seconds: 1),
-          sessionConfig: sessionConfig,
-          // sessionStateStream: sessionStateStream.stream,
-          child: MaterialApp(
-            navigatorKey: MyApp.navigatorKey,
-            title: 'UniqBizz',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              visualDensity: VisualDensity.adaptivePlatformDensity,
-              textTheme: GoogleFonts.robotoTextTheme(
-                Theme.of(context).textTheme,
+            // userActivityDebounceDuration: const Duration(seconds: 1),
+            sessionConfig: sessionConfig,
+            // sessionStateStream: sessionStateStream.stream,
+            child: MaterialApp(
+              navigatorKey: MyApp.navigatorKey,
+              title: 'UniqBizz',
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+                visualDensity: VisualDensity.adaptivePlatformDensity,
+                textTheme: GoogleFonts.robotoTextTheme(
+                  Theme.of(context).textTheme,
+                ),
               ),
-            ),
-            home: HomePage(),
-            debugShowCheckedModeBanner: false,
-          ),
-        ),
+              builder: (context, child) {
+                final size = MediaQuery.of(context).size.width;
+
+                // scale factor based on width (phone < 600, tablet >= 600)
+                double scale = size < 600 ? 0.85 : 1.0;
+
+                return MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: TextScaler.linear(scale), // ✅ scales all text
+                  ),
+                  child: child!,
+                );
+              },
+              home: HomePage(),
+              debugShowCheckedModeBanner: false,
+            )),
       ),
     );
   }

@@ -49,8 +49,12 @@ class FooterSection extends StatelessWidget {
             children: [
               Icon(Icons.location_on, color: Colors.white, size: 28),
               SizedBox(width: 12),
-              Text("304 - 306, Dempo Towers, Patto Plaza Panaji - Goa - 403001",
-                  style: TextStyle(color: Colors.white, fontSize: 18)),
+              Flexible(
+                child: Text(
+                  "304 - 306, Dempo Towers, Patto Plaza Panaji - Goa - 403001",
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
             ],
           ),
           SizedBox(height: 24),
