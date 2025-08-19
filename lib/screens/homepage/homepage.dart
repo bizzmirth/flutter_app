@@ -187,6 +187,9 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       children: [
                         HeaderSection(),
+                        SizedBox(
+                          height: 5,
+                        ),
                         CarouselSection(),
                         TopSellingDestinations(),
                         TopSellingPackages(),

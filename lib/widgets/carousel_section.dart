@@ -1,6 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
-import 'package:google_fonts/google_fonts.dart';
 
 class CarouselSection extends StatefulWidget {
   const CarouselSection({super.key});
@@ -38,7 +39,10 @@ class _CarouselSectionState extends State<CarouselSection> {
           carousel_slider.CarouselSlider.builder(
             itemCount: imageUrls.length,
             itemBuilder: (context, index, realIndex) {
+              bool isActive = index == currentIndex;
+
               return ClipRRect(
+                borderRadius: BorderRadius.circular(12),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -46,40 +50,23 @@ class _CarouselSectionState extends State<CarouselSection> {
                       imageUrls[index],
                       fit: BoxFit.cover,
                     ),
-                    Positioned(
-                      bottom:
-                          30, // Adjusted the position slightly for better visual appeal
-                      left: 20,
-                      child: Text(
-                        imageTitles[index],
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize:
-                              28, // Increased font size for title prominence
-                          fontWeight: FontWeight
-                              .w700, // Bold weight for strong title emphasis
-                          shadows: [
-                            Shadow(
-                              blurRadius: 10.0,
-                              color: Colors.black
-                                  // ignore: deprecated_member_use
-                                  .withOpacity(0.7), // Slightly darker shadow
-                              offset: Offset(4.0, 4.0),
-                            ),
-                          ],
+                    if (!isActive) // Apply blur only for non-active items
+                      BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                        child: Container(
+                          color: Colors.black.withOpacity(0.3),
                         ),
                       ),
-                    ),
                   ],
                 ),
               );
             },
             options: carousel_slider.CarouselOptions(
               autoPlay: true,
-              autoPlayInterval: Duration(seconds: 5),
+              autoPlayInterval: Duration(seconds: 3),
               enlargeCenterPage: true,
               aspectRatio: 16 / 9,
-              viewportFraction: 1.0,
+              viewportFraction: 0.80, // Adjust viewport fraction as needed
               onPageChanged: (index, reason) {
                 setState(() {
                   currentIndex = index;
