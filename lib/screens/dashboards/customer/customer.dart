@@ -553,7 +553,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             CouponProgressBar(
                               currentStep: 4,
                               confettiController: _confettiController,
-                              scaleFactor: 0.7,
+                              scaleFactor: 0.8,
                             ),
                             SizedBox(height: 16),
                             ReferralTrackerCard(

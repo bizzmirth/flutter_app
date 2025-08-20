@@ -39,6 +39,8 @@ class ReferralTrackerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = MediaQuery.of(context).size.width >= 600;
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -54,110 +56,170 @@ class ReferralTrackerCard extends StatelessWidget {
           BoxShadow(
             color: progressColor.withOpacity(0.15),
             blurRadius: 20,
-            offset: Offset(0, 8),
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: EdgeInsets.all(isTablet ? 24.0 : 16.0),
+        child: isTablet ? _buildTabletLayout() : _buildPhoneLayout(),
+      ),
+    );
+  }
+
+  Widget _buildTabletLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header with progress percentage
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Header with progress percentage
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 4),
-                    Text(
-                      '$currentStep/$totalSteps Referrals Unlocked!',
-                      style: GoogleFonts.poppins(
-                        fontSize: 21,
-                        fontWeight: FontWeight.bold,
-                        // color: Colors.green,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: progressColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    '${((currentStep / totalSteps) * 100).toInt()}%',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: progressColor,
-                    ),
+                const SizedBox(height: 4),
+                Text(
+                  '$currentStep/$totalSteps Referrals Unlocked!',
+                  style: GoogleFonts.poppins(
+                    fontSize: 21,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
-
-            SizedBox(height: 24),
-
-            // Enhanced Progress Tracker
-            EnhancedProgressTracker(
-              totalSteps: totalSteps,
-              currentStep: currentStep,
-              goal: getGoals(),
-              progressColor: progressColor,
-              goalIcon: goalIcon,
-            ),
-
-            SizedBox(height: 20),
-
-            // Message with better styling
             Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: currentStep >= totalSteps
-                    ? Colors.green.withOpacity(0.1)
-                    : progressColor.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: currentStep >= totalSteps
-                      ? Colors.green.withOpacity(0.3)
-                      : progressColor.withOpacity(0.2),
-                  width: 1,
-                ),
+                color: progressColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
               ),
-              child: Row(
-                children: [
-                  Icon(
-                    currentStep >= totalSteps
-                        ? Icons.celebration
-                        : Icons.trending_up,
-                    color: currentStep >= totalSteps
-                        ? Colors.green
-                        : progressColor,
-                    size: 20,
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      getMessage(),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: currentStep >= totalSteps
-                            ? Colors.green.shade700
-                            : Colors.grey[700],
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ),
-                ],
+              child: Text(
+                '${((currentStep / totalSteps) * 100).toInt()}%',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: progressColor,
+                ),
               ),
             ),
           ],
         ),
+
+        const SizedBox(height: 24),
+
+        // Enhanced Progress Tracker
+        EnhancedProgressTracker(
+          totalSteps: totalSteps,
+          currentStep: currentStep,
+          goal: getGoals(),
+          progressColor: progressColor,
+          goalIcon: goalIcon,
+        ),
+
+        const SizedBox(height: 20),
+
+        // Message with better styling
+        _buildMessageWidget(true),
+      ],
+    );
+  }
+
+  Widget _buildPhoneLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header with progress percentage
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                '$currentStep/$totalSteps Referrals Unlocked!',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 2,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: progressColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '${((currentStep / totalSteps) * 100).toInt()}%',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: progressColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 16),
+
+        // Enhanced Progress Tracker
+        EnhancedProgressTracker(
+          totalSteps: totalSteps,
+          currentStep: currentStep,
+          goal: getGoals(),
+          progressColor: progressColor,
+          goalIcon: goalIcon,
+        ),
+
+        const SizedBox(height: 16),
+
+        // Message with better styling
+        _buildMessageWidget(false),
+      ],
+    );
+  }
+
+  Widget _buildMessageWidget(bool isTablet) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+          vertical: isTablet ? 16 : 14, horizontal: isTablet ? 20 : 16),
+      decoration: BoxDecoration(
+        color: currentStep >= totalSteps
+            ? Colors.green.withOpacity(0.1)
+            : progressColor.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: currentStep >= totalSteps
+              ? Colors.green.withOpacity(0.3)
+              : progressColor.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            currentStep >= totalSteps ? Icons.celebration : Icons.trending_up,
+            color: currentStep >= totalSteps ? Colors.green : progressColor,
+            size: isTablet ? 20 : 18,
+          ),
+          SizedBox(width: isTablet ? 12 : 10),
+          Expanded(
+            child: Text(
+              getMessage(),
+              style: TextStyle(
+                fontSize: isTablet ? 16 : 14,
+                fontWeight: FontWeight.w600,
+                color: currentStep >= totalSteps
+                    ? Colors.green.shade700
+                    : Colors.grey[700],
+                letterSpacing: isTablet ? 0.3 : 0.2,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

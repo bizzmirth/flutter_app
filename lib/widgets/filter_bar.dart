@@ -108,6 +108,8 @@ class _FilterBarState extends State<FilterBar> {
   @override
   Widget build(BuildContext context) {
     String totalUsers = widget.userCount ?? "0";
+    final isTablet = MediaQuery.of(context).size.width >= 600;
+
     return Column(
       children: [
         Padding(
@@ -117,111 +119,11 @@ class _FilterBarState extends State<FilterBar> {
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(10),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-            child: Row(
-              children: [
-                SizedBox(width: 15),
-                // Search Bar
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: "Search...",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    ),
-                  ),
-                ),
-
-                SizedBox(width: 10),
-
-                // From Date Picker
-                Expanded(
-                  flex: 1,
-                  child: GestureDetector(
-                    onTap: () => _selectDate(context, true),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: fromDateError != null
-                            ? Border.all(color: Colors.red, width: 1)
-                            : null,
-                      ),
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Text(
-                        fromDate == null
-                            ? "From Date"
-                            : DateFormat.yMMMd().format(fromDate!),
-                        style: TextStyle(color: Colors.black54),
-                      ),
-                    ),
-                  ),
-                ),
-
-                Text("  --  "),
-
-                // To Date Picker
-                Expanded(
-                  flex: 1,
-                  child: GestureDetector(
-                    onTap: () => _selectDate(context, false),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: toDateError != null
-                            ? Border.all(color: Colors.red, width: 1)
-                            : null,
-                      ),
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Text(
-                        toDate == null
-                            ? "To Date"
-                            : DateFormat.yMMMd().format(toDate!),
-                        style: TextStyle(color: Colors.black54),
-                      ),
-                    ),
-                  ),
-                ),
-
-                SizedBox(width: 10),
-
-                // Count Users
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text("Count: $totalUsers"),
-                  ),
-                ),
-
-                SizedBox(width: 10),
-
-                // Clear Filters Button
-                IconButton(
-                  onPressed: _clearFilters,
-                  icon: Icon(Icons.clear, color: Colors.red),
-                  tooltip: "Clear Filters",
-                ),
-
-                SizedBox(width: 16),
-              ],
-            ),
+            padding:
+                EdgeInsets.symmetric(horizontal: isTablet ? 6 : 4, vertical: 6),
+            child: isTablet
+                ? _buildTabletLayout(totalUsers)
+                : _buildPhoneLayout(totalUsers),
           ),
         ),
 
@@ -233,20 +135,237 @@ class _FilterBarState extends State<FilterBar> {
             child: Row(
               children: [
                 if (fromDateError != null)
-                  Text(
-                    fromDateError!,
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                  Expanded(
+                    child: Text(
+                      fromDateError!,
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
                   ),
                 if (fromDateError != null && toDateError != null)
                   Text(" | ", style: TextStyle(color: Colors.red)),
                 if (toDateError != null)
-                  Text(
-                    toDateError!,
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                  Expanded(
+                    child: Text(
+                      toDateError!,
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
                   ),
               ],
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _buildTabletLayout(String totalUsers) {
+    return Row(
+      children: [
+        SizedBox(width: 15),
+        // Search Bar
+        Expanded(
+          flex: 2,
+          child: TextField(
+            controller: searchController,
+            decoration: InputDecoration(
+              hintText: "Search...",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            ),
+          ),
+        ),
+
+        SizedBox(width: 10),
+
+        // From Date Picker
+        Expanded(
+          flex: 1,
+          child: GestureDetector(
+            onTap: () => _selectDate(context, true),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: fromDateError != null
+                    ? Border.all(color: Colors.red, width: 1)
+                    : null,
+              ),
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                fromDate == null
+                    ? "From Date"
+                    : DateFormat.yMMMd().format(fromDate!),
+                style: TextStyle(color: Colors.black54),
+              ),
+            ),
+          ),
+        ),
+
+        Text("  --  "),
+
+        // To Date Picker
+        Expanded(
+          flex: 1,
+          child: GestureDetector(
+            onTap: () => _selectDate(context, false),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: toDateError != null
+                    ? Border.all(color: Colors.red, width: 1)
+                    : null,
+              ),
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                toDate == null ? "To Date" : DateFormat.yMMMd().format(toDate!),
+                style: TextStyle(color: Colors.black54),
+              ),
+            ),
+          ),
+        ),
+
+        SizedBox(width: 10),
+
+        // Count Users
+        Expanded(
+          flex: 1,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            alignment: Alignment.center,
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Text("Count: $totalUsers"),
+          ),
+        ),
+
+        SizedBox(width: 10),
+
+        // Clear Filters Button
+        IconButton(
+          onPressed: _clearFilters,
+          icon: Icon(Icons.clear, color: Colors.red),
+          tooltip: "Clear Filters",
+        ),
+
+        SizedBox(width: 16),
+      ],
+    );
+  }
+
+  Widget _buildPhoneLayout(String totalUsers) {
+    return Column(
+      children: [
+        // First row: Search and Clear button
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: "Search...",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                ),
+              ),
+            ),
+            SizedBox(width: 8),
+            IconButton(
+              onPressed: _clearFilters,
+              icon: Icon(Icons.clear, color: Colors.red),
+              tooltip: "Clear Filters",
+            ),
+          ],
+        ),
+
+        SizedBox(height: 8),
+
+        // Second row: Date pickers and count
+        Row(
+          children: [
+            // From Date Picker
+            Expanded(
+              child: GestureDetector(
+                onTap: () => _selectDate(context, true),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: fromDateError != null
+                        ? Border.all(color: Colors.red, width: 1)
+                        : null,
+                  ),
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    fromDate == null
+                        ? "From Date"
+                        : DateFormat.yMMMd().format(fromDate!),
+                    style: TextStyle(color: Colors.black54, fontSize: 12),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(width: 4),
+
+            Text("--", style: TextStyle(fontSize: 12)),
+
+            SizedBox(width: 4),
+
+            // To Date Picker
+            Expanded(
+              child: GestureDetector(
+                onTap: () => _selectDate(context, false),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: toDateError != null
+                        ? Border.all(color: Colors.red, width: 1)
+                        : null,
+                  ),
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    toDate == null
+                        ? "To Date"
+                        : DateFormat.yMMMd().format(toDate!),
+                    style: TextStyle(color: Colors.black54, fontSize: 12),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(width: 8),
+
+            // Count Users
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+              child: Text("Count: $totalUsers", style: TextStyle(fontSize: 12)),
+            ),
+          ],
+        ),
       ],
     );
   }
