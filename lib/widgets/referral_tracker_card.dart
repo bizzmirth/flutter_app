@@ -164,13 +164,16 @@ class ReferralTrackerCard extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // Enhanced Progress Tracker
-        EnhancedProgressTracker(
-          totalSteps: totalSteps,
-          currentStep: currentStep,
-          goal: getGoals(),
-          progressColor: progressColor,
-          goalIcon: goalIcon,
+        // Enhanced Progress Tracker with horizontal scrolling
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: EnhancedProgressTracker(
+            totalSteps: totalSteps,
+            currentStep: currentStep,
+            goal: getGoals(),
+            progressColor: progressColor,
+            goalIcon: goalIcon,
+          ),
         ),
 
         const SizedBox(height: 16),

@@ -81,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage>
     final controller = Provider.of<ProfileController>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
-    final isMobile = screenWidth < 600;
+    final isMobile = !isTablet;
 
     return Scaffold(
       appBar: AppBar(
@@ -100,26 +100,139 @@ class _ProfilePageState extends State<ProfilePage>
             )
           : SafeArea(
               child: Padding(
-                padding: EdgeInsets.all(isTablet ? 24.0 : 16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Left Sidebar
-                    SizedBox(
-                      width: isTablet
-                          ? 180
-                          : (isMobile ? screenWidth * 0.35 : 250),
-                      child: _buildSidebar(isTablet, controller),
-                    ),
-                    SizedBox(width: isTablet ? 32 : 16),
-                    // Main Content Area
-                    Expanded(
-                      child: _buildMainContent(isTablet, isMobile, controller),
-                    ),
-                  ],
-                ),
+                padding: EdgeInsets.all(isTablet ? 24.0 : 12.0),
+                child: isTablet
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Left Sidebar (Tablet only)
+                          SizedBox(
+                            width: 180,
+                            child: _buildSidebar(isTablet, controller),
+                          ),
+                          SizedBox(width: 32),
+                          // Main Content Area (Tablet only)
+                          Expanded(
+                            child: _buildMainContent(
+                                isTablet, isMobile, controller),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        // Mobile layout - single column
+                        children: [
+                          // Profile Section (Mobile)
+                          _buildMobileProfileSection(controller),
+                          SizedBox(height: 16),
+                          // Document Cards (Mobile - horizontal scroll)
+                          _buildMobileDocumentsSection(controller),
+                          SizedBox(height: 16),
+                          // Main Content (Mobile)
+                          Expanded(
+                            child: _buildMainContent(
+                                isTablet, isMobile, controller),
+                          ),
+                        ],
+                      ),
               ),
             ),
+    );
+  }
+
+  Widget _buildMobileProfileSection(ProfileController controller) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: controller.profilePic != null &&
+                    controller.profilePic!.isNotEmpty
+                ? Image.network(
+                    controller.profilePic!,
+                    height: 60,
+                    width: 60,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.person, size: 60, color: Colors.grey);
+                    },
+                  )
+                : Icon(Icons.person, size: 60, color: Colors.grey),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${controller.firstName} ${controller.lastName}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  controller.email ?? '',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  controller.phone ?? '',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.camera_alt_outlined, color: Colors.grey[400]),
+            onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileDocumentsSection(ProfileController controller) {
+    return SizedBox(
+      height: 140,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          SizedBox(width: 8),
+          _buildDocumentCard('Pan Card', controller.panCard, false,
+              isMobile: true),
+          SizedBox(width: 12),
+          _buildDocumentCard('Pass Book', controller.bankPassbook, false,
+              isMobile: true),
+          SizedBox(width: 12),
+          _buildDocumentCard('Aadhar Card', controller.aadharCard, false,
+              isMobile: true),
+          SizedBox(width: 12),
+          _buildDocumentCard('Voting Card', controller.votingCard, false,
+              isMobile: true),
+          SizedBox(width: 8),
+        ],
+      ),
     );
   }
 
@@ -220,10 +333,14 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _buildDocumentCard(
     String title,
     String? documentUrl,
-    bool isTablet,
-  ) {
+    bool isTablet, {
+    bool isMobile = false,
+  }) {
+    final cardWidth = isMobile ? 120.0 : (isTablet ? double.infinity : 150.0);
+
     return Container(
-      padding: EdgeInsets.all(isTablet ? 20 : 16),
+      width: isMobile ? cardWidth : null,
+      padding: EdgeInsets.all(isTablet ? 20 : 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -238,8 +355,8 @@ class _ProfilePageState extends State<ProfilePage>
       child: Column(
         children: [
           Container(
-            width: double.infinity,
-            height: isTablet ? 120 : 80,
+            width: isMobile ? double.infinity : null,
+            height: isTablet ? 120 : (isMobile ? 80 : 70),
             decoration: BoxDecoration(
               color: Colors.grey[50],
               borderRadius: BorderRadius.circular(8),
@@ -259,11 +376,11 @@ class _ProfilePageState extends State<ProfilePage>
                       Icon(
                         Icons.photo_outlined,
                         color: Colors.grey[400],
-                        size: isTablet ? 24 : 20,
+                        size: isTablet ? 24 : (isMobile ? 20 : 18),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 4),
                       Text(
-                        'Photo\nNot Yet\nUploaded',
+                        'Not Uploaded',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.grey[500],
@@ -271,23 +388,18 @@ class _ProfilePageState extends State<ProfilePage>
                           height: 1.2,
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Icon(
-                        Icons.camera_alt_outlined,
-                        color: Colors.grey[400],
-                        size: isTablet ? 20 : 18,
-                      ),
                     ],
                   ),
           ),
-          SizedBox(height: isTablet ? 16 : 12),
+          SizedBox(height: isTablet ? 16 : 8),
           Text(
             title,
             style: TextStyle(
-              fontSize: isTablet ? 16 : 14,
+              fontSize: isTablet ? 16 : (isMobile ? 12 : 14),
               fontWeight: FontWeight.w500,
               color: Colors.black87,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -312,7 +424,7 @@ class _ProfilePageState extends State<ProfilePage>
         children: [
           // Tab Bar
           Container(
-            padding: EdgeInsets.all(isTablet ? 20 : 16),
+            padding: EdgeInsets.all(isTablet ? 20 : 12),
             child: TabBar(
               controller: _tabController,
               labelColor: Colors.blue[600],
@@ -329,11 +441,12 @@ class _ProfilePageState extends State<ProfilePage>
               ),
               tabs: [
                 Tab(
-                  icon: Icon(Icons.home_outlined),
-                  text: 'Personal Details',
+                  icon: Icon(Icons.home_outlined, size: isTablet ? 24 : 20),
+                  text: isTablet ? 'Personal Details' : 'Personal',
                 ),
                 Tab(
-                  icon: Icon(Icons.local_offer_outlined),
+                  icon: Icon(Icons.local_offer_outlined,
+                      size: isTablet ? 24 : 20),
                   text: 'Coupons',
                 ),
               ],
@@ -389,123 +502,54 @@ class _ProfilePageState extends State<ProfilePage>
             ),
           ),
         // Name Fields
-        isMobile
-            ? Column(
-                children: [
-                  _buildFormField(
-                      'First Name', controller.firstName!, isTablet),
-                  SizedBox(height: 16),
-                  _buildFormField('Last Name', controller.lastName!, isTablet),
-                ],
-              )
-            : Row(
-                children: [
-                  Expanded(
-                    child: _buildFormField(
-                        'First Name', controller.firstName!, isTablet),
-                  ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: _buildFormField(
-                        'Last Name', controller.lastName!, isTablet),
-                  ),
-                ],
-              ),
+        Column(
+          children: [
+            _buildFormField('First Name', controller.firstName!, isTablet),
+            SizedBox(height: 16),
+            _buildFormField('Last Name', controller.lastName!, isTablet),
+          ],
+        ),
         SizedBox(height: 20),
         // Contact Fields
-        isMobile
-            ? Column(
-                children: [
-                  _buildFormField('Phone Number', controller.phone!, isTablet),
-                  SizedBox(height: 16),
-                  _buildFormField('Email Address', controller.email!, isTablet),
-                ],
-              )
-            : Row(
-                children: [
-                  Expanded(
-                    child: _buildFormField(
-                        'Phone Number', controller.phone!, isTablet),
-                  ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: _buildFormField(
-                        'Email Address', controller.email!, isTablet),
-                  ),
-                ],
-              ),
+        Column(
+          children: [
+            _buildFormField('Phone Number', controller.phone!, isTablet),
+            SizedBox(height: 16),
+            _buildFormField('Email Address', controller.email!, isTablet),
+          ],
+        ),
         SizedBox(height: 20),
         // Gender and DOB
-        isMobile
-            ? Column(
-                children: [
-                  _buildGenderSection(isTablet, controller),
-                  SizedBox(height: 16),
-                  _buildFormField(
-                      'Date of Birth', formatDate(controller.dob), isTablet,
-                      isDate: true),
-                ],
-              )
-            : Row(
-                children: [
-                  Expanded(child: _buildGenderSection(isTablet, controller)),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: _buildFormField(
-                        'Date of Birth', controller.dob!, isTablet,
-                        isDate: true),
-                  ),
-                ],
-              ),
+        Column(
+          children: [
+            _buildGenderSection(isTablet, controller),
+            SizedBox(height: 16),
+            _buildFormField(
+                'Date of Birth', formatDate(controller.dob), isTablet,
+                isDate: true),
+          ],
+        ),
         SizedBox(height: 20),
         // Location Fields
-        isMobile
-            ? Column(
-                children: [
-                  _buildDropdownField('Country', controller.country!, isTablet),
-                  SizedBox(height: 16),
-                  _buildDropdownField('State', controller.state!, isTablet),
-                ],
-              )
-            : Row(
-                children: [
-                  Expanded(
-                    child: _buildDropdownField(
-                        'Country', controller.country!, isTablet),
-                  ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: _buildDropdownField(
-                        'State', controller.state!, isTablet),
-                  ),
-                ],
-              ),
+        Column(
+          children: [
+            _buildDropdownField('Country', controller.country!, isTablet),
+            SizedBox(height: 16),
+            _buildDropdownField('State', controller.state!, isTablet),
+          ],
+        ),
         SizedBox(height: 20),
         // City and Zip
-        isMobile
-            ? Column(
-                children: [
-                  _buildDropdownField('City', controller.city!, isTablet),
-                  SizedBox(height: 16),
-                  _buildFormField('Zip Code', '403 ', isTablet),
-                ],
-              )
-            : Row(
-                children: [
-                  Expanded(
-                    child:
-                        _buildDropdownField('City', controller.city!, isTablet),
-                  ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: _buildFormField(
-                        'Zip Code', controller.zipCode!, isTablet),
-                  ),
-                ],
-              ),
+        Column(
+          children: [
+            _buildDropdownField('City', controller.city!, isTablet),
+            SizedBox(height: 16),
+            _buildFormField('Zip Code', controller.zipCode ?? '', isTablet),
+          ],
+        ),
         SizedBox(height: 20),
         // Full Address
-        _buildFormField('Full Address', controller.fullAddress!, isTablet,
+        _buildFormField('Full Address', controller.fullAddress ?? '', isTablet,
             maxLines: 3),
       ],
     );
@@ -616,7 +660,7 @@ class _ProfilePageState extends State<ProfilePage>
         ),
         SizedBox(height: 12),
         Wrap(
-          spacing: isTablet ? 24 : 16,
+          spacing: isTablet ? 24 : 12,
           runSpacing: 8,
           children: [
             _buildRadioOption('Male', selectedGender == 'male', isTablet),
@@ -652,7 +696,7 @@ class _ProfilePageState extends State<ProfilePage>
 
   Widget _buildCouponsTab(bool isTablet, ProfileController controller) {
     return Padding(
-      padding: EdgeInsets.all(isTablet ? 24 : 16),
+      padding: EdgeInsets.all(isTablet ? 24 : 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -664,115 +708,117 @@ class _ProfilePageState extends State<ProfilePage>
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: isTablet ? 32 : 24),
+          SizedBox(height: isTablet ? 32 : 16),
 
-          // Unified horizontal scroll for header and data
+          // Coupon list with horizontal scrolling
           Expanded(
             child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Column(
-                children: [
-                  // Header
-                  Container(
-                    padding: EdgeInsets.all(isTablet ? 16 : 12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border(
-                        bottom: BorderSide(
-                          color: Colors.grey[300]!,
-                          width: 1,
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columnSpacing: isTablet ? 20 : 12,
+                  horizontalMargin: isTablet ? 24 : 12,
+                  headingRowHeight: isTablet ? 48 : 40,
+                  dataRowHeight: isTablet ? 48 : 40,
+                  columns: [
+                    DataColumn(
+                      label: Text(
+                        'Coupon Code',
+                        style: TextStyle(
+                          fontSize: isTablet ? 14 : 12,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 120,
-                          child: Text(
-                            'Coupon Code',
-                            style: TextStyle(
-                              fontSize: isTablet ? 12 : 10,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[700],
-                            ),
-                          ),
+                    DataColumn(
+                      label: Text(
+                        'Amount',
+                        style: TextStyle(
+                          fontSize: isTablet ? 14 : 12,
+                          fontWeight: FontWeight.w600,
                         ),
-                        SizedBox(width: 12),
-                        SizedBox(
-                          width: 80,
-                          child: Text(
-                            'Amount',
-                            style: TextStyle(
-                              fontSize: isTablet ? 12 : 10,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[700],
-                            ),
-                          ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Created Date',
+                        style: TextStyle(
+                          fontSize: isTablet ? 14 : 12,
+                          fontWeight: FontWeight.w600,
                         ),
-                        SizedBox(width: 12),
-                        SizedBox(
-                          width: 100,
-                          child: Text(
-                            'Created Date',
-                            style: TextStyle(
-                              fontSize: isTablet ? 12 : 10,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[700],
-                            ),
-                          ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Expiry Date',
+                        style: TextStyle(
+                          fontSize: isTablet ? 14 : 12,
+                          fontWeight: FontWeight.w600,
                         ),
-                        SizedBox(width: 12),
-                        SizedBox(
-                          width: 100,
-                          child: Text(
-                            'Expiry Date',
-                            style: TextStyle(
-                              fontSize: isTablet ? 12 : 10,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[700],
-                            ),
-                          ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Status',
+                        style: TextStyle(
+                          fontSize: isTablet ? 14 : 12,
+                          fontWeight: FontWeight.w600,
                         ),
-                        SizedBox(width: 12),
-                        SizedBox(
-                          width: 70,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Status',
-                                style: TextStyle(
-                                  fontSize: isTablet ? 12 : 10,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[700],
-                                ),
+                      ),
+                    ),
+                  ],
+                  rows: controller.couponsData.map((coupon) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(
+                          coupon.code,
+                          style: TextStyle(fontSize: isTablet ? 14 : 12),
+                        )),
+                        DataCell(Text(
+                          '₹${coupon.couponAmt}',
+                          style: TextStyle(
+                            fontSize: isTablet ? 14 : 12,
+                            color: Colors.green[700],
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )),
+                        DataCell(Text(
+                          _formatDate(coupon.createdDate),
+                          style: TextStyle(
+                            fontSize: isTablet ? 14 : 12,
+                            color: Colors.grey[600],
+                          ),
+                        )),
+                        DataCell(Text(
+                          _formatDate(coupon.expiryDate),
+                          style: TextStyle(
+                            fontSize: isTablet ? 14 : 12,
+                            color: Colors.grey[600],
+                          ),
+                        )),
+                        DataCell(
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: _getStatusColor(coupon).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              _getStatus(coupon),
+                              style: TextStyle(
+                                fontSize: isTablet ? 12 : 10,
+                                color: _getStatusColor(coupon),
+                                fontWeight: FontWeight.w600,
                               ),
-                              SizedBox(width: 4),
-                              Icon(
-                                Icons.sort,
-                                color: Colors.grey[400],
-                                size: isTablet ? 14 : 12,
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ],
-                    ),
-                  ),
-
-                  // Coupon list
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: controller.couponsData
-                            .map((coupon) => _buildCouponRow(coupon, isTablet))
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                ],
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ),
@@ -781,129 +827,36 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildCouponRow(CouponData coupon, bool isTablet) {
-    String formatDate(String dateString) {
-      try {
-        DateTime date = DateTime.parse(dateString);
-        return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-      } catch (e) {
-        return dateString;
-      }
+  String _formatDate(String dateString) {
+    try {
+      DateTime date = DateTime.parse(dateString);
+      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    } catch (e) {
+      return dateString;
     }
+  }
 
-    String getStatus() {
-      if (coupon.usageStatus == "1") return "Used";
+  String _getStatus(CouponData coupon) {
+    if (coupon.usageStatus == "1") return "Used";
 
-      DateTime expiryDate = DateTime.parse(coupon.expiryDate);
-      DateTime now = DateTime.now();
+    DateTime expiryDate = DateTime.parse(coupon.expiryDate);
+    DateTime now = DateTime.now();
 
-      if (expiryDate.isBefore(now)) return "Expired";
-      return "Unused";
+    if (expiryDate.isBefore(now)) return "Expired";
+    return "Unused";
+  }
+
+  Color _getStatusColor(CouponData coupon) {
+    String status = _getStatus(coupon);
+    switch (status) {
+      case "Unused":
+        return Colors.green;
+      case "Expired":
+        return Colors.orange;
+      case "Used":
+        return Colors.red;
+      default:
+        return Colors.grey;
     }
-
-    Color getStatusColor() {
-      String status = getStatus();
-      switch (status) {
-        case "Unused":
-          return Colors.green;
-        case "Expired":
-          return Colors.orange;
-        case "Used":
-          return Colors.red;
-        default:
-          return Colors.grey;
-      }
-    }
-
-    return Container(
-      margin: EdgeInsets.only(bottom: 1),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: isTablet ? 16 : 12,
-            vertical: isTablet ? 16 : 12,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey[200]!,
-                width: 0.5,
-              ),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 120,
-                child: Text(
-                  coupon.code,
-                  style: TextStyle(
-                    fontSize: isTablet ? 11 : 9,
-                    color: Colors.grey[800],
-                    fontFamily: 'monospace',
-                  ),
-                ),
-              ),
-              SizedBox(width: 12),
-              SizedBox(
-                width: 80,
-                child: Text(
-                  '₹${coupon.couponAmt}',
-                  style: TextStyle(
-                    fontSize: isTablet ? 11 : 9,
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              SizedBox(width: 12),
-              SizedBox(
-                width: 100,
-                child: Text(
-                  formatDate(coupon.createdDate),
-                  style: TextStyle(
-                    fontSize: isTablet ? 11 : 9,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ),
-              SizedBox(width: 12),
-              SizedBox(
-                width: 100,
-                child: Text(
-                  formatDate(coupon.expiryDate),
-                  style: TextStyle(
-                    fontSize: isTablet ? 11 : 9,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ),
-              SizedBox(width: 12),
-              SizedBox(
-                width: 70,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: getStatusColor().withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    getStatus(),
-                    style: TextStyle(
-                      fontSize: isTablet ? 10 : 8,
-                      color: getStatusColor(),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

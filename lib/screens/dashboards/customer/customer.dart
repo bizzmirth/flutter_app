@@ -16,6 +16,7 @@ import 'package:bizzmirth_app/widgets/coupons_tracker.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
+import 'package:bizzmirth_app/widgets/neo_select_benefits.dart';
 import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
 import 'package:bizzmirth_app/widgets/user_type_widget.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
@@ -549,12 +550,16 @@ class _CDashboardPageState extends State<CDashboardPage> {
                               ],
                             ),
                             SizedBox(height: 20),
+
                             // SizedBox(height: 20),
-                            CouponProgressBar(
-                              currentStep: 4,
-                              confettiController: _confettiController,
-                              scaleFactor: 0.8,
-                            ),
+                            // CouponProgressBar(
+                            //   currentStep: 4,
+                            //   confettiController: _confettiController,
+                            //   scaleFactor: 0.8,
+                            // ),
+                            // SizedBox(height: 20),
+
+                            const NeoSelectBenefits(),
                             SizedBox(height: 16),
                             ReferralTrackerCard(
                               totalSteps: 10,
