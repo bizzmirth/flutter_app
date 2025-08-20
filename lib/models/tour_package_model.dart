@@ -1,36 +1,44 @@
 class TourPackageModel {
   String? id;
-  String? destination;
-  String? image;
-  String? tourDays;
   String? name;
-  String? lastBookingDate;
+  String? description;
+  String? destination;
+  String? location;
+  String? image;
+  int? price;
+  String? hotelCategory;
 
   TourPackageModel(
       {this.id,
-      this.destination,
-      this.image,
-      this.tourDays,
       this.name,
-      this.lastBookingDate});
+      this.description,
+      this.destination,
+      this.location,
+      this.image,
+      this.price,
+      this.hotelCategory});
 
   TourPackageModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    destination = json['destination'];
-    image = json['image'];
-    tourDays = json['tour_days'];
     name = json['name'];
-    lastBookingDate = json['last_booking_date'];
+    description = json['description'];
+    destination = json['destination'];
+    location = json['location'];
+    image = json['image'];
+    price = json['price'];
+    hotelCategory = json['hotel_category'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['destination'] = destination;
-    data['image'] = image;
-    data['tour_days'] = tourDays;
     data['name'] = name;
-    data['last_booking_date'] = lastBookingDate;
+    data['description'] = description;
+    data['destination'] = destination;
+    data['location'] = location;
+    data['image'] = image;
+    data['price'] = price;
+    data['hotel_category'] = hotelCategory;
     return data;
   }
 }

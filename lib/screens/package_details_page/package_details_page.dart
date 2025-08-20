@@ -11,7 +11,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PackageDetailsPage extends StatefulWidget {
-  const PackageDetailsPage({super.key});
+  final String id;
+  const PackageDetailsPage({required this.id, super.key});
 
   @override
   State<PackageDetailsPage> createState() => _PackageDetailsPageState();
@@ -135,7 +136,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Tour Packages',
+          'Package Details',
           style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.w700,

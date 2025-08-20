@@ -1,5 +1,6 @@
 import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,16 +15,18 @@ class TopPackagesPage extends StatefulWidget {
 
 class _TopPackagesPageState extends State<TopPackagesPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String? selectedTripDuration;
+  String? selectedTripDuration = "Upto 3N";
   final double _minPrice = 1000;
   final double _maxPrice = 150000;
   RangeValues _currentRange = const RangeValues(1000, 150000);
+  List<String> availableHotelStars = ['3 Star', '4 Star', "5 Star"];
   List<String> selectedHotelStars = [];
 // For mobile filter drawer
 
   @override
   void initState() {
     super.initState();
+    selectedHotelStars = List.from(availableHotelStars);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getTourPackageData();
     });
@@ -32,7 +35,32 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
   void getTourPackageData() async {
     final controller =
         Provider.of<TourPackagesController>(context, listen: false);
-    controller.apiGetTourPackages();
+    // controller.apiGetTourPackages();
+    controller.apiGetFilteredPackages([], "1000", "150000", "0", "3", "");
+  }
+
+  void getFilteredPackages() async {
+    final controller =
+        Provider.of<TourPackagesController>(context, listen: false);
+
+    final numericStars = convertStarsToNumbers(selectedHotelStars);
+
+    final durationValues = getTripDurationValues(selectedTripDuration);
+
+    final minBudget = _currentRange.start.toString();
+    final maxBudget = _currentRange.end.toString();
+
+    // Extract duration values
+    final minDuration = durationValues['minDuration']!;
+    final maxDuration = durationValues['maxDuration']!;
+    final tripDuration = durationValues['tripDuration']!;
+
+    Logger.warning(
+        "filters selected $numericStars, $minBudget, $maxBudget, $minDuration, $maxDuration, $tripDuration ");
+
+    // Make API call
+    controller.apiGetFilteredPackages(numericStars, minBudget, maxBudget,
+        minDuration, maxDuration, tripDuration);
   }
 
   // Build filter section (reusable for both layouts)
@@ -67,7 +95,6 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
           ),
           const SizedBox(height: 10),
 
-          // This Expanded will push the Apply button to the bottom
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -83,7 +110,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                   ),
                   Column(
                     children: [
-                      for (var star in ['3 Star', '4 Star', '5 Star', 'Villa'])
+                      for (var star in availableHotelStars)
                         CheckboxListTile(
                           contentPadding: EdgeInsets.zero,
                           dense: true,
@@ -204,7 +231,6 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
           ),
 
           // ---------- Apply Button ----------
-          // This will now be pushed to the bottom by the Expanded widget above
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -217,15 +243,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                 elevation: 3,
               ),
               onPressed: () {
-                // Capture filter values here
-                final filters = {
-                  "selectedHotelStars": selectedHotelStars,
-                  "minBudget": _currentRange.start.toInt(),
-                  "maxBudget": _currentRange.end.toInt(),
-                  "tripDuration": selectedTripDuration,
-                };
-
-                Logger.success("Applied Filters: $filters");
+                getFilteredPackages();
 
                 // On mobile, close the filter drawer after applying
                 if (MediaQuery.of(context).size.width < 600) {
@@ -379,13 +397,27 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      // "${pkg.tourDays} Days",
-                      "",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black, // Default color for "From"
+                        ),
+                        children: [
+                          const TextSpan(
+                            text: "From ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          TextSpan(
+                            text: "₹${pkg.price}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     ElevatedButton(
@@ -393,7 +425,9 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const PackageDetailsPage(),
+                            builder: (context) => PackageDetailsPage(
+                              id: pkg.id!,
+                            ),
                           ),
                         );
                       },

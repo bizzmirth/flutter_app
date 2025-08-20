@@ -59,7 +59,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations> {
         final myTrips = controller.topTourPackages;
 
         Logger.success("My top trips are $myTrips");
-        Logger.info("Trip count: ${myTrips?.length ?? 0}");
+        Logger.info("Trip count: ${myTrips.length}");
         Logger.info("Controller loading state: ${controller.isLoading}");
 
         return Padding(
@@ -77,7 +77,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations> {
               ),
               const SizedBox(height: 16),
               if (controller.isLoading)
-                Container(
+                SizedBox(
                   height: 150,
                   child: const Center(
                     child: CircularProgressIndicator(),
@@ -103,7 +103,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations> {
                         ),
 
                       Expanded(
-                        child: myTrips == null || myTrips.isEmpty
+                        child: myTrips.isEmpty
                             ? _buildEmptyState()
                             : ListView.builder(
                                 controller: _scrollController,
@@ -122,9 +122,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations> {
                       ),
 
                       // Right Arrow
-                      if (_showRightArrow &&
-                          myTrips != null &&
-                          myTrips.isNotEmpty)
+                      if (_showRightArrow && myTrips.isNotEmpty)
                         IconButton(
                           onPressed: () {
                             _scrollController.animateTo(
@@ -204,7 +202,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations> {
                         ),
                       );
                     },
-                    // pla 
+                    // pla
                   )
                 : Container(
                     height: 100,
