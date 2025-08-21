@@ -6,6 +6,7 @@ import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -133,10 +134,11 @@ class CustomerController extends ChangeNotifier {
 
     try {
       String email = await SharedPrefHelper().getUserEmail() ?? "";
+      final String url = AppUrls.registeredCustomers;
       Logger.success("the stored email is $email");
 
       final response = await http.get(
-        Uri.parse('$_baseUrl/customers/customers.php?action=registered_cust'),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -163,6 +165,7 @@ class CustomerController extends ChangeNotifier {
               await SharedPrefHelper().saveCurrentUserRegDate(_userRegDate!);
               setUserCustomerId = _userCustomerId;
 
+              Logger.success("Get customer count URL: $url");
               Logger.success(
                   "Found user with ca_customer_id: $_userCustomerId");
               Logger.success("User's ta_reference_no: $_userTaReferenceNo");
@@ -212,7 +215,7 @@ class CustomerController extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      final String fullUrl = "$_baseUrl/customers/dashboard_counts.php";
+      final String fullUrl = AppUrls.dashboardCounts;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final Map<String, dynamic> body = {
         "userId": userId,
@@ -223,6 +226,7 @@ class CustomerController extends ChangeNotifier {
       final response = await http.post(Uri.parse(fullUrl),
           body: encodeBody, headers: {"Content-Type": "application/json"});
       Logger.success("Dashboard counts response: ${response.body}");
+      Logger.success("Dashboard counts URL: $fullUrl");
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         if (responseData['status'] == true && responseData['data'] != null) {
@@ -269,7 +273,7 @@ class CustomerController extends ChangeNotifier {
       notifyListeners();
 
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final url = "https://testca.uniqbizz.com/api/dashboard/chartData.php";
+      final String url = AppUrls.dashboardChartsData;
       _selectedYear = selectedYear;
 
       final Map<String, dynamic> body = {
@@ -289,7 +293,7 @@ class CustomerController extends ChangeNotifier {
         body: encodeBody,
         headers: {"Content-Type": "application/json"}, // Important!
       );
-
+      Logger.success("Get chart data URL: $url");
       Logger.success("Raw response body: ${response.body}");
 
       if (response.statusCode == 200) {
@@ -345,8 +349,7 @@ class CustomerController extends ChangeNotifier {
 
       final userId = await SharedPrefHelper().getCurrentUserCustId();
 
-      final String url =
-          'https://testca.uniqbizz.com/api/dashboard/top_customer_refereral.php';
+      final String url = AppUrls.topCustomerReferrals;
 
       final Map<String, dynamic> body = {"userId": _userCustomerId ?? userId};
       Logger.warning(
@@ -393,8 +396,7 @@ class CustomerController extends ChangeNotifier {
       notifyListeners();
 
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final String url =
-          'https://testca.uniqbizz.com/api/customers/customers.php?action=registered_cust';
+      final String url = AppUrls.registeredCustomers;
 
       final response = await http.get(Uri.parse(url));
 
@@ -417,6 +419,7 @@ class CustomerController extends ChangeNotifier {
             Logger.success(
                 "Customer: ${x.name}, Reference No: ${x.referenceNo}");
           }
+          Logger.success("Registered customer URL: $url");
         } else {
           _error = "No data found";
           Logger.error("API responded with no data");
@@ -441,8 +444,7 @@ class CustomerController extends ChangeNotifier {
       notifyListeners();
 
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final String url =
-          'https://testca.uniqbizz.com/api/customers/customers.php?action=pending_cust';
+      final String url = AppUrls.pendingCustomers;
 
       final response = await http.get(Uri.parse(url));
 
@@ -466,6 +468,7 @@ class CustomerController extends ChangeNotifier {
             Logger.success(
                 "Pending Customer: ${x.name}, Reference No: ${x.referenceNo}");
           }
+          Logger.success("Pending Customer URL: $url");
         } else {
           _error = "No data found";
           Logger.error("API responded with no data");
@@ -486,7 +489,7 @@ class CustomerController extends ChangeNotifier {
   Future<void> uploadImage(
       context, String folder, String savedImagePath) async {
     try {
-      final fullUrl = 'http://testca.uniqbizz.com/api/upload_mobile.php';
+      final fullUrl = AppUrls.uploadImage;
       var request = http.MultipartRequest('POST', Uri.parse(fullUrl));
       request.files
           .add(await http.MultipartFile.fromPath('file', savedImagePath));
@@ -537,8 +540,7 @@ class CustomerController extends ChangeNotifier {
       final newPaymentProof =
           extractPathSegment(customer.paymentProof ?? "", 'payment_proof');
 
-      final fullUrl =
-          'https://testca.uniqbizz.com/api/customers/add_customers_data.php';
+      final fullUrl = AppUrls.addCustomer;
 
       String oldDob = customer.dob ?? "";
       DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(oldDob);
@@ -637,8 +639,7 @@ class CustomerController extends ChangeNotifier {
               ? extractPathSegment(customer.paymentProof ?? "", 'payment_proof')
               : customer.paymentProof;
 
-      final fullUrl =
-          'https://testca.uniqbizz.com/api/customers/edit_customers_data.php';
+      final fullUrl = AppUrls.editCustomers;
 
       final now = DateTime.now();
       final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
@@ -755,8 +756,7 @@ class CustomerController extends ChangeNotifier {
               ? extractPathSegment(customer.paymentProof ?? "", 'payment_proof')
               : customer.paymentProof;
 
-      final fullUrl =
-          'https://testca.uniqbizz.com/api/customers/edit_customers_data.php';
+      final fullUrl = AppUrls.editCustomers;
 
       String oldDob = customer.dob ?? "";
       DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(oldDob);
@@ -838,8 +838,7 @@ class CustomerController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final fullUrl =
-          "https://testca.uniqbizz.com/api/customers/delete_customers_data.php";
+      final fullUrl = AppUrls.deleteCustomers;
 
       final Map<String, dynamic> body = {
         "id": customer.id,
@@ -912,7 +911,7 @@ class CustomerController extends ChangeNotifier {
       notifyListeners();
 
       final fullUrl =
-          "https://testca.uniqbizz.com/api/customers/delete_customers_data.php";
+          AppUrls.deleteCustomers; // restores based on action provided in body
 
       final Map<String, dynamic> body = {
         "id": customer.id,

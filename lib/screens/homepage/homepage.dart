@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:bizzmirth_app/models/user_type_mode.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:bizzmirth_app/widgets/carousel_section.dart';
 import 'package:bizzmirth_app/screens/homepage/drawer/sidenav_drawer.dart';
 import 'package:bizzmirth_app/widgets/footer_section.dart';
@@ -64,9 +65,9 @@ class _HomePageState extends State<HomePage> {
         isLoading = true;
         error = '';
       });
+      final String url = AppUrls.getAllUserTypes;
 
-      final response = await http
-          .get(Uri.parse('https://testca.uniqbizz.com/api/user_type'));
+      final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
         Logger.info("Response from user type API: ${response.body}");
@@ -74,6 +75,7 @@ class _HomePageState extends State<HomePage> {
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
         await _sharedPrefHelper.saveUserDataType(response.body);
+        Logger.success("Get all usertype URL: $url ");
         Logger.success("User types saved to SharedPreferences");
 
         setState(() {

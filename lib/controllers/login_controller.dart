@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/models/user_type_mode.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -152,7 +153,7 @@ class LoginController extends ChangeNotifier {
       }
 
       // API call
-      final url = Uri.parse('https://testca.uniqbizz.com/api/login.php');
+      final url = Uri.parse(AppUrls.login);
       final email = emailController.text;
       final password = passwordController.text;
 
@@ -163,7 +164,7 @@ class LoginController extends ChangeNotifier {
         'username': email,
         'password': password,
       });
-
+      Logger.success("Login URL: $url");
       final response = await http.post(url, headers: headers, body: body);
       Logger.success("Login response: ${response.body}");
 
