@@ -31,4 +31,25 @@ class AppUrls {
       "$baseUrl/customers/edit_customers_data.php";
   static String get deleteCustomers =>
       "$baseUrl/customers/delete_customers_data.php";
+
+  // ==================== CUSTOMER PRODUCT PAYOUTS ENDPOINTS ====================
+  static String get getAllPayoutsProduct =>
+      "$baseUrl/payouts/product_payouts/customer_all_payouts.php";
+
+  static String get getPayoutsProduct =>
+      "$baseUrl/payouts/product_payouts/customer_payouts.php"; // this is used to call all previous,next and all
+
+  // ==================== CUSTOMER REFERRAL PAYOUTS ENDPOINTS ====================
+
+  static String get getAllPayoutsReference =>
+      "$baseUrl/payouts/reference_payouts/customer_all_payouts.php";
+
+  static String get getPreviousPayoutsReference =>
+      "$baseUrl/payouts/reference_payouts/customer_prev_payouts.php";
+
+  static String get getNextPayoutReference =>
+      "$baseUrl/payouts/reference_payouts/customer_next_payouts.php";
+
+  static String get getTotalPayoutsReference =>
+      "$baseUrl/payouts/reference_payouts/customer_total_payouts.php";
 }

@@ -15,7 +15,6 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 
 class CustomerController extends ChangeNotifier {
-  final String _baseUrl = 'https://testca.uniqbizz.com/api';
   int _regCustomerCount = 0;
   bool _isLoading = false;
   String? _error;

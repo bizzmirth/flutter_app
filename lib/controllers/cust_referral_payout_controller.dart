@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -45,8 +46,7 @@ class CustReferralPayoutController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_all_payouts.php";
+      final fullUrl = AppUrls.getAllPayoutsReference;
 
       final Map<String, dynamic> body = {
         "userId": userId,
@@ -101,8 +101,7 @@ class CustReferralPayoutController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_prev_payouts.php";
+      final fullUrl = AppUrls.getPreviousPayoutsReference;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final now = DateTime.now();
       final prevMonth =
@@ -159,8 +158,7 @@ class CustReferralPayoutController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_next_payouts.php";
+      final fullUrl = AppUrls.getNextPayoutReference;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final now = DateTime.now();
       final nextMonth = (now.month % 12 + 1).toString().padLeft(2, '0');
@@ -216,8 +214,7 @@ class CustReferralPayoutController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/reference_payouts/customer_total_payouts.php";
+      final fullUrl = AppUrls.getTotalPayoutsReference;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final Map<String, dynamic> body = {
         "userId": userId,

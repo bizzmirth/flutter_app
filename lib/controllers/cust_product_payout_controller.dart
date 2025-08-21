@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bizzmirth_app/models/cust_product_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -45,8 +46,7 @@ class CustProductPayoutController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/product_payouts/customer_all_payouts.php";
+      final fullUrl = AppUrls.getAllPayoutsProduct;
 
       final Map body = {"userId": userId, "userType": "10"};
       Logger.warning("Fetching all payouts for userId: $userId");
@@ -77,7 +77,7 @@ class CustProductPayoutController extends ChangeNotifier {
               Logger.error("Error parsing payout item: $e");
             }
           }
-
+          Logger.success("Get all payouts product URL: $fullUrl");
           Logger.success("Successfully loaded ${_allPayouts.length} payouts");
         } else {
           Logger.error(
@@ -103,8 +103,7 @@ class CustProductPayoutController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/product_payouts/customer_payouts.php";
+      final fullUrl = AppUrls.getPayoutsProduct;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final Map<String, dynamic> body = {
         "action": "previous",
@@ -126,6 +125,7 @@ class CustProductPayoutController extends ChangeNotifier {
             responseData['data'] != null) {
           final data = responseData['data'];
           Logger.success("Data fetched successfully: $data");
+          Logger.success("Get previous payouts product URL: $fullUrl");
 
           // Clear and populate basic data
           _previousMonthAllPayouts.clear();
@@ -184,8 +184,7 @@ class CustProductPayoutController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/product_payouts/customer_payouts.php";
+      final fullUrl = AppUrls.getPayoutsProduct;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final Map<String, dynamic> body = {
         "action": "next",
@@ -199,6 +198,7 @@ class CustProductPayoutController extends ChangeNotifier {
           headers: {'Content-Type': 'application/json'}, body: encodeBody);
 
       Logger.success("Response from next month payouts: ${response.body}");
+      Logger.success("Get next payouts product URL: $fullUrl");
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -271,8 +271,7 @@ class CustProductPayoutController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fullUrl =
-          "https://testca.uniqbizz.com/api/payouts/product_payouts/customer_payouts.php";
+      final fullUrl = AppUrls.getPayoutsProduct;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final Map<String, dynamic> body = {
         "action": "total",
@@ -289,6 +288,7 @@ class CustProductPayoutController extends ChangeNotifier {
           body: encodeBody);
 
       Logger.success("Response from total payouts: ${response.body}");
+      Logger.success("Get total payouts product URL: $fullUrl");
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
