@@ -81,7 +81,7 @@ class PremiumSelectCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              " Premium Select Member!",
+                              " Neo Select Customer!",
                               style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -233,7 +233,7 @@ class PremiumSelectCard extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              "Premium Select Member!",
+                              "Neo Select Customer!",
                               style: GoogleFonts.poppins(
                                 fontSize: isSmallPhone ? 16 : 18,
                                 fontWeight: FontWeight.bold,

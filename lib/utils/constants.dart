@@ -683,31 +683,6 @@ String extractUserId(String fullUserId) {
   return fullUserId;
 }
 
-String calculateAge(String dobString) {
-  try {
-    final parts = dobString.split('-');
-    if (parts.length != 3) return 'Invalid date';
-
-    final day = int.parse(parts[0]);
-    final month = int.parse(parts[1]);
-    final year = int.parse(parts[2]);
-
-    final dob = DateTime(year, month, day);
-    final today = DateTime.now();
-
-    int age = today.year - dob.year;
-
-    if (today.month < dob.month ||
-        (today.month == dob.month && today.day < dob.day)) {
-      age--;
-    }
-
-    return age.toString();
-  } catch (e) {
-    return 'Invalid date';
-  }
-}
-
 String extractPathSegment(String fullPath, String folderPrefix) {
   int index = fullPath.lastIndexOf(folderPrefix);
   if (index != -1) {
@@ -727,11 +702,6 @@ int? parseIntSafely(dynamic value) {
     }
   }
   return null;
-}
-
-String capitalize(String input) {
-  if (input.isEmpty) return '';
-  return input[0].toUpperCase() + input.substring(1).toLowerCase();
 }
 
 Future<String?> getDepartmentNameById(String departmentId) async {

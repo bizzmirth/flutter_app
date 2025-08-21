@@ -37,3 +37,35 @@ Map<String, String> getTripDurationValues(String? selectedDuration) {
       return {"minDuration": "0", "maxDuration": "999", "tripDuration": ""};
   }
 }
+
+// this function takes the dob as a arugement and calculates and returns the age
+String calculateAge(String dobString) {
+  try {
+    final parts = dobString.split('-');
+    if (parts.length != 3) return 'Invalid date';
+
+    final day = int.parse(parts[0]);
+    final month = int.parse(parts[1]);
+    final year = int.parse(parts[2]);
+
+    final dob = DateTime(year, month, day);
+    final today = DateTime.now();
+
+    int age = today.year - dob.year;
+
+    if (today.month < dob.month ||
+        (today.month == dob.month && today.day < dob.day)) {
+      age--;
+    }
+
+    return age.toString();
+  } catch (e) {
+    return 'Invalid date';
+  }
+}
+
+// this function takes the name as lower case and return the name first alphabet as capital. Eg. input: harsh. output: Harsh
+String capitalize(String input) {
+  if (input.isEmpty) return '';
+  return input[0].toUpperCase() + input.substring(1).toLowerCase();
+}

@@ -112,13 +112,14 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   }
 
   void showPayoutDialog(
-      BuildContext context,
-      String payoutType,
-      String date,
-      String amount,
-      String userId,
-      String userName,
-      CustProductPayoutController controller) {
+    BuildContext context,
+    String payoutType,
+    String date,
+    String amount,
+    String userId,
+    String userName,
+    CustProductPayoutController controller,
+  ) {
     List<CustProductPayoutModel> getPayoutList() {
       switch (payoutType.toLowerCase()) {
         case 'previous payout':
@@ -151,9 +152,11 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
           ),
           child: SingleChildScrollView(
             child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.95,
-              ),
+              width: isMobile
+                  ? MediaQuery.of(context).size.width * 0.95
+                  : MediaQuery.of(context).size.width * 0.9,
+              height:
+                  isMobile ? null : MediaQuery.of(context).size.height * 0.8,
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,10 +190,8 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                   if (isMobile)
                     Column(
                       children: [
-                        // Payout amount card
                         _buildPayoutCard(payoutType, amount, date),
                         const SizedBox(height: 12),
-                        // User details card
                         _buildUserCard(userId, userName, amount),
                       ],
                     )
@@ -202,47 +203,194 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                             child: _buildPayoutCard(payoutType, amount, date)),
                         const SizedBox(width: 12),
                         Expanded(
-                            child: _buildUserCard(userId, userName, amount)),
+                          flex: 1,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.black),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'ID: $userId',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ),
+                                // name
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.black),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Name: $userName',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Name: $userName',
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Rs.',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey.shade600),
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            amount.replaceAll('Rs', ""),
+                                            style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     ),
 
                   const SizedBox(height: 16),
-                  const Divider(thickness: 1, color: Colors.black26),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Center(
-                      child: Text(
-                        "$payoutType Details",
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(thickness: 1, color: Colors.black26),
-                  const FilterBar(),
-                  const SizedBox(height: 8),
 
-                  // Payout list
-                  if (payoutList.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                  // Table / List
+                  if (isMobile) ...[
+                    const Divider(thickness: 1, color: Colors.black26),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Center(
                         child: Text(
-                          'No payout data available',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          "$payoutType Details",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    )
-                  else
-                    Column(
-                      children: [
-                        for (int i = 0; i < payoutList.length; i++)
-                          _buildPayoutItem(
-                              payoutList[i], i == payoutList.length - 1),
-                      ],
                     ),
+                    const Divider(thickness: 1, color: Colors.black26),
+                    const FilterBar(),
+                    const SizedBox(height: 8),
+                    if (payoutList.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Center(
+                          child: Text(
+                            'No payout data available',
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                        ),
+                      )
+                    else
+                      Column(
+                        children: [
+                          for (int i = 0; i < payoutList.length; i++)
+                            _buildPayoutItem(
+                                payoutList[i], i == payoutList.length - 1),
+                        ],
+                      ),
+                  ] else ...[
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(thickness: 1, color: Colors.black26),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                "$payoutType Details",
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          const Divider(thickness: 1, color: Colors.black26),
+                          const FilterBar(),
+                          Card(
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: SizedBox(
+                              height: (_rowsPerPage * dataRowHeight) +
+                                  headerHeight +
+                                  paginationHeight,
+                              child: PaginatedDataTable(
+                                columnSpacing: 50,
+                                dataRowMinHeight: 40,
+                                columns: const [
+                                  DataColumn(label: Text("Date")),
+                                  DataColumn(label: Text("Payout Details")),
+                                  DataColumn(label: Text("Amount")),
+                                  DataColumn(label: Text("TDS")),
+                                  DataColumn(label: Text("Total Payable")),
+                                  DataColumn(label: Text("Remarks")),
+                                ],
+                                source: PayoutDataSource(getPayoutList()),
+                                rowsPerPage: _rowsPerPage,
+                                availableRowsPerPage: const [5, 10, 15, 20, 25],
+                                onRowsPerPageChanged: (value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      _rowsPerPage = value;
+                                    });
+                                  }
+                                },
+                                arrowHeadColor: Colors.blue,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
 
                   // Close button
                   const SizedBox(height: 16),
@@ -357,7 +505,8 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
           ),
           const SizedBox(height: 6),
           Container(
-            padding: const EdgeInsets.all(6),
+            width: 180,
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.black),
               borderRadius: BorderRadius.circular(4),
@@ -426,18 +575,18 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Date: ${payout.date ?? 'N/A'}",
+          Text("Date: ${payout.date}",
               style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text("Details: ${payout.message ?? 'N/A'}"),
+          Text("Details: ${payout.message}"),
           const SizedBox(height: 4),
-          Text("Amount: Rs. ${payout.amount ?? '0.00'}"),
+          Text("Amount: Rs. ${payout.amount}"),
           const SizedBox(height: 4),
-          Text("TDS: Rs. ${payout.tds ?? '0.00'}"),
+          Text("TDS: Rs. ${payout.tds}"),
           const SizedBox(height: 4),
-          Text("Total Payable: Rs. ${payout.totalPayable ?? '0.00'}"),
+          Text("Total Payable: Rs. ${payout.totalPayable}"),
           const SizedBox(height: 4),
-          Text("Remarks: ${payout.status ?? 'N/A'}"),
+          Text("Remarks: ${payout.status}"),
         ],
       ),
     );

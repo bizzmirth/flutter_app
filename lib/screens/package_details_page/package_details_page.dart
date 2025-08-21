@@ -9,6 +9,7 @@ import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PackageDetailsPage extends StatefulWidget {
   final String id;
@@ -92,6 +93,39 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
   void getShredPrefData() async {
     customerType = await SharedPrefHelper().getUserType();
     setState(() {});
+  }
+
+  Future<void> _launchWhatsApp() async {
+    const String phoneNumber = "+919112017081";
+    const String message = "Hi, I'm interested in the tour package details.";
+
+    final String whatsappUrl =
+        "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}";
+
+    try {
+      if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
+        await launchUrl(
+          Uri.parse(whatsappUrl),
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        final String fallbackUrl = "https://wa.me/$phoneNumber";
+        if (await canLaunchUrl(Uri.parse(fallbackUrl))) {
+          await launchUrl(
+            Uri.parse(fallbackUrl),
+            mode: LaunchMode.externalApplication,
+          );
+        } else {
+          ToastHelper.showErrorToast(
+              context: context,
+              title: "WhatsApp not found",
+              description: "WhatsApp is not installed in this device");
+        }
+      }
+    } catch (e) {
+      ToastHelper.showErrorToast(
+          context: context, title: "Error opening WhatsApp: $e");
+    }
   }
 
   @override
@@ -538,9 +572,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
             children: [
               FloatingActionButton(
                 tooltip: "Whatsapp",
-                onPressed: () {
-                  // Open WhatsApp chat
-                },
+                onPressed: _launchWhatsApp,
                 backgroundColor: Colors.green,
                 heroTag: "whatsapp",
                 child: FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white),

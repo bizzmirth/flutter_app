@@ -11,8 +11,8 @@ class NeoSelectBenefits extends StatefulWidget {
 
 class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
     with TickerProviderStateMixin {
-  final ConfettiController _confettiController =
-      ConfettiController(duration: const Duration(seconds: 3));
+  // final ConfettiController _confettiController =
+  //     ConfettiController(duration: const Duration(seconds: 3));
 
   late AnimationController _feeController;
   late AnimationController _couponController;
@@ -74,7 +74,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
     setState(() => _showFinalMessage = true);
 
     // Fire confetti 🎉
-    _confettiController.play();
+    // _confettiController.play();
   }
 
   @override
@@ -84,7 +84,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
     _savingsController.dispose();
     _titleController.dispose();
     _backgroundController.dispose();
-    _confettiController.dispose();
+    // _confettiController.dispose();
     super.dispose();
   }
 
@@ -140,13 +140,13 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.purple.withOpacity(0.3),
+                color: Colors.purple.withOpacity(0.7),
                 blurRadius: 20, // Reduced blur
                 spreadRadius: 3, // Reduced spread
                 offset: const Offset(0, 5), // Smaller offset
               ),
               BoxShadow(
-                color: Colors.deepPurpleAccent.withOpacity(0.3),
+                color: Colors.deepPurpleAccent.withOpacity(0.7),
                 blurRadius: 30, // Reduced blur
                 spreadRadius: 5, // Reduced spread
                 offset: const Offset(0, 10), // Smaller offset
@@ -216,15 +216,15 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                       child: Container(
                         padding: const EdgeInsets.all(12), // Reduced padding
                         decoration: BoxDecoration(
-                            color: Colors.redAccent.withOpacity(0.15),
+                            color: Colors.deepOrange.withOpacity(0.8),
                             borderRadius:
                                 BorderRadius.circular(12), // Smaller radius
-                            border: Border.all(
-                                color: Colors.redAccent.withOpacity(0.6),
-                                width: 1.0), // Thinner border
+                            // border: Border.all(
+                            //     color: Colors.white,
+                            //     width: 1.0), // Thinner border
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.redAccent.withOpacity(0.2),
+                                color: Colors.deepOrange.withOpacity(0.2),
                                 blurRadius: 8, // Reduced blur
                                 spreadRadius: 1, // Reduced spread
                                 offset: const Offset(0, 2), // Smaller offset
@@ -234,14 +234,13 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(Icons.payment,
-                                color: Colors.redAccent,
-                                size: 20), // Smaller icon
+                                color: Colors.white, size: 20), // Smaller icon
                             const SizedBox(width: 8), // Reduced spacing
                             Text("Paid ₹${_fee.toStringAsFixed(0)}",
                                 style: const TextStyle(
                                     fontSize: 18, // Smaller font
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.redAccent)),
+                                    color: Colors.white)),
                           ],
                         ),
                       ),
@@ -333,22 +332,22 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
               ),
 
               // Confetti Celebration 🎉
-              ConfettiWidget(
-                confettiController: _confettiController,
-                blastDirection: -pi / 2,
-                emissionFrequency: 0.05,
-                numberOfParticles: 20,
-                maxBlastForce: 20,
-                minBlastForce: 5,
-                gravity: 0.2,
-                colors: const [
-                  Colors.green,
-                  Colors.blue,
-                  Colors.pink,
-                  Colors.orange,
-                  Colors.purple
-                ],
-              ),
+              // ConfettiWidget(
+              //   confettiController: _confettiController,
+              //   blastDirection: -pi / 2,
+              //   emissionFrequency: 0.05,
+              //   numberOfParticles: 20,
+              //   maxBlastForce: 20,
+              //   minBlastForce: 5,
+              //   gravity: 0.2,
+              //   colors: const [
+              //     Colors.green,
+              //     Colors.blue,
+              //     Colors.pink,
+              //     Colors.orange,
+              //     Colors.purple
+              //   ],
+              // ),
             ],
           ),
         ),
