@@ -513,9 +513,9 @@ class _ProfilePageState extends State<ProfilePage>
         // Contact Fields
         Column(
           children: [
-            _buildFormField('Phone Number', controller.phone!, isTablet),
+            _buildFormField('Phone Number', controller.phone ?? "", isTablet),
             SizedBox(height: 16),
-            _buildFormField('Email Address', controller.email!, isTablet),
+            _buildFormField('Email Address', controller.email ?? "", isTablet),
           ],
         ),
         SizedBox(height: 20),

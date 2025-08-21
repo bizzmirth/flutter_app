@@ -15,6 +15,9 @@ class AppUrls {
   static String get login => "$baseUrl/login.php";
   static String get getAllUserTypes => "$baseUrl/user_type";
 
+  // ==================== PROFILE PAGE ENDPOINTS ====================
+  static String get getPersonalDetails => "$baseUrl/customers/profile_page.php";
+
   // ==================== CUSTOMER DASHBOARD ENDPOINTS ====================
   static String get registeredCustomers =>
       "$baseUrl/customers/customers.php?action=registered_cust"; // to get the registered customers

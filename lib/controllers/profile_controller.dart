@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:bizzmirth_app/models/coupons_data_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -76,8 +77,7 @@ class ProfileController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      const String fullUrl =
-          "https://testca.uniqbizz.com/api/customers/profile_page.php";
+      final String fullUrl = AppUrls.getPersonalDetails;
 
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final Map<String, dynamic> body = {"userId": userId, "userType": "10"};
