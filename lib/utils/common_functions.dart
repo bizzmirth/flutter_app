@@ -69,3 +69,27 @@ String capitalize(String input) {
   if (input.isEmpty) return '';
   return input[0].toUpperCase() + input.substring(1).toLowerCase();
 }
+
+// this function takes tour days as in put and return the correct days and nights. Eg. input 05. output: 5 days 4 nights
+String formatTourDuration(String? tourDays) {
+  if (tourDays == null || tourDays.isEmpty) return "N/A";
+
+  // parse and remove leading zeros
+  final int days = int.tryParse(tourDays) ?? 0;
+  if (days <= 1) return "N/A"; // since 1 will never come, but just in case
+
+  final int nights = days - 1;
+  return "$days Days $nights Nights";
+}
+
+// helper to show the data in the points stype
+List<String> formatItineraryText(String? text) {
+  if (text == null || text.isEmpty) return [];
+
+  return text
+      .split('.') // split by period
+      .map((e) => e.trim())
+      .where((e) => e.isNotEmpty)
+      .map((e) => "- $e.") // add `-` at start & keep period
+      .toList();
+}
