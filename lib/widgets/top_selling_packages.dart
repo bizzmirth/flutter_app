@@ -76,9 +76,9 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
         builder: (context, controller, child) {
       final bestDeals = controller.bestDealPackages;
 
-      Logger.success("My top trips are $bestDeals");
-      Logger.info("Trip count: ${bestDeals.length}");
-      Logger.info("Controller loading state: ${controller.isLoading}");
+      // Logger.success("My top trips are $bestDeals");
+      // Logger.info("Trip count: ${bestDeals.length}");
+      // Logger.info("Controller loading state: ${controller.isLoading}");
 
       return Padding(
         padding: const EdgeInsets.all(16.0),

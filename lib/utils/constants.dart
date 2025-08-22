@@ -32,23 +32,28 @@ Widget divider() {
 }
 
 // Custom Input Field
-Widget customInputField(IconData icon, String label, {int maxLines = 1}) {
-  return TextField(
+Widget customInputField(
+    IconData icon, String label, TextEditingController controller,
+    {int maxLines = 1,
+    String? Function(String?)? validator,
+    GlobalKey<FormFieldState>? fieldKey}) {
+  return TextFormField(
     maxLines: maxLines,
+    controller: controller,
     style: TextStyle(color: Colors.white),
+    key: fieldKey,
     decoration: InputDecoration(
       labelText: label,
-      // ignore: deprecated_member_use
       labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
       prefixIcon: Icon(icon, color: Colors.white),
       filled: true,
-      // ignore: deprecated_member_use
       fillColor: Colors.white.withOpacity(0.2),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
     ),
+    validator: validator,
   );
 }
 

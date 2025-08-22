@@ -58,9 +58,9 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations> {
       builder: (context, controller, child) {
         final myTrips = controller.topTourPackages;
 
-        Logger.success("My top trips are $myTrips");
-        Logger.info("Trip count: ${myTrips.length}");
-        Logger.info("Controller loading state: ${controller.isLoading}");
+        // Logger.success("My top trips are $myTrips");
+        // Logger.info("Trip count: ${myTrips.length}");
+        // Logger.info("Controller loading state: ${controller.isLoading}");
 
         return Padding(
           padding: const EdgeInsets.all(16.0),
