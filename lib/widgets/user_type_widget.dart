@@ -4,7 +4,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
 class PremiumSelectCard extends StatelessWidget {
-  const PremiumSelectCard({super.key});
+  final String title;
+  final String description;
+  final String firstButtonText;
+  final String secondButtonText;
+
+  const PremiumSelectCard({
+    super.key,
+    required this.title,
+    required this.description,
+    this.firstButtonText = "Premium Select Deals",
+    this.secondButtonText = "View Your Packages",
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +92,7 @@ class PremiumSelectCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              " Neo Select Customer!",
+                              title,
                               style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -90,7 +101,7 @@ class PremiumSelectCard extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              "Use points and vouchers to unlock premium & standard travel experiences.",
+                              description,
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 color: Colors.grey[700],
@@ -103,7 +114,7 @@ class PremiumSelectCard extends StatelessWidget {
                                 ElevatedButton.icon(
                                   onPressed: () {},
                                   icon: const Icon(Icons.local_offer, size: 16),
-                                  label: const Text("Premium Select Deals"),
+                                  label: Text(firstButtonText),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.orange,
                                     foregroundColor: Colors.white,
@@ -120,7 +131,7 @@ class PremiumSelectCard extends StatelessWidget {
                                   onPressed: () {},
                                   icon:
                                       const Icon(Icons.card_giftcard, size: 16),
-                                  label: const Text("View Your Packages"),
+                                  label: Text(secondButtonText),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.deepOrange,
                                     foregroundColor: Colors.white,
@@ -232,12 +243,14 @@ class PremiumSelectCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: Text(
-                              "Neo Select Customer!",
-                              style: GoogleFonts.poppins(
-                                fontSize: isSmallPhone ? 16 : 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.orange[800],
+                            child: Center(
+                              child: Text(
+                                "$title            ",
+                                style: GoogleFonts.poppins(
+                                  fontSize: isSmallPhone ? 16 : 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange[800],
+                                ),
                               ),
                             ),
                           ),
@@ -248,7 +261,7 @@ class PremiumSelectCard extends StatelessWidget {
 
                       // Description text
                       Text(
-                        "Use points and vouchers to unlock premium & standard travel experiences.",
+                        description,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: isSmallPhone ? 13 : 14,
@@ -297,7 +310,7 @@ class PremiumSelectCard extends StatelessWidget {
                             child: ElevatedButton.icon(
                               onPressed: () {},
                               icon: const Icon(Icons.local_offer, size: 16),
-                              label: const Text("Premium Select Deals"),
+                              label: Text(firstButtonText),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.orange,
                                 foregroundColor: Colors.white,
@@ -316,7 +329,7 @@ class PremiumSelectCard extends StatelessWidget {
                             child: ElevatedButton.icon(
                               onPressed: () {},
                               icon: const Icon(Icons.card_giftcard, size: 16),
-                              label: const Text("View Your Packages"),
+                              label: Text(secondButtonText),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.deepOrange,
                                 foregroundColor: Colors.white,

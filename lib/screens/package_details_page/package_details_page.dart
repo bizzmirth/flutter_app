@@ -70,6 +70,13 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getPackageDetails();
       getShredPrefData();
+
+      final pictures =
+          PackageDetailsController().packageResponse!.packagePictures;
+      for (var picture in pictures) {
+        final url = picture.getFullImageUrl();
+        precacheImage(NetworkImage(url), context); // decode & cache
+      }
     });
   }
 
@@ -273,7 +280,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                                 .join(", "),
                           ),
                           InfoRow(
-                            icon: Icons.food_bank,
+                            icon: Icons.restaurant,
                             iconColor: Colors.teal,
                             text:
                                 (controller.packageResponse?.packageMeals ?? [])
@@ -463,9 +470,8 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                                   bottom: Radius.circular(12),
                                 ),
                               ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   RichText(
                                     text: TextSpan(
@@ -585,6 +591,32 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               ],
             ),
           ),
+
+          // to be used to define behaviour per every user type
+
+          // if (customerType != 'Customer')
+          //   Positioned(
+          //     bottom: 20, // Adjust as needed
+          //     left: MediaQuery.of(context).size.width * 0.25,
+          //     right: MediaQuery.of(context).size.width * 0.25,
+          //     child: ElevatedButton(
+          //       onPressed: () {
+          //         showBookingPopup(context);
+          //       },
+          //       style: ElevatedButton.styleFrom(
+          //         padding: EdgeInsets.symmetric(vertical: 16),
+          //         backgroundColor: const Color.fromARGB(255, 46, 122, 244),
+          //         shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(30),
+          //         ),
+          //       ),
+          //       child: Text(
+          //         "Enquire or Book Now",
+          //         style: TextStyle(fontSize: 16, color: Colors.white),
+          //       ),
+          //     ),
+          //   ),
+
           if (customerType != 'Customer')
             Positioned(
               bottom: 20, // Adjust as needed
@@ -592,17 +624,20 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               right: MediaQuery.of(context).size.width * 0.25,
               child: ElevatedButton(
                 onPressed: () {
-                  showBookingPopup(context);
+                  ToastHelper.showContactToast(
+                    context: context,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: const Color.fromARGB(255, 46, 122, 244),
+                  backgroundColor: const Color.fromARGB(
+                      255, 46, 122, 244), // Orange color for customer
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
                 child: Text(
-                  "Enquire or Book Now",
+                  "Inquire Now For Best Deals",
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),

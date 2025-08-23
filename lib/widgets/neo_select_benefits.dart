@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:confetti/confetti.dart';
-import 'dart:math';
 
 class NeoSelectBenefits extends StatefulWidget {
-  const NeoSelectBenefits({super.key});
+  final String type;
+  final int amount;
+  final int numberOfCoupons;
+  final int valueCoupons;
+  final int saveAmt;
+
+  const NeoSelectBenefits({
+    super.key,
+    required this.type,
+    required this.amount,
+    required this.numberOfCoupons,
+    required this.valueCoupons,
+    required this.saveAmt,
+  });
 
   @override
   State<NeoSelectBenefits> createState() => _NeoSelectBenefitsState();
@@ -49,7 +60,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
     // Step 1: Animate Fee
     await Future.delayed(const Duration(milliseconds: 500));
     _feeController.forward();
-    for (int i = 0; i <= 11000; i += 550) {
+    for (int i = 0; i <= widget.amount; i += (widget.amount / 20).ceil()) {
       await Future.delayed(const Duration(milliseconds: 20));
       setState(() => _fee = i);
     }
@@ -57,7 +68,9 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
     // Step 2: Animate Coupons
     await Future.delayed(const Duration(milliseconds: 300));
     _couponController.forward();
-    for (int i = 0; i <= 15000; i += 750) {
+    for (int i = 0;
+        i <= widget.valueCoupons;
+        i += (widget.valueCoupons / 20).ceil()) {
       await Future.delayed(const Duration(milliseconds: 25));
       setState(() => _coupons = i);
     }
@@ -65,7 +78,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
     // Step 3: Animate Savings
     await Future.delayed(const Duration(milliseconds: 400));
     _savingsController.forward();
-    for (int i = 0; i <= 4000; i += 200) {
+    for (int i = 0; i <= widget.saveAmt; i += (widget.saveAmt / 20).ceil()) {
       await Future.delayed(const Duration(milliseconds: 20));
       setState(() => _savings = i);
     }
@@ -185,7 +198,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                       curve: Curves.elasticOut,
                     ),
                     child: Text(
-                        "🎉 Congratulations on becoming a Neo Select Customer 🎉",
+                        "🎉 Congratulations on becoming a ${widget.type} Customer 🎉",
                         textAlign: TextAlign.center,
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -261,8 +274,8 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                         const SizedBox(height: 10), // Reduced spacing
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(
-                              5, (index) => _buildCouponCard(index)),
+                          children: List.generate(widget.numberOfCoupons,
+                              (index) => _buildCouponCard(index)),
                         ),
                         const SizedBox(height: 12), // Reduced spacing
                         Text(
@@ -317,7 +330,8 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                               Padding(
                                 padding: const EdgeInsets.only(
                                     top: 8), // Reduced padding
-                                child: Text("That's ₹4000 in benefits!",
+                                child: Text(
+                                    "That's ₹${widget.saveAmt} in benefits!",
                                     style: TextStyle(
                                         fontSize: 14, // Smaller font
                                         fontWeight: FontWeight.w500,

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/book_now_page/book_now_page.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
@@ -1181,7 +1182,199 @@ String formatDate(String? date) {
   }
 }
 
-Widget buildTripOrRefundNote(int usedCoupons) {
+Widget buildTripOrRefundNote(
+    {required String userType, required BuildContext context}) {
+  // For "premium select" and "neo select", show simple "Refer and earn" message
+  if (userType == "premium select" || userType == "neo select") {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade50, Colors.white],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.blueAccent.withOpacity(0.4)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.card_giftcard, color: Colors.blueAccent, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Refer & Earn Exclusive Rewards 🎁',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.blue.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text:
+                              'Share the premium experience with your network and ',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                        TextSpan(
+                          text: 'get rewarded for every successful referral!',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '💰 ',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        TextSpan(
+                          text: 'Instant Cash Rewards: ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.green.shade700,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'Receive direct commission in your wallet for each referral that joins our premium community',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '✈️ ',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        TextSpan(
+                          text: 'Travel Benefits: ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'Exclusive upgrades, lounge access, and special travel perks',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '🎫 ',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        TextSpan(
+                          text: 'Free Trip Opportunities: ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'Earn complimentary travel experiences with every milestone you achieve',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Get started by adding your first referral now!',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.blueGrey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Add your first referral to start earning rewards today!',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.blueGrey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddReferralCustomer(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 4,
+                        shadowColor: Colors.blueAccent.withOpacity(0.3),
+                      ),
+                      child: Text(
+                        'Add Referral',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // For "premium" users, show the original detailed content
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
     child: Container(
@@ -1205,35 +1398,60 @@ Widget buildTripOrRefundNote(int usedCoupons) {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline, color: Colors.blueAccent),
+          Icon(Icons.airplane_ticket, color: Colors.blueAccent, size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Offer Outcome:',
+                  'Premium Membership Benefits ✨',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.blue.shade800,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text:
+                            'Your premium membership comes with exclusive travel opportunities ',
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                      TextSpan(
+                        text: 'and guaranteed value protection!',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blue.shade800,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 10),
                 Text.rich(
                   TextSpan(
                     children: [
-                      const TextSpan(
-                        text: '• If all 3 coupons are utilized: ',
+                      TextSpan(
+                        text: '🎯 ',
                         style: TextStyle(fontSize: 16),
                       ),
                       TextSpan(
-                        text: 'Europe Trip Unlocked 🎉',
+                        text: 'Coupon Utilization Reward: ',
                         style: TextStyle(
-                          fontWeight: FontWeight.normal,
                           fontSize: 16,
-                          color: Colors.black87,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.green.shade700,
                         ),
+                      ),
+                      TextSpan(
+                        text:
+                            'Use all 3 coupons to unlock an exclusive Europe Trip experience 🎉',
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
                       ),
                     ],
                   ),
@@ -1242,20 +1460,57 @@ Widget buildTripOrRefundNote(int usedCoupons) {
                 Text.rich(
                   TextSpan(
                     children: [
-                      const TextSpan(
-                        text:
-                            '• If the coupons aren’t utilized in the next 3 years: ',
+                      TextSpan(
+                        text: '🛡️ ',
                         style: TextStyle(fontSize: 16),
                       ),
                       TextSpan(
-                        text: 'Refund of ₹30,000 + ₹10,000 Loyalty Rewards 💸',
+                        text: 'Value Protection Guarantee: ',
                         style: TextStyle(
-                          fontWeight: FontWeight.normal,
                           fontSize: 16,
-                          color: Colors.black87,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blue.shade800,
                         ),
                       ),
+                      TextSpan(
+                        text:
+                            'If unused within 3 years, receive ₹30,000 refund + ₹10,000 loyalty bonus 💸',
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
                     ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '⏰ ',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      TextSpan(
+                        text: 'Flexible Timeline: ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blue.shade800,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            '3-year window to utilize your coupons with no pressure',
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Your investment is protected while you enjoy premium travel opportunities!',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.blueGrey.shade600,
                   ),
                 ),
               ],

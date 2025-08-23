@@ -305,6 +305,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = MediaQuery.of(context).size.width > 600; // breakpoint
     final profileController =
         Provider.of<ProfileController>(context, listen: false);
     return PopScope(
@@ -519,7 +520,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            PremiumSelectCard(),
+                            PremiumSelectCard(
+                              title: "Neo Select Customer",
+                              description:
+                                  "Use points and vouchers to unlock premium & standard travel experiences.",
+                              firstButtonText: "Premium Select Deals",
+                              secondButtonText: "View Your Packages",
+                            ),
                             SizedBox(height: 20),
                             CustomAnimatedSummaryCards(
                               cardData: [
@@ -559,14 +566,21 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             // ),
                             // SizedBox(height: 20),
 
-                            const NeoSelectBenefits(),
+                            NeoSelectBenefits(
+                              type: "Neo Select",
+                              amount: 11000,
+                              numberOfCoupons: 5,
+                              valueCoupons: 15000,
+                              saveAmt: 4000,
+                            ),
                             SizedBox(height: 16),
                             ReferralTrackerCard(
                               totalSteps: 10,
                               currentStep: 10,
                               progressColor: Colors.green,
                             ),
-                            buildTripOrRefundNote(1),
+                            buildTripOrRefundNote(
+                                userType: "premium select", context: context),
                             SizedBox(height: 20),
                             if (_isDashboardInitialized)
                               ImprovedLineChart(
@@ -618,55 +632,313 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    child: SizedBox(
-                                      height: (_rowsPerPage * dataRowHeight) +
-                                          headerHeight +
-                                          paginationHeight,
-                                      child: controller.isLoading
-                                          ? Center(
-                                              child:
-                                                  CircularProgressIndicator())
-                                          : PaginatedDataTable(
-                                              columns: [
-                                                DataColumn(label: Text("Rank")),
-                                                DataColumn(
-                                                    label: Text(
-                                                        "Profile Picture")),
-                                                DataColumn(
-                                                    label: Text("Full Name")),
-                                                DataColumn(
-                                                    label: Text("Date Reg")),
-                                                DataColumn(
-                                                    label:
-                                                        Text("Total CU Ref")),
-                                                DataColumn(
-                                                    label: Text("Status")),
-                                                DataColumn(
-                                                    label: Text(
-                                                        "Active/Inactive")),
-                                              ],
-                                              source: CustTopReferralCustomers(
-                                                  customers: controller
-                                                      .topCustomerRefererals),
-                                              rowsPerPage: _rowsPerPage,
-                                              availableRowsPerPage: [
-                                                5,
-                                                10,
-                                                15,
-                                                20,
-                                                25
-                                              ],
-                                              onRowsPerPageChanged: (value) {
-                                                if (value != null) {
-                                                  setState(() {
-                                                    _rowsPerPage = value;
-                                                  });
-                                                }
-                                              },
-                                              arrowHeadColor: Colors.blue,
-                                            ),
-                                    ),
-                                  )
+                                    child: isTablet
+                                        ? SizedBox(
+                                            height:
+                                                (_rowsPerPage * dataRowHeight) +
+                                                    headerHeight +
+                                                    paginationHeight,
+                                            child: controller.isLoading
+                                                ? Center(
+                                                    child:
+                                                        CircularProgressIndicator())
+                                                : PaginatedDataTable(
+                                                    columns: [
+                                                      DataColumn(
+                                                          label: Text("Rank")),
+                                                      DataColumn(
+                                                          label: Text(
+                                                              "Profile Picture")),
+                                                      DataColumn(
+                                                          label: Text(
+                                                              "Full Name")),
+                                                      DataColumn(
+                                                          label:
+                                                              Text("Date Reg")),
+                                                      DataColumn(
+                                                          label: Text(
+                                                              "Total CU Ref")),
+                                                      DataColumn(
+                                                          label:
+                                                              Text("Status")),
+                                                      DataColumn(
+                                                          label: Text(
+                                                              "Active/Inactive")),
+                                                    ],
+                                                    source: CustTopReferralCustomers(
+                                                        customers: controller
+                                                            .topCustomerRefererals),
+                                                    rowsPerPage: _rowsPerPage,
+                                                    availableRowsPerPage: [
+                                                      5,
+                                                      10,
+                                                      15,
+                                                      20,
+                                                      25
+                                                    ],
+                                                    onRowsPerPageChanged:
+                                                        (value) {
+                                                      if (value != null) {
+                                                        setState(() {
+                                                          _rowsPerPage = value;
+                                                        });
+                                                      }
+                                                    },
+                                                    arrowHeadColor: Colors.blue,
+                                                  ),
+                                          )
+                                        : Column(
+                                            children: [
+                                              ListView.builder(
+                                                shrinkWrap: true,
+                                                physics:
+                                                    const NeverScrollableScrollPhysics(),
+                                                itemCount: controller
+                                                    .topCustomerRefererals
+                                                    .length,
+                                                itemBuilder: (context, index) {
+                                                  final customer = controller
+                                                          .topCustomerRefererals[
+                                                      index];
+                                                  return Container(
+                                                    margin: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 6),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.grey
+                                                              .withOpacity(0.1),
+                                                          blurRadius: 4,
+                                                          offset: Offset(0, 2),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16.0),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          // Header with rank and profile
+                                                          Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              // Rank badge
+                                                              Container(
+                                                                width: 36,
+                                                                height: 36,
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: (index +
+                                                                              1) <=
+                                                                          3
+                                                                      ? Colors
+                                                                          .amber
+                                                                          .withOpacity(
+                                                                              0.2)
+                                                                      : Colors
+                                                                          .grey
+                                                                          .withOpacity(
+                                                                              0.1),
+                                                                  shape: BoxShape
+                                                                      .circle,
+                                                                  border: Border
+                                                                      .all(
+                                                                    color: (index +
+                                                                                1) <=
+                                                                            3
+                                                                        ? Colors
+                                                                            .amber
+                                                                        : Colors
+                                                                            .grey,
+                                                                    width: 1.5,
+                                                                  ),
+                                                                ),
+                                                                child: Text(
+                                                                  '${index + 1}',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        16,
+                                                                    color: (index +
+                                                                                1) <=
+                                                                            3
+                                                                        ? Colors.amber[
+                                                                            800]
+                                                                        : Colors
+                                                                            .grey[700],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                  width: 12),
+
+                                                              // Profile picture
+                                                              CircleAvatar(
+                                                                radius: 20,
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .transparent,
+                                                                child: getProfileImage(
+                                                                    customer
+                                                                        .profilePic),
+                                                              ),
+                                                              SizedBox(
+                                                                  width: 12),
+
+                                                              // Name and date
+                                                              Expanded(
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      customer.name ??
+                                                                          'N/A',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.w600,
+                                                                        fontSize:
+                                                                            16,
+                                                                      ),
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                    ),
+                                                                    SizedBox(
+                                                                        height:
+                                                                            4),
+                                                                    Text(
+                                                                      customer.registeredDate ??
+                                                                          'N/A',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .grey[600],
+                                                                        fontSize:
+                                                                            12,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+
+                                                          SizedBox(height: 16),
+
+                                                          // Stats row
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceAround,
+                                                            children: [
+                                                              // Total referrals
+                                                              _buildStatItem(
+                                                                Icons.people,
+                                                                'Total',
+                                                                '${customer.totalReferals ?? 0}',
+                                                                Colors.blue,
+                                                              ),
+
+                                                              // Active referrals
+                                                              _buildStatItem(
+                                                                Icons
+                                                                    .check_circle,
+                                                                'Active',
+                                                                '${customer.activeReferrals ?? 0}',
+                                                                Colors.green,
+                                                              ),
+
+                                                              // Inactive referrals
+                                                              _buildStatItem(
+                                                                Icons.cancel,
+                                                                'Inactive',
+                                                                '${customer.inActiveReferrals ?? 0}',
+                                                                Colors.red,
+                                                              ),
+                                                            ],
+                                                          ),
+
+                                                          SizedBox(height: 12),
+
+                                                          // Status badge
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .centerRight,
+                                                            child: Container(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
+                                                                      horizontal:
+                                                                          12,
+                                                                      vertical:
+                                                                          6),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: _getStatusColor(
+                                                                        customer
+                                                                            .status!)
+                                                                    .withOpacity(
+                                                                        0.1),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            16),
+                                                                border:
+                                                                    Border.all(
+                                                                  color: _getStatusColor(
+                                                                          customer
+                                                                              .status!)
+                                                                      .withOpacity(
+                                                                          0.3),
+                                                                  width: 1,
+                                                                ),
+                                                              ),
+                                                              child: Text(
+                                                                _getStatusText(
+                                                                    customer
+                                                                        .status!),
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: _getStatusColor(
+                                                                      customer
+                                                                          .status!),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -697,5 +969,101 @@ class _CDashboardPageState extends State<CDashboardPage> {
               ),
       ),
     );
+  }
+
+  Widget _buildStatItem(
+      IconData icon, String label, String value, Color color) {
+    return Column(
+      children: [
+        Icon(icon, size: 20, color: color),
+        SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: color,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.grey[600],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getProfileImage(String? profilePicture) {
+    const double imageSize = 40;
+
+    if (profilePicture == null || profilePicture.isEmpty) {
+      return Container(
+        width: imageSize,
+        height: imageSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Image.asset(
+          "assets/default_profile.png",
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    final String imageUrl;
+    if (profilePicture.contains('https://testca.uniqbizz.com/uploading/')) {
+      imageUrl = profilePicture;
+    } else {
+      final newpath = extractPathSegment(profilePicture, 'profile_pic/');
+      imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+    }
+
+    Logger.success("Final image URL: $imageUrl");
+
+    return Container(
+      width: imageSize,
+      height: imageSize,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(strokeWidth: 1.5),
+        ),
+        errorWidget: (context, url, error) => Image.asset(
+          "assets/default_profile.png",
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  String _getStatusText(String status) {
+    switch (status) {
+      case '1':
+        return 'Active';
+      case '3':
+        return 'Inactive';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case '1':
+        return Colors.green;
+      case '3':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 }

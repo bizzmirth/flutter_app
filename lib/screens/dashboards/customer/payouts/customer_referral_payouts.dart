@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
 import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
@@ -116,14 +117,21 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
         final isMobile = MediaQuery.of(context).size.width < 600;
 
         return Dialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 10.0 : 40.0,
+            vertical: 24.0,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           child: SingleChildScrollView(
             child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.95,
-              ),
+              width: isMobile
+                  ? MediaQuery.of(context).size.width *
+                      0.95 // Keep original value
+                  : MediaQuery.of(context).size.width * 0.9,
+              height:
+                  isMobile ? null : MediaQuery.of(context).size.height * 0.8,
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -447,6 +455,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = MediaQuery.of(context).size.width > 600; // breakpoint
     return Consumer<CustReferralPayoutController>(
       builder: (context, controller, child) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -563,35 +572,99 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: SizedBox(
-                            height: (_rowsPerPage * dataRowHeight) +
-                                headerHeight +
-                                paginationHeight,
-                            child: PaginatedDataTable(
-                              columnSpacing: 50,
-                              dataRowMinHeight: 40,
-                              columns: [
-                                DataColumn(label: Text("Date")),
-                                DataColumn(label: Text("Payout Details")),
-                                DataColumn(label: Text("Product Payout")),
-                                DataColumn(label: Text("Total")),
-                                DataColumn(label: Text("TDS")),
-                                DataColumn(label: Text("Remarks")),
-                              ],
-                              source: CustReferenceAllPayoutDataSource(
-                                  controller.allPayouts),
-                              rowsPerPage: _rowsPerPage,
-                              availableRowsPerPage: [5, 10, 15, 20, 25],
-                              onRowsPerPageChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _rowsPerPage = value;
-                                  });
-                                }
-                              },
-                              arrowHeadColor: Colors.blue,
-                            ),
-                          ),
+                          child: isTablet
+                              ? SizedBox(
+                                  height: (_rowsPerPage * dataRowHeight) +
+                                      headerHeight +
+                                      paginationHeight,
+                                  child: PaginatedDataTable(
+                                    columnSpacing: 50,
+                                    dataRowMinHeight: 40,
+                                    columns: [
+                                      DataColumn(label: Text("Date")),
+                                      DataColumn(label: Text("Payout Details")),
+                                      DataColumn(label: Text("Product Payout")),
+                                      DataColumn(label: Text("Total")),
+                                      DataColumn(label: Text("TDS")),
+                                      DataColumn(label: Text("Remarks")),
+                                    ],
+                                    source: CustReferenceAllPayoutDataSource(
+                                        controller.allPayouts),
+                                    rowsPerPage: _rowsPerPage,
+                                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                                    onRowsPerPageChanged: (value) {
+                                      if (value != null) {
+                                        setState(() {
+                                          _rowsPerPage = value;
+                                        });
+                                      }
+                                    },
+                                    arrowHeadColor: Colors.blue,
+                                  ),
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: controller.allPayouts.length,
+                                  itemBuilder: (context, index) {
+                                    final payout = controller.allPayouts[index];
+                                    return Card(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 6),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            _buildRow("Date",
+                                                formatDate(payout.date)),
+                                            _buildRow("Details",
+                                                payout.payoutDetails),
+                                            _buildRow(
+                                                "Total", "₹${payout.amount}"),
+                                            _buildRow(
+                                                "TDS",
+                                                payout.tds == "NA"
+                                                    ? "N/A"
+                                                    : "₹${payout.tds}"),
+                                            _buildRow("Payable",
+                                                "₹${payout.totalPayable}"),
+                                            Row(
+                                              children: [
+                                                const Text(
+                                                  "Status: ",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
+                                                  decoration: BoxDecoration(
+                                                    color: _getStatusColor(
+                                                        payout.status),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            4),
+                                                  ),
+                                                  child: Text(
+                                                    payout.status,
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                         ),
                       ],
                     ),
@@ -600,6 +673,40 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
         );
       },
     );
+  }
+
+  Widget _buildRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        children: [
+          Text(
+            "$label: ",
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case "credited":
+        return Colors.green;
+      case "pending":
+        return Colors.orange;
+      case "approved":
+        return Colors.blue;
+      case "processing":
+        return Colors.purple;
+      case "completed":
+        return Colors.green;
+      case "cancelled":
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 
   Widget payoutCard(String title, String date, String amount, String status,
