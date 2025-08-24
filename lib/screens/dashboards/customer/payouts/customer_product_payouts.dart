@@ -148,7 +148,6 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
         final isMobile = MediaQuery.of(context).size.width < 600;
 
         return Dialog(
-          // This is the key change - reduce the horizontal padding on mobile
           insetPadding: EdgeInsets.symmetric(
             horizontal: isMobile ? 10.0 : 40.0,
             vertical: 24.0,
@@ -159,8 +158,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
           child: SingleChildScrollView(
             child: Container(
               width: isMobile
-                  ? MediaQuery.of(context).size.width *
-                      0.95 // Keep original value
+                  ? MediaQuery.of(context).size.width * 0.95
                   : MediaQuery.of(context).size.width * 0.9,
               height:
                   isMobile ? null : MediaQuery.of(context).size.height * 0.8,
@@ -239,7 +237,6 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                     const SizedBox(width: 8),
                                   ],
                                 ),
-                                // name
                                 SizedBox(height: 8),
                                 Row(
                                   children: [
@@ -369,29 +366,50 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                               height: (_rowsPerPage * dataRowHeight) +
                                   headerHeight +
                                   paginationHeight,
-                              child: PaginatedDataTable(
-                                columnSpacing: 50,
-                                dataRowMinHeight: 40,
-                                columns: const [
-                                  DataColumn(label: Text("Date")),
-                                  DataColumn(label: Text("Payout Details")),
-                                  DataColumn(label: Text("Amount")),
-                                  DataColumn(label: Text("TDS")),
-                                  DataColumn(label: Text("Total Payable")),
-                                  DataColumn(label: Text("Remarks")),
-                                ],
-                                source: PayoutDataSource(getPayoutList()),
-                                rowsPerPage: _rowsPerPage,
-                                availableRowsPerPage: const [5, 10, 15, 20, 25],
-                                onRowsPerPageChanged: (value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      _rowsPerPage = value;
-                                    });
-                                  }
-                                },
-                                arrowHeadColor: Colors.blue,
-                              ),
+                              child: payoutList.isEmpty
+                                  ? Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Text(
+                                          'No payout data available',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : PaginatedDataTable(
+                                      columnSpacing: 50,
+                                      dataRowMinHeight: 40,
+                                      columns: const [
+                                        DataColumn(label: Text("Date")),
+                                        DataColumn(
+                                            label: Text("Payout Details")),
+                                        DataColumn(label: Text("Amount")),
+                                        DataColumn(label: Text("TDS")),
+                                        DataColumn(
+                                            label: Text("Total Payable")),
+                                        DataColumn(label: Text("Remarks")),
+                                      ],
+                                      source: PayoutDataSource(payoutList),
+                                      rowsPerPage: _rowsPerPage,
+                                      availableRowsPerPage: const [
+                                        5,
+                                        10,
+                                        15,
+                                        20,
+                                        25
+                                      ],
+                                      onRowsPerPageChanged: (value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            _rowsPerPage = value;
+                                          });
+                                        }
+                                      },
+                                      arrowHeadColor: Colors.blue,
+                                    ),
                             ),
                           ),
                         ],
@@ -425,7 +443,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
     );
   }
 
-// Helper methods for building UI components
+  // Helper methods for building UI components
   Widget _buildPayoutCard(String payoutType, String amount, String date) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -598,7 +616,6 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
             children: [
               const Text(
                 "Remarks: ",
-                // style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -624,7 +641,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isTablet = MediaQuery.of(context).size.width > 600; // breakpoint
+    final isTablet = MediaQuery.of(context).size.width > 600;
 
     return Consumer<CustProductPayoutController>(
       builder: (context, controller, child) {
@@ -730,108 +747,219 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                         Divider(thickness: 1, color: Colors.black26),
                         FilterBar(),
                         isTablet
-                            ? SizedBox(
-                                height: (_rowsPerPage * dataRowHeight) +
-                                    headerHeight +
-                                    paginationHeight,
-                                child: PaginatedDataTable(
-                                  columnSpacing: 50,
-                                  dataRowMinHeight: 40,
-                                  columns: const [
-                                    DataColumn(label: Text("Date")),
-                                    DataColumn(label: Text("Payout Details")),
-                                    DataColumn(label: Text("Total")),
-                                    DataColumn(label: Text("TDS")),
-                                    DataColumn(label: Text("Total Payable")),
-                                    DataColumn(label: Text("Remarks")),
-                                  ],
-                                  source: CustProductAllPayoutDataSource(
-                                      controller.allPayouts),
-                                  rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
-                                  onRowsPerPageChanged: (value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        _rowsPerPage = value;
-                                      });
-                                    }
-                                  },
-                                  arrowHeadColor: Colors.blue,
-                                ),
-                              )
-                            : ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: controller.allPayouts.length,
-                                itemBuilder: (context, index) {
-                                  final payout = controller.allPayouts[index];
-                                  return Card(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 6),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          _buildRow(
-                                              "Date", formatDate(payout.date)),
-                                          _buildRow("Details", payout.message),
-                                          _buildRow(
-                                              "Total", "₹${payout.amount}"),
-                                          _buildRow(
-                                              "TDS",
-                                              payout.tds == "NA"
-                                                  ? "N/A"
-                                                  : "₹${payout.tds}"),
-                                          _buildRow("Payable",
-                                              "₹${payout.totalPayable}"),
-                                          Row(
-                                            children: [
-                                              const Text(
-                                                "Status: ",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 4),
-                                                decoration: BoxDecoration(
-                                                  color: _getStatusColor(
-                                                      payout.status),
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                ),
-                                                child: Text(
-                                                  payout.status,
-                                                  style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 12),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
+                            ? _buildDesktopListView(controller)
+                            : _buildMobileListView(controller),
                       ],
                     ),
                   ),
                 ),
         );
       },
+    );
+  }
+
+  // Improved Desktop ListView with PaginatedDataTable
+  Widget _buildDesktopListView(CustProductPayoutController controller) {
+    return SizedBox(
+      height: (_rowsPerPage * dataRowHeight) + headerHeight + paginationHeight,
+      child: controller.allPayouts.isEmpty
+          ? _buildEmptyState()
+          : Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: PaginatedDataTable(
+                columnSpacing: 50,
+                dataRowMinHeight: 40,
+                dataRowMaxHeight: 60,
+                headingRowHeight: 60,
+                columns: const [
+                  DataColumn(
+                      label: Text("Date",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("Payout Details",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("Total",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("TDS",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("Total Payable",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("Remarks",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                ],
+                source: CustProductAllPayoutDataSource(controller.allPayouts),
+                rowsPerPage: _rowsPerPage,
+                availableRowsPerPage: const [5, 10, 15, 20, 25],
+                onRowsPerPageChanged: (value) {
+                  if (value != null) {
+                    setState(() => _rowsPerPage = value);
+                  }
+                },
+                arrowHeadColor: Colors.blue,
+                header: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text('All Payout Records',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ),
+    );
+  }
+
+  // Improved Mobile ListView with better performance
+  Widget _buildMobileListView(CustProductPayoutController controller) {
+    if (controller.allPayouts.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 10,
+        ),
+        // Optimized ListView with builder and separators
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: controller.allPayouts.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            final payout = controller.allPayouts[index];
+            return _buildPayoutCardMobile(payout);
+          },
+        ),
+      ],
+    );
+  }
+
+  // Improved mobile payout card with better layout
+  Widget _buildPayoutCardMobile(CustProductPayoutModel payout) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row with date and status
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  formatDate(payout.date),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.blueGrey,
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(payout.status),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    payout.status.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const Divider(height: 20, thickness: 1),
+
+            // Payout details in a compact grid layout
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              childAspectRatio: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              children: [
+                _buildDetailItem("Details", payout.message),
+                _buildDetailItem("Amount", "₹${payout.amount}"),
+                _buildDetailItem(
+                    "TDS", payout.tds == "NA" ? "N/A" : "₹${payout.tds}"),
+                _buildDetailItem("Payable", "₹${payout.totalPayable}"),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper widget for detail items
+  Widget _buildDetailItem(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+
+  // Empty state widget
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: const EdgeInsets.all(40.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.receipt_long, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'No payout records found',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Your payout history will appear here',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[500],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -920,8 +1048,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
               ),
               GestureDetector(
                 onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Downloading Payout...")),
-                ),
+                    const SnackBar(content: Text("Downloading Payout..."))),
                 child: const Icon(Icons.download, color: Colors.black54),
               ),
             ],
@@ -970,8 +1097,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                   ),
                   GestureDetector(
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Downloading Payout...")),
-                    ),
+                        const SnackBar(content: Text("Downloading Payout..."))),
                     child: const Icon(Icons.download, color: Colors.black54),
                   ),
                 ],
@@ -1023,5 +1149,17 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
         ),
       ],
     );
+  }
+
+  // Improved date formatting
+  String formatDate(String? date) {
+    if (date == null || date.isEmpty) return 'N/A';
+
+    try {
+      final parsedDate = DateTime.parse(date);
+      return DateFormat('dd MMM yyyy').format(parsedDate);
+    } catch (e) {
+      return date;
+    }
   }
 }

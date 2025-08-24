@@ -1185,7 +1185,7 @@ String formatDate(String? date) {
 Widget buildTripOrRefundNote(
     {required String userType, required BuildContext context}) {
   // For "premium select" and "neo select", show simple "Refer and earn" message
-  if (userType == "premium select" || userType == "neo select") {
+  if (userType == "Premium Select" || userType == "Neo Select") {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
       child: Container(
@@ -1313,15 +1313,6 @@ Widget buildTripOrRefundNote(
                           style: TextStyle(fontSize: 16, color: Colors.black87),
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Get started by adding your first referral now!',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.blueGrey.shade600,
                     ),
                   ),
                   const SizedBox(height: 12),

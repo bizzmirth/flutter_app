@@ -27,6 +27,52 @@ class LoginController extends ChangeNotifier {
 
   LoginController() {
     loadUserTypes();
+    _loadSavedCredentials();
+  }
+
+  // Load saved credentials if "Remember Me" was enabled
+  Future<void> _loadSavedCredentials() async {
+    try {
+      final savedRememberMe = await _sharedPrefHelper.getRememberMe();
+      if (savedRememberMe) {
+        final savedEmail = await _sharedPrefHelper.getSavedEmail();
+        final savedPassword = await _sharedPrefHelper.getSavedPassword();
+        final savedUserTypeId = await _sharedPrefHelper.getSavedUserTypeId();
+
+        if (savedEmail != null) emailController.text = savedEmail;
+        if (savedPassword != null) passwordController.text = savedPassword;
+        if (savedUserTypeId != null) {
+          selectedUserTypeId = savedUserTypeId;
+          // Find and set the user type name
+          final selectedUserType = userTypeNames.firstWhere(
+            (userType) => userType["id"] == savedUserTypeId,
+            orElse: () => {"id": "", "name": ""},
+          );
+          selectedUserTypeName = selectedUserType["name"];
+        }
+
+        rememberMe = true;
+        notifyListeners();
+      }
+    } catch (e) {
+      Logger.error('Error loading saved credentials: $e');
+    }
+  }
+
+  // Save credentials securely
+  Future<void> _saveCredentials() async {
+    if (rememberMe) {
+      await _sharedPrefHelper.saveRememberMe(true);
+      await _sharedPrefHelper.saveEmail(emailController.text);
+      await _sharedPrefHelper.savePassword(passwordController.text);
+      if (selectedUserTypeId != null) {
+        await _sharedPrefHelper.saveUserTypeId(selectedUserTypeId!);
+      }
+    } else {
+      // Clear saved credentials if "Remember Me" is disabled
+      await _sharedPrefHelper.saveRememberMe(false);
+      await _sharedPrefHelper.clearSavedCredentials();
+    }
   }
 
   // Toggle password visibility
@@ -81,6 +127,16 @@ class LoginController extends ChangeNotifier {
             .toList();
 
         Logger.info("Filtered User Type Names: $userTypeNames");
+
+        // After loading user types, try to set the user type name if we have a saved ID
+        if (selectedUserTypeId != null && selectedUserTypeName == null) {
+          final selectedUserType = userTypeNames.firstWhere(
+            (userType) => userType["id"] == selectedUserTypeId,
+            orElse: () => {"id": "", "name": ""},
+          );
+          selectedUserTypeName = selectedUserType["name"];
+          notifyListeners();
+        }
       } else {
         // Fallback data with only allowed IDs
         userTypeNames = [
@@ -107,6 +163,10 @@ class LoginController extends ChangeNotifier {
     passwordController.clear();
     selectedUserTypeId = null;
     selectedUserTypeName = null;
+    rememberMe = false;
+    // Also clear saved credentials from storage
+    _sharedPrefHelper.clearSavedCredentials();
+    _sharedPrefHelper.saveRememberMe(false);
     notifyListeners();
   }
 
@@ -181,9 +241,16 @@ class LoginController extends ChangeNotifier {
           await _sharedPrefHelper.saveUserEmail(email);
           await _sharedPrefHelper.saveCurrentUserCustId(userId);
 
+          // Save credentials if "Remember Me" is checked
+          await _saveCredentials();
+
           isLoading = false;
-          clearFormFields();
-          notifyListeners();
+          // Don't clear form fields if remember me is enabled
+          if (!rememberMe) {
+            clearFormFields();
+          } else {
+            notifyListeners();
+          }
 
           return {"status": true, "user_type": userType, "data": responseData};
         } else {
@@ -218,6 +285,24 @@ class LoginController extends ChangeNotifier {
         description: errorMessage,
       );
       return {"success": false, "message": errorMessage};
+    }
+  }
+
+  // Add a logout method to clear credentials
+  Future<void> logout() async {
+    // Clear only the session-related data, keep remember me credentials if enabled
+    await _sharedPrefHelper.clearSessionData();
+
+    // If remember me is not enabled, clear all credentials
+    if (!rememberMe) {
+      clearFormFields();
+    } else {
+      // Just clear the controllers but keep the saved state
+      emailController.clear();
+      passwordController.clear();
+      selectedUserTypeId = null;
+      selectedUserTypeName = null;
+      notifyListeners();
     }
   }
 

@@ -11,7 +11,7 @@ class FancyVideoSlider extends StatefulWidget {
     this.tabHeight = 500,
     this.phoneHeight = 250,
     this.videoUrls = const [
-      "https://testca.uniqbizz.com/api/assets/video/slider/info.mp4",
+      // "https://testca.uniqbizz.com/api/assets/video/slider/info.mp4",
       "https://testca.uniqbizz.com/api/assets/video/slider/travel.mp4",
     ],
   }) : super(key: key);

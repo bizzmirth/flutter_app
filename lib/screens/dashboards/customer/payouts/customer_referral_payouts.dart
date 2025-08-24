@@ -22,7 +22,7 @@ class CustomerReferralPayouts extends StatefulWidget {
 
 class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
   String selectedDate = "Select month, year";
-  int _rowsPerPage = 5; // Default rows per page
+  int _rowsPerPage = 5;
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
@@ -104,7 +104,6 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
         case 'all payouts':
           return controller.totalAllPayouts;
         default:
-          // Default to total payouts if type doesn't match
           return controller.totalAllPayouts;
       }
     }
@@ -127,8 +126,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
           child: SingleChildScrollView(
             child: Container(
               width: isMobile
-                  ? MediaQuery.of(context).size.width *
-                      0.95 // Keep original value
+                  ? MediaQuery.of(context).size.width * 0.95
                   : MediaQuery.of(context).size.width * 0.9,
               height:
                   isMobile ? null : MediaQuery.of(context).size.height * 0.8,
@@ -165,10 +163,8 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                   if (isMobile)
                     Column(
                       children: [
-                        // Payout amount card
                         _buildPayoutCard(payoutType, amount, date),
                         const SizedBox(height: 12),
-                        // User details card
                         _buildUserCard(userId, userName, amount),
                       ],
                     )
@@ -314,82 +310,81 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
 
   Widget _buildUserCard(String userId, String userName, String amount) {
     return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(4),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'ID: $userId',
+                style: const TextStyle(fontSize: 11),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            child: Text(
-              'ID: $userId',
-              style: const TextStyle(fontSize: 11),
-              overflow: TextOverflow.ellipsis,
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'Name: $userName',
+                style: const TextStyle(fontSize: 11),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-          const SizedBox(height: 6),
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              'Name: $userName',
-              style: const TextStyle(fontSize: 11),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Name: $userName',
-                  style: const TextStyle(fontSize: 12),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Text(
-                      'Rs.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        amount.replaceAll('Rs. ', ''),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Name: $userName',
+                    style: const TextStyle(fontSize: 12),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Text(
+                        'Rs.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          amount.replaceAll('Rs. ', ''),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ));
   }
 
   Widget _buildPayoutItem(CustReferralPayoutModel payout, bool isLast) {
@@ -455,7 +450,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
 
   @override
   Widget build(BuildContext context) {
-    final isTablet = MediaQuery.of(context).size.width > 600; // breakpoint
+    final isTablet = MediaQuery.of(context).size.width > 600;
     return Consumer<CustReferralPayoutController>(
       builder: (context, controller, child) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -495,11 +490,9 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                         ),
                         Divider(thickness: 1, color: Colors.black26),
                         const SizedBox(height: 16),
-                        // Replace the Row with a responsive layout
                         LayoutBuilder(
                           builder: (context, constraints) {
                             if (constraints.maxWidth < 600) {
-                              // Phone view
                               return Column(
                                 children: [
                                   payoutCard(
@@ -520,7 +513,6 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                 ],
                               );
                             } else {
-                              // Tablet/Desktop view
                               return Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -567,111 +559,221 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                         FilterBar(
                           userCount: controller.allPayouts.length.toString(),
                         ),
-                        Card(
-                          elevation: 5,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: isTablet
-                              ? SizedBox(
-                                  height: (_rowsPerPage * dataRowHeight) +
-                                      headerHeight +
-                                      paginationHeight,
-                                  child: PaginatedDataTable(
-                                    columnSpacing: 50,
-                                    dataRowMinHeight: 40,
-                                    columns: [
-                                      DataColumn(label: Text("Date")),
-                                      DataColumn(label: Text("Payout Details")),
-                                      DataColumn(label: Text("Product Payout")),
-                                      DataColumn(label: Text("Total")),
-                                      DataColumn(label: Text("TDS")),
-                                      DataColumn(label: Text("Remarks")),
-                                    ],
-                                    source: CustReferenceAllPayoutDataSource(
-                                        controller.allPayouts),
-                                    rowsPerPage: _rowsPerPage,
-                                    availableRowsPerPage: [5, 10, 15, 20, 25],
-                                    onRowsPerPageChanged: (value) {
-                                      if (value != null) {
-                                        setState(() {
-                                          _rowsPerPage = value;
-                                        });
-                                      }
-                                    },
-                                    arrowHeadColor: Colors.blue,
-                                  ),
-                                )
-                              : ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: controller.allPayouts.length,
-                                  itemBuilder: (context, index) {
-                                    final payout = controller.allPayouts[index];
-                                    return Card(
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 6),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            _buildRow("Date",
-                                                formatDate(payout.date)),
-                                            _buildRow("Details",
-                                                payout.payoutDetails),
-                                            _buildRow(
-                                                "Total", "₹${payout.amount}"),
-                                            _buildRow(
-                                                "TDS",
-                                                payout.tds == "NA"
-                                                    ? "N/A"
-                                                    : "₹${payout.tds}"),
-                                            _buildRow("Payable",
-                                                "₹${payout.totalPayable}"),
-                                            Row(
-                                              children: [
-                                                const Text(
-                                                  "Status: ",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Container(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 4),
-                                                  decoration: BoxDecoration(
-                                                    color: _getStatusColor(
-                                                        payout.status),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4),
-                                                  ),
-                                                  child: Text(
-                                                    payout.status,
-                                                    style: const TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 12),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                        ),
+                        isTablet
+                            ? _buildDesktopListView(controller)
+                            : _buildMobileListView(controller),
                       ],
                     ),
                   ),
                 ),
         );
       },
+    );
+  }
+
+  // Improved Desktop ListView with PaginatedDataTable
+  Widget _buildDesktopListView(CustReferralPayoutController controller) {
+    return SizedBox(
+      height: (_rowsPerPage * dataRowHeight) + headerHeight + paginationHeight,
+      child: controller.allPayouts.isEmpty
+          ? _buildEmptyState()
+          : Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: PaginatedDataTable(
+                columnSpacing: 50,
+                dataRowMinHeight: 40,
+                dataRowMaxHeight: 60,
+                headingRowHeight: 60,
+                columns: const [
+                  DataColumn(
+                      label: Text("Date",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("Payout Details",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("Product Payout",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("Total",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("TDS",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("Remarks",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                ],
+                source: CustReferenceAllPayoutDataSource(controller.allPayouts),
+                rowsPerPage: _rowsPerPage,
+                availableRowsPerPage: const [5, 10, 15, 20, 25],
+                onRowsPerPageChanged: (value) {
+                  if (value != null) {
+                    setState(() => _rowsPerPage = value);
+                  }
+                },
+                arrowHeadColor: Colors.blue,
+                header: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text('All Referral Payout Records',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ),
+    );
+  }
+
+  // Improved Mobile ListView with better performance
+  Widget _buildMobileListView(CustReferralPayoutController controller) {
+    if (controller.allPayouts.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 10,
+        ),
+        // Optimized ListView with builder and separators
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: controller.allPayouts.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            final payout = controller.allPayouts[index];
+            return _buildPayoutCardMobile(payout);
+          },
+        ),
+      ],
+    );
+  }
+
+  // Improved mobile payout card with better layout
+  Widget _buildPayoutCardMobile(CustReferralPayoutModel payout) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row with date and status
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  formatDate(payout.date),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.blueGrey,
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(payout.status),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    payout.status.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const Divider(height: 20, thickness: 1),
+
+            // Payout details in a compact grid layout
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              childAspectRatio: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              children: [
+                _buildDetailItem("Details", payout.payoutDetails ?? 'N/A'),
+                _buildDetailItem("Amount", "₹${payout.amount ?? '0.00'}"),
+                _buildDetailItem(
+                    "TDS", payout.tds == "NA" ? "N/A" : "₹${payout.tds}"),
+                _buildDetailItem(
+                    "Payable", "₹${payout.totalPayable ?? '0.00'}"),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper widget for detail items
+  Widget _buildDetailItem(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+
+  // Empty state widget
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: const EdgeInsets.all(40.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.receipt_long, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'No referral payout records found',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Your referral payout history will appear here',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[500],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -735,7 +837,9 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                     color: statusColor, borderRadius: BorderRadius.circular(4)),
                 child: Text(status,
                     style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.bold)),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
               ),
             ],
           ),
@@ -756,8 +860,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
               ),
               GestureDetector(
                 onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Downloading Payout...")),
-                ),
+                    const SnackBar(content: Text("Downloading Payout..."))),
                 child: const Icon(Icons.download, color: Colors.black54),
               ),
             ],
@@ -781,7 +884,8 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
               Text("Rs. $totalPayout/-",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -805,8 +909,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                   ),
                   GestureDetector(
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Downloading Payout...")),
-                    ),
+                        const SnackBar(content: Text("Downloading Payout..."))),
                     child: const Icon(Icons.download, color: Colors.black54),
                   ),
                 ],
@@ -858,5 +961,17 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
         ),
       ],
     );
+  }
+
+  // Improved date formatting
+  String formatDate(String? date) {
+    if (date == null || date.isEmpty) return 'N/A';
+
+    try {
+      final parsedDate = DateTime.parse(date);
+      return DateFormat('dd MMM yyyy').format(parsedDate);
+    } catch (e) {
+      return date;
+    }
   }
 }

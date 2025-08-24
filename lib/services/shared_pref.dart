@@ -93,4 +93,69 @@ class SharedPrefHelper {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user_data_type');
   }
+
+  // Save remember me preference
+  Future<void> saveRememberMe(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('remember_me', value);
+  }
+
+// Get remember me preference
+  Future<bool> getRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('remember_me') ?? false;
+  }
+
+// Save email
+  Future<void> saveEmail(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('saved_email', email);
+  }
+
+// Get saved email
+  Future<String?> getSavedEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('saved_email');
+  }
+
+// Save password
+  Future<void> savePassword(String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('saved_password', password);
+  }
+
+// Get saved password
+  Future<String?> getSavedPassword() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('saved_password');
+  }
+
+// Save user type ID
+  Future<void> saveUserTypeId(String userTypeId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('saved_user_type_id', userTypeId);
+  }
+
+// Get saved user type ID
+  Future<String?> getSavedUserTypeId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('saved_user_type_id');
+  }
+
+// Clear all saved credentials
+  Future<void> clearSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('saved_email');
+    await prefs.remove('saved_password');
+    await prefs.remove('saved_user_type_id');
+  }
+
+// Clear session data (for logout)
+  Future<void> clearSessionData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user_type');
+    await prefs.remove('user_email');
+    await prefs.remove('current_user_cust_id');
+    // Don't clear remember me preferences and saved credentials
+  }
 }

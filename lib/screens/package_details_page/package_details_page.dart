@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/info_row.dart';
 import 'package:bizzmirth_app/widgets/price_row.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -70,13 +71,6 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getPackageDetails();
       getShredPrefData();
-
-      final pictures =
-          PackageDetailsController().packageResponse!.packagePictures;
-      for (var picture in pictures) {
-        final url = picture.getFullImageUrl();
-        precacheImage(NetworkImage(url), context); // decode & cache
-      }
     });
   }
 
@@ -84,6 +78,15 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
     final controller =
         Provider.of<PackageDetailsController>(context, listen: false);
     controller.getPackageDetails(packageId: widget.id);
+
+    // Precache images after data is loaded
+    if (controller.packageResponse != null) {
+      final pictures = controller.packageResponse!.packagePictures;
+      for (var picture in pictures) {
+        final url = picture.getFullImageUrl();
+        precacheImage(NetworkImage(url), context);
+      }
+    }
   }
 
   Widget _buildInfoCard({required String title, required String content}) {
@@ -123,16 +126,18 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
       if (controller.isLoading || controller.packageResponse == null) {
         return Scaffold(
           appBar: AppBar(
-            title: Text("Package Details"),
-            backgroundColor: Color.fromARGB(255, 81, 131, 246),
+            title: const Text("Package Details"),
+            backgroundColor: const Color.fromARGB(255, 81, 131, 246),
             centerTitle: true,
           ),
-          body: Center(child: CircularProgressIndicator()),
+          body: const Center(child: CircularProgressIndicator()),
         );
       }
+
       final pictures = controller.packageResponse!.packagePictures;
       final itemCount = pictures.length;
       final itinerarys = controller.packageResponse?.packageItinerary.first;
+
       return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -143,7 +148,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               color: Colors.white,
             ),
           ),
-          backgroundColor: Color.fromARGB(255, 81, 131, 246),
+          backgroundColor: const Color.fromARGB(255, 81, 131, 246),
           centerTitle: true,
         ),
         body: Stack(children: [
@@ -155,8 +160,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                 child: Stack(
                   children: [
                     carousel_slider.CarouselSlider.builder(
-                      itemCount:
-                          controller.packageResponse!.packagePictures.length,
+                      itemCount: itemCount,
                       itemBuilder: (context, index, realIndex) {
                         bool isActive = index == currentIndex;
                         final picture = pictures[index];
@@ -168,28 +172,28 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              Image.network(
-                                imageUrl,
+                              CachedNetworkImage(
+                                imageUrl: imageUrl,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stacktree) =>
-                                    Center(
+                                memCacheWidth:
+                                    (MediaQuery.of(context).size.width * 2)
+                                        .toInt(),
+                                placeholder: (context, url) => Container(
+                                  color: Colors.grey.shade100,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Center(
                                   child: Icon(
                                     Icons.broken_image,
                                     color: Colors.grey,
+                                    size: 40,
                                   ),
                                 ),
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child;
-                                  }
-                                  return Center(
-                                      child: CircularProgressIndicator());
-                                },
                               ),
-                              if (!isActive &&
-                                  itemCount >
-                                      1) // Apply blur only for non-active items
+                              if (!isActive && itemCount > 1)
                                 BackdropFilter(
                                   filter: ImageFilter.blur(
                                       sigmaX: 5.0, sigmaY: 5.0),
@@ -203,7 +207,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                       },
                       options: carousel_slider.CarouselOptions(
                         autoPlay: itemCount > 1,
-                        autoPlayInterval: Duration(seconds: 5),
+                        autoPlayInterval: const Duration(seconds: 5),
                         enlargeCenterPage: itemCount > 1,
                         aspectRatio: 16 / 9,
                         viewportFraction: itemCount > 1 ? 0.7 : 1.0,
@@ -218,7 +222,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               // Tour Title
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -231,7 +235,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               // Location and Duration
               Padding(
                 padding:
@@ -284,6 +288,8 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                             iconColor: Colors.teal,
                             text:
                                 (controller.packageResponse?.packageMeals ?? [])
+                                    .where((meal) => !meal.contains(
+                                        '+')) // Filter out items containing '+'
                                     .join(", "),
                           ),
                         ],
@@ -293,11 +299,11 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                 ),
               ),
 
-              Divider(thickness: 1, height: 32),
+              const Divider(thickness: 1, height: 32),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PriceRow(
+                  const PriceRow(
                     label: 'Starting From:',
                     price: '',
                   ),
@@ -313,7 +319,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                       icon: Icons.child_care),
                 ],
               ),
-              Divider(thickness: 1, height: 32),
+              const Divider(thickness: 1, height: 32),
               // About Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -328,20 +334,15 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                         color: Colors.teal.shade900,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       controller.packageDetails!.description,
                       style: GoogleFonts.poppins(fontSize: 14),
                     ),
-                    // SizedBox(height: 16),
-                    // Text(
-                    //   'Discover the rich cultural heritage of the region as you explore ancient temples, bustling local markets, and vibrant festivals. Savor authentic local cuisines and interact with friendly locals to truly experience the heart of the destination.',
-                    //   style: GoogleFonts.poppins(fontSize: 14),
-                    // ),
                   ],
                 ),
               ),
-              Divider(thickness: 1, height: 32),
+              const Divider(thickness: 1, height: 32),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: LayoutBuilder(
@@ -401,7 +402,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                 ),
               ),
 
-              Divider(thickness: 1, height: 32),
+              const Divider(thickness: 1, height: 32),
 
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
@@ -414,10 +415,10 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
 
               ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: controller.packageResponse!.packageTourPlan.length,
                 itemBuilder: (context, index) {
@@ -433,22 +434,21 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                       ),
                       child: Theme(
                         data: Theme.of(context).copyWith(
-                          dividerColor:
-                              Colors.transparent, // ✅ removes extra lines
+                          dividerColor: Colors.transparent,
                         ),
                         child: ExpansionTile(
-                          tilePadding:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          tilePadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                           title: Text(
                             "${item.day} : ${item.title}",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                           leading: CircleAvatar(
                             backgroundColor: Colors.blueAccent,
                             child: Text(
                               "${index + 1}",
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           children: [
@@ -462,15 +462,16 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                             ),
                             Container(
                               width: double.infinity,
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 16),
                               decoration: BoxDecoration(
                                 color: Colors.grey[200],
-                                borderRadius: BorderRadius.vertical(
+                                borderRadius: const BorderRadius.vertical(
                                   bottom: Radius.circular(12),
                                 ),
                               ),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   RichText(
@@ -478,7 +479,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                                       style: TextStyle(
                                           color: Colors.black, fontSize: 14),
                                       children: [
-                                        TextSpan(
+                                        const TextSpan(
                                           text: "Meal: ",
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
@@ -492,7 +493,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                                       style: TextStyle(
                                           color: Colors.black, fontSize: 14),
                                       children: [
-                                        TextSpan(
+                                        const TextSpan(
                                           text: "Transport: ",
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
@@ -511,8 +512,8 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   );
                 },
               ),
-              SizedBox(height: 8),
-              Divider(thickness: 1, height: 32),
+              const SizedBox(height: 8),
+              const Divider(thickness: 1, height: 32),
 
               // Remarks Section
               Padding(
@@ -528,7 +529,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                         color: Colors.teal.shade900,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       formatItineraryText(itinerarys?.remark).join("\n"),
                       style: GoogleFonts.poppins(fontSize: 14),
@@ -536,32 +537,8 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   ],
                 ),
               ),
-              Divider(thickness: 1, height: 32),
-
-              // // Policies Section
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       Text(
-              //         'Policies',
-              //         style: GoogleFonts.poppins(
-              //           fontSize: 18,
-              //           fontWeight: FontWeight.w600,
-              //           color: Colors.teal.shade900,
-              //         ),
-              //       ),
-              //       SizedBox(height: 8),
-              //       Text(
-              //         ' Cancellation & Refund Policy \n Payment Policy \n Rescheduling Policy \n Health & Safety Policy \n Inclusion & Exclusion Policy \n Child & Senior Policy \n Code of Conduct Policy',
-              //         style: GoogleFonts.poppins(fontSize: 14),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // Divider(thickness: 1, height: 32),
-              SizedBox(height: 100),
+              const Divider(thickness: 1, height: 32),
+              const SizedBox(height: 100),
             ]),
           ),
           Positioned(
@@ -576,9 +553,10 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   onPressed: _launchWhatsApp,
                   backgroundColor: Colors.green,
                   heroTag: "whatsapp",
-                  child: FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white),
+                  child: const FaIcon(FontAwesomeIcons.whatsapp,
+                      color: Colors.white),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 FloatingActionButton(
                   tooltip: "Share",
                   onPressed: () {
@@ -586,37 +564,11 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   },
                   backgroundColor: Colors.blue,
                   heroTag: "share",
-                  child: Icon(Icons.share, color: Colors.white),
+                  child: const Icon(Icons.share, color: Colors.white),
                 ),
               ],
             ),
           ),
-
-          // to be used to define behaviour per every user type
-
-          // if (customerType != 'Customer')
-          //   Positioned(
-          //     bottom: 20, // Adjust as needed
-          //     left: MediaQuery.of(context).size.width * 0.25,
-          //     right: MediaQuery.of(context).size.width * 0.25,
-          //     child: ElevatedButton(
-          //       onPressed: () {
-          //         showBookingPopup(context);
-          //       },
-          //       style: ElevatedButton.styleFrom(
-          //         padding: EdgeInsets.symmetric(vertical: 16),
-          //         backgroundColor: const Color.fromARGB(255, 46, 122, 244),
-          //         shape: RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(30),
-          //         ),
-          //       ),
-          //       child: Text(
-          //         "Enquire or Book Now",
-          //         style: TextStyle(fontSize: 16, color: Colors.white),
-          //       ),
-          //     ),
-          //   ),
-
           if (customerType != 'Customer')
             Positioned(
               bottom: 20, // Adjust as needed
@@ -629,14 +581,14 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: const Color.fromARGB(
                       255, 46, 122, 244), // Orange color for customer
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   "Inquire Now For Best Deals",
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
@@ -655,14 +607,14 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                           "Kindly Contact Your Travel Consultant to request Quotation Details");
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: const Color.fromARGB(
                       255, 46, 122, 244), // Orange color for customer
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   "Request Quotation",
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),

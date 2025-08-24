@@ -10,6 +10,7 @@ import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/widgets/loader_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +46,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(seconds: 8), () {
+    Future.delayed(const Duration(seconds: 4), () {
       if (mounted) {
         setState(() {
           showLoader = false;
@@ -62,6 +63,55 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
       });
       customerController.apiGetPendingCustomers();
     });
+  }
+
+  Widget getProfileImage(String? profilePicture) {
+    const double imageSize = 40;
+
+    if (profilePicture == null || profilePicture.isEmpty) {
+      return Container(
+        width: imageSize,
+        height: imageSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Image.asset(
+          "assets/default_profile.png",
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    final String imageUrl;
+    if (profilePicture.contains('https://testca.uniqbizz.com/uploading/')) {
+      imageUrl = profilePicture;
+    } else {
+      final newpath = extractPathSegment(profilePicture, 'profile_pic/');
+      imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+    }
+
+    Logger.success("Final image URL: $imageUrl");
+
+    return Container(
+      width: imageSize,
+      height: imageSize,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(strokeWidth: 1.5),
+        ),
+        errorWidget: (context, url, error) => Image.asset(
+          "assets/default_profile.png",
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
   }
 
   void _initializeFilteredCustomers() {
@@ -381,14 +431,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: customer.profilePicture != null &&
-                          customer.profilePicture!.isNotEmpty
-                      ? NetworkImage(customer.profilePicture!)
-                      : AssetImage("assets/default_profile.png")
-                          as ImageProvider,
-                ),
+                getProfileImage(customer.profilePicture),
                 SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -522,14 +565,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: customer.profilePicture != null &&
-                          customer.profilePicture!.isNotEmpty
-                      ? NetworkImage(customer.profilePicture!)
-                      : AssetImage("assets/default_profile.png")
-                          as ImageProvider,
-                ),
+                getProfileImage(customer.profilePicture),
                 SizedBox(width: 16),
                 Expanded(
                   child: Column(
