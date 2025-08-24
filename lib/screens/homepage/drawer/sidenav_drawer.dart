@@ -41,7 +41,7 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
 
   void _navigateToDashboard(BuildContext context, String userType) {
     switch (userType) {
-      case "admin":
+      case "Admin":
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const AdminDashboard()),
@@ -88,7 +88,7 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
 
   String _getDashboardTitle(String userType) {
     switch (userType) {
-      case "admin":
+      case "Admin":
         return "My Admin Dashboard";
       case "Customer":
         return "My Customer Dashboard";
@@ -188,7 +188,7 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
                       _handleLogout();
                     } else {
                       // Handle login
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => LoginPage()),
                       );

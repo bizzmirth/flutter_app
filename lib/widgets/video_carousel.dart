@@ -94,34 +94,33 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
   void _handlePageChange(int newPage) {
     if (newPage == _currentPage) return;
 
-    // Pause current video
+    // Pause and reset old video
     if (_currentPage < _controllers.length &&
         _controllers[_currentPage] != null) {
       _controllers[_currentPage]!.pause();
       _controllers[_currentPage]!.seekTo(Duration.zero);
     }
 
-    setState(() {
-      _currentPage = newPage;
-    });
+    setState(() => _currentPage = newPage);
 
-    // Initialize new current video if not already initialized
+    // Initialize current + adjacent
     _initializeController(newPage);
+    if (newPage > 0) _initializeController(newPage - 1);
+    if (newPage < widget.videoUrls.length - 1)
+      _initializeController(newPage + 1);
 
-    // Play new current video
+    // Play current video when ready
     if (_controllers[newPage] != null &&
         _controllers[newPage]!.value.isInitialized) {
       _controllers[newPage]!.play();
     }
 
-    // Preload adjacent videos
-    if (newPage > 0) _initializeController(newPage - 1);
-    if (newPage < widget.videoUrls.length - 1)
-      _initializeController(newPage + 1);
-
-    // Dispose videos that are far away to save memory
-    if (newPage > 1) _disposeController(newPage - 2);
-    if (newPage < widget.videoUrls.length - 2) _disposeController(newPage + 2);
+    // Dispose all others to free buffers
+    for (int i = 0; i < _controllers.length; i++) {
+      if (i < newPage - 1 || i > newPage + 1) {
+        _disposeController(i);
+      }
+    }
   }
 
   @override
