@@ -18,7 +18,7 @@ class CustReferralPayoutModel {
   factory CustReferralPayoutModel.fromJson(Map<String, dynamic> json) {
     return CustReferralPayoutModel(
       date: json['date']?.toString() ?? '',
-      payoutDetails: json['payout_details']?.toString() ?? '',
+      payoutDetails: json['message']?.toString() ?? '',
       amount: json['amount']?.toString() ?? '',
       tds: json['tds']?.toString() ?? '',
       totalPayable: json['total_payable']?.toString() ?? '',
@@ -28,7 +28,7 @@ class CustReferralPayoutModel {
   Map<String, dynamic> toJson() {
     return {
       'date': date,
-      'payout_details': payoutDetails,
+      'message': payoutDetails,
       'amount': amount,
       'tds': tds,
       'total_payable': totalPayable,

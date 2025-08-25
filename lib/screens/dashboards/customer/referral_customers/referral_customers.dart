@@ -65,6 +65,36 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    try {
+      final customerController = context.read<CustomerController>();
+
+      // Call the same API methods as in initState
+      await customerController.apiGetRegisteredCustomers();
+      await customerController.apiGetPendingCustomers();
+
+      // Re-initialize filtered customers after data is refreshed
+      _initializeFilteredCustomers();
+
+      // Optional: Reset the loader state if needed
+      if (mounted) {
+        setState(() {
+          showLoader = false;
+        });
+      }
+    } catch (e) {
+      // Handle any errors during refresh
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to refresh data'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Widget getProfileImage(String? profilePicture) {
     const double imageSize = 40;
 
@@ -584,21 +614,9 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                   ),
                 ),
                 PopupMenuButton<String>(
-                  onSelected: (value) {
+                  onSelected: (value) async {
                     switch (value) {
                       case "edit":
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddReferralCustomer(
-                              registeredCustomer: customer,
-                              isEditMode: true,
-                            ),
-                          ),
-                        ).then((_) {
-                          customerController.apiGetRegisteredCustomers();
-                          customerController.apiGetPendingCustomers();
-                        });
                         break;
                       case "delete":
                         customerController.apiDeleteCustomer(context, customer);
@@ -618,7 +636,23 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                           value: "edit",
                           child: ListTile(
                             leading: Icon(Icons.edit, color: Colors.blueAccent),
-                            title: Text("Edit"),
+                            title: Text("Edittt"),
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddReferralCustomer(
+                                    registeredCustomer: customer,
+                                    isEditMode: true,
+                                  ),
+                                ),
+                              );
+                              final customerCustomerr =
+                                  context.read<CustomerController>();
+                              await customerCustomerr
+                                  .apiGetRegisteredCustomers();
+                              await customerCustomerr.apiGetPendingCustomers();
+                            },
                           ),
                         ),
                         PopupMenuItem(
@@ -726,7 +760,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
         child: Scaffold(
           appBar: AppBar(
             title: Text(
-              'View Referral Customers',
+              'View Referral Customernbs',
               style: Appwidget.poppinsAppBarTitle(),
             ),
             centerTitle: true,
@@ -735,170 +769,186 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           ),
           body: (showLoader)
               ? const AppLoader()
-              : SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Divider(thickness: 1, color: Colors.black26),
-                        Center(
-                          child: Padding(
+              : RefreshIndicator(
+                  onRefresh: _onRefresh,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Divider(thickness: 1, color: Colors.black26),
+                          Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                "All Pending Referral Customer's List:",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          Divider(thickness: 1, color: Colors.black26),
+                          FilterBar(
+                            userCount: pendingUserCount,
+                            onSearchChanged: _onPendingSearchChanged,
+                            onDateRangeChanged: _onPendingDateRangeChanged,
+                            onClearFilters: _onPendingClearFilters,
+                          ),
+
+                          // Show table on tablet, list on phone
+                          isTablet
+                              ? Card(
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: SizedBox(
+                                    height: (_rowsPerPage * dataRowHeight) +
+                                        headerHeight +
+                                        paginationHeight,
+                                    child: PaginatedDataTable(
+                                      columnSpacing: 36,
+                                      dataRowMinHeight: 40,
+                                      columns: [
+                                        DataColumn(label: Text("Image")),
+                                        DataColumn(label: Text("ID")),
+                                        DataColumn(label: Text("Full Name")),
+                                        DataColumn(label: Text("Ref. ID")),
+                                        DataColumn(label: Text("Ref. Name")),
+                                        DataColumn(label: Text("Joining Date")),
+                                        DataColumn(label: Text("Status")),
+                                      ],
+                                      source: MyrefCustPendingDataSource(
+                                          filteredPendingCustomers.isEmpty
+                                              ? customerController
+                                                  .pendingCustomers
+                                              : filteredPendingCustomers,
+                                          this.context),
+                                      rowsPerPage: _rowsPerPage,
+                                      availableRowsPerPage: [5, 10, 15, 20, 25],
+                                      onRowsPerPageChanged: (value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            _rowsPerPage = value;
+                                          });
+                                        }
+                                      },
+                                      arrowHeadColor: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              : _buildPendingCustomersList(customerController),
+
+                          SizedBox(height: 35),
+                          Divider(thickness: 1, color: Colors.black26),
+                          Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
-                              "All Pending Referral Customer's List:",
+                              "All Registered Referral Customer's List:",
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
-                        ),
-                        Divider(thickness: 1, color: Colors.black26),
-                        FilterBar(
-                          userCount: pendingUserCount,
-                          onSearchChanged: _onPendingSearchChanged,
-                          onDateRangeChanged: _onPendingDateRangeChanged,
-                          onClearFilters: _onPendingClearFilters,
-                        ),
+                          Divider(thickness: 1, color: Colors.black26),
 
-                        // Show table on tablet, list on phone
-                        isTablet
-                            ? Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: SizedBox(
-                                  height: (_rowsPerPage * dataRowHeight) +
-                                      headerHeight +
-                                      paginationHeight,
-                                  child: PaginatedDataTable(
-                                    columnSpacing: 36,
-                                    dataRowMinHeight: 40,
-                                    columns: [
-                                      DataColumn(label: Text("Image")),
-                                      DataColumn(label: Text("ID")),
-                                      DataColumn(label: Text("Full Name")),
-                                      DataColumn(label: Text("Ref. ID")),
-                                      DataColumn(label: Text("Ref. Name")),
-                                      DataColumn(label: Text("Joining Date")),
-                                      DataColumn(label: Text("Status")),
-                                    ],
-                                    source: MyrefCustPendingDataSource(
-                                        filteredPendingCustomers.isEmpty
-                                            ? customerController
-                                                .pendingCustomers
-                                            : filteredPendingCustomers,
-                                        this.context),
-                                    rowsPerPage: _rowsPerPage,
-                                    availableRowsPerPage: [5, 10, 15, 20, 25],
-                                    onRowsPerPageChanged: (value) {
-                                      if (value != null) {
-                                        setState(() {
-                                          _rowsPerPage = value;
-                                        });
-                                      }
-                                    },
-                                    arrowHeadColor: Colors.blue,
-                                  ),
-                                ),
-                              )
-                            : _buildPendingCustomersList(customerController),
-
-                        SizedBox(height: 35),
-                        Divider(thickness: 1, color: Colors.black26),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            "All Registered Referral Customer's List:",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                          // Filter Bar
+                          FilterBar(
+                            userCount: userCount,
+                            onSearchChanged: _onRegisteredSearchChanged,
+                            onDateRangeChanged: _onRegisteredDateRangeChanged,
+                            onClearFilters: _onRegisteredClearFilters,
                           ),
-                        ),
-                        Divider(thickness: 1, color: Colors.black26),
 
-                        // Filter Bar
-                        FilterBar(
-                          userCount: userCount,
-                          onSearchChanged: _onRegisteredSearchChanged,
-                          onDateRangeChanged: _onRegisteredDateRangeChanged,
-                          onClearFilters: _onRegisteredClearFilters,
-                        ),
-
-                        // Error Messages
-                        if (fromDateError != null || toDateError != null)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 4.0),
-                            child: Row(
-                              children: [
-                                if (fromDateError != null)
-                                  Text(
-                                    fromDateError!,
-                                    style: TextStyle(
-                                        color: Colors.red, fontSize: 12),
-                                  ),
-                                if (fromDateError != null &&
-                                    toDateError != null)
-                                  Text(" | ",
-                                      style: TextStyle(color: Colors.red)),
-                                if (toDateError != null)
-                                  Text(
-                                    toDateError!,
-                                    style: TextStyle(
-                                        color: Colors.red, fontSize: 12),
-                                  ),
-                              ],
+                          // Error Messages
+                          if (fromDateError != null || toDateError != null)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  if (fromDateError != null)
+                                    Text(
+                                      fromDateError!,
+                                      style: TextStyle(
+                                          color: Colors.red, fontSize: 12),
+                                    ),
+                                  if (fromDateError != null &&
+                                      toDateError != null)
+                                    Text(" | ",
+                                        style: TextStyle(color: Colors.red)),
+                                  if (toDateError != null)
+                                    Text(
+                                      toDateError!,
+                                      style: TextStyle(
+                                          color: Colors.red, fontSize: 12),
+                                    ),
+                                ],
+                              ),
                             ),
-                          ),
 
-                        // Show table on tablet, list on phone
-                        isTablet
-                            ? Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: SizedBox(
-                                  height: (_rowsPerPage1 * dataRowHeight) +
-                                      headerHeight +
-                                      paginationHeight,
-                                  child: PaginatedDataTable(
-                                    columnSpacing: 36,
-                                    dataRowMinHeight: 40,
-                                    columns: [
-                                      DataColumn(label: Text("Image")),
-                                      DataColumn(label: Text("Customer ID")),
-                                      DataColumn(label: Text("Full Name")),
-                                      DataColumn(label: Text("Reg. ID")),
-                                      DataColumn(label: Text("Reg. Name")),
-                                      DataColumn(label: Text("Joining Date")),
-                                      DataColumn(label: Text("Status")),
-                                      DataColumn(label: Text("Action"))
-                                    ],
-                                    source: MyrefCustRegDataSource(
-                                        filteredCustomers.isEmpty &&
-                                                (searchController
-                                                        .text.isEmpty &&
-                                                    fromDate == null &&
-                                                    toDate == null)
-                                            ? customerController
-                                                .registeredCustomers
-                                            : filteredCustomers,
-                                        this.context),
-                                    rowsPerPage: _rowsPerPage1,
-                                    availableRowsPerPage: [5, 10, 15, 20, 25],
-                                    onRowsPerPageChanged: (value) {
-                                      if (value != null) {
-                                        setState(() {
-                                          _rowsPerPage1 = value;
-                                        });
-                                      }
-                                    },
-                                    arrowHeadColor: Colors.blue,
+                          // Show table on tablet, list on phone
+                          isTablet
+                              ? Card(
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                ),
-                              )
-                            : _buildRegisteredCustomersList(customerController),
-                      ],
+                                  child: SizedBox(
+                                    height: (_rowsPerPage1 * dataRowHeight) +
+                                        headerHeight +
+                                        paginationHeight,
+                                    child: PaginatedDataTable(
+                                      columnSpacing: 36,
+                                      dataRowMinHeight: 40,
+                                      columns: [
+                                        DataColumn(label: Text("Image")),
+                                        DataColumn(label: Text("Customer ID")),
+                                        DataColumn(label: Text("Full Name")),
+                                        DataColumn(label: Text("Reg. ID")),
+                                        DataColumn(label: Text("Reg. Name")),
+                                        DataColumn(label: Text("Joining Date")),
+                                        DataColumn(label: Text("Status")),
+                                        DataColumn(label: Text("Action"))
+                                      ],
+                                      source: MyrefCustRegDataSource(
+                                          filteredCustomers.isEmpty &&
+                                                  (searchController
+                                                          .text.isEmpty &&
+                                                      fromDate == null &&
+                                                      toDate == null)
+                                              ? customerController
+                                                  .registeredCustomers
+                                              : filteredCustomers,
+                                          this.context, onDataChanged: () {
+                                        final customerController =
+                                            Provider.of<CustomerController>(
+                                                context,
+                                                listen: false);
+                                        setState(() {
+                                          filteredCustomers =
+                                              List<RegisteredCustomer>.from(
+                                                  customerController
+                                                      .registeredCustomers);
+                                        });
+                                      }),
+                                      rowsPerPage: _rowsPerPage1,
+                                      availableRowsPerPage: [5, 10, 15, 20, 25],
+                                      onRowsPerPageChanged: (value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            _rowsPerPage1 = value;
+                                          });
+                                        }
+                                      },
+                                      arrowHeadColor: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              : _buildRegisteredCustomersList(
+                                  customerController),
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _navigateToDashboard(BuildContext context, String userType) {
     switch (userType) {
-      case "Admin":
+      case "admin":
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const AdminDashboard()),

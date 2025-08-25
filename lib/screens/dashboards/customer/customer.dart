@@ -58,6 +58,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
         ConfettiController(duration: const Duration(seconds: 3));
   }
 
+  Future<void> _onRefreshDashboard() async {
+    _initializeDashboardData();
+  }
+
   @override
   void dispose() {
     _confettiController.dispose();
@@ -153,11 +157,6 @@ class _CDashboardPageState extends State<CDashboardPage> {
     } else if (type == "Neo Select") {
       return neoSelectWidget(type);
     } else {
-      // Show toast and return a placeholder widget
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ToastHelper.showErrorToast(
-            context: context, title: "No User Type Found");
-      });
       return Center(child: Text('No content available'));
     }
   }
@@ -1466,9 +1465,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
                   return Stack(
                     children: [
                       // Main content
-                      SingleChildScrollView(
-                          padding: EdgeInsets.all(16.0),
-                          child: bodywidget(custtype)),
+                      RefreshIndicator(
+                        onRefresh: _onRefreshDashboard,
+                        child: SingleChildScrollView(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.all(16.0),
+                            child: bodywidget(custtype)),
+                      ),
 
                       // Confetti overlay (on top of everything)
                       if (custtype == "Premium")

@@ -595,6 +595,9 @@ class CustomerController extends ChangeNotifier {
       Logger.success("fullUrl: $fullUrl");
       Logger.success("status code : ${response.statusCode}");
       Logger.success("API response: ${response.body}");
+      if (response.statusCode == 200) {
+        apiGetPendingCustomers();
+      }
     } catch (e) {
       Logger.error("Error in apiAddCustomer: $e");
       _error = "Error: $e";

@@ -374,7 +374,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
       await controller.apiAddCustomer(newCustomer);
       clearFormFields();
-      Navigator.pop(context);
+      Navigator.pop(context, true);
 
       Logger.success("Adding customer: $newCustomer");
     } catch (e, s) {
@@ -689,7 +689,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         ..customerType = customerType;
 
       await controller.apiUpdateRegisteredCustomer(updatedCustomer);
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     } catch (e, s) {
       Logger.error("Error updating form: $e, Stacktrace: $s");
     }

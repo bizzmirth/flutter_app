@@ -30,9 +30,14 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   @override
   void initState() {
     super.initState();
+    selectedDate = DateFormat("MMMM, yyyy").format(DateTime.now());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getAllData();
     });
+  }
+
+  Future<void> onRefresh() async {
+    getAllData();
   }
 
   void getAllData() async {
@@ -657,99 +662,103 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
           ),
           body: controller.isLoading
               ? _buildLoadingState()
-              : SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Divider(thickness: 1, color: Colors.black26),
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10),
-                            child: Text(
-                              "Payouts:",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+              : RefreshIndicator(
+                  onRefresh: onRefresh,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Divider(thickness: 1, color: Colors.black26),
+                          Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                "Payouts:",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
-                        ),
-                        Divider(thickness: 1, color: Colors.black26),
-                        const SizedBox(height: 16),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            if (constraints.maxWidth < 600) {
-                              // Phone view
-                              return Column(
-                                children: [
-                                  payoutCard(
-                                      "Previous Payout",
-                                      controller.prevMonth ?? "",
-                                      "Rs. ${controller.previousMonthPayout}/-",
-                                      "Paid",
-                                      Colors.green.shade100,
-                                      controller),
-                                  const SizedBox(height: 16),
-                                  payoutCard(
-                                      "Next Payout",
-                                      controller.nextMonth ?? "",
-                                      "Rs. ${controller.nextMonthPayout}/-",
-                                      "Pending",
-                                      Colors.orange.shade100,
-                                      controller),
-                                ],
-                              );
-                            } else {
-                              // Tablet/Desktop view
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: payoutCard(
+                          Divider(thickness: 1, color: Colors.black26),
+                          const SizedBox(height: 16),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              if (constraints.maxWidth < 600) {
+                                // Phone view
+                                return Column(
+                                  children: [
+                                    payoutCard(
                                         "Previous Payout",
                                         controller.prevMonth ?? "",
                                         "Rs. ${controller.previousMonthPayout}/-",
                                         "Paid",
                                         Colors.green.shade100,
                                         controller),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: payoutCard(
+                                    const SizedBox(height: 16),
+                                    payoutCard(
                                         "Next Payout",
                                         controller.nextMonth ?? "",
                                         "Rs. ${controller.nextMonthPayout}/-",
                                         "Pending",
                                         Colors.orange.shade100,
                                         controller),
-                                  ),
-                                ],
-                              );
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        totalPayoutCard(
-                            controller.totalPayout ?? "0.00", controller),
-                        const SizedBox(height: 50),
-                        Divider(thickness: 1, color: Colors.black26),
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10),
-                            child: Text(
-                              "All Payouts:",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                  ],
+                                );
+                              } else {
+                                // Tablet/Desktop view
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: payoutCard(
+                                          "Previous Payout",
+                                          controller.prevMonth ?? "",
+                                          "Rs. ${controller.previousMonthPayout}/-",
+                                          "Paid",
+                                          Colors.green.shade100,
+                                          controller),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: payoutCard(
+                                          "Next Payout",
+                                          controller.nextMonth ?? "",
+                                          "Rs. ${controller.nextMonthPayout}/-",
+                                          "Pending",
+                                          Colors.orange.shade100,
+                                          controller),
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          totalPayoutCard(
+                              controller.totalPayout ?? "0.00", controller),
+                          const SizedBox(height: 50),
+                          Divider(thickness: 1, color: Colors.black26),
+                          Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                "All Payouts:",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
-                        ),
-                        Divider(thickness: 1, color: Colors.black26),
-                        FilterBar(),
-                        isTablet
-                            ? _buildDesktopListView(controller)
-                            : _buildMobileListView(controller),
-                      ],
+                          Divider(thickness: 1, color: Colors.black26),
+                          FilterBar(),
+                          isTablet
+                              ? _buildDesktopListView(controller)
+                              : _buildMobileListView(controller),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -934,31 +943,33 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
 
   // Empty state widget
   Widget _buildEmptyState() {
-    return Padding(
-      padding: const EdgeInsets.all(40.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.receipt_long, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            'No payout records found',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.receipt_long, size: 64, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              'No payout records found',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Your payout history will appear here',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
+            const SizedBox(height: 8),
+            Text(
+              'Your payout history will appear here',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[500],
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
