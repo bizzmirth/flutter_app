@@ -2,6 +2,7 @@ import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
   RangeValues _currentRange = const RangeValues(1000, 150000);
   List<String> availableHotelStars = ['3 Star', '4 Star', "5 Star"];
   List<String> selectedHotelStars = [];
-// For mobile filter drawer
+  // For mobile filter drawer
 
   @override
   void initState() {
@@ -294,33 +295,45 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
         final pkg = controller.tourPackages[index];
         final imageUrl = "https://ca.uniqbizz.com/${pkg.image}";
 
-        return Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(10),
-                ),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  height: 150,
-                  width: double.infinity,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    // ✅ Show loader while image is loading
-                    if (loadingProgress == null) {
-                      // Image has loaded successfully
-                      return child;
-                    }
+        // Precache next few images for smoother scrolling
+        if (index < controller.tourPackages.length - 3) {
+          final nextPkg = controller.tourPackages[index + 3];
+          final nextImageUrl = "https://ca.uniqbizz.com/${nextPkg.image}";
+          precacheImage(NetworkImage(nextImageUrl), context);
+        }
 
-                    // Show loading indicator with progress
-                    return Container(
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PackageDetailsPage(
+                  id: pkg.id ?? '',
+                ),
+              ),
+            );
+          },
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(10),
+                  ),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    memCacheWidth:
+                        (MediaQuery.of(context).size.width * 2).toInt(),
+                    placeholder: (context, url) => Container(
                       height: 150,
                       width: double.infinity,
                       color: Colors.grey.shade100,
@@ -332,10 +345,6 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                               strokeWidth: 2,
                               valueColor:
                                   AlwaysStoppedAnimation<Color>(Colors.blue),
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -348,99 +357,99 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                           ],
                         ),
                       ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 150,
-                    width: double.infinity,
-                    color: Colors.grey.shade200,
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.broken_image,
-                          size: 50,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Image failed to load',
-                          style: TextStyle(
-                            fontSize: 12,
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      height: 150,
+                      width: double.infinity,
+                      color: Colors.grey.shade200,
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.broken_image,
+                            size: 50,
                             color: Colors.grey,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  pkg.destination ?? "",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  pkg.name ?? "",
-                  style: const TextStyle(color: Colors.black54),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black, // Default color for "From"
-                        ),
-                        children: [
-                          const TextSpan(
-                            text: "Starts From ",
+                          SizedBox(height: 8),
+                          Text(
+                            'Image failed to load',
                             style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "₹${pkg.price}",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
+                              fontSize: 12,
+                              color: Colors.grey,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PackageDetailsPage(
-                              id: pkg.id!,
-                            ),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color.fromARGB(255, 255, 255, 255),
-                      ),
-                      child: const Text('View Tour Details'),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    pkg.destination ?? "",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    pkg.name ?? "",
+                    style: const TextStyle(color: Colors.black54),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black, // Default color for "From"
+                          ),
+                          children: [
+                            const TextSpan(
+                              text: "Starts From ",
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            TextSpan(
+                              text: "₹${pkg.price}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PackageDetailsPage(
+                                id: pkg.id!,
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 255, 255, 255),
+                        ),
+                        child: const Text('View Tour Details'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

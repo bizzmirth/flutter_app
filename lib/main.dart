@@ -16,6 +16,8 @@ import 'package:bizzmirth_app/controllers/profile_controller.dart';
 import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';

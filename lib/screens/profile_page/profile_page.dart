@@ -504,9 +504,9 @@ class _ProfilePageState extends State<ProfilePage>
         // Name Fields
         Column(
           children: [
-            _buildFormField('First Name', controller.firstName!, isTablet),
+            _buildFormField('First Name', controller.firstName ?? "", isTablet),
             SizedBox(height: 16),
-            _buildFormField('Last Name', controller.lastName!, isTablet),
+            _buildFormField('Last Name', controller.lastName ?? "", isTablet),
           ],
         ),
         SizedBox(height: 20),
@@ -533,16 +533,16 @@ class _ProfilePageState extends State<ProfilePage>
         // Location Fields
         Column(
           children: [
-            _buildDropdownField('Country', controller.country!, isTablet),
+            _buildDropdownField('Country', controller.country ?? "", isTablet),
             SizedBox(height: 16),
-            _buildDropdownField('State', controller.state!, isTablet),
+            _buildDropdownField('State', controller.state ?? "", isTablet),
           ],
         ),
         SizedBox(height: 20),
         // City and Zip
         Column(
           children: [
-            _buildDropdownField('City', controller.city!, isTablet),
+            _buildDropdownField('City', controller.city ?? "", isTablet),
             SizedBox(height: 16),
             _buildFormField('Zip Code', controller.zipCode ?? '', isTablet),
           ],

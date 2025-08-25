@@ -115,4 +115,21 @@ class ToastHelper {
       style: style,
     );
   }
+
+  static void showContactToast({
+    required BuildContext context,
+    String phoneNumber = "+91 9876543210",
+    Alignment alignment = Alignment.bottomCenter,
+    Duration autoCloseDuration = const Duration(seconds: 5),
+    ToastificationStyle style = ToastificationStyle.flatColored,
+  }) {
+    showToast(
+      context: context,
+      type: ToastType.info,
+      title: "Kindly Contact The Company For More Details",
+      alignment: alignment,
+      autoCloseDuration: autoCloseDuration,
+      style: style,
+    );
+  }
 }

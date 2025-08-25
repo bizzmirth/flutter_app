@@ -3,10 +3,14 @@ import 'package:bizzmirth_app/data_source/cust_pending_data_source.dart';
 import 'package:bizzmirth_app/data_source/cust_reg_data_source.dart';
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
+import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/widgets/loader_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +46,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(seconds: 8), () {
+    Future.delayed(const Duration(seconds: 4), () {
       if (mounted) {
         setState(() {
           showLoader = false;
@@ -59,6 +63,55 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
       });
       customerController.apiGetPendingCustomers();
     });
+  }
+
+  Widget getProfileImage(String? profilePicture) {
+    const double imageSize = 40;
+
+    if (profilePicture == null || profilePicture.isEmpty) {
+      return Container(
+        width: imageSize,
+        height: imageSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Image.asset(
+          "assets/default_profile.png",
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    final String imageUrl;
+    if (profilePicture.contains('https://testca.uniqbizz.com/uploading/')) {
+      imageUrl = profilePicture;
+    } else {
+      final newpath = extractPathSegment(profilePicture, 'profile_pic/');
+      imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+    }
+
+    Logger.success("Final image URL: $imageUrl");
+
+    return Container(
+      width: imageSize,
+      height: imageSize,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(strokeWidth: 1.5),
+        ),
+        errorWidget: (context, url, error) => Image.asset(
+          "assets/default_profile.png",
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
   }
 
   void _initializeFilteredCustomers() {
@@ -196,7 +249,8 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
     }
   }
 
-  void _applyFilters() {
+  void _applyFilters(
+      {String? searchTerm, DateTime? fromDate, DateTime? toDate}) {
     final customerController =
         Provider.of<CustomerController>(context, listen: false);
 
@@ -212,18 +266,20 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
         bool matchesDateRange = true;
 
         // Search filter
-        if (searchController.text.isNotEmpty) {
-          String searchTerm = searchController.text.toLowerCase();
-          matchesSearch =
-              customer.firstName?.toLowerCase().contains(searchTerm) == true ||
-                  customer.referenceNo?.toLowerCase().contains(searchTerm) ==
-                      true ||
-                  customer.taReferenceName
-                          ?.toLowerCase()
-                          .contains(searchTerm) ==
-                      true ||
-                  customer.taReferenceNo?.toLowerCase().contains(searchTerm) ==
-                      true;
+        if (searchTerm != null && searchTerm.isNotEmpty) {
+          String searchTermLower = searchTerm.toLowerCase();
+          matchesSearch = customer.firstName
+                      ?.toLowerCase()
+                      .contains(searchTermLower) ==
+                  true ||
+              customer.referenceNo?.toLowerCase().contains(searchTermLower) ==
+                  true ||
+              customer.taReferenceName
+                      ?.toLowerCase()
+                      .contains(searchTermLower) ==
+                  true ||
+              customer.taReferenceNo?.toLowerCase().contains(searchTermLower) ==
+                  true;
         }
 
         // Date range filter
@@ -235,11 +291,11 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
               DateTime? customerDate =
                   inputFormat.parse(customer.registerDate!);
 
-              if (fromDate != null && customerDate.isBefore(fromDate!)) {
+              if (fromDate != null && customerDate.isBefore(fromDate)) {
                 matchesDateRange = false;
               }
               if (toDate != null &&
-                  customerDate.isAfter(toDate!.add(Duration(days: 1)))) {
+                  customerDate.isAfter(toDate.add(Duration(days: 1)))) {
                 matchesDateRange = false;
               }
             } catch (e) {
@@ -293,6 +349,355 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
     });
   }
 
+  void _onRegisteredSearchChanged(String searchTerm) {
+    _applyFilters(searchTerm: searchTerm);
+  }
+
+  void _onRegisteredDateRangeChanged(DateTime? from, DateTime? to) {
+    setState(() {
+      fromDate = from;
+      toDate = to;
+    });
+    _applyFilters(fromDate: from, toDate: to);
+  }
+
+  void _onRegisteredClearFilters() {
+    searchController.clear();
+    _initializeFilteredCustomers();
+  }
+
+  // Helper method to check if the device is a tablet
+  bool get isTablet {
+    final shortestSide = MediaQuery.of(context).size.shortestSide;
+    return shortestSide > 600;
+  }
+
+  // Build list view for pending customers (for mobile)
+  Widget _buildPendingCustomersList(CustomerController customerController) {
+    final customers = filteredPendingCustomers.isEmpty
+        ? customerController.pendingCustomers
+        : filteredPendingCustomers;
+
+    if (customers.isEmpty) {
+      return Center(
+        child: Text(
+          "No pending customers found",
+          style: TextStyle(fontSize: 16),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: customers.length,
+      itemBuilder: (context, index) {
+        final customer = customers[index];
+        return _buildPendingCustomerCard(customer);
+      },
+    );
+  }
+
+  // Build card for a single pending customer
+  Widget _buildPendingCustomerCard(PendingCustomer customer) {
+    String _getStatusText(String status) {
+      switch (status) {
+        case '1':
+          return 'Active';
+        case '3':
+          return 'Inactive';
+        default:
+          return 'Pending';
+      }
+    }
+
+    Color _getStatusColor(String status) {
+      switch (status) {
+        case '1':
+          return Colors.green;
+        case '3':
+          return Colors.red;
+        default:
+          return Colors.orange.shade800;
+      }
+    }
+
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                getProfileImage(customer.profilePicture),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        customer.name ?? "N/A",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text("ID: ${customer.id}"),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Divider(),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Ref. ID: ${customer.taReferenceNo ?? "N/A"}",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Ref. Name: ${customer.taReferenceName ?? "N/A"}",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(customer.status!).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: _getStatusColor(customer.status!).withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    _getStatusText(customer.status!),
+                    style: TextStyle(
+                      color: _getStatusColor(customer.status!),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              "Joining Date: ${formatDate(customer.addedOn)}",
+              style: TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Build list view for registered customers (for mobile)
+  Widget _buildRegisteredCustomersList(CustomerController customerController) {
+    final customers = filteredCustomers.isEmpty &&
+            (searchController.text.isEmpty &&
+                fromDate == null &&
+                toDate == null)
+        ? customerController.registeredCustomers
+        : filteredCustomers;
+
+    if (customers.isEmpty) {
+      return Center(
+        child: Text(
+          "No registered customers found",
+          style: TextStyle(fontSize: 16),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: customers.length,
+      itemBuilder: (context, index) {
+        final customer = customers[index];
+        return _buildRegisteredCustomerCard(customer, customerController);
+      },
+    );
+  }
+
+  // Build card for a single registered customer
+  Widget _buildRegisteredCustomerCard(
+      RegisteredCustomer customer, CustomerController customerController) {
+    String _getStatusText(String status) {
+      switch (status) {
+        case '1':
+          return 'Active';
+        case '3':
+          return 'Inactive';
+        default:
+          return 'Unknown';
+      }
+    }
+
+    Color _getStatusColor(String status) {
+      switch (status) {
+        case '1':
+          return Colors.green;
+        case '3':
+          return Colors.red;
+        default:
+          return Colors.grey;
+      }
+    }
+
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                getProfileImage(customer.profilePicture),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        customer.name ?? "N/A",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text("Customer ID: ${customer.caCustomerId}"),
+                    ],
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    switch (value) {
+                      case "edit":
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddReferralCustomer(
+                              registeredCustomer: customer,
+                              isEditMode: true,
+                            ),
+                          ),
+                        ).then((_) {
+                          customerController.apiGetRegisteredCustomers();
+                          customerController.apiGetPendingCustomers();
+                        });
+                        break;
+                      case "delete":
+                        customerController.apiDeleteCustomer(context, customer);
+                        break;
+                      case "restore":
+                        customerController.apiRestoreCustomer(
+                            context, customer);
+                        break;
+                    }
+                  },
+                  itemBuilder: (BuildContext context) {
+                    List<PopupMenuEntry<String>> menuItems = [];
+
+                    if (customer.status == "1") {
+                      menuItems.addAll([
+                        PopupMenuItem(
+                          value: "edit",
+                          child: ListTile(
+                            leading: Icon(Icons.edit, color: Colors.blueAccent),
+                            title: Text("Edit"),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: "delete",
+                          child: ListTile(
+                            leading: Icon(Icons.delete, color: Colors.red),
+                            title: Text("Delete"),
+                          ),
+                        ),
+                      ]);
+                    } else if (customer.status == "3") {
+                      menuItems.add(
+                        PopupMenuItem(
+                          value: "restore",
+                          child: ListTile(
+                            leading: Icon(Icons.restore, color: Colors.green),
+                            title: Text("Restore"),
+                          ),
+                        ),
+                      );
+                    }
+
+                    return menuItems;
+                  },
+                  icon: Icon(Icons.more_vert, color: Colors.black54),
+                ),
+              ],
+            ),
+            Divider(),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Reg. ID: ${customer.taReferenceNo ?? "N/A"}",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Reg. Name: ${customer.taReferenceName ?? "N/A"}",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(customer.status!).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: _getStatusColor(customer.status!).withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    _getStatusText(customer.status!),
+                    style: TextStyle(
+                      color: _getStatusColor(customer.status!),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              "Joining Date: ${customer.registerDate ?? "N/A"}",
+              style: TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<CustomerController>(
@@ -307,311 +712,217 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           ? customerController.registeredCustomers.length.toString()
           : filteredCustomers.length.toString();
 
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'View Referral Customers',
-            style: Appwidget.poppinsAppBarTitle(),
+      return WillPopScope(
+        onWillPop: () async {
+          // When back is pressed, go to HomePage
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CDashboardPage(),
+            ),
+          );
+          return false; // Prevent default back behavior
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'View Referral Customers',
+              style: Appwidget.poppinsAppBarTitle(),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.blueAccent,
+            elevation: 0,
           ),
-          centerTitle: true,
-          backgroundColor: Colors.blueAccent,
-          elevation: 0,
-        ),
-        body: (showLoader)
-            ? const AppLoader()
-            : SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Divider(thickness: 1, color: Colors.black26),
-                      Center(
-                        child: Padding(
+          body: (showLoader)
+              ? const AppLoader()
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Divider(thickness: 1, color: Colors.black26),
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              "All Pending Referral Customer's List:",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        Divider(thickness: 1, color: Colors.black26),
+                        FilterBar(
+                          userCount: pendingUserCount,
+                          onSearchChanged: _onPendingSearchChanged,
+                          onDateRangeChanged: _onPendingDateRangeChanged,
+                          onClearFilters: _onPendingClearFilters,
+                        ),
+
+                        // Show table on tablet, list on phone
+                        isTablet
+                            ? Card(
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: SizedBox(
+                                  height: (_rowsPerPage * dataRowHeight) +
+                                      headerHeight +
+                                      paginationHeight,
+                                  child: PaginatedDataTable(
+                                    columnSpacing: 36,
+                                    dataRowMinHeight: 40,
+                                    columns: [
+                                      DataColumn(label: Text("Image")),
+                                      DataColumn(label: Text("ID")),
+                                      DataColumn(label: Text("Full Name")),
+                                      DataColumn(label: Text("Ref. ID")),
+                                      DataColumn(label: Text("Ref. Name")),
+                                      DataColumn(label: Text("Joining Date")),
+                                      DataColumn(label: Text("Status")),
+                                    ],
+                                    source: MyrefCustPendingDataSource(
+                                        filteredPendingCustomers.isEmpty
+                                            ? customerController
+                                                .pendingCustomers
+                                            : filteredPendingCustomers,
+                                        this.context),
+                                    rowsPerPage: _rowsPerPage,
+                                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                                    onRowsPerPageChanged: (value) {
+                                      if (value != null) {
+                                        setState(() {
+                                          _rowsPerPage = value;
+                                        });
+                                      }
+                                    },
+                                    arrowHeadColor: Colors.blue,
+                                  ),
+                                ),
+                              )
+                            : _buildPendingCustomersList(customerController),
+
+                        SizedBox(height: 35),
+                        Divider(thickness: 1, color: Colors.black26),
+                        Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Text(
-                            "All Pending Referral Customer's List:",
+                            "All Registered Referral Customer's List:",
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
-                      ),
-                      Divider(thickness: 1, color: Colors.black26),
-                      FilterBar(
-                        userCount: pendingUserCount,
-                        onSearchChanged: _onPendingSearchChanged,
-                        onDateRangeChanged: _onPendingDateRangeChanged,
-                        onClearFilters: _onPendingClearFilters,
-                      ),
+                        Divider(thickness: 1, color: Colors.black26),
 
-                      // Paginated Table for Pending List
-                      Card(
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        // Filter Bar
+                        FilterBar(
+                          userCount: userCount,
+                          onSearchChanged: _onRegisteredSearchChanged,
+                          onDateRangeChanged: _onRegisteredDateRangeChanged,
+                          onClearFilters: _onRegisteredClearFilters,
                         ),
-                        child: SizedBox(
-                          height: (_rowsPerPage * dataRowHeight) +
-                              headerHeight +
-                              paginationHeight,
-                          child: PaginatedDataTable(
-                            columnSpacing: 36,
-                            dataRowMinHeight: 40,
-                            columns: [
-                              DataColumn(label: Text("Image")),
-                              DataColumn(label: Text("ID")),
-                              DataColumn(label: Text("Full Name")),
-                              DataColumn(label: Text("Ref. ID")),
-                              DataColumn(label: Text("Ref. Name")),
-                              DataColumn(label: Text("Joining Date")),
-                              DataColumn(label: Text("Status")),
-                            ],
-                            source: MyrefCustPendingDataSource(
-                                // Use filtered pending customers
-                                filteredPendingCustomers.isEmpty
-                                    ? customerController.pendingCustomers
-                                    : filteredPendingCustomers,
-                                this.context),
-                            rowsPerPage: _rowsPerPage,
-                            availableRowsPerPage: [5, 10, 15, 20, 25],
-                            onRowsPerPageChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _rowsPerPage = value;
-                                });
-                              }
-                            },
-                            arrowHeadColor: Colors.blue,
+
+                        // Error Messages
+                        if (fromDateError != null || toDateError != null)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 4.0),
+                            child: Row(
+                              children: [
+                                if (fromDateError != null)
+                                  Text(
+                                    fromDateError!,
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 12),
+                                  ),
+                                if (fromDateError != null &&
+                                    toDateError != null)
+                                  Text(" | ",
+                                      style: TextStyle(color: Colors.red)),
+                                if (toDateError != null)
+                                  Text(
+                                    toDateError!,
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 12),
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ),
 
-                      SizedBox(height: 35),
-                      Divider(thickness: 1, color: Colors.black26),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Text(
-                          "All Registered Referral Customer's List:",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Divider(thickness: 1, color: Colors.black26),
-
-                      // Filter Bar
-                      Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 15),
-                              // Search Bar
-                              Expanded(
-                                flex: 2,
-                                child: TextField(
-                                  controller: searchController,
-                                  decoration: InputDecoration(
-                                    hintText: "Search...",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 10),
+                        // Show table on tablet, list on phone
+                        isTablet
+                            ? Card(
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: SizedBox(
+                                  height: (_rowsPerPage1 * dataRowHeight) +
+                                      headerHeight +
+                                      paginationHeight,
+                                  child: PaginatedDataTable(
+                                    columnSpacing: 36,
+                                    dataRowMinHeight: 40,
+                                    columns: [
+                                      DataColumn(label: Text("Image")),
+                                      DataColumn(label: Text("Customer ID")),
+                                      DataColumn(label: Text("Full Name")),
+                                      DataColumn(label: Text("Reg. ID")),
+                                      DataColumn(label: Text("Reg. Name")),
+                                      DataColumn(label: Text("Joining Date")),
+                                      DataColumn(label: Text("Status")),
+                                      DataColumn(label: Text("Action"))
+                                    ],
+                                    source: MyrefCustRegDataSource(
+                                        filteredCustomers.isEmpty &&
+                                                (searchController
+                                                        .text.isEmpty &&
+                                                    fromDate == null &&
+                                                    toDate == null)
+                                            ? customerController
+                                                .registeredCustomers
+                                            : filteredCustomers,
+                                        this.context),
+                                    rowsPerPage: _rowsPerPage1,
+                                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                                    onRowsPerPageChanged: (value) {
+                                      if (value != null) {
+                                        setState(() {
+                                          _rowsPerPage1 = value;
+                                        });
+                                      }
+                                    },
+                                    arrowHeadColor: Colors.blue,
                                   ),
                                 ),
-                              ),
-
-                              SizedBox(width: 10),
-
-                              // From Date Picker
-                              Expanded(
-                                flex: 1,
-                                child: GestureDetector(
-                                  onTap: () => _selectDate(context, true),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: fromDateError != null
-                                          ? Border.all(
-                                              color: Colors.red, width: 1)
-                                          : null,
-                                    ),
-                                    alignment: Alignment.center,
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    child: Text(
-                                      fromDate == null
-                                          ? "From Date"
-                                          : DateFormat.yMMMd()
-                                              .format(fromDate!),
-                                      style: TextStyle(color: Colors.black54),
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              Text("  --  "),
-
-                              // To Date Picker
-                              Expanded(
-                                flex: 1,
-                                child: GestureDetector(
-                                  onTap: () => _selectDate(context, false),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: toDateError != null
-                                          ? Border.all(
-                                              color: Colors.red, width: 1)
-                                          : null,
-                                    ),
-                                    alignment: Alignment.center,
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    child: Text(
-                                      toDate == null
-                                          ? "To Date"
-                                          : DateFormat.yMMMd().format(toDate!),
-                                      style: TextStyle(color: Colors.black54),
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              SizedBox(width: 10),
-
-                              // Count Users
-                              Expanded(
-                                flex: 1,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  alignment: Alignment.center,
-                                  padding: EdgeInsets.symmetric(vertical: 12),
-                                  child: Text("Users: $userCount"),
-                                ),
-                              ),
-
-                              SizedBox(width: 10),
-
-                              // Clear Filters Button
-                              IconButton(
-                                onPressed: _clearFilters,
-                                icon: Icon(Icons.clear, color: Colors.red),
-                                tooltip: "Clear Filters",
-                              ),
-
-                              SizedBox(width: 16),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // Error Messages
-                      if (fromDateError != null || toDateError != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 4.0),
-                          child: Row(
-                            children: [
-                              if (fromDateError != null)
-                                Text(
-                                  fromDateError!,
-                                  style: TextStyle(
-                                      color: Colors.red, fontSize: 12),
-                                ),
-                              if (fromDateError != null && toDateError != null)
-                                Text(" | ",
-                                    style: TextStyle(color: Colors.red)),
-                              if (toDateError != null)
-                                Text(
-                                  toDateError!,
-                                  style: TextStyle(
-                                      color: Colors.red, fontSize: 12),
-                                ),
-                            ],
-                          ),
-                        ),
-
-                      // Paginated Table for Registered List
-                      Card(
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: SizedBox(
-                          height: (_rowsPerPage1 * dataRowHeight) +
-                              headerHeight +
-                              paginationHeight,
-                          child: PaginatedDataTable(
-                            columnSpacing: 36,
-                            dataRowMinHeight: 40,
-                            columns: [
-                              DataColumn(label: Text("Image")),
-                              DataColumn(label: Text("Customer ID")),
-                              DataColumn(label: Text("Full Name")),
-                              DataColumn(label: Text("Reg. ID")),
-                              DataColumn(label: Text("Reg. Name")),
-                              DataColumn(label: Text("Joining Date")),
-                              DataColumn(label: Text("Status")),
-                              DataColumn(label: Text("Action"))
-                            ],
-                            source: MyrefCustRegDataSource(
-                                // Use filtered customers if available, otherwise use all customers
-                                filteredCustomers.isEmpty &&
-                                        (searchController.text.isEmpty &&
-                                            fromDate == null &&
-                                            toDate == null)
-                                    ? customerController.registeredCustomers
-                                    : filteredCustomers,
-                                this.context),
-                            rowsPerPage: _rowsPerPage1,
-                            availableRowsPerPage: [5, 10, 15, 20, 25],
-                            onRowsPerPageChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _rowsPerPage1 = value;
-                                });
-                              }
-                            },
-                            arrowHeadColor: Colors.blue,
-                          ),
-                        ),
-                      ),
-                    ],
+                              )
+                            : _buildRegisteredCustomersList(customerController),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const AddReferralCustomer()),
-            );
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AddReferralCustomer()),
+              );
 
-            final customerController = context.read<CustomerController>();
-            await customerController.apiGetRegisteredCustomers();
-            await customerController.apiGetPendingCustomers();
-            // Refresh filtered customers after API calls
-            _initializeFilteredCustomers();
-          },
-          backgroundColor: const Color.fromARGB(255, 153, 198, 250),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
+              final customerController = context.read<CustomerController>();
+              await customerController.apiGetRegisteredCustomers();
+              await customerController.apiGetPendingCustomers();
+              // Refresh filtered customers after API calls
+              _initializeFilteredCustomers();
+            },
+            backgroundColor: const Color.fromARGB(255, 153, 198, 250),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50),
+            ),
+            tooltip: "Add New Referral Customer",
+            child: Icon(Icons.add, size: 30),
           ),
-          tooltip: "Add New Referral Customer",
-          child: Icon(Icons.add, size: 30),
         ),
       );
     });

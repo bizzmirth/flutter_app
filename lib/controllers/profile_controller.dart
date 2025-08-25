@@ -26,6 +26,7 @@ class ProfileController extends ChangeNotifier {
   String? _dob;
   String? _fullAddress;
   String? _compCheck;
+  String? _customerType;
 
   String? get firstName => _firstName;
   String? get lastName => _lastName;
@@ -35,6 +36,7 @@ class ProfileController extends ChangeNotifier {
   String? get dob => _dob;
   String? get fullAddress => _fullAddress;
   String? get compCheck => _compCheck;
+  String? get customerType => _customerType;
 
   // Location details
   String? _country;
@@ -94,11 +96,14 @@ class ProfileController extends ChangeNotifier {
         final decoded = jsonDecode(response.body);
 
         if (decoded['status'] == 'success') {
+          _customerType = decoded['data']['customer_type'];
           final basicInfo = decoded['data']['basic_info'];
           final location = decoded['data']['location'];
           final documents = decoded['data']['documents'];
           final compCheck = decoded['data']['comp_chek'];
           _compCheck = compCheck;
+
+          Logger.success("Customer Type from API: $_customerType");
           Logger.success("documents $documents and comp check is $_compCheck");
 
           // Personal Info
