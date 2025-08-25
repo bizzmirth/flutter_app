@@ -120,7 +120,7 @@ class _FilterBarState extends State<FilterBar> {
               borderRadius: BorderRadius.circular(10),
             ),
             padding:
-                EdgeInsets.symmetric(horizontal: isTablet ? 6 : 4, vertical: 6),
+                EdgeInsets.symmetric(horizontal: isTablet ? 6 : 7, vertical: 8),
             child: isTablet
                 ? _buildTabletLayout(totalUsers)
                 : _buildPhoneLayout(totalUsers),

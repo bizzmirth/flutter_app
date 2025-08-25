@@ -6,6 +6,7 @@ import 'package:bizzmirth_app/screens/dashboards/business_mentor/business_mentor
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
+import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/loader_widget.dart';
 import 'package:flutter/material.dart';
@@ -153,363 +154,176 @@ class _LoginPageState extends State<LoginPage> {
     final isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          // Background Image
-          SizedBox.expand(
-            child: _controller.value.isInitialized
-                ? FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: _controller.value.size.width,
-                      height: _controller.value.size.height,
-                      child: VideoPlayer(_controller),
-                    ),
-                  )
-                : Container(color: Colors.black),
+    return WillPopScope(
+      onWillPop: () async {
+        // When back is pressed, go to ReferralCustomersPage instead of previous page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
           ),
-
-          // Dark Overlay
-          Positioned.fill(
-            // ignore: deprecated_member_use
-            child: Container(color: Colors.black.withOpacity(0.5)),
-          ),
-
-          // Login Form
-          Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isPortrait ? 190 : 380,
-                  vertical: 50,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // App Logo
-                    Image.asset(
-                      "assets/uniqbizz.png",
-                      height: 100,
-                    ),
-                    const SizedBox(height: 1),
-
-                    Form(
-                      key: _loginFormKey,
-                      child: Container(
-                        width: screenWidth * 0.6,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 30),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              // ignore: deprecated_member_use
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            _buildCustomDropdown(
-                              'Users *',
-                              controller.userTypeNames,
-                            ),
-                            const SizedBox(height: 10),
-                            if (controller.errorMessage != null)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: Text(
-                                  controller.errorMessage!,
-                                  style: const TextStyle(color: Colors.red),
-                                ),
-                              ),
-                            // Email Input
-                            TextFormField(
-                              controller: controller.emailController,
-                              decoration: InputDecoration(
-                                labelText: 'Email',
-                                prefixIcon:
-                                    const Icon(Icons.email, color: Colors.blue),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-
-                            // Password Input
-                            TextFormField(
-                              controller: controller.passwordController,
-                              obscureText: controller.obscurePassword,
-                              decoration: InputDecoration(
-                                labelText: 'Password',
-                                prefixIcon:
-                                    const Icon(Icons.lock, color: Colors.blue),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    controller.obscurePassword
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    color: Colors.grey,
-                                  ),
-                                  onPressed: () =>
-                                      controller.togglePasswordVisibility(),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-
-                            // Remember Me
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Remember Me Checkbox
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                      value: controller.rememberMe,
-                                      onChanged: (value) =>
-                                          controller.toggleRememberMe(value!),
-                                    ),
-                                    const Text("Remember Me"),
-                                  ],
-                                ),
-
-                                // Forgot Password Button
-                                TextButton(
-                                  onPressed: () {
-                                    // Navigate to Forgot Password Page (Placeholder)
-                                  },
-                                  child: const Text(
-                                    "Forgot Password?",
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            // Login Button
-                            ElevatedButton(
-                              onPressed: controller.isLoading
-                                  ? null
-                                  : () => _handleLogin(context),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    const Color.fromARGB(255, 81, 131, 246),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 50, vertical: 15),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                              ),
-                              child: const Text(
-                                'Login',
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color.fromARGB(255, 255, 255, 255)),
-                              ),
-                            ),
-                          ],
-                        ),
+        );
+        return false; // Prevent default back behavior
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            // Background Image
+            SizedBox.expand(
+              child: _controller.value.isInitialized
+                  ? FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: _controller.value.size.width,
+                        height: _controller.value.size.height,
+                        child: VideoPlayer(_controller),
                       ),
-                    ),
-                    const SizedBox(height: 50),
-
-                    // Footer Text
-                    Text(
-                      "© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays",
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Image.asset(
-                      "assets/bizz_logo.png",
-                      height: 100,
-                    ),
-                  ],
-                ),
-              ),
+                    )
+                  : Container(color: Colors.black),
             ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildPhoneLayout(BuildContext context, LoginController controller) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          SizedBox.expand(
-            child: _controller.value.isInitialized
-                ? FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: _controller.value.size.width,
-                      height: _controller.value.size.height,
-                      child: VideoPlayer(_controller),
-                    ),
-                  )
-                : Container(color: Colors.black),
-          ),
-          // Dark Overlay
-          Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.5)),
-          ),
+            // Dark Overlay
+            Positioned.fill(
+              // ignore: deprecated_member_use
+              child: Container(color: Colors.black.withOpacity(0.5)),
+            ),
 
-          // Login Content
-          SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
+            // Login Form
+            Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isPortrait ? 190 : 380,
+                    vertical: 50,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(height: 160),
                       // App Logo
                       Image.asset(
                         "assets/uniqbizz.png",
-                        height: 40,
+                        height: 100,
                       ),
-                      SizedBox(height: 10),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Form(
+                      const SizedBox(height: 1),
+
+                      Form(
                         key: _loginFormKey,
-                        child: Column(
-                          children: [
-                            _buildCustomDropdown(
-                              'Users *',
-                              controller.userTypeNames,
-                            ),
-                            const SizedBox(height: 10),
-                            if (controller.errorMessage != null)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: Text(
-                                  controller.errorMessage!,
-                                  style: const TextStyle(color: Colors.red),
-                                ),
+                        child: Container(
+                          width: screenWidth * 0.6,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 50, vertical: 30),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                // ignore: deprecated_member_use
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
                               ),
-                            // Email Input
-                            TextFormField(
-                              controller: controller.emailController,
-                              decoration: InputDecoration(
-                                labelText: 'Email',
-                                prefixIcon:
-                                    const Icon(Icons.email, color: Colors.blue),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              _buildCustomDropdown(
+                                'Users *',
+                                controller.userTypeNames,
                               ),
-                            ),
-                            const SizedBox(height: 15),
-
-                            // Password Input
-                            TextFormField(
-                              controller: controller.passwordController,
-                              obscureText: controller.obscurePassword,
-                              decoration: InputDecoration(
-                                labelText: 'Password',
-                                prefixIcon:
-                                    const Icon(Icons.lock, color: Colors.blue),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    controller.obscurePassword
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    color: Colors.grey,
-                                  ),
-                                  onPressed: () =>
-                                      controller.togglePasswordVisibility(),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-
-                            // Remember Me
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Remember Me Checkbox
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                      value: controller.rememberMe,
-                                      onChanged: (value) =>
-                                          controller.toggleRememberMe(value!),
-                                    ),
-                                    const Text("Remember Me"),
-                                  ],
-                                ),
-
-                                // Forgot Password Button
-                                TextButton(
-                                  onPressed: () {
-                                    // Navigate to Forgot Password Page (Placeholder)
-                                  },
-                                  child: const Text(
-                                    "Forgot Password?",
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                              const SizedBox(height: 10),
+                              if (controller.errorMessage != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Text(
+                                    controller.errorMessage!,
+                                    style: const TextStyle(color: Colors.red),
                                   ),
                                 ),
-                              ],
-                            ),
+                              // Email Input
+                              TextFormField(
+                                controller: controller.emailController,
+                                decoration: InputDecoration(
+                                  labelText: 'Email',
+                                  prefixIcon: const Icon(Icons.email,
+                                      color: Colors.blue),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
 
-                            const SizedBox(height: 15),
+                              // Password Input
+                              TextFormField(
+                                controller: controller.passwordController,
+                                obscureText: controller.obscurePassword,
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  prefixIcon: const Icon(Icons.lock,
+                                      color: Colors.blue),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      controller.obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.grey,
+                                    ),
+                                    onPressed: () =>
+                                        controller.togglePasswordVisibility(),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
 
-                            // Login Button
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
+                              // Remember Me
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Remember Me Checkbox
+                                  Row(
+                                    children: [
+                                      Checkbox(
+                                        value: controller.rememberMe,
+                                        onChanged: (value) =>
+                                            controller.toggleRememberMe(value!),
+                                      ),
+                                      const Text("Remember Me"),
+                                    ],
+                                  ),
+
+                                  // Forgot Password Button
+                                  TextButton(
+                                    onPressed: () {
+                                      // Navigate to Forgot Password Page (Placeholder)
+                                    },
+                                    child: const Text(
+                                      "Forgot Password?",
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              // Login Button
+                              ElevatedButton(
                                 onPressed: controller.isLoading
                                     ? null
                                     : () => _handleLogin(context),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
                                       const Color.fromARGB(255, 81, 131, 246),
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 15),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 50, vertical: 15),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25),
                                   ),
@@ -522,41 +336,261 @@ class _LoginPageState extends State<LoginPage> {
                                           Color.fromARGB(255, 255, 255, 255)),
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 50),
+
+                      // Footer Text
+                      Text(
+                        "© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Image.asset(
+                        "assets/bizz_logo.png",
+                        height: 100,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhoneLayout(BuildContext context, LoginController controller) {
+    return WillPopScope(
+      onWillPop: () async {
+        // When back is pressed, go to ReferralCustomersPage instead of previous page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+        );
+        return false; // Prevent default back behavior
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            SizedBox.expand(
+              child: _controller.value.isInitialized
+                  ? FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: _controller.value.size.width,
+                        height: _controller.value.size.height,
+                        child: VideoPlayer(_controller),
+                      ),
+                    )
+                  : Container(color: Colors.black),
+            ),
+            // Dark Overlay
+            Positioned.fill(
+              child: Container(color: Colors.black.withOpacity(0.5)),
+            ),
+
+            // Login Content
+            SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        SizedBox(height: 160),
+                        // App Logo
+                        Image.asset(
+                          "assets/uniqbizz.png",
+                          height: 40,
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
                             ),
                           ],
                         ),
+                        child: Form(
+                          key: _loginFormKey,
+                          child: Column(
+                            children: [
+                              _buildCustomDropdown(
+                                'Users *',
+                                controller.userTypeNames,
+                              ),
+                              const SizedBox(height: 10),
+                              if (controller.errorMessage != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Text(
+                                    controller.errorMessage!,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              // Email Input
+                              TextFormField(
+                                controller: controller.emailController,
+                                decoration: InputDecoration(
+                                  labelText: 'Email',
+                                  prefixIcon: const Icon(Icons.email,
+                                      color: Colors.blue),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 15),
+
+                              // Password Input
+                              TextFormField(
+                                controller: controller.passwordController,
+                                obscureText: controller.obscurePassword,
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  prefixIcon: const Icon(Icons.lock,
+                                      color: Colors.blue),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      controller.obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.grey,
+                                    ),
+                                    onPressed: () =>
+                                        controller.togglePasswordVisibility(),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+
+                              // Remember Me
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Remember Me Checkbox
+                                  Row(
+                                    children: [
+                                      Checkbox(
+                                        value: controller.rememberMe,
+                                        onChanged: (value) =>
+                                            controller.toggleRememberMe(value!),
+                                      ),
+                                      const Text("Remember Me"),
+                                    ],
+                                  ),
+
+                                  // Forgot Password Button
+                                  TextButton(
+                                    onPressed: () {
+                                      // Navigate to Forgot Password Page (Placeholder)
+                                    },
+                                    child: const Text(
+                                      "Forgot Password?",
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 15),
+
+                              // Login Button
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: controller.isLoading
+                                      ? null
+                                      : () => _handleLogin(context),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 81, 131, 246),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Login',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color:
+                                            Color.fromARGB(255, 255, 255, 255)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 60, top: 10),
-                    child: Column(
-                      children: [
-                        // Footer Text
-                        Text(
-                          "© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays",
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 60, top: 10),
+                      child: Column(
+                        children: [
+                          // Footer Text
+                          Text(
+                            "© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 10),
-                        Image.asset(
-                          "assets/bizz_logo.png",
-                          height: 70,
-                        ),
-                      ],
+                          const SizedBox(height: 10),
+                          Image.asset(
+                            "assets/bizz_logo.png",
+                            height: 70,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // very important!
+    super.dispose();
   }
 
   @override
