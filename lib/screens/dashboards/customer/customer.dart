@@ -1,8 +1,10 @@
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/controllers/profile_controller.dart';
+import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/models/user_type_mode.dart';
+import 'package:bizzmirth_app/screens/contact_us/contact_us.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_referral_payouts.dart';
@@ -82,6 +84,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
       final customerController = context.read<CustomerController>();
       final profileController = context.read<ProfileController>();
 
+      await SharedPrefHelper()
+          .setCustomerName(profileController.firstName ?? '');
+      await SharedPrefHelper()
+          .setCustomerProfilePic(profileController.profilePic ?? '');
+
       int attempts = 0;
       while (customerController.isLoading && attempts < 20) {
         await Future.delayed(Duration(milliseconds: 100));
@@ -153,303 +160,910 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Widget bodywidget(String type) {
     if (type == "Premium") {
       return premiumWidget(type);
-    } else if (type == "Premium Select") {
+    } else if (type == "Premium Select Lite") {
       return premiumSelectWidget(type);
     } else if (type == "Neo Select") {
       return neoSelectWidget(type);
     } else {
-      return Center(child: Text('No content available'));
+      return freeuser();
     }
   }
 
   Widget freeuser() {
-    final isTablet = MediaQuery.of(context).size.width > 600;
     final customerController = context.read<CustomerController>();
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      FreeUserCard(),
-      SizedBox(height: 20),
-      CustomAnimatedSummaryCards(
-        cardData: [
-          SummaryCardData(
-              title: 'Registered Customers',
-              value: customerController.registerCustomerTotal!,
-              thisMonthValue: customerController.registerCustomerThisMonth,
-              icon: Icons.people),
-          SummaryCardData(
-              title: 'Completed Tours',
-              value: customerController.completedTourTotal!,
-              thisMonthValue: customerController.completedTourThisMonth,
-              icon: Icons.map_outlined),
-          SummaryCardData(
-              title: 'Upcoming Tours',
-              value: customerController.upcomingTourTotal!,
-              thisMonthValue: customerController.upcomingTourThisMonth,
-              icon: Icons.history),
-          SummaryCardData(
-              title: 'Commision Earned',
-              value: customerController.commisionEarnedTotal!,
-              thisMonthValue: customerController.pendingCommissionTotal,
-              icon: Icons.money),
-        ],
-      ),
-      SizedBox(height: 20),
-      if (_isDashboardInitialized)
-        ImprovedLineChart(
-          initialYear: _cachedRegDate ?? customerController.userRegDate,
-          key: ValueKey(
-              'chart_${_cachedRegDate ?? customerController.userRegDate}'),
-        )
-      else
-        SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading chart data...'),
-              ],
-            ),
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with upgrade CTA
+          FreeUserCard(),
+
+          SizedBox(height: 24),
+
+          // Stats Cards with improved design
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final cardWidth = constraints.maxWidth > 500 ? 0.489 : 1;
+              return Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: [
+                  SizedBox(
+                    width: constraints.maxWidth * cardWidth,
+                    child: _buildStatCard(
+                      context: context,
+                      title: 'Your Referrals',
+                      value: "Upgrade to view",
+                      icon: Icons.people_outline,
+                      color: Colors.blue,
+                      hasData: false,
+                      onTap: () => _showUpgradePrompt(context),
+                    ),
+                  ),
+                  SizedBox(
+                    width: constraints.maxWidth * cardWidth,
+                    child: _buildStatCard(
+                      context: context,
+                      title: 'Available Tours',
+                      value: "Sign Up to know more",
+                      icon: Icons.explore_outlined,
+                      color: Colors.green,
+                      hasData: false,
+                      onTap: () => _showUpgradePrompt(context),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
-        ),
-      SizedBox(height: 20),
-      Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Divider(thickness: 1, color: Colors.black26),
-            Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  "Top Customers Referral",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+
+          SizedBox(height: 24),
+
+          // Premium Features Card
+          Card(
+            elevation: 2,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDarkMode
+                      ? [Colors.grey.shade800, Colors.grey.shade700]
+                      : [Colors.white, Colors.grey.shade50],
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: isDarkMode
+                        ? [Colors.indigo.shade800, Colors.purple.shade800]
+                        : [Colors.indigo.shade50, Colors.purple.shade50],
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header with icon
+                      Row(
+                        children: [
+                          Icon(Icons.workspace_premium,
+                              size: 24, color: Colors.amber),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              "Unlock Premium Benefits",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: isDarkMode
+                                    ? Colors.white
+                                    : Colors.indigo.shade800,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 16),
+
+                      // Subtitle
+                      Text(
+                        "Upgrade your account to access exclusive features:",
+                        style: TextStyle(
+                          color: isDarkMode
+                              ? Colors.white70
+                              : Colors.indigo.shade700,
+                          fontSize: 14,
+                        ),
+                      ),
+
+                      SizedBox(height: 20),
+
+                      // Features in a responsive grid
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final crossAxisCount =
+                              constraints.maxWidth > 400 ? 2 : 1;
+                          return GridView.count(
+                            crossAxisCount: crossAxisCount,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            childAspectRatio: crossAxisCount == 2 ? 3.5 : 4,
+                            children: [
+                              _buildFeatureCard(
+                                  "Earn Commission",
+                                  Icons.monetization_on,
+                                  Colors.green,
+                                  "Get paid for every successful referral",
+                                  context),
+                              _buildFeatureCard(
+                                  "Premium Tours",
+                                  Icons.star,
+                                  Colors.amber,
+                                  "Access exclusive tour packages",
+                                  context),
+                              _buildFeatureCard(
+                                  "Referral Bonuses",
+                                  Icons.card_giftcard,
+                                  Colors.purple,
+                                  "Special rewards for top referrers",
+                                  context),
+                              _buildFeatureCard(
+                                  "Exclusive Discounts",
+                                  Icons.discount,
+                                  Colors.blue,
+                                  "Member-only pricing on all tours",
+                                  context),
+                            ],
+                          );
+                        },
+                      ),
+
+                      SizedBox(height: 24),
+
+                      // CTA Button with icon
+                      ElevatedButton.icon(
+                        onPressed: () => _showMembershipOptions(context),
+                        icon: Icon(Icons.rocket_launch, size: 20),
+                        label: Text("Explore Membership Plans"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isDarkMode
+                              ? Colors.amber.shade700
+                              : Colors.indigo,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          minimumSize: Size(double.infinity, 52),
+                          elevation: 2,
+                          shadowColor: Colors.indigo.withOpacity(0.3),
+                        ),
+                      ),
+
+                      SizedBox(height: 8),
+                    ],
+                  ),
                 ),
               ),
             ),
-            Divider(thickness: 1, color: Colors.black26),
-            FilterBar(
-              userCount:
-                  customerController.topCustomerRefererals.length.toString(),
-            ),
+          ),
+
+          SizedBox(height: 24),
+
+          // Limited preview section with improved design
+          if (customerController.topCustomerRefererals != null &&
+              customerController.topCustomerRefererals!.isNotEmpty)
             Card(
-              elevation: 5,
+              elevation: 2,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: isTablet
-                  ? SizedBox(
-                      height: (_rowsPerPage * dataRowHeight) +
-                          headerHeight +
-                          paginationHeight,
-                      child: customerController.isLoading
-                          ? Center(child: CircularProgressIndicator())
-                          : PaginatedDataTable(
-                              columns: [
-                                DataColumn(label: Text("Rank")),
-                                DataColumn(label: Text("Profile Picture")),
-                                DataColumn(label: Text("Full Name")),
-                                DataColumn(label: Text("Date Reg")),
-                                DataColumn(label: Text("Total CU Ref")),
-                                DataColumn(label: Text("Status")),
-                                DataColumn(label: Text("Active/Inactive")),
-                              ],
-                              source: CustTopReferralCustomers(
-                                  customers:
-                                      customerController.topCustomerRefererals),
-                              rowsPerPage: _rowsPerPage,
-                              availableRowsPerPage: [5, 10, 15, 20, 25],
-                              onRowsPerPageChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _rowsPerPage = value;
-                                  });
-                                }
-                              },
-                              arrowHeadColor: Colors.blue,
-                            ),
-                    )
-                  : Column(
+                  borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount:
-                              customerController.topCustomerRefererals.length,
-                          itemBuilder: (context, index) {
-                            final customer =
-                                customerController.topCustomerRefererals[index];
-                            return Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
+                        Icon(Icons.leaderboard, size: 20, color: Colors.blue),
+                        SizedBox(width: 8),
+                        Text(
+                          "Top Referrers Preview",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode
+                                ? Colors.white
+                                : Colors.grey.shade800,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.lock_outline, size: 16, color: Colors.grey),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "Upgrade to see the full leaderboard and your ranking",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    // Show limited preview (first 2 items)
+                    Container(
+                      height: 180,
+                      decoration: BoxDecoration(
+                        color: isDarkMode
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.lock_outline,
+                              size: 48,
+                              color: Colors.grey.shade400,
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              "Upgrade to unlock detailed analytics",
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w500,
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Header with rank and profile
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Rank badge
-                                        Container(
-                                          width: 36,
-                                          height: 36,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            color: (index + 1) <= 3
-                                                ? Colors.amber.withOpacity(0.2)
-                                                : Colors.grey.withOpacity(0.1),
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: (index + 1) <= 3
-                                                  ? Colors.amber
-                                                  : Colors.grey,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              color: (index + 1) <= 3
-                                                  ? Colors.amber[800]
-                                                  : Colors.grey[700],
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 12),
-
-                                        // Profile picture
-                                        CircleAvatar(
-                                          radius: 20,
-                                          backgroundColor: Colors.transparent,
-                                          child: getProfileImage(
-                                              customer.profilePic),
-                                        ),
-                                        SizedBox(width: 12),
-
-                                        // Name and date
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                customer.name ?? 'N/A',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              SizedBox(height: 4),
-                                              Text(
-                                                customer.registeredDate ??
-                                                    'N/A',
-                                                style: TextStyle(
-                                                  color: Colors.grey[600],
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    SizedBox(height: 16),
-
-                                    // Stats row
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        // Total referrals
-                                        _buildStatItem(
-                                          Icons.people,
-                                          'Total',
-                                          '${customer.totalReferals ?? 0}',
-                                          Colors.blue,
-                                        ),
-
-                                        // Active referrals
-                                        _buildStatItem(
-                                          Icons.check_circle,
-                                          'Active',
-                                          '${customer.activeReferrals ?? 0}',
-                                          Colors.green,
-                                        ),
-
-                                        // Inactive referrals
-                                        _buildStatItem(
-                                          Icons.cancel,
-                                          'Inactive',
-                                          '${customer.inActiveReferrals ?? 0}',
-                                          Colors.red,
-                                        ),
-                                      ],
-                                    ),
-
-                                    SizedBox(height: 12),
-
-                                    // Status badge
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 6),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              _getStatusColor(customer.status!)
-                                                  .withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          border: Border.all(
-                                            color: _getStatusColor(
-                                                    customer.status!)
-                                                .withOpacity(0.3),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          _getStatusText(customer.status!),
-                                          style: TextStyle(
-                                            color: _getStatusColor(
-                                                customer.status!),
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                            ),
+                            SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () => _showUpgradePrompt(context),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                            );
-                          },
+                              child: Text("Unlock Analytics"),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    if (customerController.topCustomerRefererals!.length > 2)
+                      Center(
+                        child: TextButton(
+                          onPressed: () => _showUpgradePrompt(context),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "Upgrade to see all ${customerController.topCustomerRefererals!.length} referrers",
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                              SizedBox(width: 4),
+                              Icon(Icons.arrow_forward,
+                                  size: 16, color: Colors.blue),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+          SizedBox(height: 24),
+
+          // Analytics preview with improved design
+          Card(
+            elevation: 2,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.bar_chart, size: 20, color: Colors.blue),
+                      SizedBox(width: 8),
+                      Text(
+                        "Your Activity Preview",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color:
+                              isDarkMode ? Colors.white : Colors.grey.shade800,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  Container(
+                    height: 180,
+                    decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.lock_outline,
+                            size: 48,
+                            color: Colors.grey.shade400,
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            "Upgrade to unlock detailed analytics",
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => _showUpgradePrompt(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text("Unlock Analytics"),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          SizedBox(height: 24),
+
+          // FAQ section with enhanced design
+          Card(
+            elevation: 2,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDarkMode
+                      ? [Colors.grey.shade800, Colors.grey.shade700]
+                      : [Colors.white, Colors.grey.shade50],
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header with improved styling
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.help_outline,
+                              size: 22, color: Colors.blue),
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          "Frequently Asked Questions",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode
+                                ? Colors.white
+                                : Colors.grey.shade800,
+                          ),
                         ),
                       ],
                     ),
+
+                    SizedBox(height: 8),
+
+                    Text(
+                      "Everything you need to know about our membership program",
+                      style: TextStyle(
+                        color:
+                            isDarkMode ? Colors.white70 : Colors.grey.shade600,
+                        fontSize: 14,
+                      ),
+                    ),
+
+                    SizedBox(height: 20),
+
+                    // Interactive FAQ items
+                    _buildExpandableFAQItem(
+                        "How do I refer friends & family?",
+                        "Upgrade your membership to get started. Once you're a premium member, you can start referring friends and family. You'll earn commissions when they sign up for any tour package.",
+                        context),
+
+                    _buildExpandableFAQItem(
+                        "What benefits do I get with a membership?",
+                        "As a premium member, you'll enjoy: \n• Commission on every successful referral\n• Exclusive access to premium tours\n• Special discounts on all packages\n• Chance to win free trips\n• Referral bonuses and rewards\n• Priority customer support",
+                        context),
+
+                    _buildExpandableFAQItem(
+                        "How do I upgrade my account?",
+                        "Choose a membership plan that fits your needs and contact our team to complete the upgrade process. We'll guide you through the steps to unlock premium features and start earning immediately.",
+                        context),
+
+                    SizedBox(height: 20),
+
+                    // Enhanced CTA section
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: isDarkMode
+                            ? Colors.blue.shade900
+                            : Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.support_agent,
+                                  size: 20, color: Colors.blue),
+                              SizedBox(width: 8),
+                              Text(
+                                "Need more help?",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: isDarkMode
+                                      ? Colors.white
+                                      : Colors.blue.shade800,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            "Our team is ready to answer all your questions",
+                            style: TextStyle(
+                              color: isDarkMode
+                                  ? Colors.white70
+                                  : Colors.blue.shade700,
+                              fontSize: 13,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ContactUsPage()),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              minimumSize: Size(double.infinity, 48),
+                            ),
+                            child: Text("Contact Us Now"),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+// For expandable FAQ items
+  Widget _buildExpandableFAQItem(
+      String question, String answer, BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: isDarkMode ? Colors.grey.shade700 : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 2,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          title: Text(
+            question,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: isDarkMode ? Colors.white : Colors.grey.shade800,
+            ),
+          ),
+          children: [
+            // Fixed alignment: Use Align or Padding with crossAxisAlignment
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  answer,
+                  textAlign: TextAlign.left, // Explicitly set text alignment
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.white70 : Colors.grey.shade600,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
       ),
-    ]);
+    );
+  }
+
+// Updated _buildStatCard method
+  Widget _buildStatCard({
+    required BuildContext context,
+    required String title,
+    required String value,
+    required IconData icon,
+    required Color color,
+    required bool hasData,
+    VoidCallback? onTap,
+  }) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: color, size: 20),
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDarkMode ? Colors.white70 : Colors.grey.shade700,
+                    ),
+                  ),
+                ),
+                if (!hasData)
+                  Icon(Icons.lock_outline, size: 16, color: Colors.grey),
+              ],
+            ),
+            SizedBox(height: 12),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isDarkMode ? Colors.white : Colors.grey.shade800,
+              ),
+            ),
+            if (!hasData) ...[
+              SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: onTap,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: color,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  child: Text(
+                    "Upgrade to Access",
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeatureCard(String title, IconData icon, Color color,
+      String description, BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(12),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: isDarkMode ? Colors.white : Colors.grey.shade800,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDarkMode ? Colors.white70 : Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showUpgradePrompt(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.lock_outline, size: 48, color: Colors.blue),
+              SizedBox(height: 16),
+              Text(
+                "Upgrade Required",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "This feature is available for premium members. Upgrade now to access exclusive benefits and analytics.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
+              ),
+              SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: Text("Later"),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showMembershipOptions(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: Text("View Plans"),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showMembershipOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Container(
+        padding: EdgeInsets.fromLTRB(
+            24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Text(
+              "Choose Membership",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            _buildMembershipOption(
+                "Neo Select",
+                "₹11,000",
+                "Neo Select Customer Benefits - Memership Validity period of 10 Years \n - 5 Travel Coupons, each worth ₹3000/-",
+                Icons.star_border,
+                Colors.blue,
+                context),
+            _buildMembershipOption(
+                "Premium Select Lite",
+                "₹21,000",
+                "Premium Select Lite Customer - Memership Validity period of 10 Years \n - 5 Travel Coupons, each worth ₹5000/-",
+                Icons.star_half,
+                Colors.purple,
+                context),
+            _buildMembershipOption(
+                "Premium",
+                "₹30,000",
+                "Premium Customer - Memership Validity period of 10 Years \n - 10 Travel Coupons, each worth ₹3000/-",
+                Icons.star,
+                Colors.amber,
+                context),
+            SizedBox(height: 20),
+            Divider(),
+            SizedBox(height: 16),
+            Text(
+              "Contact us for more details:",
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+            SizedBox(height: 12),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.phone, size: 20, color: Colors.blue),
+              title: Text("+91 8010892265 / 0832-2438989",
+                  style: TextStyle(color: Colors.blue)),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.email, size: 20, color: Colors.blue),
+              title: Text("support@uniqbizz.com",
+                  style: TextStyle(color: Colors.blue)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMembershipOption(String title, String price, String description,
+      IconData icon, Color color, BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+      child: ListTile(
+        contentPadding: EdgeInsets.all(16),
+        leading: Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.2),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color),
+        ),
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(description, style: TextStyle(fontSize: 13)),
+        trailing: Text(price,
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+        onTap: () {},
+      ),
+    );
   }
 
   Widget premiumWidget(String type) {
@@ -1651,18 +2265,23 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         );
                       },
                     ),
-                    ListTile(
-                      leading: Icon(Icons.people),
-                      title: Text('Referral Customers'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ViewCustomersPage()),
-                        );
-                      },
-                    ),
-                    if (custtype != 'Free')
+                    if (custtype == 'Premium' ||
+                        custtype == 'Premium Select Lite' ||
+                        custtype == 'Neo Select')
+                      ListTile(
+                        leading: Icon(Icons.people),
+                        title: Text('Referral Customers'),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ViewCustomersPage()),
+                          );
+                        },
+                      ),
+                    if (custtype == 'Premium' ||
+                        custtype == 'Premium Select Lite' ||
+                        custtype == 'Neo Select')
                       ListTile(
                         leading: Icon(Icons.account_balance_wallet),
                         title: Text('My Wallet'),
@@ -1674,40 +2293,46 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           );
                         },
                       ),
-                    ExpansionTile(
-                      title: const Text("Payouts"),
-                      leading: const Icon(Icons.payment),
-                      children: [
-                        _drawerItem(
-                            context,
-                            Icons.inventory_2,
-                            "Product Payout",
-                            CustProductPayoutsPage(
-                              userName:
-                                  "${profileController.firstName} ${profileController.lastName}",
-                            ),
-                            padding: true),
-                        _drawerItem(
-                            context,
-                            Icons.people_alt,
-                            "Referral Payout",
-                            CustomerReferralPayouts(
-                                username:
-                                    "${profileController.firstName} ${profileController.lastName}"),
-                            padding: true),
-                      ],
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.history),
-                      title: Text('Order History'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OrderHistory()),
-                        );
-                      },
-                    ),
+                    if (custtype == 'Premium' ||
+                        custtype == 'Premium Select Lite' ||
+                        custtype == 'Neo Select')
+                      ExpansionTile(
+                        title: const Text("Payouts"),
+                        leading: const Icon(Icons.payment),
+                        children: [
+                          _drawerItem(
+                              context,
+                              Icons.inventory_2,
+                              "Product Payout",
+                              CustProductPayoutsPage(
+                                userName:
+                                    "${profileController.firstName} ${profileController.lastName}",
+                              ),
+                              padding: true),
+                          _drawerItem(
+                              context,
+                              Icons.people_alt,
+                              "Referral Payout",
+                              CustomerReferralPayouts(
+                                  username:
+                                      "${profileController.firstName} ${profileController.lastName}"),
+                              padding: true),
+                        ],
+                      ),
+
+                    //commented order history since in v1 we wont be including it.
+
+                    // ListTile(
+                    //   leading: Icon(Icons.history),
+                    //   title: Text('Order History'),
+                    //   onTap: () {
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //           builder: (context) => OrderHistory()),
+                    //     );
+                    //   },
+                    // ),
                     const Divider(),
                     Padding(
                       padding: EdgeInsets.zero,

@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/widgets/carousel_section.dart';
 import 'package:bizzmirth_app/screens/homepage/drawer/sidenav_drawer.dart';
 import 'package:bizzmirth_app/widgets/footer_section.dart';
 import 'package:bizzmirth_app/widgets/header_section.dart';
+import 'package:bizzmirth_app/widgets/membership_promotion_card.dart';
 import 'package:bizzmirth_app/widgets/top_selling_destinations.dart';
 import 'package:bizzmirth_app/widgets/top_selling_packages.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -337,6 +338,21 @@ class _HomePageState extends State<HomePage> {
                           height: 5,
                         ),
                         CarouselSection(),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        MembershipPromotionCard(
+                          isForFreeUser:
+                              false, // This shows "Start Your Journey With Us"
+                          onPlanSelected: (planName) {
+                            // Navigate to a signup page or show a dialog for visitors
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (context) =>
+                            //             SignUpPage(selectedPlan: planName)));
+                          },
+                        ),
                         SizedBox(
                           height: 15,
                         ),

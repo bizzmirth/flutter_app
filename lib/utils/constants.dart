@@ -1185,7 +1185,7 @@ String formatDate(String? date) {
 Widget buildTripOrRefundNote(
     {required String userType, required BuildContext context}) {
   // For "premium select" and "neo select", show simple "Refer and earn" message
-  if (userType == "Premium Select" || userType == "Neo Select") {
+  if (userType == "Premium Select Lite" || userType == "Neo Select") {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
       child: Container(

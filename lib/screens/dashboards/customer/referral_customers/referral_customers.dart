@@ -952,27 +952,30 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                     ),
                   ),
                 ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const AddReferralCustomer()),
-              );
+          floatingActionButton: (showLoader)
+              ? null
+              : FloatingActionButton(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AddReferralCustomer()),
+                    );
 
-              final customerController = context.read<CustomerController>();
-              await customerController.apiGetRegisteredCustomers();
-              await customerController.apiGetPendingCustomers();
-              // Refresh filtered customers after API calls
-              _initializeFilteredCustomers();
-            },
-            backgroundColor: const Color.fromARGB(255, 153, 198, 250),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
-            ),
-            tooltip: "Add New Referral Customer",
-            child: Icon(Icons.add, size: 30),
-          ),
+                    final customerController =
+                        context.read<CustomerController>();
+                    await customerController.apiGetRegisteredCustomers();
+                    await customerController.apiGetPendingCustomers();
+                    // Refresh filtered customers after API calls
+                    _initializeFilteredCustomers();
+                  },
+                  backgroundColor: const Color.fromARGB(255, 153, 198, 250),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  tooltip: "Add New Referral Customer",
+                  child: Icon(Icons.add, size: 30),
+                ),
         ),
       );
     });

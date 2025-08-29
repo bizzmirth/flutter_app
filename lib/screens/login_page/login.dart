@@ -296,19 +296,19 @@ class _LoginPageState extends State<LoginPage> {
                                     ],
                                   ),
 
-                                  // Forgot Password Button
-                                  TextButton(
-                                    onPressed: () {
-                                      // Navigate to Forgot Password Page (Placeholder)
-                                    },
-                                    child: const Text(
-                                      "Forgot Password?",
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
+                                  // // Forgot Password Button
+                                  // TextButton(
+                                  //   onPressed: () {
+                                  //     // Navigate to Forgot Password Page (Placeholder)
+                                  //   },
+                                  //   child: const Text(
+                                  //     "Forgot Password?",
+                                  //     style: TextStyle(
+                                  //       color: Colors.blue,
+                                  //       fontWeight: FontWeight.bold,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
 
@@ -507,19 +507,19 @@ class _LoginPageState extends State<LoginPage> {
                                     ],
                                   ),
 
-                                  // Forgot Password Button
-                                  TextButton(
-                                    onPressed: () {
-                                      // Navigate to Forgot Password Page (Placeholder)
-                                    },
-                                    child: const Text(
-                                      "Forgot Password?",
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
+                                  // // Forgot Password Button
+                                  // TextButton(
+                                  //   onPressed: () {
+                                  //     // Navigate to Forgot Password Page (Placeholder)
+                                  //   },
+                                  //   child: const Text(
+                                  //     "Forgot Password?",
+                                  //     style: TextStyle(
+                                  //       color: Colors.blue,
+                                  //       fontWeight: FontWeight.bold,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
 
