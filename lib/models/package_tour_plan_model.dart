@@ -56,7 +56,7 @@ class PackageTourPlan {
   // Extract places to visit from day details
   List<String> get placesToVisit {
     final places = <String>[];
-    final text = dayDetails.toLowerCase();
+    dayDetails.toLowerCase();
 
     final patterns = [
       RegExp(r'visit\s+([^,\.]+?)(?:,|\.|temple|mandir|ghat)',

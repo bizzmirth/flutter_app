@@ -1,11 +1,10 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/controllers/profile_controller.dart';
-import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
-import 'package:bizzmirth_app/models/user_type_mode.dart';
 import 'package:bizzmirth_app/screens/contact_us/contact_us.dart';
-import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_referral_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
@@ -15,7 +14,6 @@ import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
-import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/coupons_tracker.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -366,7 +364,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
           // Limited preview section with improved design
           if (customerController.topCustomerRefererals != null &&
-              customerController.topCustomerRefererals!.isNotEmpty)
+              customerController.topCustomerRefererals.isNotEmpty)
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -446,7 +444,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                     ),
                     SizedBox(height: 8),
-                    if (customerController.topCustomerRefererals!.length > 2)
+                    if (customerController.topCustomerRefererals.length > 2)
                       Center(
                         child: TextButton(
                           onPressed: () => _showUpgradePrompt(context),
@@ -454,7 +452,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "Upgrade to see all ${customerController.topCustomerRefererals!.length} referrers",
+                                "Upgrade to see all ${customerController.topCustomerRefererals.length} referrers",
                                 style: TextStyle(color: Colors.blue),
                               ),
                               SizedBox(width: 4),
@@ -2160,7 +2158,6 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isTablet = MediaQuery.of(context).size.width > 600; // breakpoint
     final profileController =
         Provider.of<ProfileController>(context, listen: false);
     return PopScope(

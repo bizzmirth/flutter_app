@@ -13,7 +13,6 @@ import 'package:bizzmirth_app/widgets/top_selling_packages.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/video_carousel.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
