@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class MembershipPromotionCard extends StatelessWidget {
@@ -83,7 +84,7 @@ class MembershipPromotionCard extends StatelessWidget {
               builder: (context, constraints) {
                 final isWide = constraints.maxWidth > 700;
                 final isTablet = constraints.maxWidth > 500;
-                final crossAxisCount = isWide ? 3 : (isTablet ? 2 : 1);
+                final crossAxisCount = isWide ? 2 : (isTablet ? 2 : 1);
 
                 return GridView.count(
                   crossAxisCount: crossAxisCount,
@@ -97,7 +98,7 @@ class MembershipPromotionCard extends StatelessWidget {
                   children: const [
                     _PlanCard(plan: _neoSelectPlan, isPopular: true),
                     _PlanCard(plan: _premiumLitePlan),
-                    _PlanCard(plan: _premiumPlan),
+                    _PlanCard(plan: _premiumSelectPlan),
                   ],
                 );
               },
@@ -109,12 +110,19 @@ class MembershipPromotionCard extends StatelessWidget {
   }
 }
 
+class _Benefit {
+  final String text;
+  final bool available;
+
+  const _Benefit(this.text, {this.available = true});
+}
+
 // Plan Data Model
 class _MembershipPlan {
   final String name;
   final String price;
   final String validity;
-  final List<String> benefits;
+  final List<_Benefit> benefits;
   final Color accentColor;
   final Color gradientStart;
   final Color gradientEnd;
@@ -136,9 +144,16 @@ const _neoSelectPlan = _MembershipPlan(
   price: '₹11,000',
   validity: '10 Years',
   benefits: [
-    '5 Travel Coupons',
-    '₹3,000 value per coupon',
-    'Referral benefits',
+    _Benefit('5 Travel Coupons'),
+    _Benefit('₹3,000 value per coupon'),
+    _Benefit('Basic + Mid + Premium Holiday Package Access'),
+    _Benefit('Highly Affordable'),
+    _Benefit('Highest Value for Money\nPay Less,\nEnjoy More'),
+    _Benefit('No Customizations Available', available: false),
+    _Benefit(
+        'Referral Benefits:\n\t\t\t\tDirect: ₹1000\n\t\t\t\tSecondary: ₹500'),
+    _Benefit(
+        'Best for Smart Buyers who want Flexibility + Savings at a Low Cost')
   ],
   accentColor: Colors.blue,
   gradientStart: Color(0xFFE3F2FD),
@@ -150,27 +165,40 @@ const _premiumLitePlan = _MembershipPlan(
   price: '₹21,000',
   validity: '10 Years',
   benefits: [
-    '5 Travel Coupons',
-    '₹5,000 value per coupon',
-    'Referral benefits',
+    _Benefit('5 Travel Coupons'),
+    _Benefit('₹5,000 value per coupon'),
+    _Benefit('Only Premium Holiday Package Access'),
+    _Benefit('Moderate Affordability', available: false),
+    _Benefit('Good Value for Money'),
+    _Benefit('No Customizations Available', available: false),
+    _Benefit(
+        'Referral Benefits:\n\t\t\t\tDirect: ₹1000\n\t\t\t\tSecondary: ₹500\n\t\t\t\tSub-Secondary: ₹250'),
+    _Benefit(
+        'Best for Customers who want Larger Coupons but Limited Package Choices')
   ],
   accentColor: Colors.purple,
   gradientStart: Color(0xFFF3E5F5),
   gradientEnd: Color(0xFFE1BEE7),
 );
 
-const _premiumPlan = _MembershipPlan(
-  name: 'Premium',
-  price: '₹30,000',
+const _premiumSelectPlan = _MembershipPlan(
+  name: 'Premium Select',
+  price: '₹35,000',
   validity: '10 Years',
   benefits: [
-    '10 Travel Coupons',
-    '₹3,000 value per coupon',
-    'Referral benefits',
+    _Benefit('10 Travel Coupons'),
+    _Benefit('₹3,000 value per coupon'),
+    _Benefit('Only Premium Holiday Package Access'),
+    _Benefit('Higher Affordability', available: false),
+    _Benefit('Moderate Value for Money'),
+    _Benefit('No Customizations Available', available: false),
+    _Benefit(
+        'Referral Benefits:\n\t\t\t\tDirect: ₹1500\n\t\t\t\tSecondary: ₹500\n\t\t\t\tSub-Secondary: ₹250'),
+    _Benefit('Best for Customers who Spend More for Long-Term Coupon Benefits')
   ],
-  accentColor: Colors.amber,
-  gradientStart: Color(0xFFFFF8E1),
-  gradientEnd: Color(0xFFFFECB3),
+  accentColor: Colors.pink,
+  gradientStart: Color.fromARGB(255, 232, 219, 224), // light pink
+  gradientEnd: Color.fromARGB(255, 227, 121, 156), // medium pink
 );
 
 // Plan Card
@@ -269,47 +297,40 @@ class _PlanCard extends StatelessWidget {
                   const SizedBox(height: 5),
 
                   Expanded(
-                    child:
-                        NotificationListener<OverscrollIndicatorNotification>(
-                      onNotification: (notification) {
-                        notification.disallowIndicator(); // removes glow
-                        return true;
-                      },
-                      child: NotificationListener<ScrollNotification>(
-                        onNotification: (scrollNotification) {
-                          // 👇 This prevents the parent scroll from taking over
-                          return true;
-                        },
-                        child: ListView.builder(
-                          controller: ScrollController(),
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: plan.benefits.length,
-                          itemBuilder: (context, index) {
-                            final benefit = plan.benefits[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.check_circle_rounded,
-                                      size: 20, color: Colors.green.shade600),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      benefit,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: isDarkMode
-                                            ? Colors.white
-                                            : Colors.grey.shade800,
-                                      ),
-                                    ),
+                    child: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: plan.benefits.length,
+                      itemBuilder: (context, index) {
+                        final benefit = plan.benefits[index];
+                        final icon = benefit.available
+                            ? Icons.check_circle_rounded
+                            : Icons.cancel_rounded;
+                        final color = benefit.available
+                            ? Colors.green.shade600
+                            : Colors.red.shade600;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            children: [
+                              Icon(icon, size: 20, color: color),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  benefit.text,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.grey.shade800,
                                   ),
-                                ],
+                                ),
                               ),
-                            );
-                          },
-                        ),
-                      ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
 
@@ -436,8 +457,8 @@ class _PlanCard extends StatelessWidget {
                 context,
                 icon: Icons.email_rounded,
                 title: 'Send Email',
-                subtitle: 'contact@example.com',
-                onTap: () => _handleEmail(context),
+                subtitle: 'support@uniqbizz.com',
+                onTap: () => _handleEmail(context, plan.name),
               ),
 
               const SizedBox(height: 24),
@@ -513,10 +534,44 @@ class _PlanCard extends StatelessWidget {
     _launchUrl('tel:+918010892265');
   }
 
-  void _handleEmail(BuildContext context) {
+  void _handleEmail(BuildContext context, String planName) async {
     Navigator.pop(context);
-    _launchUrl(
-        'mailto:contact@example.com?subject=Inquiry about ${plan.name} Membership');
+
+    final String subject =
+        Uri.encodeComponent("Inquiry about $planName Membership");
+    final String body = Uri.encodeComponent(
+        "Hello,\n\nI would like to know more about the $planName Membership.\n\nThanks,");
+
+    // ✅ First try native mailto
+    final Uri emailUri =
+        Uri.parse("mailto:support@uniqbizz.com?subject=$subject&body=$body");
+
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri, mode: LaunchMode.externalApplication);
+      return;
+    }
+
+    final Uri gmailUri = Uri.parse(
+        "googlegmail://co?to=support@uniqbizz.com&subject=$subject&body=$body");
+
+    if (await canLaunchUrl(gmailUri)) {
+      await launchUrl(gmailUri, mode: LaunchMode.externalApplication);
+      return;
+    }
+
+    // ✅ Fallback Gmail web
+    final Uri webGmailUri = Uri.parse(
+        "https://mail.google.com/mail/?view=cm&fs=1&to=support@uniqbizz.com&su=$subject&body=$body");
+
+    if (await canLaunchUrl(webGmailUri)) {
+      await launchUrl(webGmailUri, mode: LaunchMode.externalApplication);
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text("No email app or Gmail available on this device")),
+    );
   }
 
   void _launchUrl(String url) async {

@@ -20,6 +20,33 @@ class TourPackagesController extends ChangeNotifier {
       _topTourPackages;
   List<BestDealsModel> get bestDealPackages => _bestDealPackages;
 
+  // In TourPackagesController class
+  List<TourPackageModel> get filteredPackages {
+    if (_searchQuery.isEmpty) {
+      return tourPackages;
+    }
+    return tourPackages.where((package) {
+      return package.destination
+                  ?.toLowerCase()
+                  .contains(_searchQuery.toLowerCase()) ==
+              true ||
+          package.name?.toLowerCase().contains(_searchQuery.toLowerCase()) ==
+              true;
+    }).toList();
+  }
+
+  String _searchQuery = '';
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
+  void clearSearch() {
+    _searchQuery = '';
+    notifyListeners();
+  }
+
   void apiGetTourPackages() async {
     _isLoading = true;
     _error = null;

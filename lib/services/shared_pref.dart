@@ -14,10 +14,6 @@ class SharedPrefHelper {
 
   static String _customerTypeKey = "customer_type";
 
-  static const String _keyCustomerName = "customer_name";
-
-  static const String _keyCustomerProfilePic = "customer_profile_pic";
-
   Future<void> saveUserDataType(String userDataType) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userDataTypeKey, userDataType);
@@ -78,28 +74,6 @@ class SharedPrefHelper {
     return prefs.getString(_customerTypeKey);
   }
 
-  /// ✅ SETTERS
-  Future<void> setCustomerName(String name) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyCustomerName, name);
-  }
-
-  Future<void> setCustomerProfilePic(String url) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyCustomerProfilePic, url);
-  }
-
-  /// ✅ GETTERS
-  Future<String?> getCustomerName() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyCustomerName);
-  }
-
-  Future<String?> getCustomerProfilePic() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyCustomerProfilePic);
-  }
-
   Future<void> clearAllData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -112,8 +86,6 @@ class SharedPrefHelper {
     await prefs.remove(_customerTypeKey);
     await prefs.remove(_currUserCustId);
     await prefs.remove(_userTypeKey);
-    await prefs.remove(_keyCustomerName);
-    await prefs.remove(_keyCustomerProfilePic);
     Logger.warning("message: User details removed from shared preferences");
   }
 

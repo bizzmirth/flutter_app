@@ -82,11 +82,6 @@ class _CDashboardPageState extends State<CDashboardPage> {
       final customerController = context.read<CustomerController>();
       final profileController = context.read<ProfileController>();
 
-      await SharedPrefHelper()
-          .setCustomerName(profileController.firstName ?? '');
-      await SharedPrefHelper()
-          .setCustomerProfilePic(profileController.profilePic ?? '');
-
       int attempts = 0;
       while (customerController.isLoading && attempts < 20) {
         await Future.delayed(Duration(milliseconds: 100));
@@ -159,12 +154,320 @@ class _CDashboardPageState extends State<CDashboardPage> {
     if (type == "Premium") {
       return premiumWidget(type);
     } else if (type == "Premium Select Lite") {
-      return premiumSelectWidget(type);
+      return premiumSelectLiteWidget(type);
     } else if (type == "Neo Select") {
       return neoSelectWidget(type);
+    } else if (type == "Premium Select") {
+      return premiumSelectWidget(type);
     } else {
       return freeuser();
     }
+  }
+
+  Widget premiumSelectWidget(String type) {
+    final isTablet = MediaQuery.of(context).size.width > 600;
+    final customerController = context.read<CustomerController>();
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      PremiumSelectCard(
+        title: "Premium Select Customer",
+        description:
+            "Use points and vouchers to unlock premium & standard travel experiences.",
+        firstButtonText: "Premium Select Deals",
+        secondButtonText: "View Your Packages",
+      ),
+      SizedBox(height: 20),
+      CustomAnimatedSummaryCards(
+        cardData: [
+          SummaryCardData(
+              title: 'Registered Customers',
+              value: customerController.registerCustomerTotal!,
+              thisMonthValue: customerController.registerCustomerThisMonth,
+              icon: Icons.people),
+          SummaryCardData(
+              title: 'Completed Tours',
+              value: customerController.completedTourTotal!,
+              thisMonthValue: customerController.completedTourThisMonth,
+              icon: Icons.map_outlined),
+          SummaryCardData(
+              title: 'Upcoming Tours',
+              value: customerController.upcomingTourTotal!,
+              thisMonthValue: customerController.upcomingTourThisMonth,
+              icon: Icons.history),
+          SummaryCardData(
+              title: 'Commision Earned',
+              value: customerController.commisionEarnedTotal!,
+              thisMonthValue: customerController.pendingCommissionTotal,
+              icon: Icons.money),
+        ],
+      ),
+      SizedBox(height: 20),
+      // NeoSelectBenefits(
+      //   type: "Premium Select",
+      //   amount: 35000,
+      //   numberOfCoupons: 5,
+      //   valueCoupons: 25000,
+      //   saveAmt: 4000,
+      // ),
+      // SizedBox(height: 16),
+      buildTripOrRefundNote(userType: type, context: context),
+      SizedBox(height: 20),
+      if (_isDashboardInitialized)
+        ImprovedLineChart(
+          initialYear: _cachedRegDate ?? customerController.userRegDate,
+          key: ValueKey(
+              'chart_${_cachedRegDate ?? customerController.userRegDate}'),
+        )
+      else
+        SizedBox(
+          height: 300,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Loading chart data...'),
+              ],
+            ),
+          ),
+        ),
+      SizedBox(height: 20),
+      Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Divider(thickness: 1, color: Colors.black26),
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Top Customers Referral",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            Divider(thickness: 1, color: Colors.black26),
+            FilterBar(
+              userCount:
+                  customerController.topCustomerRefererals.length.toString(),
+            ),
+            Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: isTablet
+                  ? SizedBox(
+                      height: (_rowsPerPage * dataRowHeight) +
+                          headerHeight +
+                          paginationHeight,
+                      child: customerController.isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : PaginatedDataTable(
+                              columns: [
+                                DataColumn(label: Text("Rank")),
+                                DataColumn(label: Text("Profile Picture")),
+                                DataColumn(label: Text("Full Name")),
+                                DataColumn(label: Text("Date Reg")),
+                                DataColumn(label: Text("Total CU Ref")),
+                                DataColumn(label: Text("Status")),
+                                DataColumn(label: Text("Active/Inactive")),
+                              ],
+                              source: CustTopReferralCustomers(
+                                  customers:
+                                      customerController.topCustomerRefererals),
+                              rowsPerPage: _rowsPerPage,
+                              availableRowsPerPage: [5, 10, 15, 20, 25],
+                              onRowsPerPageChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _rowsPerPage = value;
+                                  });
+                                }
+                              },
+                              arrowHeadColor: Colors.blue,
+                            ),
+                    )
+                  : Column(
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount:
+                              customerController.topCustomerRefererals.length,
+                          itemBuilder: (context, index) {
+                            final customer =
+                                customerController.topCustomerRefererals[index];
+                            return Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Header with rank and profile
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Rank badge
+                                        Container(
+                                          width: 36,
+                                          height: 36,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            color: (index + 1) <= 3
+                                                ? Colors.amber.withOpacity(0.2)
+                                                : Colors.grey.withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: (index + 1) <= 3
+                                                  ? Colors.amber
+                                                  : Colors.grey,
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              color: (index + 1) <= 3
+                                                  ? Colors.amber[800]
+                                                  : Colors.grey[700],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 12),
+
+                                        // Profile picture
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundColor: Colors.transparent,
+                                          child: getProfileImage(
+                                              customer.profilePic),
+                                        ),
+                                        SizedBox(width: 12),
+
+                                        // Name and date
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                customer.name ?? 'N/A',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 16,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              SizedBox(height: 4),
+                                              Text(
+                                                customer.registeredDate ??
+                                                    'N/A',
+                                                style: TextStyle(
+                                                  color: Colors.grey[600],
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    SizedBox(height: 16),
+
+                                    // Stats row
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        // Total referrals
+                                        _buildStatItem(
+                                          Icons.people,
+                                          'Total',
+                                          '${customer.totalReferals ?? 0}',
+                                          Colors.blue,
+                                        ),
+
+                                        // Active referrals
+                                        _buildStatItem(
+                                          Icons.check_circle,
+                                          'Active',
+                                          '${customer.activeReferrals ?? 0}',
+                                          Colors.green,
+                                        ),
+
+                                        // Inactive referrals
+                                        _buildStatItem(
+                                          Icons.cancel,
+                                          'Inactive',
+                                          '${customer.inActiveReferrals ?? 0}',
+                                          Colors.red,
+                                        ),
+                                      ],
+                                    ),
+
+                                    SizedBox(height: 12),
+
+                                    // Status badge
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 6),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              _getStatusColor(customer.status!)
+                                                  .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          border: Border.all(
+                                            color: _getStatusColor(
+                                                    customer.status!)
+                                                .withOpacity(0.3),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          _getStatusText(customer.status!),
+                                          style: TextStyle(
+                                            color: _getStatusColor(
+                                                customer.status!),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+            ),
+          ],
+        ),
+      ),
+    ]);
   }
 
   Widget freeuser() {
@@ -1373,7 +1676,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
     ]);
   }
 
-  Widget premiumSelectWidget(String type) {
+  Widget premiumSelectLiteWidget(String type) {
     final isTablet = MediaQuery.of(context).size.width > 600;
     final customerController = context.read<CustomerController>();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
