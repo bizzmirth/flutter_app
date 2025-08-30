@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/models/package_price_model.dart';
 import 'package:bizzmirth_app/models/package_response_model.dart';
 import 'package:bizzmirth_app/models/package_tour_plan_model.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -40,8 +41,7 @@ class PackageDetailsController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fullUrl =
-          "https://ca.uniqbizz.com/api/packages/view_package_details/package_details.php";
+      final fullUrl = AppUrls.getTourPackageDetails; // Use the URL from AppUrls
 
       final Map<String, dynamic> body = {"id": packageId};
       final encodeBody = jsonEncode(body);
@@ -57,6 +57,7 @@ class PackageDetailsController extends ChangeNotifier {
         },
       );
 
+      Logger.info("full package details URL: $fullUrl");
       Logger.info("Response status code: ${response.statusCode}");
       Logger.info("Response body: ${response.body}");
 
@@ -123,9 +124,10 @@ class PackageDetailsController extends ChangeNotifier {
   }
 
   // Get package images with full URLs
-  List<String> getImageUrls({String baseUrl = "https://ca.uniqbizz.com/"}) {
+  List<String> getImageUrls({String? baseUrl}) {
+    final effectiveBaseUrl = baseUrl ?? AppUrls.getImageBaseUrl;
     return pictures
-        .map((picture) => picture.getFullImageUrl(baseUrl: baseUrl))
+        .map((picture) => picture.getFullImageUrl(baseUrl: effectiveBaseUrl))
         .toList();
   }
 
