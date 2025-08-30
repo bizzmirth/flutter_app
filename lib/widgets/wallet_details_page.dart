@@ -6,7 +6,6 @@ import 'package:bizzmirth_app/data_source/cust_redeemable_table_data_source.dart
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,6 +46,10 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    getCustomerWalletDetails();
+  }
+
   void getCustomerWalletDetails() async {
     final controller =
         Provider.of<CustWalletController>(context, listen: false);
@@ -78,848 +81,863 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
         ),
         body: controller.isLoading
             ? Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Divider(thickness: 1, color: Colors.black26),
-                      Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            "Wallet Options",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+            : RefreshIndicator(
+                onRefresh: _onRefresh,
+                child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Divider(thickness: 1, color: Colors.black26),
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              "Wallet Options",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
-                      ),
-                      Divider(thickness: 1, color: Colors.black26),
+                        Divider(thickness: 1, color: Colors.black26),
 
-                      SizedBox(height: 16),
+                        SizedBox(height: 16),
 
-                      // Wallet Options
-                      Row(
-                        children: [
-                          if (_customerType == 'Prime' &&
-                              _customerType == 'Premium')
-                            Expanded(
-                              child: _buildWalletOptionCard(
-                                title: 'Redeemable Count',
-                                amount: controller.referenceCountTotal ?? "",
-                                thisMonthAmount:
-                                    controller.referenceCountThisMonth ?? "",
-                                icon: Icons.person_outline,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => TopUpWalletPage(
-                                              title: "Top Up Wallet",
-                                            )),
-                                  );
-                                },
-                                isClickable: false,
+                        // Wallet Options
+                        Row(
+                          children: [
+                            if (_customerType == 'Prime' &&
+                                _customerType == 'Premium')
+                              Expanded(
+                                child: _buildWalletOptionCard(
+                                  title: 'Redeemable Count',
+                                  amount: controller.referenceCountTotal ?? "",
+                                  thisMonthAmount:
+                                      controller.referenceCountThisMonth ?? "",
+                                  icon: Icons.person_outline,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => TopUpWalletPage(
+                                                title: "Top Up Wallet",
+                                              )),
+                                    );
+                                  },
+                                  isClickable: false,
+                                ),
+                              )
+                            else ...[
+                              Expanded(
+                                child: _buildWalletOptionCard(
+                                  title: 'Redeemable Count',
+                                  amount: controller.referenceCountTotal ?? "",
+                                  thisMonthAmount:
+                                      controller.referenceCountThisMonth ?? "",
+                                  icon: Icons.person_outline,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => TopUpWalletPage(
+                                                title: "Top Up Wallet",
+                                              )),
+                                    );
+                                  },
+                                  isClickable: false,
+                                ),
                               ),
-                            )
-                          else ...[
-                            Expanded(
-                              child: _buildWalletOptionCard(
-                                title: 'Redeemable Count',
-                                amount: controller.referenceCountTotal ?? "",
-                                thisMonthAmount:
-                                    controller.referenceCountThisMonth ?? "",
-                                icon: Icons.person_outline,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => TopUpWalletPage(
-                                              title: "Top Up Wallet",
-                                            )),
-                                  );
-                                },
-                                isClickable: false,
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: _buildWalletOptionCard(
+                                  title: 'Bookings\nWALLET',
+                                  amount:
+                                      controller.bookingPointsCountTotal ?? "",
+                                  icon: Icons.people_outline,
+                                  thisMonthAmount:
+                                      controller.bookingPointsCountThisMonth ??
+                                          "",
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => TopUpWalletPage(
+                                                title: "Referral Wallet",
+                                              )),
+                                    );
+                                  },
+                                  isClickable: false,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: _buildWalletOptionCard(
-                                title: 'Bookings\nWALLET',
-                                amount:
-                                    controller.bookingPointsCountTotal ?? "",
-                                icon: Icons.people_outline,
-                                thisMonthAmount:
-                                    controller.bookingPointsCountThisMonth ??
-                                        "",
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => TopUpWalletPage(
-                                              title: "Referral Wallet",
-                                            )),
-                                  );
-                                },
-                                isClickable: false,
-                              ),
-                            ),
+                            ],
                           ],
-                        ],
-                      ),
-
-                      SizedBox(height: 20),
-                      if (_customerType == 'Prime' &&
-                          _customerType == 'Premium')
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Divider(thickness: 1, color: Colors.black26),
-                              Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Text(
-                                    "Redeemable Wallet History",
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                              Divider(thickness: 1, color: Colors.black26),
-                              FilterBar(
-                                userCount: controller
-                                    .custRedeemableWalletHistory.length
-                                    .toString(),
-                              ),
-                              Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: SizedBox(
-                                  height: (_rowsPerPage * dataRowHeight) +
-                                      headerHeight +
-                                      paginationHeight,
-                                  child: PaginatedDataTable(
-                                    columns: [
-                                      DataColumn(label: Text("SR No.")),
-                                      DataColumn(label: Text("Payout Message")),
-                                      DataColumn(label: Text("Payout Amount")),
-                                      DataColumn(label: Text("Earned ON")),
-                                      DataColumn(label: Text("Status")),
-                                    ],
-                                    source: CustRedeemableTableDataSource(
-                                        controller.custRedeemableWalletHistory),
-                                    rowsPerPage: _rowsPerPage,
-                                    availableRowsPerPage: [5, 10, 15, 20, 25],
-                                    onRowsPerPageChanged: (value) {
-                                      if (value != null) {
-                                        setState(() {
-                                          _rowsPerPage = value;
-                                        });
-                                      }
-                                    },
-                                    arrowHeadColor: Colors.blue,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      else ...[
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Divider(thickness: 1, color: Colors.black26),
-                              Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Text(
-                                    "Redeemable Wallet History",
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                              Divider(thickness: 1, color: Colors.black26),
-                              FilterBar(
-                                userCount: controller
-                                    .custRedeemableWalletHistory.length
-                                    .toString(),
-                              ),
-                              Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: isTablet
-                                    ? SizedBox(
-                                        height: (_rowsPerPage * dataRowHeight) +
-                                            headerHeight +
-                                            paginationHeight,
-                                        child: PaginatedDataTable(
-                                          columns: [
-                                            DataColumn(label: Text("SR No.")),
-                                            DataColumn(
-                                                label: Text("Payout Message")),
-                                            DataColumn(
-                                                label: Text("Payout Amount")),
-                                            DataColumn(
-                                                label: Text("Earned ON")),
-                                            DataColumn(label: Text("Status")),
-                                          ],
-                                          source: CustRedeemableTableDataSource(
-                                              controller
-                                                  .custRedeemableWalletHistory),
-                                          rowsPerPage: _rowsPerPage,
-                                          availableRowsPerPage: [
-                                            5,
-                                            10,
-                                            15,
-                                            20,
-                                            25
-                                          ],
-                                          onRowsPerPageChanged: (value) {
-                                            if (value != null) {
-                                              setState(() {
-                                                _rowsPerPage = value;
-                                              });
-                                            }
-                                          },
-                                          arrowHeadColor: Colors.blue,
-                                        ),
-                                      )
-                                    : ListView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemCount: controller
-                                            .custRedeemableWalletHistory.length,
-                                        itemBuilder: (context, index) {
-                                          final payout = controller
-                                                  .custRedeemableWalletHistory[
-                                              index];
-                                          return Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 5, vertical: 5),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.2),
-                                                  spreadRadius: 1,
-                                                  blurRadius: 4,
-                                                  offset: const Offset(0, 2),
-                                                ),
-                                              ],
-                                            ),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              child: Material(
-                                                color: index.isEven
-                                                    ? Colors.grey[50]
-                                                    : Colors.white,
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    // Add tap functionality if needed
-                                                  },
-                                                  splashColor: Colors.blue
-                                                      .withOpacity(0.1),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            16.0),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        // Header with SR No. and Date
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      horizontal:
-                                                                          12,
-                                                                      vertical:
-                                                                          6),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color: Colors
-                                                                    .blue[50],
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            8),
-                                                              ),
-                                                              child: Text(
-                                                                "SR No. #${(index + 1).toString().padLeft(2, '0')}",
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .blue,
-                                                                  fontSize: 14,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              "     Date \n${payout.date!}",
-                                                              style: TextStyle(
-                                                                color: Colors
-                                                                    .grey[600],
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-
-                                                        const SizedBox(
-                                                            height: 12),
-
-                                                        // Payout Message
-                                                        Text(
-                                                          "Points Message",
-                                                          style: TextStyle(
-                                                            fontSize: 12,
-                                                            color: Colors
-                                                                .grey[600],
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                            height: 4),
-                                                        Text(
-                                                          payout.message!,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color:
-                                                                Colors.black87,
-                                                          ),
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-
-                                                        const SizedBox(
-                                                            height: 12),
-
-                                                        // Payout Amount and Status in a row
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  "Points Value",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                            .grey[
-                                                                        600],
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                  ),
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 4),
-                                                                Text(
-                                                                  payout
-                                                                      .amount!,
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    fontSize:
-                                                                        18,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    color: Colors
-                                                                        .green,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .end,
-                                                              children: [
-                                                                Text(
-                                                                  "Status      ",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                            .grey[
-                                                                        600],
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                  ),
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 4),
-                                                                Container(
-                                                                  padding: const EdgeInsets
-                                                                      .symmetric(
-                                                                      horizontal:
-                                                                          12,
-                                                                      vertical:
-                                                                          6),
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: _getStatusColor(
-                                                                        payout
-                                                                            .status!),
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            16),
-                                                                  ),
-                                                                  child: Text(
-                                                                    payout
-                                                                        .status!,
-                                                                    style:
-                                                                        const TextStyle(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      fontSize:
-                                                                          12,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                              )
-                            ],
-                          ),
                         ),
+
                         SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Divider(thickness: 1, color: Colors.black26),
-                              Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Text(
-                                    "Booking Points Wallet History",
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
+                        if (_customerType == 'Prime' &&
+                            _customerType == 'Premium')
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                Divider(thickness: 1, color: Colors.black26),
+                                Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 10),
+                                    child: Text(
+                                      "Redeemable Wallet History",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Divider(thickness: 1, color: Colors.black26),
-                              FilterBar(
-                                userCount: controller
-                                    .custBookingWalletHistory.length
-                                    .toString(),
-                              ),
-                              Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                Divider(thickness: 1, color: Colors.black26),
+                                FilterBar(
+                                  userCount: controller
+                                      .custRedeemableWalletHistory.length
+                                      .toString(),
                                 ),
-                                child: isTablet
-                                    ? SizedBox(
-                                        height: (_rowsPerPage * dataRowHeight) +
-                                            headerHeight +
-                                            paginationHeight,
-                                        child: PaginatedDataTable(
-                                          columns: [
-                                            DataColumn(label: Text("SR No.")),
-                                            DataColumn(
-                                                label: Text("Points Message")),
-                                            DataColumn(
-                                                label: Text("Points Value")),
-                                            DataColumn(label: Text("Added On")),
-                                            DataColumn(label: Text("Status")),
-                                          ],
-                                          source: CustBookingPointsDataSource(
-                                              controller
-                                                  .custBookingWalletHistory),
-                                          rowsPerPage: _rowsPerPage,
-                                          availableRowsPerPage: [
-                                            5,
-                                            10,
-                                            15,
-                                            20,
-                                            25
-                                          ],
-                                          onRowsPerPageChanged: (value) {
-                                            if (value != null) {
-                                              setState(() {
-                                                _rowsPerPage = value;
-                                              });
-                                            }
-                                          },
-                                          arrowHeadColor: Colors.blue,
-                                        ),
-                                      )
-                                    : ListView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemCount: controller
-                                            .custBookingWalletHistory.length,
-                                        itemBuilder: (context, index) {
-                                          final payout = controller
-                                              .custBookingWalletHistory[index];
-                                          return Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 5, vertical: 5),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.2),
-                                                  spreadRadius: 1,
-                                                  blurRadius: 4,
-                                                  offset: const Offset(0, 2),
-                                                ),
-                                              ],
-                                            ),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              child: Material(
-                                                color: index.isEven
-                                                    ? Colors.grey[50]
-                                                    : Colors.white,
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    // Add tap functionality if needed
-                                                  },
-                                                  splashColor: Colors.blue
-                                                      .withOpacity(0.1),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            16.0),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        // Header with SR No. and Date
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      horizontal:
-                                                                          12,
-                                                                      vertical:
-                                                                          6),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color: Colors
-                                                                    .blue[50],
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            8),
-                                                              ),
-                                                              child: Text(
-                                                                "SR No. #${(index + 1).toString().padLeft(2, '0')}",
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .blue,
-                                                                  fontSize: 14,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              "     Date \n${payout.date!}",
-                                                              style: TextStyle(
-                                                                color: Colors
-                                                                    .grey[600],
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-
-                                                        const SizedBox(
-                                                            height: 12),
-
-                                                        // Payout Message
-                                                        Text(
-                                                          "Points Message",
-                                                          style: TextStyle(
-                                                            fontSize: 12,
-                                                            color: Colors
-                                                                .grey[600],
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                            height: 4),
-                                                        Text(
-                                                          payout.message!,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color:
-                                                                Colors.black87,
-                                                          ),
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-
-                                                        const SizedBox(
-                                                            height: 12),
-
-                                                        // Payout Amount and Status in a row
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  "Points Value",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
+                                Card(
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: SizedBox(
+                                    height: (_rowsPerPage * dataRowHeight) +
+                                        headerHeight +
+                                        paginationHeight,
+                                    child: PaginatedDataTable(
+                                      columns: [
+                                        DataColumn(label: Text("SR No.")),
+                                        DataColumn(
+                                            label: Text("Payout Message")),
+                                        DataColumn(
+                                            label: Text("Payout Amount")),
+                                        DataColumn(label: Text("Earned ON")),
+                                        DataColumn(label: Text("Status")),
+                                      ],
+                                      source: CustRedeemableTableDataSource(
+                                          controller
+                                              .custRedeemableWalletHistory),
+                                      rowsPerPage: _rowsPerPage,
+                                      availableRowsPerPage: [5, 10, 15, 20, 25],
+                                      onRowsPerPageChanged: (value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            _rowsPerPage = value;
+                                          });
+                                        }
+                                      },
+                                      arrowHeadColor: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        else ...[
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                Divider(thickness: 1, color: Colors.black26),
+                                Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 10),
+                                    child: Text(
+                                      "Redeemable Wallet History",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                                Divider(thickness: 1, color: Colors.black26),
+                                FilterBar(
+                                  userCount: controller
+                                      .custRedeemableWalletHistory.length
+                                      .toString(),
+                                ),
+                                Card(
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: isTablet
+                                      ? SizedBox(
+                                          height:
+                                              (_rowsPerPage * dataRowHeight) +
+                                                  headerHeight +
+                                                  paginationHeight,
+                                          child: PaginatedDataTable(
+                                            columns: [
+                                              DataColumn(label: Text("SR No.")),
+                                              DataColumn(
+                                                  label:
+                                                      Text("Payout Message")),
+                                              DataColumn(
+                                                  label: Text("Payout Amount")),
+                                              DataColumn(
+                                                  label: Text("Earned ON")),
+                                              DataColumn(label: Text("Status")),
+                                            ],
+                                            source: CustRedeemableTableDataSource(
+                                                controller
+                                                    .custRedeemableWalletHistory),
+                                            rowsPerPage: _rowsPerPage,
+                                            availableRowsPerPage: [
+                                              5,
+                                              10,
+                                              15,
+                                              20,
+                                              25
+                                            ],
+                                            onRowsPerPageChanged: (value) {
+                                              if (value != null) {
+                                                setState(() {
+                                                  _rowsPerPage = value;
+                                                });
+                                              }
+                                            },
+                                            arrowHeadColor: Colors.blue,
+                                          ),
+                                        )
+                                      : ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount: controller
+                                              .custRedeemableWalletHistory
+                                              .length,
+                                          itemBuilder: (context, index) {
+                                            final payout = controller
+                                                    .custRedeemableWalletHistory[
+                                                index];
+                                            return Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 5),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.2),
+                                                    spreadRadius: 1,
+                                                    blurRadius: 4,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                child: Material(
+                                                  color: index.isEven
+                                                      ? Colors.grey[50]
+                                                      : Colors.white,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      // Add tap functionality if needed
+                                                    },
+                                                    splashColor: Colors.blue
+                                                        .withOpacity(0.1),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16.0),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          // Header with SR No. and Date
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Container(
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
                                                                         12,
-                                                                    color: Colors
-                                                                            .grey[
-                                                                        600],
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                  ),
+                                                                    vertical:
+                                                                        6),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                      .blue[50],
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              8),
                                                                 ),
-                                                                const SizedBox(
-                                                                    height: 4),
-                                                                Text(
-                                                                  payout
-                                                                      .amount!,
+                                                                child: Text(
+                                                                  "SR No. #${(index + 1).toString().padLeft(2, '0')}",
                                                                   style:
                                                                       const TextStyle(
-                                                                    fontSize:
-                                                                        18,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .bold,
                                                                     color: Colors
-                                                                        .green,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .end,
-                                                              children: [
-                                                                Text(
-                                                                  "Status      ",
-                                                                  style:
-                                                                      TextStyle(
+                                                                        .blue,
                                                                     fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                            .grey[
-                                                                        600],
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
+                                                                        14,
                                                                   ),
                                                                 ),
-                                                                const SizedBox(
-                                                                    height: 4),
-                                                                Container(
-                                                                  padding: const EdgeInsets
-                                                                      .symmetric(
-                                                                      horizontal:
-                                                                          12,
-                                                                      vertical:
-                                                                          6),
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: _getStatusColor(
-                                                                        payout
-                                                                            .status!),
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            16),
-                                                                  ),
-                                                                  child: Text(
-                                                                    payout
-                                                                        .status!,
+                                                              ),
+                                                              Text(
+                                                                "     Date \n${payout.date!}",
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      600],
+                                                                  fontSize: 12,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+
+                                                          const SizedBox(
+                                                              height: 12),
+
+                                                          // Payout Message
+                                                          Text(
+                                                            "Points Message",
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors
+                                                                  .grey[600],
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 4),
+                                                          Text(
+                                                            payout.message!,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: Colors
+                                                                  .black87,
+                                                            ),
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+
+                                                          const SizedBox(
+                                                              height: 12),
+
+                                                          // Payout Amount and Status in a row
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    "Points Value",
                                                                     style:
-                                                                        const TextStyle(
-                                                                      color: Colors
-                                                                          .white,
+                                                                        TextStyle(
                                                                       fontSize:
                                                                           12,
+                                                                      color: Colors
+                                                                              .grey[
+                                                                          600],
                                                                       fontWeight:
                                                                           FontWeight
-                                                                              .w600,
+                                                                              .w500,
                                                                     ),
                                                                   ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          4),
+                                                                  Text(
+                                                                    payout
+                                                                        .amount!,
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      fontSize:
+                                                                          18,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Colors
+                                                                          .green,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  Text(
+                                                                    "Status      ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                              .grey[
+                                                                          600],
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          4),
+                                                                  Container(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        horizontal:
+                                                                            12,
+                                                                        vertical:
+                                                                            6),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color: _getStatusColor(
+                                                                          payout
+                                                                              .status!),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              16),
+                                                                    ),
+                                                                    child: Text(
+                                                                      payout
+                                                                          .status!,
+                                                                      style:
+                                                                          const TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize:
+                                                                            12,
+                                                                        fontWeight:
+                                                                            FontWeight.w600,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                              )
-                            ],
+                                            );
+                                          },
+                                        ),
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                      ]
+                          SizedBox(height: 20),
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                Divider(thickness: 1, color: Colors.black26),
+                                Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 10),
+                                    child: Text(
+                                      "Booking Points Wallet History",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                                Divider(thickness: 1, color: Colors.black26),
+                                FilterBar(
+                                  userCount: controller
+                                      .custBookingWalletHistory.length
+                                      .toString(),
+                                ),
+                                Card(
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: isTablet
+                                      ? SizedBox(
+                                          height:
+                                              (_rowsPerPage * dataRowHeight) +
+                                                  headerHeight +
+                                                  paginationHeight,
+                                          child: PaginatedDataTable(
+                                            columns: [
+                                              DataColumn(label: Text("SR No.")),
+                                              DataColumn(
+                                                  label:
+                                                      Text("Points Message")),
+                                              DataColumn(
+                                                  label: Text("Points Value")),
+                                              DataColumn(
+                                                  label: Text("Added On")),
+                                              DataColumn(label: Text("Status")),
+                                            ],
+                                            source: CustBookingPointsDataSource(
+                                                controller
+                                                    .custBookingWalletHistory),
+                                            rowsPerPage: _rowsPerPage,
+                                            availableRowsPerPage: [
+                                              5,
+                                              10,
+                                              15,
+                                              20,
+                                              25
+                                            ],
+                                            onRowsPerPageChanged: (value) {
+                                              if (value != null) {
+                                                setState(() {
+                                                  _rowsPerPage = value;
+                                                });
+                                              }
+                                            },
+                                            arrowHeadColor: Colors.blue,
+                                          ),
+                                        )
+                                      : ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount: controller
+                                              .custBookingWalletHistory.length,
+                                          itemBuilder: (context, index) {
+                                            final payout = controller
+                                                    .custBookingWalletHistory[
+                                                index];
+                                            return Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 5),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.2),
+                                                    spreadRadius: 1,
+                                                    blurRadius: 4,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                child: Material(
+                                                  color: index.isEven
+                                                      ? Colors.grey[50]
+                                                      : Colors.white,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      // Add tap functionality if needed
+                                                    },
+                                                    splashColor: Colors.blue
+                                                        .withOpacity(0.1),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16.0),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          // Header with SR No. and Date
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Container(
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        12,
+                                                                    vertical:
+                                                                        6),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                      .blue[50],
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              8),
+                                                                ),
+                                                                child: Text(
+                                                                  "SR No. #${(index + 1).toString().padLeft(2, '0')}",
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: Colors
+                                                                        .blue,
+                                                                    fontSize:
+                                                                        14,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Text(
+                                                                "     Date \n${payout.date!}",
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      600],
+                                                                  fontSize: 12,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
 
-                      // Quick Actions
-                      // Container(
-                      //   width: double.infinity,
-                      //   padding: EdgeInsets.all(20),
-                      //   decoration: BoxDecoration(
-                      //     color: Colors.white,
-                      //     borderRadius: BorderRadius.circular(12),
-                      //     boxShadow: [
-                      //       BoxShadow(
-                      //         color: Colors.black.withOpacity(0.05),
-                      //         blurRadius: 8,
-                      //         offset: Offset(0, 2),
-                      //       ),
-                      //     ],
-                      //   ),
-                      //   child: Column(
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     children: [
-                      //       Text(
-                      //         'Quick Actions',
-                      //         style: TextStyle(
-                      //           fontSize: 18,
-                      //           fontWeight: FontWeight.bold,
-                      //           color: Colors.grey[800],
-                      //         ),
-                      //       ),
-                      //       SizedBox(height: 16),
-                      //       Row(
-                      //         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      //         children: [
-                      //           _buildQuickActionButton(
-                      //             icon: Icons.add,
-                      //             label: 'Add Money',
-                      //             onTap: () {},
-                      //           ),
-                      //           _buildQuickActionButton(
-                      //             icon: Icons.send,
-                      //             label: 'Transfer',
-                      //             onTap: () {},
-                      //           ),
-                      //           _buildQuickActionButton(
-                      //             icon: Icons.history,
-                      //             label: 'History',
-                      //             onTap: () {},
-                      //           ),
-                      //         ],
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                    ],
+                                                          const SizedBox(
+                                                              height: 12),
+
+                                                          // Payout Message
+                                                          Text(
+                                                            "Points Message",
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors
+                                                                  .grey[600],
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 4),
+                                                          Text(
+                                                            payout.message!,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: Colors
+                                                                  .black87,
+                                                            ),
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+
+                                                          const SizedBox(
+                                                              height: 12),
+
+                                                          // Payout Amount and Status in a row
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    "Points Value",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                              .grey[
+                                                                          600],
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          4),
+                                                                  Text(
+                                                                    payout
+                                                                        .amount!,
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      fontSize:
+                                                                          18,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Colors
+                                                                          .green,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  Text(
+                                                                    "Status      ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                              .grey[
+                                                                          600],
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          4),
+                                                                  Container(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        horizontal:
+                                                                            12,
+                                                                        vertical:
+                                                                            6),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color: _getStatusColor(
+                                                                          payout
+                                                                              .status!),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              16),
+                                                                    ),
+                                                                    child: Text(
+                                                                      payout
+                                                                          .status!,
+                                                                      style:
+                                                                          const TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize:
+                                                                            12,
+                                                                        fontWeight:
+                                                                            FontWeight.w600,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ]
+
+                        // Quick Actions
+                        // Container(
+                        //   width: double.infinity,
+                        //   padding: EdgeInsets.all(20),
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.white,
+                        //     borderRadius: BorderRadius.circular(12),
+                        //     boxShadow: [
+                        //       BoxShadow(
+                        //         color: Colors.black.withOpacity(0.05),
+                        //         blurRadius: 8,
+                        //         offset: Offset(0, 2),
+                        //       ),
+                        //     ],
+                        //   ),
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       Text(
+                        //         'Quick Actions',
+                        //         style: TextStyle(
+                        //           fontSize: 18,
+                        //           fontWeight: FontWeight.bold,
+                        //           color: Colors.grey[800],
+                        //         ),
+                        //       ),
+                        //       SizedBox(height: 16),
+                        //       Row(
+                        //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        //         children: [
+                        //           _buildQuickActionButton(
+                        //             icon: Icons.add,
+                        //             label: 'Add Money',
+                        //             onTap: () {},
+                        //           ),
+                        //           _buildQuickActionButton(
+                        //             icon: Icons.send,
+                        //             label: 'Transfer',
+                        //             onTap: () {},
+                        //           ),
+                        //           _buildQuickActionButton(
+                        //             icon: Icons.history,
+                        //             label: 'History',
+                        //             onTap: () {},
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                      ],
+                    ),
                   ),
                 ),
               ),
       );
     });
-  }
-
-  Widget _buildRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
-      child: Row(
-        children: [
-          Text(
-            "$label: ",
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(child: Text(value)),
-        ],
-      ),
-    );
   }
 
   Color _getStatusColor(String status) {

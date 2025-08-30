@@ -224,9 +224,10 @@ class LoginController extends ChangeNotifier {
         'username': email,
         'password': password,
       });
-      Logger.success("Login URL: $url");
       final response = await http.post(url, headers: headers, body: body);
+      Logger.success("Login URL: $url");
       Logger.success("Login response: ${response.body}");
+      Logger.warning("Login Request Body: $body");
 
       if (response.statusCode == 200) {
         final Map responseData = json.decode(response.body);

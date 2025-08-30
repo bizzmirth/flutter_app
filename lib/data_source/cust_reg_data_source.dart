@@ -10,8 +10,10 @@ import 'package:provider/provider.dart';
 
 class MyrefCustRegDataSource extends DataTableSource {
   final List<RegisteredCustomer> data;
-  MyrefCustRegDataSource(this.data, this.context);
   final BuildContext context;
+  final VoidCallback? onDataChanged; // Add callback for data changes
+
+  MyrefCustRegDataSource(this.data, this.context, {this.onDataChanged});
 
   @override
   DataRow? getRow(int index) {
@@ -133,29 +135,35 @@ class MyrefCustRegDataSource extends DataTableSource {
     );
   }
 
-// Action Menu Widget
+  // Action Menu Widget
   Widget _buildActionMenu(context, RegisteredCustomer regCustomer) {
     final customerController =
         Provider.of<CustomerController>(context, listen: false);
     return Consumer<CustomerController>(builder: (context, controller, child) {
       return PopupMenuButton<String>(
-        onSelected: (value) {
+        onSelected: (value) async {
           // Handle menu actions
           switch (value) {
             case "add_ref":
-              Navigator.push(
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddTAcustPage(isHidden: false),
                 ),
               );
+              if (result == true) {
+                await _refreshData();
+              }
               break;
             case "edit":
+              // This case is handled by onTap in PopupMenuItem
               break;
             case "delete":
+              // This case is handled by onTap in PopupMenuItem
               break;
             case "restore":
-              customerController.apiRestoreCustomer(controller, regCustomer);
+              await customerController.apiRestoreCustomer(context, regCustomer);
+              await _refreshData();
               break;
             default:
               break;
@@ -172,8 +180,11 @@ class MyrefCustRegDataSource extends DataTableSource {
                   leading: Icon(Icons.edit, color: Colors.blueAccent),
                   title: Text("Edit"),
                   onTap: () async {
+                    // Close the popup menu first
                     Navigator.pop(context);
-                    await Navigator.push(
+
+                    // Navigate to edit page and wait for result
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => AddReferralCustomer(
@@ -183,8 +194,9 @@ class MyrefCustRegDataSource extends DataTableSource {
                       ),
                     );
 
-                    customerController.apiGetRegisteredCustomers();
-                    customerController.apiGetPendingCustomers();
+                    if (result == true) {
+                      await _refreshData();
+                    }
                   },
                 ),
               ),
@@ -193,9 +205,11 @@ class MyrefCustRegDataSource extends DataTableSource {
                 child: ListTile(
                   leading: Icon(Icons.delete, color: Colors.red),
                   title: Text("Delete"),
-                  onTap: () {
+                  onTap: () async {
                     Navigator.pop(context);
-                    customerController.apiDeleteCustomer(context, regCustomer);
+                    await customerController.apiDeleteCustomer(
+                        context, regCustomer);
+                    await _refreshData();
                   },
                 ),
               ),
@@ -207,9 +221,11 @@ class MyrefCustRegDataSource extends DataTableSource {
                 child: ListTile(
                   leading: Icon(Icons.restore, color: Colors.green),
                   title: Text("Restore"),
-                  onTap: () {
+                  onTap: () async {
                     Navigator.pop(context);
-                    customerController.apiRestoreCustomer(context, regCustomer);
+                    await customerController.apiRestoreCustomer(
+                        context, regCustomer);
+                    await _refreshData();
                   },
                 ),
               ),
@@ -221,6 +237,22 @@ class MyrefCustRegDataSource extends DataTableSource {
         icon: Icon(Icons.more_vert, color: Colors.black54),
       );
     });
+  }
+
+  Future<void> _refreshData() async {
+    try {
+      final customerController = context.read<CustomerController>();
+
+      await Future.wait([
+        customerController.apiGetRegisteredCustomers(),
+        customerController.apiGetPendingCustomers(),
+      ]);
+
+      onDataChanged?.call();
+      notifyListeners();
+    } catch (e) {
+      Logger.error("Error refreshing data: $e");
+    }
   }
 
   @override

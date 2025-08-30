@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:bizzmirth_app/controllers/package_details_controller.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/info_row.dart';
 import 'package:bizzmirth_app/widgets/price_row.dart';
@@ -14,6 +13,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class PackageDetailsPage extends StatefulWidget {
   final String id;
@@ -32,36 +32,23 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
     setState(() {});
   }
 
-  Future<void> _launchWhatsApp() async {
-    const String phoneNumber = "+919112017081";
-    const String message = "Hi, I'm interested in the tour package details.";
+  void _openWhatsApp(String phone, String message) async {
+    final encodedMessage = Uri.encodeComponent(message);
+    final whatsappUrl = "whatsapp://send?phone=$phone&text=$encodedMessage";
 
-    final String whatsappUrl =
-        "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}";
-
-    try {
-      if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
-        await launchUrl(
-          Uri.parse(whatsappUrl),
+    if (await canLaunchUrlString(whatsappUrl)) {
+      await launchUrlString(whatsappUrl, mode: LaunchMode.externalApplication);
+    } else {
+      final fallbackUrl = "https://wa.me/$phone?text=$encodedMessage";
+      if (await canLaunchUrlString(fallbackUrl)) {
+        await launchUrlString(
+          fallbackUrl,
           mode: LaunchMode.externalApplication,
         );
       } else {
-        final String fallbackUrl = "https://wa.me/$phoneNumber";
-        if (await canLaunchUrl(Uri.parse(fallbackUrl))) {
-          await launchUrl(
-            Uri.parse(fallbackUrl),
-            mode: LaunchMode.externalApplication,
-          );
-        } else {
-          ToastHelper.showErrorToast(
-              context: context,
-              title: "WhatsApp not found",
-              description: "WhatsApp is not installed in this device");
-        }
+        ToastHelper.showErrorToast(
+            context: context, title: "Could not detect WhatsApp on device.");
       }
-    } catch (e) {
-      ToastHelper.showErrorToast(
-          context: context, title: "Error opening WhatsApp: $e");
     }
   }
 
@@ -550,22 +537,27 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               children: [
                 FloatingActionButton(
                   tooltip: "Whatsapp",
-                  onPressed: _launchWhatsApp,
+                  onPressed: () {
+                    _openWhatsApp(
+                      "919168376463",
+                      'Hi, I wanna inquire more about the *"${controller.packageDetails?.name}"* package.',
+                    );
+                  },
                   backgroundColor: Colors.green,
                   heroTag: "whatsapp",
                   child: const FaIcon(FontAwesomeIcons.whatsapp,
                       color: Colors.white),
                 ),
-                const SizedBox(height: 12),
-                FloatingActionButton(
-                  tooltip: "Share",
-                  onPressed: () {
-                    // Add share functionality
-                  },
-                  backgroundColor: Colors.blue,
-                  heroTag: "share",
-                  child: const Icon(Icons.share, color: Colors.white),
-                ),
+                // const SizedBox(height: 12),
+                // FloatingActionButton(
+                //   tooltip: "Share",
+                //   onPressed: () {
+                //     // Add share functionality
+                //   },
+                //   backgroundColor: Colors.blue,
+                //   heroTag: "share",
+                //   child: const Icon(Icons.share, color: Colors.white),
+                // ),
               ],
             ),
           ),

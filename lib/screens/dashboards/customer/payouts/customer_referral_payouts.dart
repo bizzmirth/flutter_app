@@ -3,7 +3,6 @@ import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
 import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
@@ -33,18 +32,22 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      lastDate: DateTime(
+        2030,
+      ),
     );
     if (picked != null) {
       setState(() {
         selectedDate = DateFormat("MMMM, yyyy").format(picked);
       });
+      Logger.success("selected Date : $selectedDate");
     }
   }
 
   @override
   void initState() {
     super.initState();
+    selectedDate = DateFormat("MMMM, yyyy").format(DateTime.now());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getAllStatData();
     });
@@ -58,6 +61,10 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
     controller.apiGetPreviousMonthPayouts();
     controller.apiGetNextMonthPayouts();
     controller.apiGetTotalPayouts();
+  }
+
+  Future<void> onRefresh() async {
+    getAllStatData();
   }
 
   String getMonthName(String? monthNumber) {
@@ -176,11 +183,100 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                             child: _buildPayoutCard(payoutType, amount, date)),
                         const SizedBox(width: 12),
                         Expanded(
-                            child: _buildUserCard(userId, userName, amount)),
+                          flex: 1,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.black),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'ID: $userId',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ),
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.black),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Name: $userName',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Name: $userName',
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Rs.',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey.shade600),
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            amount.replaceAll('Rs', ""),
+                                            style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     ),
 
                   const SizedBox(height: 16),
+
                   const Divider(thickness: 1, color: Colors.black26),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -199,7 +295,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                   const SizedBox(height: 8),
 
                   // Payout list
-                  if (payoutList.isEmpty)
+                  if (payoutList.isEmpty) ...[
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Center(
@@ -208,8 +304,8 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       ),
-                    )
-                  else
+                    ),
+                  ] else if (isMobile) ...[
                     Column(
                       children: [
                         for (int i = 0; i < payoutList.length; i++)
@@ -217,6 +313,72 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                               payoutList[i], i == payoutList.length - 1),
                       ],
                     ),
+                  ] else ...[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(thickness: 1, color: Colors.black26),
+                          Card(
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: SizedBox(
+                              height: (_rowsPerPage * dataRowHeight) +
+                                  headerHeight +
+                                  paginationHeight,
+                              child: payoutList.isEmpty
+                                  ? Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Text(
+                                          'No payout data available',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : PaginatedDataTable(
+                                      columnSpacing: 50,
+                                      dataRowMinHeight: 40,
+                                      columns: const [
+                                        DataColumn(label: Text("Date")),
+                                        DataColumn(
+                                            label: Text("Payout Details")),
+                                        DataColumn(label: Text("Amount")),
+                                        DataColumn(label: Text("TDS")),
+                                        DataColumn(
+                                            label: Text("Total Payable")),
+                                        DataColumn(label: Text("Remarks")),
+                                      ],
+                                      source: CustReferenceAllPayoutDataSource(
+                                          payoutList),
+                                      rowsPerPage: _rowsPerPage,
+                                      availableRowsPerPage: const [
+                                        5,
+                                        10,
+                                        15,
+                                        20,
+                                        25
+                                      ],
+                                      onRowsPerPageChanged: (value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            _rowsPerPage = value;
+                                          });
+                                        }
+                                      },
+                                      arrowHeadColor: Colors.blue,
+                                    ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
 
                   // Close button
                   const SizedBox(height: 16),
@@ -399,18 +561,18 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Date: ${payout.date ?? 'N/A'}",
+          Text("Date: ${payout.date}",
               style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text("Payout Details: ${payout.payoutDetails ?? 'N/A'}"),
+          Text("Payout Details: ${payout.payoutDetails}"),
           const SizedBox(height: 4),
-          Text("Amount: Rs. ${payout.amount ?? '0.00'}"),
+          Text("Amount: Rs. ${payout.amount}"),
           const SizedBox(height: 4),
-          Text("TDS: Rs. ${payout.tds ?? '0.00'}"),
+          Text("TDS: Rs. ${payout.tds}"),
           const SizedBox(height: 4),
-          Text("Total Payable: Rs. ${payout.totalPayable ?? '0.00'}"),
+          Text("Total Payable: Rs. ${payout.totalPayable}"),
           const SizedBox(height: 4),
-          Text("Remarks: ${payout.status ?? 'N/A'}"),
+          Text("Remarks: ${payout.status}"),
         ],
       ),
     );
@@ -471,98 +633,102 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
           ),
           body: controller.isLoading
               ? _buildLoadingState()
-              : SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Divider(thickness: 1, color: Colors.black26),
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10),
-                            child: Text(
-                              "Payouts:",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+              : RefreshIndicator(
+                  onRefresh: onRefresh,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Divider(thickness: 1, color: Colors.black26),
+                          Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                "Payouts:",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
-                        ),
-                        Divider(thickness: 1, color: Colors.black26),
-                        const SizedBox(height: 16),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            if (constraints.maxWidth < 600) {
-                              return Column(
-                                children: [
-                                  payoutCard(
-                                      "Previous Payout",
-                                      "${getMonthName(controller.prevMonth)}, ${controller.year}",
-                                      "Rs. ${controller.previousMonthPayout}/-",
-                                      "Paid",
-                                      Colors.green.shade100,
-                                      controller),
-                                  const SizedBox(height: 16),
-                                  payoutCard(
-                                      "Next Payout",
-                                      "${getMonthName(controller.nextMonth)}, ${controller.year}",
-                                      "Rs. ${controller.nextMonthPayout}/-",
-                                      "Pending",
-                                      Colors.orange.shade100,
-                                      controller),
-                                ],
-                              );
-                            } else {
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: payoutCard(
+                          Divider(thickness: 1, color: Colors.black26),
+                          const SizedBox(height: 16),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              if (constraints.maxWidth < 600) {
+                                return Column(
+                                  children: [
+                                    payoutCard(
                                         "Previous Payout",
                                         "${getMonthName(controller.prevMonth)}, ${controller.year}",
                                         "Rs. ${controller.previousMonthPayout}/-",
                                         "Paid",
                                         Colors.green.shade100,
                                         controller),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: payoutCard(
+                                    const SizedBox(height: 16),
+                                    payoutCard(
                                         "Next Payout",
                                         "${getMonthName(controller.nextMonth)}, ${controller.year}",
                                         "Rs. ${controller.nextMonthPayout}/-",
                                         "Pending",
                                         Colors.orange.shade100,
                                         controller),
-                                  ),
-                                ],
-                              );
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        totalPayoutCard(controller.totalPayout, controller),
-                        const SizedBox(height: 50),
-                        Divider(thickness: 1, color: Colors.black26),
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10),
-                            child: Text(
-                              "All Payouts:",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                  ],
+                                );
+                              } else {
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: payoutCard(
+                                          "Previous Payout",
+                                          "${getMonthName(controller.prevMonth)}, ${controller.year}",
+                                          "Rs. ${controller.previousMonthPayout}/-",
+                                          "Paid",
+                                          Colors.green.shade100,
+                                          controller),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: payoutCard(
+                                          "Next Payout",
+                                          "${getMonthName(controller.nextMonth)}, ${controller.year}",
+                                          "Rs. ${controller.nextMonthPayout}/-",
+                                          "Pending",
+                                          Colors.orange.shade100,
+                                          controller),
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          totalPayoutCard(controller.totalPayout, controller),
+                          const SizedBox(height: 50),
+                          Divider(thickness: 1, color: Colors.black26),
+                          Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                "All Payouts:",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
-                        ),
-                        Divider(thickness: 1, color: Colors.black26),
-                        FilterBar(
-                          userCount: controller.allPayouts.length.toString(),
-                        ),
-                        isTablet
-                            ? _buildDesktopListView(controller)
-                            : _buildMobileListView(controller),
-                      ],
+                          Divider(thickness: 1, color: Colors.black26),
+                          FilterBar(
+                            userCount: controller.allPayouts.length.toString(),
+                          ),
+                          isTablet
+                              ? _buildDesktopListView(controller)
+                              : _buildMobileListView(controller),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -574,7 +740,6 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
   // Improved Desktop ListView with PaginatedDataTable
   Widget _buildDesktopListView(CustReferralPayoutController controller) {
     return SizedBox(
-      height: (_rowsPerPage * dataRowHeight) + headerHeight + paginationHeight,
       child: controller.allPayouts.isEmpty
           ? _buildEmptyState()
           : Card(
@@ -582,29 +747,30 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
               child: PaginatedDataTable(
-                columnSpacing: 50,
+                columnSpacing: 30,
                 dataRowMinHeight: 40,
-                dataRowMaxHeight: 60,
-                headingRowHeight: 60,
                 columns: const [
+                  DataColumn(label: Text("Date")),
                   DataColumn(
-                      label: Text("Date",
-                          style: TextStyle(fontWeight: FontWeight.bold))),
+                      label: Text(
+                    "Payout Details",
+                  )),
                   DataColumn(
-                      label: Text("Payout Details",
-                          style: TextStyle(fontWeight: FontWeight.bold))),
+                      label: Text(
+                    "Product Payout",
+                  )),
                   DataColumn(
-                      label: Text("Product Payout",
-                          style: TextStyle(fontWeight: FontWeight.bold))),
+                      label: Text(
+                    "Total",
+                  )),
                   DataColumn(
-                      label: Text("Total",
-                          style: TextStyle(fontWeight: FontWeight.bold))),
+                      label: Text(
+                    "TDS",
+                  )),
                   DataColumn(
-                      label: Text("TDS",
-                          style: TextStyle(fontWeight: FontWeight.bold))),
-                  DataColumn(
-                      label: Text("Remarks",
-                          style: TextStyle(fontWeight: FontWeight.bold))),
+                      label: Text(
+                    "Remarks",
+                  )),
                 ],
                 source: CustReferenceAllPayoutDataSource(controller.allPayouts),
                 rowsPerPage: _rowsPerPage,
@@ -615,12 +781,6 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                   }
                 },
                 arrowHeadColor: Colors.blue,
-                header: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text('All Referral Payout Records',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                ),
               ),
             ),
     );
@@ -705,12 +865,11 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
               children: [
-                _buildDetailItem("Details", payout.payoutDetails ?? 'N/A'),
-                _buildDetailItem("Amount", "₹${payout.amount ?? '0.00'}"),
+                _buildDetailItem("Details", payout.payoutDetails),
+                _buildDetailItem("Amount", "₹${payout.amount}"),
                 _buildDetailItem(
                     "TDS", payout.tds == "NA" ? "N/A" : "₹${payout.tds}"),
-                _buildDetailItem(
-                    "Payable", "₹${payout.totalPayable ?? '0.00'}"),
+                _buildDetailItem("Payable", "₹${payout.totalPayable}"),
               ],
             ),
           ],
@@ -748,46 +907,33 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
 
   // Empty state widget
   Widget _buildEmptyState() {
-    return Padding(
-      padding: const EdgeInsets.all(40.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.receipt_long, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            'No referral payout records found',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.receipt_long, size: 64, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              'No referral payout records found',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Your referral payout history will appear here',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
+            const SizedBox(height: 8),
+            Text(
+              'Your referral payout history will appear here',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[500],
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
-      child: Row(
-        children: [
-          Text(
-            "$label: ",
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(child: Text(value)),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -161,7 +161,7 @@ class CustReferralPayoutController extends ChangeNotifier {
       final fullUrl = AppUrls.getNextPayoutReference;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final now = DateTime.now();
-      final nextMonth = (now.month % 12 + 1).toString().padLeft(2, '0');
+      final nextMonth = (now.month % 12).toString().padLeft(2, '0');
       final currentYear = now.year.toString();
       final Map<String, dynamic> body = {
         "userId": userId,
@@ -216,8 +216,13 @@ class CustReferralPayoutController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getTotalPayoutsReference;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final now = DateTime.now();
+      final nextMonth = (now.month % 12).toString().padLeft(2, '0');
+      final currentYear = now.year.toString();
       final Map<String, dynamic> body = {
         "userId": userId,
+        "month": nextMonth,
+        "year": currentYear
       };
       final encodeBody = jsonEncode(body);
       Logger.warning("Fetching total payouts for userId: $encodeBody");

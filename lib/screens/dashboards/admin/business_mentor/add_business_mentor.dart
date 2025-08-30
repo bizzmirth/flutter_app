@@ -929,12 +929,12 @@ class _AddbmState extends State<AddbmPage> {
   void updatePendingBusinessMentor() async {
     try {
       isLoading = true;
-      String? newProfilePicturePath;
-      String? newAdharCardPath;
-      String? newPanCardPath;
-      String? newBankPassbookPath;
-      String? newVotingCardPath;
-      String? newPaymentProofPath;
+      // String? newProfilePicturePath;
+      // String? newAdharCardPath;
+      // String? newPanCardPath;
+      // String? newBankPassbookPath;
+      // String? newVotingCardPath;
+      // String? newPaymentProofPath;
     } catch (e) {
       Logger.error("Error updating pending business mentor : $e");
     } finally {

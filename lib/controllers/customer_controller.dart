@@ -500,22 +500,22 @@ class CustomerController extends ChangeNotifier {
       Logger.success("Upload Api FULL URL: $fullUrl");
       Logger.info('this is reuest $request');
 
-      if (responseBody == '1') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Upload Failed  $responseBody")));
-      } else if (responseBody == '2') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Invalid File Extension  $responseBody")));
-      } else if (responseBody == '3') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("No File Selected  $responseBody")));
-      } else if (responseBody == '4') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("File Size Exceeds 2MB  $responseBody")));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Upload Successful: $responseBody")));
-      }
+      // if (responseBody == '1') {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(content: Text("Upload Failed  $responseBody")));
+      // } else if (responseBody == '2') {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(content: Text("Invalid File Extension  $responseBody")));
+      // } else if (responseBody == '3') {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(content: Text("No File Selected  $responseBody")));
+      // } else if (responseBody == '4') {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(content: Text("File Size Exceeds 2MB  $responseBody")));
+      // } else {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(content: Text("Upload Successful: $responseBody")));
+      // }
     } catch (e) {
       Logger.error("Error uploading image: $e");
     }
@@ -595,6 +595,9 @@ class CustomerController extends ChangeNotifier {
       Logger.success("fullUrl: $fullUrl");
       Logger.success("status code : ${response.statusCode}");
       Logger.success("API response: ${response.body}");
+      if (response.statusCode == 200) {
+        apiGetPendingCustomers();
+      }
     } catch (e) {
       Logger.error("Error in apiAddCustomer: $e");
       _error = "Error: $e";

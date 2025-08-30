@@ -1,7 +1,9 @@
 import 'package:bizzmirth_app/controllers/profile_controller.dart';
 import 'package:bizzmirth_app/models/coupons_data_model.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,14 +17,49 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  String custtype = "";
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getPersonalDetails();
     });
+
+    // Run async work separately
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    try {
+      await getCustomerType();
+      final profileController = context.read<ProfileController>();
+
+      if (profileController.customerType != null &&
+          profileController.customerType!.isNotEmpty) {
+        // Use the fresh customer_type from API instead of SharedPreferences
+        custtype = profileController.customerType!;
+        // Save it to SharedPreferences for future use
+        await SharedPrefHelper().saveCustomerType(custtype);
+        Logger.success("Using customer_type from API: $custtype");
+      }
+    } catch (e) {
+      Logger.error('Error initializing dashboard: $e');
+    }
+  }
+
+  Future<void> getCustomerType() async {
+    try {
+      custtype = await SharedPrefHelper().getCustomerType() ?? '';
+      Logger.success("customer type: $custtype");
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      Logger.error('Error getting customer type: $e');
+    }
   }
 
   void getPersonalDetails() async {
@@ -168,7 +205,13 @@ class _ProfilePageState extends State<ProfilePage>
                       return Icon(Icons.person, size: 60, color: Colors.grey);
                     },
                   )
-                : Icon(Icons.person, size: 60, color: Colors.grey),
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      "https://testca.uniqbizz.com/uploading/not_uploaded.png",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
           ),
           SizedBox(width: 16),
           Expanded(
@@ -288,6 +331,7 @@ class _ProfilePageState extends State<ProfilePage>
                     color: Colors.black87,
                   ),
                 ),
+                SizedBox(height: isTablet ? 16 : 16),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50), // circular image
                   child: controller.profilePic != null &&
@@ -298,12 +342,19 @@ class _ProfilePageState extends State<ProfilePage>
                           width: isTablet ? 80 : 60,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
-                            return Icon(Icons.person,
-                                size: isTablet ? 80 : 60, color: Colors.grey);
+                            return Image.network(
+                              "https://testca.uniqbizz.com/uploading/not_uploaded.png",
+                              fit: BoxFit.cover,
+                            );
                           },
                         )
-                      : Icon(Icons.person,
-                          size: isTablet ? 80 : 60, color: Colors.grey),
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            "https://testca.uniqbizz.com/uploading/not_uploaded.png",
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -368,27 +419,20 @@ class _ProfilePageState extends State<ProfilePage>
                     child: Image.network(
                       documentUrl,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.network(
+                          "https://testca.uniqbizz.com/uploading/not_uploaded.png",
+                          fit: BoxFit.cover,
+                        );
+                      },
                     ),
                   )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.photo_outlined,
-                        color: Colors.grey[400],
-                        size: isTablet ? 24 : (isMobile ? 20 : 18),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Not Uploaded',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: isTablet ? 12 : 10,
-                          height: 1.2,
-                        ),
-                      ),
-                    ],
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      "https://testca.uniqbizz.com/uploading/not_uploaded.png",
+                      fit: BoxFit.cover,
+                    ),
                   ),
           ),
           SizedBox(height: isTablet ? 16 : 8),
@@ -733,6 +777,15 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                     DataColumn(
                       label: Text(
+                        'Coupon',
+                        style: TextStyle(
+                          fontSize: isTablet ? 14 : 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
                         'Amount',
                         style: TextStyle(
                           fontSize: isTablet ? 14 : 12,
@@ -773,6 +826,10 @@ class _ProfilePageState extends State<ProfilePage>
                       cells: [
                         DataCell(Text(
                           coupon.code,
+                          style: TextStyle(fontSize: isTablet ? 14 : 12),
+                        )),
+                        DataCell(Text(
+                          custtype,
                           style: TextStyle(fontSize: isTablet ? 14 : 12),
                         )),
                         DataCell(Text(
