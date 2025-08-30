@@ -6,7 +6,6 @@ import 'package:bizzmirth_app/data_source/cust_redeemable_table_data_source.dart
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -939,21 +938,6 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
               ),
       );
     });
-  }
-
-  Widget _buildRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
-      child: Row(
-        children: [
-          Text(
-            "$label: ",
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(child: Text(value)),
-        ],
-      ),
-    );
   }
 
   Color _getStatusColor(String status) {

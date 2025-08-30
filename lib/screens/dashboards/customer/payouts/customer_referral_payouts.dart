@@ -3,7 +3,6 @@ import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
 import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
@@ -562,18 +561,18 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Date: ${payout.date ?? 'N/A'}",
+          Text("Date: ${payout.date}",
               style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text("Payout Details: ${payout.payoutDetails ?? 'N/A'}"),
+          Text("Payout Details: ${payout.payoutDetails}"),
           const SizedBox(height: 4),
-          Text("Amount: Rs. ${payout.amount ?? '0.00'}"),
+          Text("Amount: Rs. ${payout.amount}"),
           const SizedBox(height: 4),
-          Text("TDS: Rs. ${payout.tds ?? '0.00'}"),
+          Text("TDS: Rs. ${payout.tds}"),
           const SizedBox(height: 4),
-          Text("Total Payable: Rs. ${payout.totalPayable ?? '0.00'}"),
+          Text("Total Payable: Rs. ${payout.totalPayable}"),
           const SizedBox(height: 4),
-          Text("Remarks: ${payout.status ?? 'N/A'}"),
+          Text("Remarks: ${payout.status}"),
         ],
       ),
     );
@@ -866,12 +865,11 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
               children: [
-                _buildDetailItem("Details", payout.payoutDetails ?? 'N/A'),
-                _buildDetailItem("Amount", "₹${payout.amount ?? '0.00'}"),
+                _buildDetailItem("Details", payout.payoutDetails),
+                _buildDetailItem("Amount", "₹${payout.amount}"),
                 _buildDetailItem(
                     "TDS", payout.tds == "NA" ? "N/A" : "₹${payout.tds}"),
-                _buildDetailItem(
-                    "Payable", "₹${payout.totalPayable ?? '0.00'}"),
+                _buildDetailItem("Payable", "₹${payout.totalPayable}"),
               ],
             ),
           ],
@@ -936,21 +934,6 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
-      child: Row(
-        children: [
-          Text(
-            "$label: ",
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(child: Text(value)),
-        ],
       ),
     );
   }

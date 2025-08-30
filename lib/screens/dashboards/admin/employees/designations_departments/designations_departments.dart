@@ -418,7 +418,6 @@ class _DesignationsPageState extends State<DesignationsPage> {
 
   void Adddesignation(BuildContext context) {
     final TextEditingController nameController = TextEditingController();
-    String? selectedDepartment = "";
     String? selectedDepartmentId = "";
     showDialog(
       context: context,
@@ -466,7 +465,6 @@ class _DesignationsPageState extends State<DesignationsPage> {
                 onDepartmentSelected: (selectedDept) {
                   // selectedDept is now a Map with 'id' and 'name'
                   selectedDepartmentId = selectedDept?['id'];
-                  selectedDepartment = selectedDept?['name'];
                 },
               ),
             ],

@@ -5,7 +5,6 @@ import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.d
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
-import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -240,45 +239,6 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
     });
   }
 
-  Future<void> _selectDate(BuildContext context, bool isFromDate) async {
-    DateTime initialDate = isFromDate
-        ? fromDate ?? DateTime.now()
-        : toDate ?? fromDate ?? DateTime.now();
-
-    DateTime firstDate =
-        isFromDate ? DateTime(2000) : fromDate ?? DateTime(2000);
-    DateTime lastDate = isFromDate ? toDate ?? DateTime(2101) : DateTime(2101);
-
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
-    );
-
-    if (pickedDate != null) {
-      setState(() {
-        if (isFromDate) {
-          if (toDate != null && pickedDate.isAfter(toDate!)) {
-            fromDateError = "From Date can't be after To Date";
-          } else {
-            fromDate = pickedDate;
-            fromDateError = null;
-            _applyFilters();
-          }
-        } else {
-          if (fromDate != null && pickedDate.isBefore(fromDate!)) {
-            toDateError = "To Date can't be before From Date";
-          } else {
-            toDate = pickedDate;
-            toDateError = null;
-            _applyFilters();
-          }
-        }
-      });
-    }
-  }
-
   void _applyFilters(
       {String? searchTerm, DateTime? fromDate, DateTime? toDate}) {
     final customerController =
@@ -343,17 +303,6 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
         return matchesSearch && matchesDateRange;
       }).toList();
-    });
-  }
-
-  void _clearFilters() {
-    setState(() {
-      searchController.clear();
-      fromDate = null;
-      toDate = null;
-      fromDateError = null;
-      toDateError = null;
-      _initializeFilteredCustomers(); // Reset to all customers
     });
   }
 
@@ -952,27 +901,30 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                     ),
                   ),
                 ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const AddReferralCustomer()),
-              );
+          floatingActionButton: (showLoader)
+              ? null
+              : FloatingActionButton(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AddReferralCustomer()),
+                    );
 
-              final customerController = context.read<CustomerController>();
-              await customerController.apiGetRegisteredCustomers();
-              await customerController.apiGetPendingCustomers();
-              // Refresh filtered customers after API calls
-              _initializeFilteredCustomers();
-            },
-            backgroundColor: const Color.fromARGB(255, 153, 198, 250),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
-            ),
-            tooltip: "Add New Referral Customer",
-            child: Icon(Icons.add, size: 30),
-          ),
+                    final customerController =
+                        context.read<CustomerController>();
+                    await customerController.apiGetRegisteredCustomers();
+                    await customerController.apiGetPendingCustomers();
+                    // Refresh filtered customers after API calls
+                    _initializeFilteredCustomers();
+                  },
+                  backgroundColor: const Color.fromARGB(255, 153, 198, 250),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  tooltip: "Add New Referral Customer",
+                  child: Icon(Icons.add, size: 30),
+                ),
         ),
       );
     });
