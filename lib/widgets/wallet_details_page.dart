@@ -1086,24 +1086,6 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
     });
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "credited":
-      case "completed":
-        return Colors.green;
-      case "pending":
-        return Colors.orange;
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
   Widget _buildWalletOptionCard({
     required String title,
     required String amount,
