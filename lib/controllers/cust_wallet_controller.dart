@@ -28,7 +28,7 @@ class CustWalletController extends ChangeNotifier {
   List<CustBookingWalletHistory> get custBookingWalletHistory =>
       _custBookingWalletHistory;
 
-  void apiGetWalletDetails() async {
+  Future<void> apiGetWalletDetails() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
