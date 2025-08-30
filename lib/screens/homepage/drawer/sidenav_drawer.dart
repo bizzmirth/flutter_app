@@ -21,8 +21,6 @@ class SideNavDrawer extends StatefulWidget {
 
 class _SideNavDrawerState extends State<SideNavDrawer> {
   String? userType = '';
-  String? userName = '';
-  String? userProfilePic = '';
   bool isLoading = true;
 
   @override
@@ -33,14 +31,10 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
 
   void getUserType() async {
     final getUserType = await SharedPrefHelper().getUserType();
-    final getUserName = await SharedPrefHelper().getCustomerName();
-    final getUserProfilePic = await SharedPrefHelper().getCustomerProfilePic();
     Logger.info("User Type from Shared Preferences: $getUserType");
 
     setState(() {
       userType = getUserType;
-      userName = getUserName;
-      userProfilePic = getUserProfilePic;
       isLoading = false;
     });
   }
@@ -127,40 +121,19 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (userProfilePic != null && userProfilePic!.isNotEmpty)
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(userProfilePic!),
-                      radius: 30,
-                      onBackgroundImageError: (_, __) {
-                        setState(() {
-                          userProfilePic = '';
-                        });
-                      },
-                    )
-                  else
-                    const CircleAvatar(
-                      backgroundImage: AssetImage('assets/user_image.jpg'),
-                      radius: 30,
-                    ),
+                  const CircleAvatar(
+                    backgroundImage: AssetImage('assets/user_image.jpg'),
+                    radius: 30,
+                  ),
                   SizedBox(height: 10),
-                  if (userName != null && userName!.isNotEmpty)
-                    Text(
-                      "Welcome, $userName!",
-                      style: GoogleFonts.roboto(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                  else
-                    Text(
-                      "Welcome, Traveler!",
-                      style: GoogleFonts.roboto(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Text(
+                    "Welcome, Traveler!",
+                    style: GoogleFonts.roboto(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
                   Text(
                     "Explore the best trips and deals",
                     style: GoogleFonts.roboto(
@@ -241,8 +214,6 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
     await SharedPrefHelper().removeDetails();
     setState(() {
       userType = '';
-      userName = '';
-      userProfilePic = '';
     });
     Logger.info("User logged out successfully");
   }

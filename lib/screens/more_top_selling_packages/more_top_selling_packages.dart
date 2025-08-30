@@ -22,6 +22,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
   RangeValues _currentRange = const RangeValues(1000, 150000);
   List<String> availableHotelStars = ['3 Star', '4 Star', "5 Star"];
   List<String> selectedHotelStars = [];
+  TextEditingController _searchController = TextEditingController();
   // For mobile filter drawer
 
   @override
@@ -31,6 +32,12 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getTourPackageData();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose(); // Dispose the controller
+    super.dispose();
   }
 
   void getTourPackageData() async {
@@ -66,6 +73,8 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
 
   // Build filter section (reusable for both layouts)
   Widget _buildFilterSection(BuildContext context) {
+    final controller =
+        Provider.of<TourPackagesController>(context, listen: false);
     return Container(
       color: const Color.fromARGB(255, 205, 222, 248),
       padding: const EdgeInsets.all(13.0),
@@ -74,13 +83,24 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
           const SizedBox(height: 40),
           // Search field at the top
           TextField(
+            controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Search',
+              hintText: 'Search by destination or package name',
               prefixIcon: const Icon(Icons.search),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _searchController.clear();
+                  controller.clearSearch();
+                },
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
             ),
+            onChanged: (value) {
+              controller.setSearchQuery(value);
+            },
           ),
           const SizedBox(height: 10),
           const Divider(),
@@ -283,21 +303,21 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
       );
     }
 
-    if (controller.tourPackages.isEmpty) {
+    if (controller.filteredPackages.isEmpty) {
       return const Center(
         child: Text("No packages available"),
       );
     }
 
     return ListView.builder(
-      itemCount: controller.tourPackages.length,
+      itemCount: controller.filteredPackages.length,
       itemBuilder: (context, index) {
-        final pkg = controller.tourPackages[index];
+        final pkg = controller.filteredPackages[index];
         final imageUrl = "https://ca.uniqbizz.com/${pkg.image}";
 
         // Precache next few images for smoother scrolling
-        if (index < controller.tourPackages.length - 3) {
-          final nextPkg = controller.tourPackages[index + 3];
+        if (index < controller.filteredPackages.length - 3) {
+          final nextPkg = controller.filteredPackages[index + 3];
           final nextImageUrl = "https://ca.uniqbizz.com/${nextPkg.image}";
           precacheImage(NetworkImage(nextImageUrl), context);
         }
@@ -484,6 +504,16 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
             ),
             backgroundColor: const Color.fromARGB(255, 81, 131, 246),
             centerTitle: true,
+            actions: [
+              if (_searchController.text.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.clear, color: Colors.white),
+                  onPressed: () {
+                    _searchController.clear();
+                    controller.clearSearch();
+                  },
+                ),
+            ],
           ),
           body: Row(
             children: [
@@ -526,10 +556,17 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
             backgroundColor: const Color.fromARGB(255, 81, 131, 246),
             centerTitle: true,
             actions: [
+              if (_searchController.text.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    controller.clearSearch();
+                  },
+                ),
               IconButton(
                 icon: const Icon(Icons.filter_list),
                 onPressed: () {
-                  // Use a GlobalKey to access the Scaffold
                   _scaffoldKey.currentState?.openEndDrawer();
                 },
               ),

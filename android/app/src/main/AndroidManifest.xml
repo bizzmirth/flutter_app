@@ -8,12 +8,23 @@
 
     <!-- ✅ Correct place for queries -->
     <queries>
+        <!-- WhatsApp (already present) -->
         <package android:name="com.whatsapp" />
+
+        <!-- Gmail -->
+        <package android:name="com.google.android.gm" />
+
+        <!-- Any app that can send email -->
         <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="mailto" />
         </intent>
     </queries>
+
 
     <application
         android:label="Bizzmirth Holidays"
