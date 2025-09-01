@@ -45,7 +45,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(seconds: 4), () {
+    Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
         setState(() {
           showLoader = false;
@@ -60,7 +60,9 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
         // Initialize filtered customers after data is loaded
         _initializeFilteredCustomers();
       });
-      customerController.apiGetPendingCustomers();
+      customerController.apiGetPendingCustomers().then((_) {
+        _initializePendingFilteredCustomers();
+      });
     });
   }
 
@@ -152,12 +154,27 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
     });
   }
 
+  void _initializePendingFilteredCustomers() async {
+    final customerController =
+        Provider.of<CustomerController>(context, listen: false);
+    setState(() {
+      filteredPendingCustomers = List.from(customerController.pendingCustomers);
+    });
+  }
+
   void _onPendingSearchChanged(String searchTerm) {
+    setState(() {
+      searchController.text = searchTerm; // ✅ Update the controller
+    });
     _applyPendingFilters(searchTerm: searchTerm);
   }
 
-  void _onPendingDateRangeChanged(DateTime? fromDate, DateTime? toDate) {
-    _applyPendingFilters(fromDate: fromDate, toDate: toDate);
+  void _onPendingDateRangeChanged(DateTime? from, DateTime? to) {
+    setState(() {
+      fromDate = from; // ✅ Update the state variables
+      toDate = to;
+    });
+    _applyPendingFilters(fromDate: from, toDate: to);
   }
 
   void _initializeFilteredPendingCustomers() {
@@ -169,6 +186,11 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
   }
 
   void _onPendingClearFilters() {
+    setState(() {
+      searchController.clear(); // ✅ Clear the controller
+      fromDate = null; // ✅ Clear the variables
+      toDate = null;
+    });
     _initializeFilteredPendingCustomers();
   }
 
@@ -353,15 +375,21 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
   // Build list view for pending customers (for mobile)
   Widget _buildPendingCustomersList(CustomerController customerController) {
-    final customers = filteredPendingCustomers.isEmpty
+    final customers = filteredPendingCustomers.isEmpty &&
+            (searchController.text.isEmpty &&
+                fromDate == null &&
+                toDate == null)
         ? customerController.pendingCustomers
         : filteredPendingCustomers;
 
     if (customers.isEmpty) {
-      return Center(
-        child: Text(
-          "No pending customers found",
-          style: TextStyle(fontSize: 16),
+      return SizedBox(
+        height: 100,
+        child: Center(
+          child: Text(
+            "No pending customers found",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
       );
     }
@@ -491,10 +519,13 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
         : filteredCustomers;
 
     if (customers.isEmpty) {
-      return Center(
-        child: Text(
-          "No registered customers found",
-          style: TextStyle(fontSize: 16),
+      return SizedBox(
+        height: 100,
+        child: Center(
+          child: Text(
+            "No registered customers found",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
       );
     }
@@ -568,11 +599,8 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                       case "edit":
                         break;
                       case "delete":
-                        customerController.apiDeleteCustomer(context, customer);
                         break;
                       case "restore":
-                        customerController.apiRestoreCustomer(
-                            context, customer);
                         break;
                     }
                   },
@@ -585,9 +613,11 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                           value: "edit",
                           child: ListTile(
                             leading: Icon(Icons.edit, color: Colors.blueAccent),
-                            title: Text("Edittt"),
+                            title: Text("Edit"),
                             onTap: () async {
-                              await Navigator.push(
+                              Navigator.pop(context);
+
+                              final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => AddReferralCustomer(
@@ -601,6 +631,10 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                               await customerCustomerr
                                   .apiGetRegisteredCustomers();
                               await customerCustomerr.apiGetPendingCustomers();
+                              Logger.warning("result after edit: $result");
+                              if (result == true) {
+                                await _onRefresh();
+                              }
                             },
                           ),
                         ),
@@ -609,6 +643,12 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                           child: ListTile(
                             leading: Icon(Icons.delete, color: Colors.red),
                             title: Text("Delete"),
+                            onTap: () async {
+                              Navigator.pop(context);
+                              await customerController.apiDeleteCustomer(
+                                  context, customer);
+                              await _onRefresh();
+                            },
                           ),
                         ),
                       ]);
@@ -619,6 +659,12 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                           child: ListTile(
                             leading: Icon(Icons.restore, color: Colors.green),
                             title: Text("Restore"),
+                            onTap: () async {
+                              Navigator.pop(context);
+                              await customerController.apiRestoreCustomer(
+                                  context, customer);
+                              await _onRefresh();
+                            },
                           ),
                         ),
                       );
@@ -685,15 +731,21 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
   Widget build(BuildContext context) {
     return Consumer<CustomerController>(
         builder: (context, customerController, child) {
-      String pendingUserCount = filteredPendingCustomers.isEmpty
-          ? customerController.pendingCustomers.length.toString()
-          : filteredPendingCustomers.length.toString();
+      // String pendingUserCount = filteredPendingCustomers.isEmpty
+      //     ? customerController.pendingCustomers.length.toString()
+      //     : filteredPendingCustomers.length.toString();
       String userCount = filteredCustomers.isEmpty &&
               (searchController.text.isEmpty &&
                   fromDate == null &&
                   toDate == null)
           ? customerController.registeredCustomers.length.toString()
           : filteredCustomers.length.toString();
+      String pendingUserCount = filteredPendingCustomers.isEmpty &&
+              (searchController.text.isEmpty &&
+                  fromDate == null &&
+                  toDate == null)
+          ? customerController.pendingCustomers.length.toString()
+          : filteredPendingCustomers.length.toString();
 
       return WillPopScope(
         onWillPop: () async {

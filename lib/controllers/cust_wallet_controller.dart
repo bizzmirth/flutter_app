@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/models/cust_booking_wallet_history_model.dart';
 import 'package:bizzmirth_app/models/cust_redeemable_wallet_history_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -28,14 +29,13 @@ class CustWalletController extends ChangeNotifier {
   List<CustBookingWalletHistory> get custBookingWalletHistory =>
       _custBookingWalletHistory;
 
-  void apiGetWalletDetails() async {
+  Future<void> apiGetWalletDetails() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final String fullUrl =
-          "https://testca.uniqbizz.com/api/customers/wallets/wallets_api.php";
+      final String fullUrl = AppUrls.getWalletDetails;
       final String? userId = await SharedPrefHelper().getCurrentUserCustId();
 
       final Map<String, dynamic> body = {"userId": userId};
@@ -63,6 +63,7 @@ class CustWalletController extends ChangeNotifier {
 
           _custRedeemableWalletHistory.clear();
           _custBookingWalletHistory.clear();
+          Logger.success("wallet details full URL: $fullUrl");
 
           final redeemableHistory =
               historyData['redeemable_wallet_history'] as List<dynamic>?;

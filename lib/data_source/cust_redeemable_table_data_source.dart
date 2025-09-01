@@ -7,7 +7,7 @@ class CustRedeemableTableDataSource extends DataTableSource {
   Color _getStatusColor(String status) {
     String statusText = status.toLowerCase();
     switch (statusText) {
-      case "credited":
+      case "paid":
         return Colors.green;
       case "not approved":
         return Colors.grey;

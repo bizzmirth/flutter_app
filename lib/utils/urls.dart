@@ -11,6 +11,21 @@ class AppUrls {
 
   static String get baseUrl => _baseUrls[_currentEnvironment]!;
 
+  // ==================== HOMEPAGE TOUR PACKAGE DETAILS ====================
+  static String get getTourPackages =>
+      "$baseUrl/packages/best_destinations.php";
+
+  static String get getFilteredTourPackages =>
+      "$baseUrl/packages/filtered_package.php";
+
+  static String get getBestDeals => "$baseUrl/packages/best_deals.php";
+
+  static String get getTourPackageDetails =>
+      "$baseUrl/packages/view_package_details/package_details.php";
+
+  // ==================== BASE URL TO GET IMAGES ====================
+  static String get getImageBaseUrl => "https://ca.uniqbizz.com/";
+
   // ==================== AUTHENTICATION ENDPOINTS ====================
   static String get login => "$baseUrl/login.php";
   static String get getAllUserTypes => "$baseUrl/user_type";
@@ -33,10 +48,15 @@ class AppUrls {
       "$baseUrl/dashboard/top_customer_refereral.php";
   static String get uploadImage => "$baseUrl/upload_mobile.php";
   static String get addCustomer => "$baseUrl/customers/add_customers_data.php";
+  static String get validateEmail => "$baseUrl/customers/valid_email.php";
   static String get editCustomers =>
       "$baseUrl/customers/edit_customers_data.php";
   static String get deleteCustomers =>
       "$baseUrl/customers/delete_customers_data.php";
+
+  // ==================== CUSTOMER WALLET ENDPOINTS ====================
+  static String get getWalletDetails =>
+      "$baseUrl/customers/wallets/wallets_api.php";
 
   // ==================== CUSTOMER PRODUCT PAYOUTS ENDPOINTS ====================
   static String get getAllPayoutsProduct =>
@@ -58,4 +78,8 @@ class AppUrls {
 
   static String get getTotalPayoutsReference =>
       "$baseUrl/payouts/reference_payouts/customer_total_payouts.php";
+
+  // ==================== CUSTOMER ORDER HISTORY ENDPOINTS ====================
+  static String get getOrderHistoryStatCounts =>
+      "$baseUrl/orders/get_counts.php";
 }

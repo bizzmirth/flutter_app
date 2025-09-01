@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,8 +27,7 @@ class CustOrderHistoryController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final String fullUrl =
-          "https://testca.uniqbizz.com/api/orders/get_counts.php";
+      final String fullUrl = AppUrls.getOrderHistoryStatCounts;
 
       final String? userId = await SharedPrefHelper().getCurrentUserCustId();
       final Map<String, dynamic> body = {"userId": userId, "userType": "10"};

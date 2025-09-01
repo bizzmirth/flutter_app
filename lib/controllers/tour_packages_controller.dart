@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/models/best_deals_model.dart';
 import 'package:bizzmirth_app/models/tour_package_model.dart';
 import 'package:bizzmirth_app/models/travel_plan.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -53,8 +54,7 @@ class TourPackagesController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final String fullUrl =
-          "https://ca.uniqbizz.com/api/packages/best_destinations.php";
+      final String fullUrl = AppUrls.getTourPackages;
 
       final response = await http.get(Uri.parse(fullUrl));
 
@@ -79,6 +79,7 @@ class TourPackagesController extends ChangeNotifier {
           //     "Tour packages populated: ${_tourPackages.length} items");
           Logger.success(
               "Top tour packages populated: ${_topTourPackages.length} items");
+          Logger.success("tour packages full URL: $fullUrl");
         } else {
           _error = "No packages found";
           Logger.error("No packages found in response");
@@ -108,8 +109,7 @@ class TourPackagesController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final String fullUrl =
-          "https://ca.uniqbizz.com/api/packages/filtered_package.php";
+      final String fullUrl = AppUrls.getFilteredTourPackages;
       final Map<String, dynamic> body = {
         "userId": "",
         "usertype": "",
@@ -124,6 +124,7 @@ class TourPackagesController extends ChangeNotifier {
       final encodeBody = json.encode(body);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success("Encoded body of filtered $encodeBody");
+      Logger.success("get filtered packages full URL: $fullUrl");
 
       Logger.success("Raw Data fetched from filtered api ${response.body}");
       if (response.statusCode == 200) {
@@ -154,11 +155,11 @@ class TourPackagesController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final String fullUrl =
-          "https://ca.uniqbizz.com/api/packages/best_deals.php";
+      final String fullUrl = AppUrls.getBestDeals;
       final response = await http.get(Uri.parse(fullUrl),
           headers: {"Content-Type": "application/json"});
       if (response.statusCode == 200) {
+        Logger.success("best details full URL: $fullUrl");
         Logger.success("Raw response from best deals api : ${response.body}");
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
         if (jsonData['status'] == 'success' && jsonData['packages'] != null) {

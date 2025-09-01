@@ -45,6 +45,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
   static const double paginationHeight = 60.0;
   // String customerType = '';
   String custtype = '';
+  int eligibleCouponsCount = 0;
   late ConfettiController _confettiController;
 
   bool _isDashboardInitialized = false;
@@ -104,9 +105,16 @@ class _CDashboardPageState extends State<CDashboardPage> {
         customerController.apiGetTopCustomerRefererals(),
         profileController.apiGetUserDetails(),
         profileController.apiGetPersonalDetails(),
+        profileController.getCouponDetails(),
         if (_cachedRegDate != null)
           customerController.apiGetChartData(DateTime.now().year.toString()),
       ]);
+
+      eligibleCouponsCount = profileController.eligibleCouponCount;
+
+      if (eligibleCouponsCount == 3 || eligibleCouponsCount > 3) {
+        eligibleCouponsCount = 4;
+      }
 
       if (profileController.customerType != null &&
           profileController.customerType!.isNotEmpty) {
@@ -263,204 +271,215 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           paginationHeight,
                       child: customerController.isLoading
                           ? Center(child: CircularProgressIndicator())
-                          : PaginatedDataTable(
-                              columns: [
-                                DataColumn(label: Text("Rank")),
-                                DataColumn(label: Text("Profile Picture")),
-                                DataColumn(label: Text("Full Name")),
-                                DataColumn(label: Text("Date Reg")),
-                                DataColumn(label: Text("Total CU Ref")),
-                                DataColumn(label: Text("Status")),
-                                DataColumn(label: Text("Active/Inactive")),
-                              ],
-                              source: CustTopReferralCustomers(
-                                  customers:
-                                      customerController.topCustomerRefererals),
-                              rowsPerPage: _rowsPerPage,
-                              availableRowsPerPage: [5, 10, 15, 20, 25],
-                              onRowsPerPageChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _rowsPerPage = value;
-                                  });
-                                }
-                              },
-                              arrowHeadColor: Colors.blue,
-                            ),
+                          : customerController.topCustomerRefererals.isEmpty
+                              ? _buildEmptyState()
+                              : PaginatedDataTable(
+                                  columns: [
+                                    DataColumn(label: Text("Rank")),
+                                    DataColumn(label: Text("Profile Picture")),
+                                    DataColumn(label: Text("Full Name")),
+                                    DataColumn(label: Text("Date Reg")),
+                                    DataColumn(label: Text("Total CU Ref")),
+                                    DataColumn(label: Text("Status")),
+                                    DataColumn(label: Text("Active/Inactive")),
+                                  ],
+                                  source: CustTopReferralCustomers(
+                                      customers: customerController
+                                          .topCustomerRefererals),
+                                  rowsPerPage: _rowsPerPage,
+                                  availableRowsPerPage: [5, 10, 15, 20, 25],
+                                  onRowsPerPageChanged: (value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _rowsPerPage = value;
+                                      });
+                                    }
+                                  },
+                                  arrowHeadColor: Colors.blue,
+                                ),
                     )
                   : Column(
                       children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount:
-                              customerController.topCustomerRefererals.length,
-                          itemBuilder: (context, index) {
-                            final customer =
-                                customerController.topCustomerRefererals[index];
-                            return Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Header with rank and profile
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Rank badge
-                                        Container(
-                                          width: 36,
-                                          height: 36,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            color: (index + 1) <= 3
-                                                ? Colors.amber.withOpacity(0.2)
-                                                : Colors.grey.withOpacity(0.1),
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: (index + 1) <= 3
-                                                  ? Colors.amber
-                                                  : Colors.grey,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              color: (index + 1) <= 3
-                                                  ? Colors.amber[800]
-                                                  : Colors.grey[700],
-                                            ),
-                                          ),
+                        customerController.topCustomerRefererals.isEmpty
+                            ? _buildEmptyState()
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: customerController
+                                    .topCustomerRefererals.length,
+                                itemBuilder: (context, index) {
+                                  final customer = customerController
+                                      .topCustomerRefererals[index];
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
                                         ),
-                                        SizedBox(width: 12),
-
-                                        // Profile picture
-                                        CircleAvatar(
-                                          radius: 20,
-                                          backgroundColor: Colors.transparent,
-                                          child: getProfileImage(
-                                              customer.profilePic),
-                                        ),
-                                        SizedBox(width: 12),
-
-                                        // Name and date
-                                        Expanded(
-                                          child: Column(
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Header with rank and profile
+                                          Row(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                customer.name ?? 'N/A',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16,
+                                              // Rank badge
+                                              Container(
+                                                width: 36,
+                                                height: 36,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                  color: (index + 1) <= 3
+                                                      ? Colors.amber
+                                                          .withOpacity(0.2)
+                                                      : Colors.grey
+                                                          .withOpacity(0.1),
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: (index + 1) <= 3
+                                                        ? Colors.amber
+                                                        : Colors.grey,
+                                                    width: 1.5,
+                                                  ),
                                                 ),
-                                                overflow: TextOverflow.ellipsis,
+                                                child: Text(
+                                                  '${index + 1}',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                    color: (index + 1) <= 3
+                                                        ? Colors.amber[800]
+                                                        : Colors.grey[700],
+                                                  ),
+                                                ),
                                               ),
-                                              SizedBox(height: 4),
-                                              Text(
-                                                customer.registeredDate ??
-                                                    'N/A',
-                                                style: TextStyle(
-                                                  color: Colors.grey[600],
-                                                  fontSize: 12,
+                                              SizedBox(width: 12),
+
+                                              // Profile picture
+                                              CircleAvatar(
+                                                radius: 20,
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                child: getProfileImage(
+                                                    customer.profilePic),
+                                              ),
+                                              SizedBox(width: 12),
+
+                                              // Name and date
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      customer.name ?? 'N/A',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 16,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    SizedBox(height: 4),
+                                                    Text(
+                                                      customer.registeredDate ??
+                                                          'N/A',
+                                                      style: TextStyle(
+                                                        color: Colors.grey[600],
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
 
-                                    SizedBox(height: 16),
+                                          SizedBox(height: 16),
 
-                                    // Stats row
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        // Total referrals
-                                        _buildStatItem(
-                                          Icons.people,
-                                          'Total',
-                                          '${customer.totalReferals ?? 0}',
-                                          Colors.blue,
-                                        ),
+                                          // Stats row
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              // Total referrals
+                                              _buildStatItem(
+                                                Icons.people,
+                                                'Total',
+                                                '${customer.totalReferals ?? 0}',
+                                                Colors.blue,
+                                              ),
 
-                                        // Active referrals
-                                        _buildStatItem(
-                                          Icons.check_circle,
-                                          'Active',
-                                          '${customer.activeReferrals ?? 0}',
-                                          Colors.green,
-                                        ),
+                                              // Active referrals
+                                              _buildStatItem(
+                                                Icons.check_circle,
+                                                'Active',
+                                                '${customer.activeReferrals ?? 0}',
+                                                Colors.green,
+                                              ),
 
-                                        // Inactive referrals
-                                        _buildStatItem(
-                                          Icons.cancel,
-                                          'Inactive',
-                                          '${customer.inActiveReferrals ?? 0}',
-                                          Colors.red,
-                                        ),
-                                      ],
-                                    ),
-
-                                    SizedBox(height: 12),
-
-                                    // Status badge
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 6),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              _getStatusColor(customer.status!)
-                                                  .withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          border: Border.all(
-                                            color: _getStatusColor(
-                                                    customer.status!)
-                                                .withOpacity(0.3),
-                                            width: 1,
+                                              // Inactive referrals
+                                              _buildStatItem(
+                                                Icons.cancel,
+                                                'Inactive',
+                                                '${customer.inActiveReferrals ?? 0}',
+                                                Colors.red,
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                        child: Text(
-                                          _getStatusText(customer.status!),
-                                          style: TextStyle(
-                                            color: _getStatusColor(
-                                                customer.status!),
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 12,
+
+                                          SizedBox(height: 12),
+
+                                          // Status badge
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12, vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: _getStatusColor(
+                                                        customer.status!)
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                border: Border.all(
+                                                  color: _getStatusColor(
+                                                          customer.status!)
+                                                      .withOpacity(0.3),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                _getStatusText(
+                                                    customer.status!),
+                                                style: TextStyle(
+                                                  color: _getStatusColor(
+                                                      customer.status!),
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
                       ],
                     ),
             ),
@@ -1405,14 +1424,14 @@ class _CDashboardPageState extends State<CDashboardPage> {
       ),
       SizedBox(height: 20),
       CouponProgressBar(
-        currentStep: 4,
+        currentStep: eligibleCouponsCount,
         confettiController: _confettiController,
         scaleFactor: 0.8,
       ),
       SizedBox(height: 16),
       ReferralTrackerCard(
         totalSteps: 10,
-        currentStep: 10,
+        currentStep: int.parse(customerController.registerCustomerTotal!),
         progressColor: Colors.green,
       ),
       buildTripOrRefundNote(userType: type, context: context),
@@ -1469,204 +1488,215 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           paginationHeight,
                       child: customerController.isLoading
                           ? Center(child: CircularProgressIndicator())
-                          : PaginatedDataTable(
-                              columns: [
-                                DataColumn(label: Text("Rank")),
-                                DataColumn(label: Text("Profile Picture")),
-                                DataColumn(label: Text("Full Name")),
-                                DataColumn(label: Text("Date Reg")),
-                                DataColumn(label: Text("Total CU Ref")),
-                                DataColumn(label: Text("Status")),
-                                DataColumn(label: Text("Active/Inactive")),
-                              ],
-                              source: CustTopReferralCustomers(
-                                  customers:
-                                      customerController.topCustomerRefererals),
-                              rowsPerPage: _rowsPerPage,
-                              availableRowsPerPage: [5, 10, 15, 20, 25],
-                              onRowsPerPageChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _rowsPerPage = value;
-                                  });
-                                }
-                              },
-                              arrowHeadColor: Colors.blue,
-                            ),
+                          : customerController.topCustomerRefererals.isEmpty
+                              ? _buildEmptyState()
+                              : PaginatedDataTable(
+                                  columns: [
+                                    DataColumn(label: Text("Rank")),
+                                    DataColumn(label: Text("Profile Picture")),
+                                    DataColumn(label: Text("Full Name")),
+                                    DataColumn(label: Text("Date Reg")),
+                                    DataColumn(label: Text("Total CU Ref")),
+                                    DataColumn(label: Text("Status")),
+                                    DataColumn(label: Text("Active/Inactive")),
+                                  ],
+                                  source: CustTopReferralCustomers(
+                                      customers: customerController
+                                          .topCustomerRefererals),
+                                  rowsPerPage: _rowsPerPage,
+                                  availableRowsPerPage: [5, 10, 15, 20, 25],
+                                  onRowsPerPageChanged: (value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _rowsPerPage = value;
+                                      });
+                                    }
+                                  },
+                                  arrowHeadColor: Colors.blue,
+                                ),
                     )
                   : Column(
                       children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount:
-                              customerController.topCustomerRefererals.length,
-                          itemBuilder: (context, index) {
-                            final customer =
-                                customerController.topCustomerRefererals[index];
-                            return Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Header with rank and profile
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Rank badge
-                                        Container(
-                                          width: 36,
-                                          height: 36,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            color: (index + 1) <= 3
-                                                ? Colors.amber.withOpacity(0.2)
-                                                : Colors.grey.withOpacity(0.1),
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: (index + 1) <= 3
-                                                  ? Colors.amber
-                                                  : Colors.grey,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              color: (index + 1) <= 3
-                                                  ? Colors.amber[800]
-                                                  : Colors.grey[700],
-                                            ),
-                                          ),
+                        customerController.topCustomerRefererals.isEmpty
+                            ? _buildEmptyState()
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: customerController
+                                    .topCustomerRefererals.length,
+                                itemBuilder: (context, index) {
+                                  final customer = customerController
+                                      .topCustomerRefererals[index];
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
                                         ),
-                                        SizedBox(width: 12),
-
-                                        // Profile picture
-                                        CircleAvatar(
-                                          radius: 20,
-                                          backgroundColor: Colors.transparent,
-                                          child: getProfileImage(
-                                              customer.profilePic),
-                                        ),
-                                        SizedBox(width: 12),
-
-                                        // Name and date
-                                        Expanded(
-                                          child: Column(
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Header with rank and profile
+                                          Row(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                customer.name ?? 'N/A',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16,
+                                              // Rank badge
+                                              Container(
+                                                width: 36,
+                                                height: 36,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                  color: (index + 1) <= 3
+                                                      ? Colors.amber
+                                                          .withOpacity(0.2)
+                                                      : Colors.grey
+                                                          .withOpacity(0.1),
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: (index + 1) <= 3
+                                                        ? Colors.amber
+                                                        : Colors.grey,
+                                                    width: 1.5,
+                                                  ),
                                                 ),
-                                                overflow: TextOverflow.ellipsis,
+                                                child: Text(
+                                                  '${index + 1}',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                    color: (index + 1) <= 3
+                                                        ? Colors.amber[800]
+                                                        : Colors.grey[700],
+                                                  ),
+                                                ),
                                               ),
-                                              SizedBox(height: 4),
-                                              Text(
-                                                customer.registeredDate ??
-                                                    'N/A',
-                                                style: TextStyle(
-                                                  color: Colors.grey[600],
-                                                  fontSize: 12,
+                                              SizedBox(width: 12),
+
+                                              // Profile picture
+                                              CircleAvatar(
+                                                radius: 20,
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                child: getProfileImage(
+                                                    customer.profilePic),
+                                              ),
+                                              SizedBox(width: 12),
+
+                                              // Name and date
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      customer.name ?? 'N/A',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 16,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    SizedBox(height: 4),
+                                                    Text(
+                                                      customer.registeredDate ??
+                                                          'N/A',
+                                                      style: TextStyle(
+                                                        color: Colors.grey[600],
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
 
-                                    SizedBox(height: 16),
+                                          SizedBox(height: 16),
 
-                                    // Stats row
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        // Total referrals
-                                        _buildStatItem(
-                                          Icons.people,
-                                          'Total',
-                                          '${customer.totalReferals ?? 0}',
-                                          Colors.blue,
-                                        ),
+                                          // Stats row
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              // Total referrals
+                                              _buildStatItem(
+                                                Icons.people,
+                                                'Total',
+                                                '${customer.totalReferals ?? 0}',
+                                                Colors.blue,
+                                              ),
 
-                                        // Active referrals
-                                        _buildStatItem(
-                                          Icons.check_circle,
-                                          'Active',
-                                          '${customer.activeReferrals ?? 0}',
-                                          Colors.green,
-                                        ),
+                                              // Active referrals
+                                              _buildStatItem(
+                                                Icons.check_circle,
+                                                'Active',
+                                                '${customer.activeReferrals ?? 0}',
+                                                Colors.green,
+                                              ),
 
-                                        // Inactive referrals
-                                        _buildStatItem(
-                                          Icons.cancel,
-                                          'Inactive',
-                                          '${customer.inActiveReferrals ?? 0}',
-                                          Colors.red,
-                                        ),
-                                      ],
-                                    ),
-
-                                    SizedBox(height: 12),
-
-                                    // Status badge
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 6),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              _getStatusColor(customer.status!)
-                                                  .withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          border: Border.all(
-                                            color: _getStatusColor(
-                                                    customer.status!)
-                                                .withOpacity(0.3),
-                                            width: 1,
+                                              // Inactive referrals
+                                              _buildStatItem(
+                                                Icons.cancel,
+                                                'Inactive',
+                                                '${customer.inActiveReferrals ?? 0}',
+                                                Colors.red,
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                        child: Text(
-                                          _getStatusText(customer.status!),
-                                          style: TextStyle(
-                                            color: _getStatusColor(
-                                                customer.status!),
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 12,
+
+                                          SizedBox(height: 12),
+
+                                          // Status badge
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12, vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: _getStatusColor(
+                                                        customer.status!)
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                border: Border.all(
+                                                  color: _getStatusColor(
+                                                          customer.status!)
+                                                      .withOpacity(0.3),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                _getStatusText(
+                                                    customer.status!),
+                                                style: TextStyle(
+                                                  color: _getStatusColor(
+                                                      customer.status!),
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
                       ],
                     ),
             ),
@@ -1775,204 +1805,215 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           paginationHeight,
                       child: customerController.isLoading
                           ? Center(child: CircularProgressIndicator())
-                          : PaginatedDataTable(
-                              columns: [
-                                DataColumn(label: Text("Rank")),
-                                DataColumn(label: Text("Profile Picture")),
-                                DataColumn(label: Text("Full Name")),
-                                DataColumn(label: Text("Date Reg")),
-                                DataColumn(label: Text("Total CU Ref")),
-                                DataColumn(label: Text("Status")),
-                                DataColumn(label: Text("Active/Inactive")),
-                              ],
-                              source: CustTopReferralCustomers(
-                                  customers:
-                                      customerController.topCustomerRefererals),
-                              rowsPerPage: _rowsPerPage,
-                              availableRowsPerPage: [5, 10, 15, 20, 25],
-                              onRowsPerPageChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _rowsPerPage = value;
-                                  });
-                                }
-                              },
-                              arrowHeadColor: Colors.blue,
-                            ),
+                          : customerController.topCustomerRefererals.isEmpty
+                              ? _buildEmptyState()
+                              : PaginatedDataTable(
+                                  columns: [
+                                    DataColumn(label: Text("Rank")),
+                                    DataColumn(label: Text("Profile Picture")),
+                                    DataColumn(label: Text("Full Name")),
+                                    DataColumn(label: Text("Date Reg")),
+                                    DataColumn(label: Text("Total CU Ref")),
+                                    DataColumn(label: Text("Status")),
+                                    DataColumn(label: Text("Active/Inactive")),
+                                  ],
+                                  source: CustTopReferralCustomers(
+                                      customers: customerController
+                                          .topCustomerRefererals),
+                                  rowsPerPage: _rowsPerPage,
+                                  availableRowsPerPage: [5, 10, 15, 20, 25],
+                                  onRowsPerPageChanged: (value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _rowsPerPage = value;
+                                      });
+                                    }
+                                  },
+                                  arrowHeadColor: Colors.blue,
+                                ),
                     )
                   : Column(
                       children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount:
-                              customerController.topCustomerRefererals.length,
-                          itemBuilder: (context, index) {
-                            final customer =
-                                customerController.topCustomerRefererals[index];
-                            return Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Header with rank and profile
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Rank badge
-                                        Container(
-                                          width: 36,
-                                          height: 36,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            color: (index + 1) <= 3
-                                                ? Colors.amber.withOpacity(0.2)
-                                                : Colors.grey.withOpacity(0.1),
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: (index + 1) <= 3
-                                                  ? Colors.amber
-                                                  : Colors.grey,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              color: (index + 1) <= 3
-                                                  ? Colors.amber[800]
-                                                  : Colors.grey[700],
-                                            ),
-                                          ),
+                        customerController.topCustomerRefererals.isEmpty
+                            ? _buildEmptyState()
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: customerController
+                                    .topCustomerRefererals.length,
+                                itemBuilder: (context, index) {
+                                  final customer = customerController
+                                      .topCustomerRefererals[index];
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
                                         ),
-                                        SizedBox(width: 12),
-
-                                        // Profile picture
-                                        CircleAvatar(
-                                          radius: 20,
-                                          backgroundColor: Colors.transparent,
-                                          child: getProfileImage(
-                                              customer.profilePic),
-                                        ),
-                                        SizedBox(width: 12),
-
-                                        // Name and date
-                                        Expanded(
-                                          child: Column(
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Header with rank and profile
+                                          Row(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                customer.name ?? 'N/A',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16,
+                                              // Rank badge
+                                              Container(
+                                                width: 36,
+                                                height: 36,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                  color: (index + 1) <= 3
+                                                      ? Colors.amber
+                                                          .withOpacity(0.2)
+                                                      : Colors.grey
+                                                          .withOpacity(0.1),
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: (index + 1) <= 3
+                                                        ? Colors.amber
+                                                        : Colors.grey,
+                                                    width: 1.5,
+                                                  ),
                                                 ),
-                                                overflow: TextOverflow.ellipsis,
+                                                child: Text(
+                                                  '${index + 1}',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                    color: (index + 1) <= 3
+                                                        ? Colors.amber[800]
+                                                        : Colors.grey[700],
+                                                  ),
+                                                ),
                                               ),
-                                              SizedBox(height: 4),
-                                              Text(
-                                                customer.registeredDate ??
-                                                    'N/A',
-                                                style: TextStyle(
-                                                  color: Colors.grey[600],
-                                                  fontSize: 12,
+                                              SizedBox(width: 12),
+
+                                              // Profile picture
+                                              CircleAvatar(
+                                                radius: 20,
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                child: getProfileImage(
+                                                    customer.profilePic),
+                                              ),
+                                              SizedBox(width: 12),
+
+                                              // Name and date
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      customer.name ?? 'N/A',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 16,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    SizedBox(height: 4),
+                                                    Text(
+                                                      customer.registeredDate ??
+                                                          'N/A',
+                                                      style: TextStyle(
+                                                        color: Colors.grey[600],
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
 
-                                    SizedBox(height: 16),
+                                          SizedBox(height: 16),
 
-                                    // Stats row
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        // Total referrals
-                                        _buildStatItem(
-                                          Icons.people,
-                                          'Total',
-                                          '${customer.totalReferals ?? 0}',
-                                          Colors.blue,
-                                        ),
+                                          // Stats row
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              // Total referrals
+                                              _buildStatItem(
+                                                Icons.people,
+                                                'Total',
+                                                '${customer.totalReferals ?? 0}',
+                                                Colors.blue,
+                                              ),
 
-                                        // Active referrals
-                                        _buildStatItem(
-                                          Icons.check_circle,
-                                          'Active',
-                                          '${customer.activeReferrals ?? 0}',
-                                          Colors.green,
-                                        ),
+                                              // Active referrals
+                                              _buildStatItem(
+                                                Icons.check_circle,
+                                                'Active',
+                                                '${customer.activeReferrals ?? 0}',
+                                                Colors.green,
+                                              ),
 
-                                        // Inactive referrals
-                                        _buildStatItem(
-                                          Icons.cancel,
-                                          'Inactive',
-                                          '${customer.inActiveReferrals ?? 0}',
-                                          Colors.red,
-                                        ),
-                                      ],
-                                    ),
-
-                                    SizedBox(height: 12),
-
-                                    // Status badge
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 6),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              _getStatusColor(customer.status!)
-                                                  .withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          border: Border.all(
-                                            color: _getStatusColor(
-                                                    customer.status!)
-                                                .withOpacity(0.3),
-                                            width: 1,
+                                              // Inactive referrals
+                                              _buildStatItem(
+                                                Icons.cancel,
+                                                'Inactive',
+                                                '${customer.inActiveReferrals ?? 0}',
+                                                Colors.red,
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                        child: Text(
-                                          _getStatusText(customer.status!),
-                                          style: TextStyle(
-                                            color: _getStatusColor(
-                                                customer.status!),
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 12,
+
+                                          SizedBox(height: 12),
+
+                                          // Status badge
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12, vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: _getStatusColor(
+                                                        customer.status!)
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                border: Border.all(
+                                                  color: _getStatusColor(
+                                                          customer.status!)
+                                                      .withOpacity(0.3),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                _getStatusText(
+                                                    customer.status!),
+                                                style: TextStyle(
+                                                  color: _getStatusColor(
+                                                      customer.status!),
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
                       ],
                     ),
             ),
@@ -2081,204 +2122,215 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           paginationHeight,
                       child: customerController.isLoading
                           ? Center(child: CircularProgressIndicator())
-                          : PaginatedDataTable(
-                              columns: [
-                                DataColumn(label: Text("Rank")),
-                                DataColumn(label: Text("Profile Picture")),
-                                DataColumn(label: Text("Full Name")),
-                                DataColumn(label: Text("Date Reg")),
-                                DataColumn(label: Text("Total CU Ref")),
-                                DataColumn(label: Text("Status")),
-                                DataColumn(label: Text("Active/Inactive")),
-                              ],
-                              source: CustTopReferralCustomers(
-                                  customers:
-                                      customerController.topCustomerRefererals),
-                              rowsPerPage: _rowsPerPage,
-                              availableRowsPerPage: [5, 10, 15, 20, 25],
-                              onRowsPerPageChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _rowsPerPage = value;
-                                  });
-                                }
-                              },
-                              arrowHeadColor: Colors.blue,
-                            ),
+                          : customerController.topCustomerRefererals.isEmpty
+                              ? _buildEmptyState()
+                              : PaginatedDataTable(
+                                  columns: [
+                                    DataColumn(label: Text("Rank")),
+                                    DataColumn(label: Text("Profile Picture")),
+                                    DataColumn(label: Text("Full Name")),
+                                    DataColumn(label: Text("Date Reg")),
+                                    DataColumn(label: Text("Total CU Ref")),
+                                    DataColumn(label: Text("Status")),
+                                    DataColumn(label: Text("Active/Inactive")),
+                                  ],
+                                  source: CustTopReferralCustomers(
+                                      customers: customerController
+                                          .topCustomerRefererals),
+                                  rowsPerPage: _rowsPerPage,
+                                  availableRowsPerPage: [5, 10, 15, 20, 25],
+                                  onRowsPerPageChanged: (value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _rowsPerPage = value;
+                                      });
+                                    }
+                                  },
+                                  arrowHeadColor: Colors.blue,
+                                ),
                     )
                   : Column(
                       children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount:
-                              customerController.topCustomerRefererals.length,
-                          itemBuilder: (context, index) {
-                            final customer =
-                                customerController.topCustomerRefererals[index];
-                            return Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Header with rank and profile
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Rank badge
-                                        Container(
-                                          width: 36,
-                                          height: 36,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            color: (index + 1) <= 3
-                                                ? Colors.amber.withOpacity(0.2)
-                                                : Colors.grey.withOpacity(0.1),
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: (index + 1) <= 3
-                                                  ? Colors.amber
-                                                  : Colors.grey,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              color: (index + 1) <= 3
-                                                  ? Colors.amber[800]
-                                                  : Colors.grey[700],
-                                            ),
-                                          ),
+                        customerController.topCustomerRefererals.isEmpty
+                            ? _buildEmptyState()
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: customerController
+                                    .topCustomerRefererals.length,
+                                itemBuilder: (context, index) {
+                                  final customer = customerController
+                                      .topCustomerRefererals[index];
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
                                         ),
-                                        SizedBox(width: 12),
-
-                                        // Profile picture
-                                        CircleAvatar(
-                                          radius: 20,
-                                          backgroundColor: Colors.transparent,
-                                          child: getProfileImage(
-                                              customer.profilePic),
-                                        ),
-                                        SizedBox(width: 12),
-
-                                        // Name and date
-                                        Expanded(
-                                          child: Column(
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Header with rank and profile
+                                          Row(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                customer.name ?? 'N/A',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16,
+                                              // Rank badge
+                                              Container(
+                                                width: 36,
+                                                height: 36,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                  color: (index + 1) <= 3
+                                                      ? Colors.amber
+                                                          .withOpacity(0.2)
+                                                      : Colors.grey
+                                                          .withOpacity(0.1),
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: (index + 1) <= 3
+                                                        ? Colors.amber
+                                                        : Colors.grey,
+                                                    width: 1.5,
+                                                  ),
                                                 ),
-                                                overflow: TextOverflow.ellipsis,
+                                                child: Text(
+                                                  '${index + 1}',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                    color: (index + 1) <= 3
+                                                        ? Colors.amber[800]
+                                                        : Colors.grey[700],
+                                                  ),
+                                                ),
                                               ),
-                                              SizedBox(height: 4),
-                                              Text(
-                                                customer.registeredDate ??
-                                                    'N/A',
-                                                style: TextStyle(
-                                                  color: Colors.grey[600],
-                                                  fontSize: 12,
+                                              SizedBox(width: 12),
+
+                                              // Profile picture
+                                              CircleAvatar(
+                                                radius: 20,
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                child: getProfileImage(
+                                                    customer.profilePic),
+                                              ),
+                                              SizedBox(width: 12),
+
+                                              // Name and date
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      customer.name ?? 'N/A',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 16,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    SizedBox(height: 4),
+                                                    Text(
+                                                      customer.registeredDate ??
+                                                          'N/A',
+                                                      style: TextStyle(
+                                                        color: Colors.grey[600],
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
 
-                                    SizedBox(height: 16),
+                                          SizedBox(height: 16),
 
-                                    // Stats row
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        // Total referrals
-                                        _buildStatItem(
-                                          Icons.people,
-                                          'Total',
-                                          '${customer.totalReferals ?? 0}',
-                                          Colors.blue,
-                                        ),
+                                          // Stats row
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              // Total referrals
+                                              _buildStatItem(
+                                                Icons.people,
+                                                'Total',
+                                                '${customer.totalReferals ?? 0}',
+                                                Colors.blue,
+                                              ),
 
-                                        // Active referrals
-                                        _buildStatItem(
-                                          Icons.check_circle,
-                                          'Active',
-                                          '${customer.activeReferrals ?? 0}',
-                                          Colors.green,
-                                        ),
+                                              // Active referrals
+                                              _buildStatItem(
+                                                Icons.check_circle,
+                                                'Active',
+                                                '${customer.activeReferrals ?? 0}',
+                                                Colors.green,
+                                              ),
 
-                                        // Inactive referrals
-                                        _buildStatItem(
-                                          Icons.cancel,
-                                          'Inactive',
-                                          '${customer.inActiveReferrals ?? 0}',
-                                          Colors.red,
-                                        ),
-                                      ],
-                                    ),
-
-                                    SizedBox(height: 12),
-
-                                    // Status badge
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 6),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              _getStatusColor(customer.status!)
-                                                  .withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          border: Border.all(
-                                            color: _getStatusColor(
-                                                    customer.status!)
-                                                .withOpacity(0.3),
-                                            width: 1,
+                                              // Inactive referrals
+                                              _buildStatItem(
+                                                Icons.cancel,
+                                                'Inactive',
+                                                '${customer.inActiveReferrals ?? 0}',
+                                                Colors.red,
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                        child: Text(
-                                          _getStatusText(customer.status!),
-                                          style: TextStyle(
-                                            color: _getStatusColor(
-                                                customer.status!),
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 12,
+
+                                          SizedBox(height: 12),
+
+                                          // Status badge
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12, vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: _getStatusColor(
+                                                        customer.status!)
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                border: Border.all(
+                                                  color: _getStatusColor(
+                                                          customer.status!)
+                                                      .withOpacity(0.3),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                _getStatusText(
+                                                    customer.status!),
+                                                style: TextStyle(
+                                                  color: _getStatusColor(
+                                                      customer.status!),
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
                       ],
                     ),
             ),
@@ -2286,6 +2338,41 @@ class _CDashboardPageState extends State<CDashboardPage> {
         ),
       ),
     ]);
+  }
+
+  Widget _buildEmptyState() {
+    return Container(
+      height: 200, // Adjust height as needed
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.people_outline,
+              size: 64,
+              color: Colors.grey[400],
+            ),
+            SizedBox(height: 16),
+            Text(
+              "No referral customers found",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[600],
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "You haven't referred any customers yet",
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[500],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> getCustomerType() async {

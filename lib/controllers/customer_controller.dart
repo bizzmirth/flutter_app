@@ -96,8 +96,9 @@ class CustomerController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final String fullUrl = AppUrls.validateEmail;
       final response = await http.post(
-        Uri.parse('https://testca.uniqbizz.com/api/customers/valid_email.php'),
+        Uri.parse(fullUrl),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -107,6 +108,7 @@ class CustomerController extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
+        Logger.success("validate email full URL: $fullUrl");
         final data = jsonDecode(response.body);
         _emailError = data['status'] == true ? data['message'] : null;
       } else {
