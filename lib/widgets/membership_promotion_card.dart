@@ -93,12 +93,12 @@ class MembershipPromotionCard extends StatelessWidget {
                   mainAxisSpacing: 16,
                   crossAxisSpacing: 16,
                   childAspectRatio: isWide
-                      ? 0.65 // desktops / very wide screens
-                      : (isTablet ? 0.7 : 1.1), // tablets vs phones
+                      ? 0.8 // desktops / very wide screens
+                      : (isTablet ? 0.4 : 0.7), // tablets vs phones
                   children: const [
                     _PlanCard(plan: _neoSelectPlan, isPopular: true),
                     _PlanCard(plan: _premiumLitePlan),
-                    _PlanCard(plan: _premiumSelectPlan),
+                    // _PlanCard(plan: _premiumSelectPlan),
                   ],
                 );
               },
@@ -145,15 +145,13 @@ const _neoSelectPlan = _MembershipPlan(
   validity: '10 Years',
   benefits: [
     _Benefit('5 Travel Coupons'),
-    _Benefit('₹3,000 value per coupon'),
-    _Benefit('Basic + Mid + Premium Holiday Package Access'),
-    _Benefit('Highly Affordable'),
-    _Benefit('Highest Value for Money\nPay Less,\nEnjoy More'),
-    _Benefit('No Customizations Available', available: false),
-    _Benefit(
-        'Referral Benefits:\n\t\t\t\tDirect: ₹1000\n\t\t\t\tSecondary: ₹500'),
-    _Benefit(
-        'Best for Smart Buyers who want Flexibility + Savings at a Low Cost')
+    _Benefit('₹3,000 / Coupon'),
+    _Benefit('Access: Basic + Mid + Premium Packages'),
+    _Benefit('Affordable Option'),
+    _Benefit('High Value: Pay Less, Enjoy More'),
+    _Benefit('No Customizations', available: false),
+    _Benefit('Referral Rewards'),
+    _Benefit('Ideal: Smart Buyers (Flexibility + Savings)')
   ],
   accentColor: Colors.blue,
   gradientStart: Color(0xFFE3F2FD),
@@ -166,40 +164,37 @@ const _premiumLitePlan = _MembershipPlan(
   validity: '10 Years',
   benefits: [
     _Benefit('5 Travel Coupons'),
-    _Benefit('₹5,000 value per coupon'),
-    _Benefit('Only Premium Holiday Package Access'),
+    _Benefit('₹5,000 / Coupon'),
+    _Benefit('Access: Premium Only'),
     _Benefit('Moderate Affordability', available: false),
     _Benefit('Good Value for Money'),
-    _Benefit('No Customizations Available', available: false),
-    _Benefit(
-        'Referral Benefits:\n\t\t\t\tDirect: ₹1000\n\t\t\t\tSecondary: ₹500\n\t\t\t\tSub-Secondary: ₹250'),
-    _Benefit(
-        'Best for Customers who want Larger Coupons but Limited Package Choices')
+    _Benefit('No Customizations', available: false),
+    _Benefit('Referral Rewards'),
+    _Benefit('Ideal: Bigger Coupons, Limited Choices')
   ],
   accentColor: Colors.purple,
   gradientStart: Color(0xFFF3E5F5),
   gradientEnd: Color(0xFFE1BEE7),
 );
 
-const _premiumSelectPlan = _MembershipPlan(
-  name: 'Premium Select',
-  price: '₹35,000',
-  validity: '10 Years',
-  benefits: [
-    _Benefit('10 Travel Coupons'),
-    _Benefit('₹3,000 value per coupon'),
-    _Benefit('Only Premium Holiday Package Access'),
-    _Benefit('Higher Affordability', available: false),
-    _Benefit('Moderate Value for Money'),
-    _Benefit('No Customizations Available', available: false),
-    _Benefit(
-        'Referral Benefits:\n\t\t\t\tDirect: ₹1500\n\t\t\t\tSecondary: ₹500\n\t\t\t\tSub-Secondary: ₹250'),
-    _Benefit('Best for Customers who Spend More for Long-Term Coupon Benefits')
-  ],
-  accentColor: Colors.pink,
-  gradientStart: Color.fromARGB(255, 232, 219, 224), // light pink
-  gradientEnd: Color.fromARGB(255, 227, 121, 156), // medium pink
-);
+// const _premiumSelectPlan = _MembershipPlan(
+//   name: 'Premium Select',
+//   price: '₹35,000',
+//   validity: '10 Years',
+//   benefits: [
+//     _Benefit('10 Travel Coupons'),
+//     _Benefit('₹3,000 / Coupon'),
+//     _Benefit('Access: Premium Only'),
+//     _Benefit('Higher Affordability', available: false),
+//     _Benefit('Moderate Value for Money'),
+//     _Benefit('No Customizations', available: false),
+//     _Benefit('Referral Rewards'),
+//     _Benefit('Ideal: Long-Term, Bigger Spend Benefits')
+//   ],
+//   accentColor: Colors.pink,
+//   gradientStart: Color.fromARGB(255, 232, 219, 224), // light pink
+//   gradientEnd: Color.fromARGB(255, 227, 121, 156), // medium pink
+// );
 
 // Plan Card
 class _PlanCard extends StatelessWidget {

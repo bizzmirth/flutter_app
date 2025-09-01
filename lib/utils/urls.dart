@@ -48,6 +48,7 @@ class AppUrls {
       "$baseUrl/dashboard/top_customer_refereral.php";
   static String get uploadImage => "$baseUrl/upload_mobile.php";
   static String get addCustomer => "$baseUrl/customers/add_customers_data.php";
+  static String get validateEmail => "$baseUrl/customers/valid_email.php";
   static String get editCustomers =>
       "$baseUrl/customers/edit_customers_data.php";
   static String get deleteCustomers =>

@@ -66,11 +66,48 @@ class ProfileController extends ChangeNotifier {
   String? get votingCard => _votingCard;
   String? get idProof => _idProof;
 
+  int _eligibleCouponCount = 0;
+  int get eligibleCouponCount => _eligibleCouponCount;
+
   String? _formatUrl(String? path) {
     if (path == null || path.isEmpty) return null;
     return path.startsWith("http")
         ? path
         : _baseUrl + path.replaceFirst("../", "");
+  }
+
+  // Add this method to count eligible coupons
+  void _countEligibleCoupons() {
+    _eligibleCouponCount = 0;
+
+    for (var coupon in _couponsData) {
+      // Check if usage_status is "1" (utilized)
+      if (coupon.usageStatus == "1") {
+        try {
+          // Parse the created date
+          DateTime createdDate = DateTime.parse(coupon.createdDate);
+
+          // Check if used_date exists and parse it
+          if (coupon.usedDate != null && coupon.usedDate!.isNotEmpty) {
+            DateTime usedDate = DateTime.parse(coupon.usedDate!);
+
+            // Calculate the difference in years
+            int yearsDifference =
+                usedDate.difference(createdDate).inDays ~/ 365;
+
+            // Check if used within 3 years from creation
+            if (yearsDifference <= 3) {
+              _eligibleCouponCount++;
+            }
+          }
+        } catch (e) {
+          Logger.error("Error parsing coupon dates: $e");
+          continue; // Skip this coupon if date parsing fails
+        }
+      }
+    }
+
+    Logger.success("Eligible coupon count: $_eligibleCouponCount");
   }
 
   Future<void> apiGetPersonalDetails() async {
@@ -198,7 +235,7 @@ class ProfileController extends ChangeNotifier {
     }
   }
 
-  void getCouponDetails() async {
+  Future<void> getCouponDetails() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -234,7 +271,11 @@ class ProfileController extends ChangeNotifier {
             );
           }).toList();
 
+          // Count eligible coupons after parsing
+          _countEligibleCoupons();
+
           Logger.success("Successfully parsed ${_couponsData.length} coupons");
+          Logger.success("Eligible coupons count: $_eligibleCouponCount");
         } else {
           _errorMessage = jsonResponse['message'] ?? "Failed to fetch coupons";
           Logger.error("API returned error status: ${jsonResponse['message']}");

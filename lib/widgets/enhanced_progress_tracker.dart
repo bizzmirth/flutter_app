@@ -179,7 +179,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                             child: Column(
                               children: [
                                 SizedBox(
-                                    height: 20), // Added space to lower dots
+                                    height: 23), // Added space to lower dots
                                 AnimatedContainer(
                                   duration: Duration(milliseconds: 300),
                                   width: isCompleted || isCurrent ? 24 : 16,
