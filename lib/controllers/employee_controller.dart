@@ -4,16 +4,21 @@ import 'dart:io';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EmployeeController extends ChangeNotifier {
   final IsarService _isarService = IsarService();
-  final String baseUrl = 'https://testca.uniqbizz.com/api/employees';
+  final String baseUrl =
+      'https://testca.uniqbizz.com/api/employees/all_employees';
 
-  bool isLoading = false;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
   List<PendingEmployeeModel> _employees = [];
   List<PendingEmployeeModel> get employees => _employees;
 
@@ -27,14 +32,14 @@ class EmployeeController extends ChangeNotifier {
 
   Future<void> fetchAndSavePendingEmployees() async {
     try {
-      isLoading = true;
+      _isLoading = true;
       notifyListeners();
 
       final hasNetwork = await _hasNetwork();
       if (!hasNetwork) {
         Logger.warning('No network connection, using local data');
         _employees = await _isarService.getAll<PendingEmployeeModel>();
-        isLoading = false;
+        _isLoading = false;
         notifyListeners();
         return;
       }
@@ -50,10 +55,10 @@ class EmployeeController extends ChangeNotifier {
 
       // Update state
       _employees = apiEmployees;
-      isLoading = false;
+      _isLoading = false;
       notifyListeners();
     } catch (e) {
-      isLoading = false;
+      _isLoading = false;
       notifyListeners();
       Logger.error("Error in fetchAndSavePendingEmployees: $e");
       throw Exception('Failed to fetch and save employees');
@@ -104,7 +109,7 @@ class EmployeeController extends ChangeNotifier {
 
   Future<void> fetchAndSaveRegisterEmployees() async {
     try {
-      isLoading = true;
+      _isLoading = true;
       notifyListeners();
 
       final hasNetwork = await _hasNetwork();
@@ -112,7 +117,7 @@ class EmployeeController extends ChangeNotifier {
         Logger.warning('No network connection, using local data');
         _registerEmployee =
             await _isarService.getAll<RegisteredEmployeeModel>();
-        isLoading = false;
+        _isLoading = false;
         notifyListeners();
         return;
       }
@@ -122,9 +127,11 @@ class EmployeeController extends ChangeNotifier {
       await _isarService.clearAll<RegisteredEmployeeModel>();
       for (var employee in apiEmployees) {
         await _isarService.save<RegisteredEmployeeModel>(employee);
+        _isLoading = false;
+        notifyListeners();
       }
     } catch (e) {
-      isLoading = false;
+      _isLoading = false;
       notifyListeners();
       Logger.error("Error in fetchAndSaveRegisterEmployees: $e");
       throw Exception('Failed to fetch and save register employees');
@@ -144,7 +151,7 @@ class EmployeeController extends ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        Logger.warning("API response $jsonResponse");
+        Logger.success("API response from register $jsonResponse");
         Logger.success('Full URL: $fullUrl');
 
         if (jsonResponse.containsKey('status') &&
@@ -179,7 +186,7 @@ class EmployeeController extends ChangeNotifier {
       // Convert the image bytes to a Base64 string
       return base64Encode(bytes);
     } catch (e) {
-      print("Error converting image to Base64: $e");
+      Logger.error("Error converting image to Base64: $e");
       return "";
     }
   }
@@ -205,28 +212,21 @@ class EmployeeController extends ChangeNotifier {
     }
   }
 
-  String extractPathSegment(String fullPath, String folderPrefix) {
-    // Find the index of the folder name in the full path
-    int index = fullPath.lastIndexOf(folderPrefix);
-    if (index != -1) {
-      // Return the folder prefix plus the filename
-      return fullPath.substring(index);
-    }
-    // If the path doesn't contain the expected folder structure, return the original
-    return fullPath;
-  }
-
   Future<bool> addEmployee(PendingEmployeeModel employee) async {
     try {
       final fullUrl = '$baseUrl/add_employee_data.php';
       formatDateForApi(employee.dateOfBirth!);
       formatDateForApi(employee.dateOfJoining!);
 
-      final profilePicPath =
-          extractPathSegment(employee.profilePicture!, 'profile_pic/');
-      final idProofPath = extractPathSegment(employee.idProof!, 'id_proof/');
-      final bankDetailsPath =
-          extractPathSegment(employee.bankDetails!, 'passbook/');
+      final profilePicPath = employee.profilePicture != null
+          ? extractPathSegment(employee.profilePicture!, 'profile_pic/')
+          : '';
+      final idProofPath = employee.idProof != null
+          ? extractPathSegment(employee.idProof!, 'id_proof/')
+          : '';
+      final bankDetailsPath = employee.bankDetails != null
+          ? extractPathSegment(employee.bankDetails!, 'passbook/')
+          : '';
 
       Logger.success("Trimmed profile path : $profilePicPath");
       Logger.success("Trimmed ID Proof : $idProofPath");
@@ -235,7 +235,7 @@ class EmployeeController extends ChangeNotifier {
       final Map<String, dynamic> requestBody = {
         "name": employee.name,
         "birth_date": employee.dateOfBirth,
-        "country_cd": "+91", // Hard-coded as per your example
+        "country_cd": "91", // Hard-coded as per your example
         "contact": employee.mobileNumber,
         "email": employee.email,
         "address": employee.address,
@@ -288,7 +288,7 @@ class EmployeeController extends ChangeNotifier {
   Future<void> uploadImage(
       context, String folder, String savedImagePath) async {
     try {
-      final fullUrl = 'https://testca.uniqbizz.com/uploading/upload_mobile.php';
+      final fullUrl = 'http://testca.uniqbizz.com/api/upload_mobile.php';
       var request = http.MultipartRequest('POST', Uri.parse(fullUrl));
       request.files
           .add(await http.MultipartFile.fromPath('file', savedImagePath));
@@ -297,7 +297,8 @@ class EmployeeController extends ChangeNotifier {
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
       Logger.warning('Raw API response body: $responseBody');
-      Logger.info('this is reuest ${request}');
+      Logger.success("Upload Api FULL URL: $fullUrl");
+      Logger.info('this is reuest $request');
 
       if (responseBody == '1') {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -384,6 +385,7 @@ class EmployeeController extends ChangeNotifier {
       final idProofPath = extractPathSegment(employee.idProof!, 'id_proof/');
       final bankDetailsPath =
           extractPathSegment(employee.bankDetails!, 'passbook/');
+      Logger.success("Trimmed profile path : ${employee.profilePicture!}");
 
       final Map<String, dynamic> requestBody = {
         "editfor": "pending",
@@ -488,28 +490,119 @@ class EmployeeController extends ChangeNotifier {
     }
   }
 
-  String capitalize(String input) {
-    if (input.isEmpty) return '';
-    return input[0].toUpperCase() + input.substring(1).toLowerCase();
+  Future<bool> apiUpdateEmployeeStatus(context, id, email) async {
+    try {
+      final fullUrl = '$baseUrl/confirm_employee.php';
+      final Map<String, dynamic> requestBody = {
+        'id': id.toString(),
+        'uname': email,
+      };
+
+      final encodeBody = jsonEncode(requestBody);
+
+      final response = await http.post(Uri.parse(fullUrl),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: encodeBody);
+
+      Logger.success("Api Request body : $requestBody");
+      Logger.success("Api Response body : ${response.body}");
+      Logger.info('Api response status code: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        // Wait for the fetch to complete
+        await fetchAndSaveRegisterEmployees();
+        notifyListeners();
+        return true;
+      } else {
+        Logger.error(
+            'Failed to update employee status: ${response.statusCode}');
+        Logger.error("Failed to update employee status: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      Logger.error("Error updating employee status: $e");
+      return false;
+    }
+  }
+
+  Future<void> apiGetZone() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final fullUrl = '$baseUrl/add_employees_zone.php';
+      final response = await http.get(Uri.parse(fullUrl));
+      Logger.success(
+          "Response Code: ${response.statusCode} Api Response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        final jsonData = json.decode(response.body);
+
+        if (jsonData['status'] == 'success') {
+          // Convert the zones array to a string for storage
+          final zonesData = json.encode(jsonData['zones']);
+
+          // Save zones data to SharedPreferences
+          await prefs.setString('zones', zonesData);
+          Logger.success("Zones data saved to SharedPreferences");
+        } else {
+          Logger.error(
+              "API returned success code but status was not 'success'");
+        }
+      }
+    } catch (e) {
+      Logger.error("Error getting zones: $e");
+    }
+  }
+
+  Future<void> apiGetBranchs(String zoneId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final fullUrl = "$baseUrl/add_employees_branch.php";
+      final requestBody = {'zone_id': zoneId};
+      final encodeBody = json.encode(requestBody);
+      final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
+      Logger.success(
+          "Response Code: ${response.statusCode} Api Response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+
+        if (jsonData['status'] == 'success') {
+          final branchesData = json.encode(jsonData['branches']);
+          await prefs.setString('branches_$zoneId', branchesData);
+          Logger.success(
+              "Branches data saved to SharedPreferences for zone $zoneId");
+        } else {
+          Logger.error(
+              "API returned success code but status was not 'success'");
+        }
+      }
+    } catch (e) {
+      Logger.error("Error getting branches: $e");
+    }
   }
 
   PendingEmployeeModel _pendingEmployeeFromJson(Map<String, dynamic> json) {
     try {
       final employee = PendingEmployeeModel()
-        ..id = _parseIntSafely(json['id']) // Use auto-increment for local ID
+        ..id = parseIntSafely(json['id']) // Use auto-increment for local ID
+        ..regId = json['employee_id'] ?? ''
         ..name = json['name'] ?? ''
         ..mobileNumber = json['contact'] ?? ''
         ..email = json['email'] ?? ''
         ..address = json['address'] ?? ''
         ..gender = capitalize(json['gender'] ?? '')
         ..dateOfBirth = json['date_of_birth'] ?? ''
-        ..dateOfJoining = json['date_of_joining'] ?? ''
-        ..status = _parseIntSafely(json['status']) ?? 1
-        ..department = _parseIntSafely(json['department']).toString()
-        ..designation = _parseIntSafely(json['designation']).toString()
-        ..zone = _parseIntSafely(json['zone']).toString()
-        ..branch = _parseIntSafely(json['branch']).toString()
+        ..dateOfJoining = json['added_on'] ?? ''
+        ..status = parseIntSafely(json['status']) ?? 1
+        ..department = parseIntSafely(json['department']).toString()
+        ..designation = parseIntSafely(json['designation']).toString()
+        ..zone = parseIntSafely(json['zone']).toString()
+        ..branch = parseIntSafely(json['branch']).toString()
         ..reportingManager = json['reporting_manager'] ?? ''
+        ..reportingManagerName = json['reporting_manager_name'] ?? ''
         ..profilePicture = json['profile_pic'] ?? ''
         ..idProof = json['id_proof'] ?? ''
         ..bankDetails = json['bank_details'] ?? '';
@@ -525,7 +618,7 @@ class EmployeeController extends ChangeNotifier {
       Map<String, dynamic> json) {
     try {
       final employee = RegisteredEmployeeModel()
-        ..id = _parseIntSafely(json['id']) // Use auto-increment for local ID
+        ..id = parseIntSafely(json['id']) // Use auto-increment for local ID
         ..regId = json['employee_id']
         ..name = json['name'] ?? ''
         ..mobileNumber = json['contact'] ?? ''
@@ -534,34 +627,22 @@ class EmployeeController extends ChangeNotifier {
         ..gender = capitalize(json['gender'] ?? '')
         ..dateOfBirth = json['date_of_birth'] ?? ''
         ..dateOfJoining = json['date_of_joining'] ?? ''
-        ..status = _parseIntSafely(json['status']) ?? 1
-        ..department = _parseIntSafely(json['department']).toString()
-        ..designation = _parseIntSafely(json['designation']).toString()
-        ..zone = _parseIntSafely(json['zone']).toString()
-        ..branch = _parseIntSafely(json['branch']).toString()
+        ..status = parseIntSafely(json['status']) ?? 1
+        ..department = parseIntSafely(json['department']).toString()
+        ..designation = parseIntSafely(json['designation']).toString()
+        ..zone = parseIntSafely(json['zone']).toString()
+        ..branch = parseIntSafely(json['branch']).toString()
         ..reportingManager = json['reporting_manager'] ?? ''
+        ..reportingManagerName = json['reporting_manager_name'] ?? ''
         ..profilePicture = json['profile_pic'] ?? ''
         ..idProof = json['id_proof'] ?? ''
-        ..bankDetails = json['bank_details'] ?? '';
+        ..bankDetails = json['bank_details'] ?? ''
+        ..userType = json['user_type'];
 
       return employee;
     } catch (e) {
       Logger.error("Error parsing registered employee: $e for data: $json");
       throw Exception("Error parsing registered employee: $e");
     }
-  }
-
-// Helper method to safely parse integers
-  int? _parseIntSafely(dynamic value) {
-    if (value == null) return null;
-    if (value is int) return value;
-    if (value is String) {
-      try {
-        return int.parse(value);
-      } catch (_) {
-        return null;
-      }
-    }
-    return null;
   }
 }

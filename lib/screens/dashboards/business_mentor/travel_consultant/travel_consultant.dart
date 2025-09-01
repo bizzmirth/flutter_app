@@ -1,8 +1,8 @@
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_mentor/travel_consultant/add_travel_consultants.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ViewTCPage extends StatefulWidget {
   const ViewTCPage({super.key});
@@ -24,11 +24,7 @@ class _ViewTCPageState extends State<ViewTCPage> {
       appBar: AppBar(
         title: Text(
           'View Travel Consultant',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

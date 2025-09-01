@@ -1,7 +1,7 @@
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class AddViewTEPage extends StatefulWidget {
@@ -112,11 +112,7 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
       appBar: AppBar(
         title: Text(
           'Add Travel Agent',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -284,11 +280,7 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
                   SizedBox(height: 20),
                   Text(
                     "Attachments",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: Appwidget.normalSubTitle(),
                   ),
                   SizedBox(height: 10),
                   _buildUploadButton("Profile Picture"),

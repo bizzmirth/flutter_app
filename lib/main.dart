@@ -1,54 +1,179 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
+import 'package:bizzmirth_app/controllers/contact_us_controller.dart';
+import 'package:bizzmirth_app/controllers/cust_order_history_controller.dart';
+import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
+import 'package:bizzmirth_app/controllers/cust_referral_payout_controller.dart';
+import 'package:bizzmirth_app/controllers/cust_wallet_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller.dart';
+import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/controllers/login_controller.dart';
-import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
-import 'package:bizzmirth_app/entities/pending_techno_enterprise/pending_techno_enterprise_model.dart';
+import 'package:bizzmirth_app/controllers/package_details_controller.dart';
+import 'package:bizzmirth_app/controllers/profile_controller.dart';
+import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
+import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
-import 'package:bizzmirth_app/screens/dashboards/admin/admin_dashboard.dart';
-import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/all_employees_page.dart';
-import 'package:bizzmirth_app/screens/dashboards/business_mentor/business_mentor.dart';
-import 'package:bizzmirth_app/screens/dashboards/business_mentor/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/screens/login_page/login.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:local_session_timeout/local_session_timeout.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:intl/intl.dart';
 
-void main() {
+void main() async {
   bypassSSLVerification();
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  // Global navigator key
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final sessionStateStream = StreamController<SessionState>();
+  late SessionConfig sessionConfig;
+  StreamSubscription<SessionTimeoutState>? _sessionSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    sessionConfig = SessionConfig(
+      invalidateSessionForAppLostFocus: const Duration(minutes: 30),
+      invalidateSessionForUserInactivity: const Duration(minutes: 30),
+    );
+
+    // Listen to session timeout events
+    _sessionSubscription =
+        sessionConfig.stream.listen((SessionTimeoutState timeoutEvent) {
+      sessionStateStream.add(SessionState.stopListening);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final currentContext = MyApp.navigatorKey.currentContext;
+        if (currentContext != null && mounted) {
+          _handleSessionTimeout(currentContext, timeoutEvent);
+        }
+      });
+    });
+  }
+
+  void _handleSessionTimeout(
+      BuildContext context, SessionTimeoutState timeoutEvent) async {
+    if (timeoutEvent == SessionTimeoutState.userInactivityTimeout) {
+      final sharedPrefHelper = SharedPrefHelper();
+      Logger.warning("User inactivity timeout triggered");
+      ToastHelper.showErrorToast(
+        context: context,
+        title: "Session Expired",
+        description:
+            "You have been inactive for too long. Please log in again.",
+        alignment: Alignment.bottomCenter,
+      );
+      await sharedPrefHelper.removeDetails();
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        (Route<dynamic> route) => false,
+      );
+    } else if (timeoutEvent == SessionTimeoutState.appFocusTimeout) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        (Route<dynamic> route) => false,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _sessionSubscription?.cancel();
+    sessionStateStream.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LoginController()),
+        ChangeNotifierProvider(create: (_) => CustomerController()),
         ChangeNotifierProvider(create: (_) => EmployeeController()),
+        ChangeNotifierProvider(create: (_) => AdminBusniessMentorController()),
+        ChangeNotifierProvider(
+            create: (_) => DesignationDepartmentController()),
+        ChangeNotifierProvider(create: (_) => AdminCustomerController()),
+        ChangeNotifierProvider(create: (_) => CustProductPayoutController()),
+        ChangeNotifierProvider(create: (_) => CustReferralPayoutController()),
+        ChangeNotifierProvider(create: (_) => ProfileController()),
+        ChangeNotifierProvider(create: (_) => CustWalletController()),
+        ChangeNotifierProvider(create: (_) => CustOrderHistoryController()),
+        ChangeNotifierProvider(create: (_) => TourPackagesController()),
+        ChangeNotifierProvider(create: (_) => ContactUsController()),
+        ChangeNotifierProvider(create: (_) => PackageDetailsController()),
       ],
-      child: MaterialApp(
-        title: 'UniqBizz',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
-        ),
-        home: BMDashboardPage(),
-        debugShowCheckedModeBanner: false,
+      child: ToastificationWrapper(
+        child: SessionTimeoutManager(
+            // userActivityDebounceDuration: const Duration(seconds: 1),
+            sessionConfig: sessionConfig,
+            // sessionStateStream: sessionStateStream.stream,
+            child: MaterialApp(
+              navigatorKey: MyApp.navigatorKey,
+              title: 'UniqBizz',
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+                visualDensity: VisualDensity.adaptivePlatformDensity,
+                textTheme: GoogleFonts.robotoTextTheme(
+                  Theme.of(context).textTheme,
+                ),
+              ),
+              builder: (context, child) {
+                final size = MediaQuery.of(context).size.width;
+
+                // scale factor based on width (phone < 600, tablet >= 600)
+                double scale = size < 600 ? 0.85 : 1.0;
+
+                return MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: TextScaler.linear(scale), // ✅ scales all text
+                  ),
+                  child: child!,
+                );
+              },
+              home: HomePage(),
+              debugShowCheckedModeBanner: false,
+            )),
       ),
     );
   }
 }
 
 void bypassSSLVerification() {
-  HttpOverrides.global = new MyHttpOverrides();
+  HttpOverrides.global = MyHttpOverrides();
 }
 
 class MyHttpOverrides extends HttpOverrides {
@@ -73,12 +198,12 @@ final List<Map<String, dynamic>> orders = [
   },
   {
     "profilePicture": "https://randomuser.me/api/portraits/men/2.jpg",
-    "id": "2", // Changed from "Id" to "id"
-    "name": "Pandurang Naik", // Changed from "Name" to "name"
-    "phone": "9876543210", // Changed from "Phone/Email" to "phone"
+    "id": "2",
+    "name": "Pandurang Naik",
+    "phone": "9876543210",
     "phone1": "Pandurang Naik",
     "design": "BM",
-    "jd": "15/03/2021", // Changed from "JD" to "jd"
+    "jd": "15/03/2021",
     "status": "Pending",
   },
   {
@@ -1013,103 +1138,6 @@ final List<Map<String, dynamic>> orders1BM = [
   },
 ];
 
-final List<Map<String, dynamic>> bmlist = [
-  {
-    "profilePicture": "https://randomuser.me/api/portraits/men/1.jpg",
-    "id": "1",
-    "name": "Savio Vaz",
-    "phone": "9876543210",
-    "jd": "10/01/2022",
-    "status": "Completed",
-  },
-  {
-    "profilePicture": "https://randomuser.me/api/portraits/men/2.jpg",
-    "id": "2", // Changed from "Id" to "id"
-    "name": "Pandurang Naik", // Changed from "Name" to "name"
-    "phone": "9876543210", // Changed from "Phone/Email" to "phone"
-    "jd": "15/03/2021", // Changed from "JD" to "jd"
-    "status": "Completed",
-  },
-  {
-    "profilePicture": "https://randomuser.me/api/portraits/men/3.jpg",
-    "id": "3",
-    "name": "Nishant C M",
-    "phone": "0123456789",
-    "jd": "11/06/2025",
-    "status": "Completed",
-  },
-  {
-    "profilePicture": "https://randomuser.me/api/portraits/men/4.jpg",
-    "id": "4", // Changed from "Id" to "id"
-    "name": "Shravan Apte", // Changed from "Name" to "name"
-    "phone": "9876543210", // Changed from "Phone/Email" to "phone"
-    "jd": "01/03/2025", // Changed from "JD" to "jd"
-    "status": "Completed",
-  },
-];
-
-final List<Map<String, String>> depart = [
-  {"id": "1", "name": "Rahul Shet", "designation": "Channel Management"},
-  {"id": "2", "name": "Amit Verma", "designation": "Channel Management"},
-  {"id": "3", "name": "Sneha Joshi", "designation": "Test1"},
-  {"id": "4", "name": "Rajesh Kumar", "designation": "Operation Management"}
-];
-
-final List<Map<String, String>> desig = [
-  {
-    "id": "1",
-    "name": "Rahul Shet",
-  },
-  {
-    "id": "2",
-    "name": "Amit Verma",
-  },
-  {
-    "id": "3",
-    "name": "Sneha Joshi",
-  },
-  {
-    "id": "4",
-    "name": "Rahul Shet",
-  },
-  {
-    "id": "5",
-    "name": "Amit Verma",
-  },
-  {
-    "id": "6",
-    "name": "Sneha Joshi",
-  },
-  {
-    "id": "7",
-    "name": "Rahul Shet",
-  },
-  {
-    "id": "8",
-    "name": "Amit Verma",
-  },
-  {
-    "id": "9",
-    "name": "Sneha Joshi",
-  },
-  {
-    "id": "10",
-    "name": "Sneha Joshi",
-  },
-  {
-    "id": "11",
-    "name": "Rahul Shet",
-  },
-  {
-    "id": "12",
-    "name": "Amit Verma",
-  },
-  {
-    "id": "13",
-    "name": "Sneha Joshi",
-  }
-];
-
 final List<Map<String, String>> packages = [
   {
     "id": "1",
@@ -1353,45 +1381,6 @@ final List<Map<String, String>> TCrecruitmentpayout = [
   },
 ];
 
-final List<Map<String, String>> TErecruitmentpayout = [
-  {
-    "date": "13-Feb-2025",
-    "name": "Details xyz",
-    "prodpay": "23000",
-    "total": "23000",
-    "tds": "200",
-    "payable": "23200",
-    "remark": "Completed",
-  },
-  {
-    "date": "13-Feb-2025",
-    "name": "Details xyz",
-    "prodpay": "23000",
-    "total": "23000",
-    "tds": "200",
-    "payable": "23200",
-    "remark": "Pending",
-  },
-  {
-    "date": "13-Feb-2025",
-    "name": "Details xyz",
-    "prodpay": "23000",
-    "total": "23000",
-    "tds": "200",
-    "payable": "23200",
-    "remark": "Completed",
-  },
-  {
-    "date": "13-Feb-2025",
-    "name": "Details xyz",
-    "prodpay": "23000",
-    "total": "23000",
-    "tds": "200",
-    "payable": "23200",
-    "remark": "Pending",
-  },
-];
-
 final List<Map<String, String>> BMrecruitmentpayout = [
   {
     "date": "13-Feb-2025",
@@ -1607,49 +1596,6 @@ final List<Map<String, String>> pendingMentors = [
   },
 ];
 
-final List<Map<String, String>> registeredMentors = [
-  {
-    "id": "BM250001",
-    "name": "Shivama Panjikar",
-    "phone": "+91 9856231458",
-    "email": "shivama@gmail.com",
-    "dob": "06-02-1995",
-    "joining_date": "06-02-2025",
-  },
-  {
-    "id": "BM250002",
-    "name": "Shravan Apte",
-    "phone": "+91 9856254785",
-    "email": "shravan@gmail.com",
-    "dob": "28-02-1985",
-    "joining_date": "10-02-2025",
-  },
-  {
-    "id": "BM250003",
-    "name": "Anita Desai",
-    "phone": "+91 9876543210",
-    "email": "anita@gmail.com",
-    "dob": "15-07-1990",
-    "joining_date": "12-02-2025",
-  },
-  {
-    "id": "BM250004",
-    "name": "Rajiv Menon",
-    "phone": "+91 9001122334",
-    "email": "rajiv@gmail.com",
-    "dob": "03-11-1982",
-    "joining_date": "15-02-2025",
-  },
-  {
-    "id": "BM250005",
-    "name": "Meera Naik",
-    "phone": "+91 8112233445",
-    "email": "meera@gmail.com",
-    "dob": "22-09-1993",
-    "joining_date": "18-02-2025",
-  },
-];
-
 class MyEmployeePendingDataSource extends DataTableSource {
   final List<Map<String, dynamic>> data;
   MyEmployeePendingDataSource(this.data);
@@ -1762,242 +1708,10 @@ class MyEmployeePendingDataSource extends DataTableSource {
   int get selectedRowCount => 0;
 }
 
-class MyrefCustPendingDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyrefCustPendingDataSource(this.data, this.context);
-  final BuildContext context; // Pass context from parent widget
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(
-          Center(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(order["profilePicture"]),
-            ),
-          ),
-        ),
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["phone"]?.toString() ?? "N/A")),
-        DataCell(Text(order["phone1"]?.toString() ?? "N/A")),
-        DataCell(Text(order["jd"]?.toString() ?? "N/A")),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order["status"]?.toString() ?? ""),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order["status"]?.toString() ?? "Unknown",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "pending":
-        return Colors.orange;
-      case "completed":
-        return Colors.green;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-        switch (value) {
-          case "add_ref":
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddTAcustPage(isHidden: false),
-              ),
-            );
-            break;
-          case "edit":
-            break;
-          case "delete":
-            break;
-          default:
-            break;
-        }
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "add_ref",
-          child: ListTile(
-            leading: Icon(Icons.person_add_alt_1, color: Colors.blue),
-            title: Text("Add Ref"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
-class MyrefCustRegDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyrefCustRegDataSource(this.data, this.context);
-  final BuildContext context; // Pass context from parent widget
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(
-          Center(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(order["profilePicture"]),
-            ),
-          ),
-        ),
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["phone"]?.toString() ?? "N/A")),
-        DataCell(Text(order["phone1"]?.toString() ?? "N/A")),
-        DataCell(Text(order["jd"]?.toString() ?? "N/A")),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order["status"]?.toString() ?? ""),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order["status"]?.toString() ?? "Unknown",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "pending":
-        return Colors.orange;
-      case "completed":
-        return Colors.green;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-        switch (value) {
-          case "add_ref":
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddTAcustPage(isHidden: false),
-              ),
-            );
-            break;
-          case "edit":
-            break;
-          case "delete":
-            break;
-          default:
-            break;
-        }
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "add_ref",
-          child: ListTile(
-            leading: Icon(Icons.person_add_alt_1, color: Colors.blue),
-            title: Text("Add Ref"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
 class MyBMCustPendingDataSource extends DataTableSource {
   final List<Map<String, dynamic>> data;
   MyBMCustPendingDataSource(this.data, this.context);
-  final BuildContext context; // Pass context from parent widget
+  final BuildContext context;
 
   @override
   DataRow? getRow(int index) {
@@ -2799,233 +2513,6 @@ class MyBMCustRegDataSource extends DataTableSource {
   int get selectedRowCount => 0;
 }
 
-class MyDepartDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyDepartDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
-class MyDesigDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyDesigDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["designation"]?.toString() ?? "N/A")),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
-class MyBMDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyBMDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(
-          Center(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(order["profilePicture"]),
-            ),
-          ),
-        ),
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["phone"]?.toString() ?? "N/A")),
-        DataCell(Text(order["phone1"]?.toString() ?? "N/A")),
-        DataCell(Text(order["jd"]?.toString() ?? "N/A")),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order["status"]?.toString() ?? ""),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order["status"]?.toString() ?? "Unknown",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "pending":
-        return Colors.orange;
-      case "completed":
-        return Colors.green;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading:
-                Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "register",
-          child: ListTile(
-            leading: Icon(Icons.app_registration,
-                color: const Color.fromARGB(255, 43, 29, 240)),
-            title: Text("Register"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
 class ViewMyBMDataSource extends DataTableSource {
   final List<Map<String, dynamic>> data;
   ViewMyBMDataSource(this.data);
@@ -3527,114 +3014,6 @@ class MyViewTCDataSource extends DataTableSource {
           child: ListTile(
             leading: Icon(Icons.delete, color: Colors.red),
             title: Text("Delete"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
-class MyAdminCustPendingDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyAdminCustPendingDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(
-          Center(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(order["profilePicture"]),
-            ),
-          ),
-        ),
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["rid"]?.toString() ?? "N/A")),
-        DataCell(Text(order["rname"]?.toString() ?? "N/A")),
-        DataCell(Text(order["jd"]?.toString() ?? "N/A")),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order["status"]?.toString() ?? ""),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order["status"]?.toString() ?? "Unknown",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "pending":
-        return Colors.orange;
-      case "completed":
-        return Colors.green;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading:
-                Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "register",
-          child: ListTile(
-            leading: Icon(Icons.app_registration,
-                color: const Color.fromARGB(255, 43, 29, 240)),
-            title: Text("Register"),
           ),
         ),
       ],
@@ -4174,114 +3553,6 @@ class MyQuotationsApprovedDataSource extends DataTableSource {
   int get selectedRowCount => 0;
 }
 
-class MyAdminCustRegDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyAdminCustRegDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(
-          Center(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(order["profilePicture"]),
-            ),
-          ),
-        ),
-        DataCell(Text(order["id"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["rid"]?.toString() ?? "N/A")),
-        DataCell(Text(order["rname"]?.toString() ?? "N/A")),
-        DataCell(Text(order["jd"]?.toString() ?? "N/A")),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order["status"]?.toString() ?? ""),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order["status"]?.toString() ?? "Unknown",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        DataCell(_buildActionMenu()),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "pending":
-        return Colors.orange;
-      case "completed":
-        return Colors.green;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-// Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
-          child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "edit",
-          child: ListTile(
-            leading:
-                Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
-            title: Text("Edit"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "delete",
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
-          ),
-        ),
-        PopupMenuItem(
-          value: "unregister",
-          child: ListTile(
-            leading: Icon(Icons.app_registration,
-                color: const Color.fromARGB(255, 0, 238, 127)),
-            title: Text("Un-Register"),
-          ),
-        ),
-      ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
 class MyPackageDataSource extends DataTableSource {
   final List<Map<String, dynamic>> data;
   MyPackageDataSource(this.data);
@@ -4603,65 +3874,6 @@ class MyTCProductionPayoutDataSource extends DataTableSource {
   int get selectedRowCount => 0;
 }
 
-class MyTEProductionPayoutDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyTEProductionPayoutDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(Text(order["date"]?.toString() ?? "N/A")),
-        DataCell(Text(order["name"]?.toString() ?? "N/A")),
-        DataCell(Text(order["prodpay"]?.toString() ?? "N/A")),
-        DataCell(Text(order["total"]?.toString() ?? "N/A")),
-        DataCell(Text(order["tds"]?.toString() ?? "N/A")),
-        DataCell(Text(order["payable"]?.toString() ?? "N/A")),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order["remark"]?.toString() ?? ""),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order["remark"]?.toString() ?? "Unknown",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "approved":
-        return Colors.blue;
-      case "processing":
-        return Colors.purple;
-      case "pending":
-        return Colors.orange;
-      case "completed":
-        return Colors.green;
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
 class MyTCRegDataSource extends DataTableSource {
   final List<Map<String, dynamic>> data;
   MyTCRegDataSource(this.data);
@@ -4761,6 +3973,27 @@ class MyTCRegDataSource extends DataTableSource {
   @override
   int get selectedRowCount => 0;
 }
+
+var dummyPayoutData = [
+  CustReferralPayoutModel(
+    date: "2025-07-14",
+    payoutDetails:
+        "Niranjan asdGaowkar (ID: CU250048) has earned ₹250 for referring Dhanraj Sahu (ID: CU250049) as a Level 1 referrer.",
+    amount: "250",
+    tds: "5",
+    totalPayable: "245",
+    status: "Pending",
+  ),
+  CustReferralPayoutModel(
+    date: "2025-07-14",
+    payoutDetails:
+        "Niranjan Gaowkar (ID: CU250048) has gained 250 booking points for referring Dhanraj Sahu (ID: CU250049) as a Level 1 referrer.",
+    amount: "250",
+    tds: "NA",
+    totalPayable: "250",
+    status: "Credited",
+  ),
+];
 
 class MyViewTCRegDataSource extends DataTableSource {
   final List<Map<String, dynamic>> data;
@@ -5194,11 +4427,7 @@ class _ViewPackagePageState extends State<ViewPackagePage> {
       appBar: AppBar(
         title: Text(
           'Packages',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -5402,11 +4631,7 @@ class _AddTAcustPageState extends State<AddTAcustPage> {
       appBar: AppBar(
         title: Text(
           'Add Customer',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -5616,11 +4841,7 @@ class _AddTAcustPageState extends State<AddTAcustPage> {
                   SizedBox(height: 20),
                   Text(
                     "Attachments",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: Appwidget.normalSubTitle(),
                   ),
                   SizedBox(height: 10),
                   _buildUploadButton("Profile Picture"),
@@ -5935,11 +5156,7 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
       appBar: AppBar(
         title: Text(
           'Enquiry Form',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -5962,11 +5179,7 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
               // Title
               Text(
                 "Enquiry/Quotation Form",
-                style: GoogleFonts.poppins(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                style: Appwidget.poppinsHeadline(),
               ),
               const SizedBox(height: 10),
               Row(

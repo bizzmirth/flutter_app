@@ -4,7 +4,10 @@ import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_pr
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/product_markup/travel_consultant_product_markup_page.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
+import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -22,11 +25,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
       appBar: AppBar(
         title: Text(
           'Travel Consultant Dashboard',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -123,7 +122,9 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => TopUpWalletPage()),
+                            builder: (context) => TopUpWalletPage(
+                                  title: "Top Up Wallet",
+                                )),
                       );
                     },
                   ),

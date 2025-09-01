@@ -1,14 +1,20 @@
 // Widget for Contact Info
 import 'dart:async';
-
+import 'dart:convert';
+import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/main.dart';
-import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/book_now_page/book_now_page.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
+import 'package:bizzmirth_app/screens/login_page/login.dart';
+import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+final IsarService _isarService = IsarService();
 //contact info
 Widget contactInfo(IconData icon, String text) {
   return ListTile(
@@ -27,24 +33,42 @@ Widget divider() {
 }
 
 // Custom Input Field
-Widget customInputField(IconData icon, String label, {int maxLines = 1}) {
-  return TextField(
+Widget customInputField(
+    IconData icon, String label, TextEditingController controller,
+    {int maxLines = 1,
+    String? Function(String?)? validator,
+    GlobalKey<FormFieldState>? fieldKey}) {
+  return TextFormField(
     maxLines: maxLines,
+    controller: controller,
     style: TextStyle(color: Colors.white),
+    key: fieldKey,
     decoration: InputDecoration(
       labelText: label,
-      // ignore: deprecated_member_use
       labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
       prefixIcon: Icon(icon, color: Colors.white),
       filled: true,
-      // ignore: deprecated_member_use
       fillColor: Colors.white.withOpacity(0.2),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
     ),
+    validator: validator,
   );
+}
+
+String normalizeGender(String gender) {
+  switch (gender.toLowerCase().trim()) {
+    case 'male':
+      return 'Male';
+    case 'female':
+      return 'Female';
+    case 'other':
+      return 'Other';
+    default:
+      return "---- Select Gender ----";
+  }
 }
 
 // Helper function for tab buttons
@@ -64,6 +88,7 @@ Widget buildTabButton(String label) {
 }
 
 // Helper function for tiles
+
 Widget buildTile(String title, List<String> subTitles, List<String> values) {
   return Container(
     padding: EdgeInsets.all(12),
@@ -84,6 +109,8 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
         Text(
           title,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         SizedBox(height: 8), // Space between title & content
 
@@ -96,6 +123,8 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
                 child: Text(
                   subTitle,
                   style: TextStyle(fontSize: 12, color: Colors.black54),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               );
             }).toList(),
@@ -111,6 +140,8 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
               child: Text(
                 value,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             );
           }).toList(),
@@ -120,295 +151,55 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
   );
 }
 
-//custom animated cards (3x1)
-class CustomAnimatedSummaryCards extends StatefulWidget {
-  final List<SummaryCardData> cardData;
-
-  const CustomAnimatedSummaryCards({super.key, required this.cardData});
-
-  @override
-  _AnimatedSummaryCardsState createState() => _AnimatedSummaryCardsState();
-}
-
-class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
-  List<Color> colors = [
-    Colors.blueAccent,
-    Colors.purpleAccent,
-  ];
-
-  int _currentColorIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    Timer.periodic(Duration(seconds: 2), (timer) {
-      if (mounted) {
-        setState(() {
-          _currentColorIndex = (_currentColorIndex + 1) % colors.length;
-        });
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: widget.cardData.map((data) => _buildCard(data)).toList(),
-    );
-  }
-
-  Widget _buildCard(SummaryCardData data) {
-    return Flexible(
-      child: AnimatedContainer(
-        duration: Duration(seconds: 1),
-        curve: Curves.easeInOut,
-        height: 120,
-        width: 240,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          gradient: LinearGradient(
-            colors: [
-              colors[_currentColorIndex].withOpacity(0.8),
-              colors[(_currentColorIndex + 1) % colors.length].withOpacity(0.8),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+Widget buildStatCard({
+  required IconData icon,
+  required String value,
+  required String label,
+  required Color backgroundColor,
+  required Color iconColor,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(16.0),
+    decoration: BoxDecoration(
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          spreadRadius: 1,
+          blurRadius: 4,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          icon,
+          color: iconColor,
+          size: 24,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
           ),
         ),
-        child: Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(data.icon, size: 35, color: Colors.white),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      data.title,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              Spacer(),
-              Text(
-                data.value,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.black54,
           ),
         ),
-      ),
-    );
-  }
-}
-
-// linechart
-class ImprovedLineChart extends StatelessWidget {
-  final List<FlSpot> chartData = [
-    FlSpot(1, 2),
-    FlSpot(2, 5),
-    FlSpot(3, 3),
-    FlSpot(4, 7),
-    FlSpot(5, 6),
-    FlSpot(6, 9),
-    FlSpot(7, 10),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 3,
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  "Performance Overview",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 300,
-                ),
-                Expanded(
-                  child: Positioned(
-                    top: 20,
-                    right: 70,
-                    child: Row(
-                      children: [
-                        Text(
-                          "23/02/2025",
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () => null,
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 1),
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text("Select Month"),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            AspectRatio(
-              aspectRatio: 1.8,
-              child: LineChart(
-                LineChartData(
-                  minX: 1,
-                  maxX: chartData.length.toDouble(),
-                  minY: 0,
-                  maxY: chartData
-                          .map((e) => e.y)
-                          .reduce((a, b) => a > b ? a : b) +
-                      2,
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: true,
-                    verticalInterval: 1,
-                    horizontalInterval: 2,
-                  ),
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40, // Ensures Y-axis labels fit properly
-                        interval: 2, // Proper spacing between Y-axis numbers
-                        getTitlesWidget: (value, _) {
-                          return Padding(
-                            padding:
-                                EdgeInsets.only(right: 18.0), // Prevent overlap
-                            child: Text(
-                              value.toInt().toString(),
-                              style: TextStyle(fontSize: 12),
-                              textAlign: TextAlign.right,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40, // Ensures Y-axis labels fit properly
-                        interval: 2, // Proper spacing between Y-axis numbers
-                        getTitlesWidget: (value, _) {
-                          return Padding(
-                            padding:
-                                EdgeInsets.only(right: 6.0), // Prevent overlap
-                            child: Text(
-                              value.toInt().toString(),
-                              style: TextStyle(fontSize: 12),
-                              textAlign: TextAlign.right,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        interval: 1, // Ensures each day is evenly spaced
-                        getTitlesWidget: (value, _) {
-                          return Padding(
-                            padding: EdgeInsets.only(top: 6.0), // Fixes spacing
-                            child: Text(
-                              "Day ${value.toInt()}",
-                              style: TextStyle(fontSize: 12),
-                              textAlign: TextAlign.center,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        interval: 1, // Ensures each day is evenly spaced
-                        getTitlesWidget: (value, _) {
-                          return Padding(
-                            padding: EdgeInsets.only(top: 0.0), // Fixes spacing
-                            child: Text(
-                              "${value.toInt()}",
-                              style: TextStyle(fontSize: 12),
-                              textAlign: TextAlign.center,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  borderData: FlBorderData(
-                    show: true,
-                    border: Border.all(color: Colors.grey, width: 0.5),
-                  ),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: chartData,
-                      isCurved: true, // Smooth Curves
-                      color: Colors.blueAccent,
-                      barWidth: 4,
-                      isStrokeCapRound: true,
-                      belowBarData: BarAreaData(
-                        show: true,
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.blue.withOpacity(0.3),
-                            Colors.transparent
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                      dotData: FlDotData(
-                        show: true,
-                        getDotPainter: (spot, percent, barData, index) {
-                          return FlDotCirclePainter(
-                            radius: 4,
-                            color: const Color.fromARGB(255, 29, 153, 255),
-                            strokeColor: Colors.white,
-                            strokeWidth: 2,
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
 }
 
 //progress tracker card
@@ -419,12 +210,12 @@ class ProgressTrackerCard extends StatelessWidget {
   final Color progressColor;
 
   const ProgressTrackerCard({
-    Key? key,
+    super.key,
     required this.totalSteps,
     required this.currentStep,
     required this.message,
-    this.progressColor = Colors.blueAccent, // Default color
-  }) : super(key: key);
+    this.progressColor = Colors.blueAccent,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -436,7 +227,6 @@ class ProgressTrackerCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Customizable Progress Tracker
             ProgressTracker(
               totalSteps: totalSteps,
               currentStep: currentStep,
@@ -471,11 +261,11 @@ class ProgressTracker extends StatefulWidget {
   final Color progressColor;
 
   const ProgressTracker({
-    Key? key,
+    super.key,
     required this.totalSteps,
     required this.currentStep,
     this.progressColor = Colors.blueAccent, // Default color
-  }) : super(key: key);
+  });
 
   @override
   _ProgressTrackerState createState() => _ProgressTrackerState();
@@ -488,6 +278,14 @@ class _ProgressTrackerState extends State<ProgressTracker> {
   void initState() {
     super.initState();
     _startStepAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant ProgressTracker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentStep != widget.currentStep) {
+      _startStepAnimation();
+    }
   }
 
   void _startStepAnimation() async {
@@ -565,14 +363,176 @@ class _ProgressTrackerState extends State<ProgressTracker> {
 void showBookingPopup(BuildContext context) {
   showDialog(
     context: context,
+    builder: (context) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final bool isTablet = constraints.maxWidth > 600;
+
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            title: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.info_outline, size: 40, color: Colors.blueAccent),
+                SizedBox(height: 10),
+                Text(
+                  'Need More Info or Ready to Book?',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                      fontSize: isTablet ? 20 : 18,
+                      fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            content: Text(
+              'Would you like to enquire more about this package or proceed to booking?',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(fontSize: isTablet ? 16 : 14),
+            ),
+            actions: [
+              if (isTablet)
+                // Your original tablet layout
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Close',
+                          style: GoogleFonts.poppins(color: Colors.red)),
+                    ),
+                    SizedBox(width: 16),
+                    TextButton(
+                      onPressed: () => _handleUserAction(context, 'enquire'),
+                      child: Text('Submit Your Query',
+                          style: GoogleFonts.poppins(color: Colors.orange)),
+                    ),
+                    SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: () => _handleUserAction(context, 'book'),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green),
+                      child: Text('Book Now',
+                          style: GoogleFonts.poppins(color: Colors.white)),
+                    ),
+                  ],
+                )
+              else
+                // Phone layout
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => _handleUserAction(context, 'book'),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green),
+                        child: Text('Book Now'),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('Close',
+                              style: GoogleFonts.poppins(color: Colors.red)),
+                        ),
+                        TextButton(
+                          onPressed: () =>
+                              _handleUserAction(context, 'enquire'),
+                          child: Text('Submit Query',
+                              style: GoogleFonts.poppins(color: Colors.orange)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+Future<void> _handleUserAction(BuildContext context, String action) async {
+  final navigator = Navigator.of(context);
+  final scaffoldMessenger = ScaffoldMessenger.of(context);
+  final mediaQuery = MediaQuery.of(context);
+
+  navigator.pop();
+
+  final userType = await SharedPrefHelper().getUserType();
+
+  if (userType == null || userType.isEmpty) {
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.warning, color: Colors.white),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'You need to log in to continue',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                scaffoldMessenger.hideCurrentSnackBar();
+                navigator.push(
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+              child: Text(
+                'Login',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.orange,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(
+          bottom: 20,
+          left: 20,
+          right: mediaQuery.size.width * 0.3,
+        ),
+        duration: Duration(seconds: 4),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  } else {
+    if (action == 'enquire') {
+      navigator.push(MaterialPageRoute(builder: (context) => EnquireNowPage()));
+    } else if (action == 'book') {
+      navigator.push(MaterialPageRoute(builder: (context) => BookNowPage()));
+    }
+  }
+}
+
+void showBookingPopupAlternative(BuildContext context) {
+  showDialog(
+    context: context,
     builder: (BuildContext context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.info_outline,
-                size: 40, color: Colors.blueAccent), // Info icon
+            Icon(Icons.info_outline, size: 40, color: Colors.blueAccent),
             SizedBox(height: 10),
             Text(
               'Need More Info or Ready to Book?',
@@ -589,26 +549,22 @@ void showBookingPopup(BuildContext context) {
         ),
         actions: [
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.center, // Adjust this as needed
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(width: 65),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close popup
+                  Navigator.of(context).pop();
                 },
                 child: Text(
                   'Close',
                   style: GoogleFonts.poppins(fontSize: 14, color: Colors.red),
                 ),
               ),
-              SizedBox(width: 65), // Adjust spacing between buttons
+              SizedBox(width: 65),
               TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => EnquireNowPage()),
-                  );
+                onPressed: () async {
+                  await _handleUserActionWithBanner(context, 'enquire');
                 },
                 child: Text(
                   'Submit Your Query',
@@ -618,13 +574,10 @@ void showBookingPopup(BuildContext context) {
                       color: Colors.orange),
                 ),
               ),
-              SizedBox(width: 65), // Adjust spacing between buttons
+              SizedBox(width: 65),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BookNowPage()),
-                  );
+                onPressed: () async {
+                  await _handleUserActionWithBanner(context, 'book');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -644,165 +597,244 @@ void showBookingPopup(BuildContext context) {
   );
 }
 
-// filter bar
-class FilterBar extends StatefulWidget {
-  const FilterBar({super.key});
+Future<void> _handleUserActionWithBanner(
+    BuildContext context, String action) async {
+  final userType = await SharedPrefHelper().getUserType();
 
-  @override
-  _FilterBarState createState() => _FilterBarState();
-}
+  if (!context.mounted) return;
 
-class _FilterBarState extends State<FilterBar> {
-  TextEditingController searchController = TextEditingController();
-  DateTime? fromDate;
-  DateTime? toDate;
+  if (userType == null || userType.isEmpty) {
+    await Future.delayed(Duration(milliseconds: 100));
 
-  int countUsers = 100; // Example count
+    if (!context.mounted) return;
 
-  String? fromDateError;
-  String? toDateError;
-
-  Future<void> _selectDate(BuildContext context, bool isFromDate) async {
-    DateTime initialDate = isFromDate
-        ? fromDate ?? DateTime.now()
-        : toDate ?? fromDate ?? DateTime.now();
-
-    DateTime firstDate =
-        isFromDate ? DateTime(2000) : fromDate ?? DateTime(2000);
-    DateTime lastDate = isFromDate ? toDate ?? DateTime(2101) : DateTime(2101);
-
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
-    );
-
-    if (pickedDate != null) {
-      setState(() {
-        if (isFromDate) {
-          if (toDate != null && pickedDate.isAfter(toDate!)) {
-            fromDateError = "From Date can't be after To Date";
-          } else {
-            fromDate = pickedDate;
-            fromDateError = null;
-          }
-        } else {
-          if (fromDate != null && pickedDate.isBefore(fromDate!)) {
-            toDateError = "To Date can't be before From Date";
-          } else {
-            toDate = pickedDate;
-            toDateError = null;
-          }
-        }
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(10), // Rounded corners
+    ScaffoldMessenger.of(context).showMaterialBanner(
+      MaterialBanner(
+        content: Text(
+          'You need to log in to continue with your ${action == 'enquire' ? 'enquiry' : 'booking'}',
+          style: GoogleFonts.poppins(fontSize: 14),
         ),
-        padding:
-            EdgeInsets.symmetric(horizontal: 6, vertical: 6), // Light padding
-
-        child: Row(
-          children: [
-            SizedBox(width: 15),
-            // Search Bar
-            Expanded(
-              flex: 2,
-              child: TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  hintText: "Search...",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                    borderSide: BorderSide.none, // No border line
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                ),
+        leading: Icon(Icons.lock_outline, color: Colors.orange),
+        backgroundColor: Colors.orange.shade50,
+        actions: [
+          TextButton(
+            onPressed: () {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+              }
+            },
+            child: Text(
+              'Dismiss',
+              style: GoogleFonts.poppins(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
-
-            SizedBox(width: 10),
-
-            // From Date Picker
-            Expanded(
-              flex: 1,
-              child: GestureDetector(
-                onTap: () => _selectDate(context, true),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    fromDate == null
-                        ? "From Date"
-                        : DateFormat.yMMMd().format(fromDate!),
-                    style: TextStyle(color: Colors.black54),
-                  ),
-                ),
+            child: Text(
+              'Login Now',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.white,
               ),
             ),
-
-            Text("  --  "),
-
-            // To Date Picker
-            Expanded(
-              flex: 1,
-              child: GestureDetector(
-                onTap: () => _selectDate(context, false),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    toDate == null
-                        ? "To Date"
-                        : DateFormat.yMMMd().format(toDate!),
-                    style: TextStyle(color: Colors.black54),
-                  ),
-                ),
-              ),
-            ),
-
-            SizedBox(width: 10),
-
-            // Count Users
-            Expanded(
-              flex: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10), // Rounded corners
-                ),
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Text("Users: $countUsers"),
-              ),
-            ),
-
-            SizedBox(width: 16),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+
+    Future.delayed(Duration(seconds: 5), () {
+      if (context.mounted) {
+        try {
+          ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+        } catch (e) {}
+      }
+    });
+  } else {
+    Navigator.of(context).pop();
+
+    if (!context.mounted) return;
+
+    if (action == 'enquire') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => EnquireNowPage()),
+      );
+    } else if (action == 'book') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => BookNowPage()),
+      );
+    }
   }
+}
+
+String extractUserId(String fullUserId) {
+  if (fullUserId.contains(" - ")) {
+    return fullUserId.split(" - ")[0].trim();
+  }
+  return fullUserId;
+}
+
+String extractPathSegment(String fullPath, String folderPrefix) {
+  int index = fullPath.lastIndexOf(folderPrefix);
+  if (index != -1) {
+    return fullPath.substring(index);
+  }
+  return fullPath;
+}
+
+int? parseIntSafely(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is String) {
+    try {
+      return int.parse(value);
+    } catch (_) {
+      return null;
+    }
+  }
+  return null;
+}
+
+Future<String?> getDepartmentNameById(String departmentId) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final departmentDataString = prefs.getString('departmentData');
+
+    if (departmentDataString != null) {
+      final List<dynamic> departmentData = json.decode(departmentDataString);
+      final departmentInfo = departmentData.firstWhere(
+        (dept) => dept['id'].toString() == departmentId,
+        orElse: () => {'id': departmentId, 'dept_name': null},
+      );
+
+      return departmentInfo['dept_name']?.toString();
+    }
+  } catch (e) {
+    Logger.error('Error looking up department name: $e');
+  }
+  return null;
+}
+
+Future<String?> getDesignationById(String designationId) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final designationDataString = prefs.getString('designationData');
+
+    if (designationDataString != null) {
+      final List<dynamic> designationData = json.decode(designationDataString);
+      final designationInfo = designationData.firstWhere(
+        (desg) => desg['id'].toString() == designationId,
+        orElse: () => {'id': designationId, 'desg_name': null},
+      );
+      return designationInfo['designation_name']?.toString();
+    }
+  } catch (e) {
+    Logger.error("Error looking up designation name: $e");
+  }
+  return null;
+}
+
+Future<String?> getReportingManagerNameById(String reportingManagerId) async {
+  try {
+    final reportingManagerDataList =
+        await _isarService.getAll<RegisteredEmployeeModel>();
+
+    // Find the employee with the matching regId
+    for (var employee in reportingManagerDataList) {
+      if (employee.regId == reportingManagerId) {
+        return employee.name;
+      }
+    }
+
+    // If no match is found, return a default value
+    return "N/A";
+  } catch (e) {
+    Logger.error("Error fetching reporting manager data: $e");
+    return null;
+  }
+}
+
+Future<String?> getNameByReferenceNo(String referenceNo) async {
+  try {
+    final userList = await _isarService.getAll<RegisteredEmployeeModel>();
+
+    // Find the user with the matching referenceNo
+    for (var user in userList) {
+      if (user.regId == referenceNo) {
+        Logger.success("Fetched Name is : ${user.name}");
+        return user.name;
+      }
+    }
+
+    // If no match is found, return a default value
+    return "N/A";
+  } catch (e) {
+    Logger.error("Error fetching user data: $e");
+    return null;
+  }
+}
+
+Future<String?> getZoneById(String zoneId) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final zoneDataString = prefs.getString('zones');
+
+    if (zoneDataString != null) {
+      final List<dynamic> zoneData = json.decode(zoneDataString);
+      final zoneInfo = zoneData.firstWhere(
+        (zone) => zone['id'].toString() == zoneId,
+        orElse: () => {'id': zoneId, 'zone_name': null},
+      );
+      return zoneInfo['zone_name']?.toString();
+    }
+  } catch (e) {
+    Logger.error("Error looking up zone name : $e");
+  }
+  return null;
+}
+
+void scrollToFirstFormErrors({
+  required BuildContext context,
+  required List<_ValidationTarget> targets,
+}) {
+  for (final target in targets) {
+    if (target.hasError()) {
+      final context = target.key.currentContext;
+      if (context != null) {
+        Scrollable.ensureVisible(
+          context,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+      return;
+    }
+  }
+}
+
+class _ValidationTarget {
+  final GlobalKey key;
+  final bool Function() hasError;
+
+  _ValidationTarget({
+    required this.key,
+    required this.hasError,
+  });
 }
 
 // filter bar
@@ -1138,4 +1170,347 @@ class _FilterBar2State extends State<FilterBar2> {
       ),
     );
   }
+}
+
+String formatDate(String? date) {
+  if (date == null || date.isEmpty) return "N/A";
+  try {
+    final parsedDate = DateTime.parse(date);
+    return DateFormat('dd-MM-yyyy').format(parsedDate);
+  } catch (e) {
+    return "Invalid Date";
+  }
+}
+
+Widget buildTripOrRefundNote(
+    {required String userType, required BuildContext context}) {
+  // For "premium select" and "neo select", show simple "Refer and earn" message
+  if (userType == "Premium Select" ||
+      userType == "Premium Select Lite" ||
+      userType == "Neo Select") {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade50, Colors.white],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.blueAccent.withOpacity(0.4)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.card_giftcard, color: Colors.blueAccent, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Refer & Earn Exclusive Rewards 🎁',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.blue.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text:
+                              'Share the premium experience with your network and ',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                        TextSpan(
+                          text: 'get rewarded for every successful referral!',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '💰 ',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        TextSpan(
+                          text: 'Instant Cash Rewards: ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.green.shade700,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'Receive direct commission in your wallet for each referral that joins our premium community',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '✈️ ',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        TextSpan(
+                          text: 'Travel Benefits: ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'Exclusive upgrades, lounge access, and special travel perks',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '🎫 ',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        TextSpan(
+                          text: 'Free Trip Opportunities: ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'Earn complimentary travel experiences with every milestone you achieve',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Add your first referral to start earning rewards today!',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.blueGrey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddReferralCustomer(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 4,
+                        shadowColor: Colors.blueAccent.withOpacity(0.3),
+                      ),
+                      child: Text(
+                        'Add Referral',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // For "premium" users, show the original detailed content
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue.shade50, Colors.white],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.blueAccent.withOpacity(0.4)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.airplane_ticket, color: Colors.blueAccent, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Premium Membership Benefits ✨',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.blue.shade800,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text:
+                            'Your premium membership comes with exclusive travel opportunities ',
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                      TextSpan(
+                        text: 'and guaranteed value protection!',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blue.shade800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '🎯 ',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      TextSpan(
+                        text: 'Coupon Utilization Reward: ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.green.shade700,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            'Use all 3 coupons to unlock an exclusive Europe Trip experience 🎉',
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '🛡️ ',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      TextSpan(
+                        text: 'Value Protection Guarantee: ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blue.shade800,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            'If unused within 3 years, receive ₹30,000 refund + ₹10,000 loyalty bonus 💸',
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '⏰ ',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      TextSpan(
+                        text: 'Flexible Timeline: ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blue.shade800,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            '3-year window to utilize your coupons with no pressure',
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Your investment is protected while you enjoy premium travel opportunities!',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.blueGrey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -1,6 +1,8 @@
+import 'dart:ui';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
-import 'package:google_fonts/google_fonts.dart';
 
 class CarouselSection extends StatefulWidget {
   const CarouselSection({super.key});
@@ -12,20 +14,24 @@ class CarouselSection extends StatefulWidget {
 
 class _CarouselSectionState extends State<CarouselSection> {
   final List<String> imageUrls = [
-    'assets/paris.jpg',
-    'assets/bali.jpg',
-    'assets/newyork.jpg',
-    'assets/tokyo.jpg',
-    'assets/santorini.jpg',
+    'https://testca.uniqbizz.com/api/assets/app_images/paris.jpg',
+    'https://testca.uniqbizz.com/api/assets/app_images/bali.jpg',
+    'https://testca.uniqbizz.com/api/assets/app_images/newyork.jpg',
+    'https://testca.uniqbizz.com/api/assets/app_images/tokyo.jpg',
+    'https://testca.uniqbizz.com/api/assets/app_images/santorini.jpg',
   ];
 
-  final List<String> imageTitles = [
-    'Paris, France',
-    'Bali, Indonesia',
-    'New York, USA',
-    'Tokyo, Japan',
-    'Santorini, Greece',
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    // Warm up cache for all images
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (var url in imageUrls) {
+        precacheImage(NetworkImage(url), context);
+      }
+    });
+  }
 
   int currentIndex = 0;
 
@@ -38,48 +44,36 @@ class _CarouselSectionState extends State<CarouselSection> {
           carousel_slider.CarouselSlider.builder(
             itemCount: imageUrls.length,
             itemBuilder: (context, index, realIndex) {
+              bool isActive = index == currentIndex;
+
               return ClipRRect(
+                borderRadius: BorderRadius.circular(12),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset(
-                      imageUrls[index],
+                    CachedNetworkImage(
+                      imageUrl: imageUrls[index],
                       fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) => const Center(
+                          child: Icon(Icons.error, color: Colors.red)),
                     ),
-                    Positioned(
-                      bottom:
-                          30, // Adjusted the position slightly for better visual appeal
-                      left: 20,
-                      child: Text(
-                        imageTitles[index],
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize:
-                              28, // Increased font size for title prominence
-                          fontWeight: FontWeight
-                              .w700, // Bold weight for strong title emphasis
-                          shadows: [
-                            Shadow(
-                              blurRadius: 10.0,
-                              color: Colors.black
-                                  // ignore: deprecated_member_use
-                                  .withOpacity(0.7), // Slightly darker shadow
-                              offset: Offset(4.0, 4.0),
-                            ),
-                          ],
-                        ),
+                    if (!isActive)
+                      BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                        child: Container(color: Colors.black.withOpacity(0.3)),
                       ),
-                    ),
                   ],
                 ),
               );
             },
             options: carousel_slider.CarouselOptions(
               autoPlay: true,
-              autoPlayInterval: Duration(seconds: 5),
+              autoPlayInterval: const Duration(seconds: 3),
               enlargeCenterPage: true,
               aspectRatio: 16 / 9,
-              viewportFraction: 1.0,
+              viewportFraction: 0.80,
               onPageChanged: (index, reason) {
                 setState(() {
                   currentIndex = index;

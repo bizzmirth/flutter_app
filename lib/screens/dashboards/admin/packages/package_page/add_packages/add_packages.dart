@@ -3,8 +3,8 @@ import 'package:bizzmirth_app/screens/dashboards/admin/packages/package_page/add
 import 'package:bizzmirth_app/screens/dashboards/admin/packages/package_page/add_packages/package_pricing.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/packages/package_page/add_packages/package_selection_screen.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/packages/package_page/packages.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AddpackagesPage extends StatefulWidget {
   const AddpackagesPage({super.key});
@@ -44,11 +44,7 @@ class _AddpackagesState extends State<AddpackagesPage> {
       appBar: AppBar(
         title: Text(
           'Add Package Details',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,

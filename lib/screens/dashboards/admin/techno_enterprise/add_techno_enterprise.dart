@@ -1,14 +1,13 @@
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class AddTechnoPage extends StatefulWidget {
   const AddTechnoPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _AddAddTechnoPageState createState() => _AddAddTechnoPageState();
 }
 
@@ -23,7 +22,7 @@ class _AddAddTechnoPageState extends State<AddTechnoPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _dateController = TextEditingController();
 
-  String _selectedCountryCode = '+91'; // Default country code
+  String _selectedCountryCode = '+91';
 
   void _pickFile(String fileType) async {
     try {
@@ -32,7 +31,7 @@ class _AddAddTechnoPageState extends State<AddTechnoPage> {
         PlatformFile file = result.files.first;
 
         setState(() {
-          selectedFiles[fileType] = file.name; // 🔥 Save selected file name
+          selectedFiles[fileType] = file.name;
         });
 
         Logger.info("Picked file for $fileType: ${file.name}");
@@ -110,12 +109,8 @@ class _AddAddTechnoPageState extends State<AddTechnoPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add Techno Enterprise',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          'Add Techno Enterprisess',
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -285,11 +280,7 @@ class _AddAddTechnoPageState extends State<AddTechnoPage> {
                   SizedBox(height: 20),
                   Text(
                     "Attachments",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: Appwidget.normalSubTitle(),
                   ),
                   SizedBox(height: 10),
                   _buildUploadButton("Profile Picture"),

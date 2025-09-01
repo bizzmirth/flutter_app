@@ -1,11 +1,17 @@
 import 'dart:async';
 
+import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/approve_tc_payments_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/pending_transactions_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/transactions_history_page.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TopUpWalletPage extends StatefulWidget {
+  final String title;
+  const TopUpWalletPage({super.key, required this.title});
+
   @override
   _TopUpWalletPageState createState() => _TopUpWalletPageState();
 }
@@ -16,6 +22,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
   List<Map<String, String>> _transactions = [];
   List<Map<String, String>> _pendingTransactions = [];
   late AnimationController _controller;
+  String? customerType;
 
   final TextEditingController _amountController = TextEditingController();
   String _selectedPaymentMode = "Credit Card";
@@ -29,10 +36,18 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
   @override
   void initState() {
     super.initState();
+    getSharedPrefData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CustomerController>().getRegCustomerCount();
+    });
     _controller = AnimationController(
       duration: Duration(seconds: 1),
       vsync: this,
     );
+  }
+
+  void getSharedPrefData() async {
+    customerType = await SharedPrefHelper().getUserType();
   }
 
   void _addPendingTransaction() {
@@ -72,7 +87,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Topup Wallet', style: TextStyle(color: Colors.white)),
+        title: Text(widget.title, style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
@@ -83,16 +98,49 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
           children: [
             _buildAnimatedWallet(),
             SizedBox(height: 20),
-            _buildTopUpFields(),
+            _buildTopUpFields(context),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _addPendingTransaction,
-              child: Text(
-                "Add Balance",
-                style: TextStyle(
-                  color: Colors.blueAccent,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+            Container(
+              width: 300,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blueAccent, Colors.purpleAccent],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blueAccent.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: _addPendingTransaction,
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add_circle_outline,
+                            color: Colors.white, size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          "Add Balance",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -104,13 +152,16 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
     );
   }
 
-  Widget _buildTopUpFields() {
+  Widget _buildTopUpFields(context) {
+    final controller = Provider.of<CustomerController>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildReadOnlyField("TA Reference ID", "TA12345"),
+        _buildReadOnlyField(
+            "TA Reference ID", controller.userTaReferenceNo ?? ""),
         SizedBox(height: 10),
-        _buildReadOnlyField("TA Reference Name", "John Doe"),
+        _buildReadOnlyField(
+            "TA Reference Name", controller.userTaRefrenceName ?? ""),
         SizedBox(height: 10),
         _buildAmountField(),
         SizedBox(height: 10),
@@ -170,14 +221,14 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
 
   Widget _buildAnimatedWallet() {
     List<Color> colors = [Colors.blueAccent, Colors.purpleAccent];
-    int _currentColorIndex = 0;
+    int currentColorIndex = 0;
 
     return StatefulBuilder(
       builder: (context, setState) {
         Timer.periodic(Duration(seconds: 60000), (timer) {
           if (mounted) {
             setState(() {
-              _currentColorIndex = (_currentColorIndex + 1) % colors.length;
+              currentColorIndex = (currentColorIndex + 1) % colors.length;
             });
           }
         });
@@ -187,14 +238,14 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
           tween: Tween<double>(begin: _balance - 50, end: _balance),
           builder: (context, value, child) {
             return Container(
-              width: 240, // Match Summary Card Width
-              height: 120, // Match Summary Card Height
+              width: 240,
+              height: 120,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 gradient: LinearGradient(
                   colors: [
-                    colors[_currentColorIndex].withOpacity(0.8),
-                    colors[(_currentColorIndex + 1) % colors.length]
+                    colors[currentColorIndex].withOpacity(0.8),
+                    colors[(currentColorIndex + 1) % colors.length]
                         .withOpacity(0.8),
                   ],
                   begin: Alignment.topLeft,
@@ -241,67 +292,163 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
   Widget _buildNavigationButtons() {
     return Column(
       children: [
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ApprovePaymentsPage(
-                  pendingTransactions: _pendingTransactions,
-                  approveTransaction: _approveTransaction,
-                  rejectTransaction: _rejectTransaction,
+        customerType == "Admin"
+            ? Container(
+                width: 300,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.blueAccent.withOpacity(0.8),
+                      Colors.purpleAccent.withOpacity(0.8)
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blueAccent.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ApprovePaymentsPage(
+                            pendingTransactions: _pendingTransactions,
+                            approveTransaction: _approveTransaction,
+                            rejectTransaction: _rejectTransaction,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.check_circle_outline,
+                              color: Colors.white, size: 18),
+                          SizedBox(width: 8),
+                          Text(
+                            "Approve Payments",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : SizedBox(),
+        SizedBox(height: 12),
+        Container(
+          width: 300,
+          height: 48,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.blueAccent, width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        TransactionHistoryPage(transactions: _transactions),
+                  ),
+                );
+              },
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.history, color: Colors.blueAccent, size: 18),
+                    SizedBox(width: 8),
+                    Text(
+                      "View Transaction History",
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-          child: Text(
-            "Approve Payments",
-            style: TextStyle(
-              color: Colors.blueAccent,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    TransactionHistoryPage(transactions: _transactions),
+        SizedBox(height: 12),
+        Container(
+          width: 300,
+          height: 48,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.blueAccent, width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 6,
+                offset: Offset(0, 2),
               ),
-            );
-          },
-          child: Text(
-            "View Transaction History",
-            style: TextStyle(
-              color: Colors.blueAccent,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            ],
           ),
-        ),
-        SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => PendingTransactionsPage(
-                  pendingTransactions:
-                      _pendingTransactions, // Pass actual pending transactions
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PendingTransactionsPage(
+                      pendingTransactions: _pendingTransactions,
+                    ),
+                  ),
+                );
+              },
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.pending_actions,
+                        color: Colors.blueAccent, size: 18),
+                    SizedBox(width: 8),
+                    Text(
+                      "View Pending History",
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-          child: Text(
-            "View Pending History",
-            style: TextStyle(
-              color: Colors.blueAccent,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
             ),
           ),
         ),

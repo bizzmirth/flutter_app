@@ -15,6 +15,8 @@ import 'package:bizzmirth_app/screens/dashboards/admin/packages/quotations/quota
 import 'package:bizzmirth_app/screens/dashboards/admin/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -218,6 +220,31 @@ class _AdminDashboardState extends State<AdminDashboard> {
     ];
   }
 
+  Widget buildResponsiveGrid(BuildContext context) {
+    // Check if it's mobile (small screen)
+    bool isMobile = MediaQuery.of(context).size.width < 600;
+
+    return GridView.count(
+      crossAxisCount: 2,
+      crossAxisSpacing: 15,
+      mainAxisSpacing: 10,
+      childAspectRatio:
+          isMobile ? 1.5 : 3.5, // Only change aspect ratio for mobile
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      children: [
+        buildTile("Total Recruits", ["Total Count", "Amount Earned"],
+            ["26", "₹ 25,000/-"]),
+        buildTile("Total Production", ["Packages Sold", "Amount Earned"],
+            ["91", "₹ 91,596/-"]),
+        buildTile("Total Travel Consultants", [], ["61"]),
+        buildTile("Total Customers", [], ["126"]),
+        buildTile("Total Business Mentors", [], ["32"]),
+        buildTile("Total Employees", [], ["441"]),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -225,11 +252,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       appBar: AppBar(
         title: Text(
           'Admin Dashboard',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -351,6 +374,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ),
                       title: Text("Log Out"),
                       onTap: () {
+                        SharedPrefHelper().removeDetails();
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),
@@ -418,24 +442,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               SizedBox(height: 10),
 
               // Tiles Grid Layout (Fixed)
-              GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 15,
-                mainAxisSpacing: 10,
-                childAspectRatio: 3.5,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  buildTile("Total Recruits (TE/CA)",
-                      ["Total Count", "Amount Earned"], ["26", "₹ 25,000/-"]),
-                  buildTile("Total Production",
-                      ["Packages Sold", "Amount Earned"], ["91", "₹ 91,596/-"]),
-                  buildTile("Total Travel Consultants", [], ["61"]),
-                  buildTile("Total Customers", [], ["126"]),
-                  buildTile("Total Business Mentors", [], ["32"]),
-                  buildTile("Total Employees", [], ["441"]),
-                ],
-              ),
+              buildResponsiveGrid(context),
 
               SizedBox(height: 20),
               Divider(thickness: 1, color: Colors.black26),
@@ -707,7 +714,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   children: [
                     TextSpan(text: "Payment made towards the "),
                     TextSpan(
-                      text: "${transaction.title}",
+                      text: transaction.title,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(text: " paid amount "),
@@ -717,7 +724,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ),
                     TextSpan(text: " towards "),
                     TextSpan(
-                      text: "${transaction.whom}",
+                      text: transaction.whom,
                     ),
                     TextSpan(text: " via "),
                     TextSpan(

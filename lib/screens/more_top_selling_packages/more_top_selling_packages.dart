@@ -1,388 +1,587 @@
-import 'package:bizzmirth_app/models/travel_plan_top_selling_packages.dart';
-import 'package:bizzmirth_app/screens/login_page/login.dart';
+import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
+import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class TopPackagesPage extends StatefulWidget {
   const TopPackagesPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _TopPackagesPageState createState() => _TopPackagesPageState();
 }
 
 class _TopPackagesPageState extends State<TopPackagesPage> {
-  final List<TravelPlanTopSellingPackages> myTrips = [
-    TravelPlanTopSellingPackages(
-      destination: "Paris, France",
-      image: 'assets/paris.jpg',
-      description:
-          'Join us on an unforgettable trip to Paris! Experience the best of French culture, food, and history.',
-      price: "40,000",
-    ),
-    TravelPlanTopSellingPackages(
-      destination: "Bali, Indonesia",
-      image: 'assets/bali.jpg',
-      description:
-          'Discover the serene beaches and rich culture of Bali, Indonesia.',
-      price: "20,000",
-    ),
-    TravelPlanTopSellingPackages(
-      destination: "New York, USA",
-      image: 'assets/newyork.jpg',
-      description:
-          'Explore the vibrant city of New York, from Times Square to Central Park.',
-      price: "1,00,000",
-    ),
-    TravelPlanTopSellingPackages(
-      destination: "Tokyo, Japan",
-      image: 'assets/tokyo.jpg',
-      description:
-          'Experience the perfect blend of traditional and modern culture in Tokyo.',
-      price: "2,00,000",
-    ),
-    TravelPlanTopSellingPackages(
-      destination: "Santorini, Greece",
-      image: 'assets/santorini.jpg',
-      description:
-          'Enjoy the beautiful sunset views and whitewashed buildings of Santorini.',
-      price: "1,50,000",
-    ),
-  ];
-
-  String? selectedHotelStar; // Tracks selected hotel star
-  String? selectedTripDuration; // Tracks selected trip duration
-  final double _minPrice = 0;
-  final double _maxPrice = 50000;
-  RangeValues _currentRange = const RangeValues(0, 50000);
-  double currentValue = 5000;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  String? selectedTripDuration = "Upto 3N";
+  final double _minPrice = 1000;
+  final double _maxPrice = 150000;
+  RangeValues _currentRange = const RangeValues(1000, 150000);
+  List<String> availableHotelStars = ['3 Star', '4 Star', "5 Star"];
   List<String> selectedHotelStars = [];
+  TextEditingController _searchController = TextEditingController();
+  // For mobile filter drawer
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Tour Packages',
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Color.fromARGB(255, 81, 131, 246),
-        centerTitle: true,
-      ),
-      body: Row(
+  void initState() {
+    super.initState();
+    selectedHotelStars = List.from(availableHotelStars);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getTourPackageData();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose(); // Dispose the controller
+    super.dispose();
+  }
+
+  void getTourPackageData() async {
+    final controller =
+        Provider.of<TourPackagesController>(context, listen: false);
+    // controller.apiGetTourPackages();
+    controller.apiGetFilteredPackages([], "1000", "150000", "0", "3", "");
+  }
+
+  void getFilteredPackages() async {
+    final controller =
+        Provider.of<TourPackagesController>(context, listen: false);
+
+    final numericStars = convertStarsToNumbers(selectedHotelStars);
+
+    final durationValues = getTripDurationValues(selectedTripDuration);
+
+    final minBudget = _currentRange.start.toString();
+    final maxBudget = _currentRange.end.toString();
+
+    // Extract duration values
+    final minDuration = durationValues['minDuration']!;
+    final maxDuration = durationValues['maxDuration']!;
+    final tripDuration = durationValues['tripDuration']!;
+
+    Logger.warning(
+        "filters selected $numericStars, $minBudget, $maxBudget, $minDuration, $maxDuration, $tripDuration ");
+
+    // Make API call
+    controller.apiGetFilteredPackages(numericStars, minBudget, maxBudget,
+        minDuration, maxDuration, tripDuration);
+  }
+
+  // Build filter section (reusable for both layouts)
+  Widget _buildFilterSection(BuildContext context) {
+    final controller =
+        Provider.of<TourPackagesController>(context, listen: false);
+    return Container(
+      color: const Color.fromARGB(255, 205, 222, 248),
+      padding: const EdgeInsets.all(13.0),
+      child: Column(
         children: [
-          // Filter Section
+          const SizedBox(height: 40),
+          // Search field at the top
+          TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Search by destination or package name',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _searchController.clear();
+                  controller.clearSearch();
+                },
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+            ),
+            onChanged: (value) {
+              controller.setSearchQuery(value);
+            },
+          ),
+          const SizedBox(height: 10),
+          const Divider(),
+
+          // Filters header
+          Text(
+            'Filters',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 10),
+
           Expanded(
-            flex: 3,
-            child: Container(
-              height: double.infinity,
-              color: Color.fromARGB(255, 205, 222, 248),
-              padding: const EdgeInsets.all(13.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ---------- Hotel Stars Filter ----------
+                  Text(
+                    'Hotel Category',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const SizedBox(height: 10),
-                    Divider(),
-                    Text(
-                      'Filters',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: const Color.fromARGB(255, 0, 0,
-                            0), // Optional text color to match the box
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    // Hotel Stars Filter
-                    Text(
-                      'Hotel Category',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        for (var star in [
-                          '3 Star',
-                          '4 Star',
-                          '5 Star',
-                          'Villa'
-                        ])
-                          CheckboxListTile(
-                            title: Text(
-                              star,
-                              style: GoogleFonts.poppins(
-                                fontSize: 14, // Adjust the font size here
-                                fontWeight: FontWeight.w400,
-                              ),
+                  ),
+                  Column(
+                    children: [
+                      for (var star in availableHotelStars)
+                        CheckboxListTile(
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title: Text(
+                            star,
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
                             ),
-                            value: selectedHotelStars.contains(
-                                star), // Check if this star is selected
-                            onChanged: (isChecked) {
-                              setState(() {
-                                if (isChecked == true) {
-                                  selectedHotelStars
-                                      .add(star); // Add the star if checked
-                                } else {
-                                  selectedHotelStars.remove(
-                                      star); // Remove the star if unchecked
-                                }
-                              });
-                            },
-                            controlAffinity: ListTileControlAffinity.leading,
                           ),
+                          value: selectedHotelStars.contains(star),
+                          onChanged: (isChecked) {
+                            setState(() {
+                              if (isChecked == true) {
+                                selectedHotelStars.add(star);
+                              } else {
+                                selectedHotelStars.remove(star);
+                              }
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                        ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+                  const Divider(),
+
+                  // ---------- Budget Range ----------
+                  Text(
+                    'Budget',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 159, 197, 255),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '₹${_currentRange.start.toInt()}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                              '₹${_currentRange.end.toInt()}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        RangeSlider(
+                          values: _currentRange,
+                          min: _minPrice,
+                          max: _maxPrice,
+                          labels: RangeLabels(
+                            '₹${_currentRange.start.toInt()}',
+                            '₹${_currentRange.end.toInt()}',
+                          ),
+                          activeColor: Colors.teal,
+                          inactiveColor: Colors.teal.withOpacity(0.3),
+                          onChanged: (RangeValues values) {
+                            setState(() {
+                              _currentRange = values;
+                            });
+                          },
+                        ),
                       ],
                     ),
+                  ),
 
-                    const SizedBox(height: 1),
+                  const SizedBox(height: 10),
+                  const Divider(),
 
-                    Divider(),
-                    // Budget
-                    Text(
-                      'Budget',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                  // ---------- Trip Duration ----------
+                  Text(
+                    'Trip Duration',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
-                    // FlutterSlider
-                    // Column(
-                    //   crossAxisAlignment: CrossAxisAlignment.start,
-                    //   children: [
-                    //     FlutterSlider(
-                    //       values: [currentValue],
-                    //       max: 50000,
-                    //       min: 0,
-                    //       onDragging: (handlerIndex, lowerValue, upperValue) {
-                    //         setState(() {
-                    //           currentValue =
-                    //               lowerValue; // Update the value dynamically
-                    //         });
-                    //       },
-                    //       tooltip: FlutterSliderTooltip(
-                    //         disabled: true, // Disable the tooltip
-                    //       ),
-                    //       handler: FlutterSliderHandler(
-                    //         decoration: BoxDecoration(),
-                    //         child: Material(
-                    //           type: MaterialType.circle,
-                    //           color: Colors.teal,
-                    //           elevation: 5,
-                    //           child: Container(
-                    //             padding: EdgeInsets.all(5),
-                    //             child: Icon(Icons.drag_handle,
-                    //                 color: Colors.white),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //       trackBar: FlutterSliderTrackBar(
-                    //         activeTrackBarHeight: 6,
-                    //         activeTrackBar: BoxDecoration(
-                    //           color: Colors.teal,
-                    //         ),
-                    //         inactiveTrackBar: BoxDecoration(
-                    //           color: const Color.fromARGB(255, 81, 131, 246),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //     // Remove or reduce the spacing between the slider and the text
-                    //     SizedBox(height: 0), // Adjust height to reduce spacing
-                    //     Text(
-                    //       'Selected Price: ₹${currentValue.toInt()}',
-                    //       style: TextStyle(
-                    //         fontSize: 18,
-                    //         fontWeight: FontWeight.bold,
-                    //         color: Colors.teal,
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // const SizedBox(height: 1),
-                    // Divider(),
-
-                    // Price Range Slider
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 159, 197, 255),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Min and Max Price
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '₹${_currentRange.start.toInt()}',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              Text(
-                                '₹${_currentRange.end.toInt()}',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 1),
-
-                          // Range Slider
-                          RangeSlider(
-                            values: _currentRange,
-                            min: _minPrice,
-                            max: _maxPrice,
-                            labels: RangeLabels(
-                              '₹${_currentRange.start.toInt()}',
-                              '₹${_currentRange.end.toInt()}',
-                            ),
-                            activeColor: Colors.teal,
-                            inactiveColor: Colors.teal.withOpacity(0.3),
-                            onChanged: (RangeValues values) {
-                              setState(() {
-                                _currentRange = values;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Divider(),
-
-                    // Trip Duration Filter
-                    Text(
-                      'Trip Duration',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    for (var duration in [
-                      'Upto 3N',
-                      '4N - 7N',
-                      '7N - 11N',
-                      '11N - 15N',
-                      'Above 15N'
-                    ])
-                      RadioListTile<String>(
-                        title: Text(duration),
-                        value: duration,
-                        groupValue: selectedTripDuration,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedTripDuration = value;
-                          });
-                        },
-                      ),
-                    Divider()
-                  ],
-                ),
+                  ),
+                  Column(
+                    children: [
+                      for (var duration in [
+                        'Upto 3N',
+                        '4N - 7N',
+                        '7N - 11N',
+                        '11N - 15N',
+                        'Above 15N'
+                      ])
+                        RadioListTile(
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title: Text(duration),
+                          value: duration,
+                          groupValue: selectedTripDuration,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedTripDuration = value;
+                            });
+                          },
+                        ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
 
-          // Top Selling Packages Section
-          Expanded(
-            flex: 7,
-            child: Container(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView.builder(
-                itemCount: myTrips.length,
-                itemBuilder: (context, index) {
-                  final trip = myTrips[index];
-                  return Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(10),
-                          ),
-                          child: Image.asset(
-                            trip.image,
-                            fit: BoxFit.cover,
-                            height: 150,
-                            width: double.infinity,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            trip.destination,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            trip.description,
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '₹${trip.price}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => LoginPage()),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        Color.fromARGB(255, 255, 255, 255)),
-                                child: Text('View Tour Details'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+          // ---------- Apply Button ----------
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 3,
+              ),
+              onPressed: () {
+                getFilteredPackages();
+
+                // On mobile, close the filter drawer after applying
+                if (MediaQuery.of(context).size.width < 600) {
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text(
+                "Apply Filters",
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  // Build packages list (reusable for both layouts)
+  Widget _buildPackagesList(TourPackagesController controller) {
+    if (controller.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (controller.error != null) {
+      return Center(
+        child: Text(
+          controller.error!,
+          style: const TextStyle(color: Colors.red),
+        ),
+      );
+    }
+
+    if (controller.filteredPackages.isEmpty) {
+      return const Center(
+        child: Text("No packages available"),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: controller.filteredPackages.length,
+      itemBuilder: (context, index) {
+        final pkg = controller.filteredPackages[index];
+        final imageUrl = "https://ca.uniqbizz.com/${pkg.image}";
+
+        // Precache next few images for smoother scrolling
+        if (index < controller.filteredPackages.length - 3) {
+          final nextPkg = controller.filteredPackages[index + 3];
+          final nextImageUrl = "https://ca.uniqbizz.com/${nextPkg.image}";
+          precacheImage(NetworkImage(nextImageUrl), context);
+        }
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PackageDetailsPage(
+                  id: pkg.id ?? '',
+                ),
+              ),
+            );
+          },
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(10),
+                  ),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    memCacheWidth:
+                        (MediaQuery.of(context).size.width * 2).toInt(),
+                    placeholder: (context, url) => Container(
+                      height: 150,
+                      width: double.infinity,
+                      color: Colors.grey.shade100,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Loading...',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      height: 150,
+                      width: double.infinity,
+                      color: Colors.grey.shade200,
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.broken_image,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Image failed to load',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    pkg.destination ?? "",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    pkg.name ?? "",
+                    style: const TextStyle(color: Colors.black54),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black, // Default color for "From"
+                          ),
+                          children: [
+                            const TextSpan(
+                              text: "Starts From ",
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            TextSpan(
+                              text: "₹${pkg.price}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PackageDetailsPage(
+                                id: pkg.id!,
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 255, 255, 255),
+                        ),
+                        child: const Text('View Tour Details'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Use tablet layout for screens wider than 600 pixels
+    if (screenWidth > 600) {
+      return _buildTabletLayout(context);
+    } else {
+      return _buildMobileLayout(context);
+    }
+  }
+
+  // Tablet layout (side-by-side)
+  Widget _buildTabletLayout(BuildContext context) {
+    return Consumer<TourPackagesController>(
+      builder: (context, controller, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'Tour Packages',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: const Color.fromARGB(255, 81, 131, 246),
+            centerTitle: true,
+            actions: [
+              if (_searchController.text.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.clear, color: Colors.white),
+                  onPressed: () {
+                    _searchController.clear();
+                    controller.clearSearch();
+                  },
+                ),
+            ],
+          ),
+          body: Row(
+            children: [
+              // ================== FILTER SECTION ==================
+              Expanded(
+                flex: 3,
+                child: _buildFilterSection(context),
+              ),
+
+              // ================== PACKAGES SECTION ==================
+              Expanded(
+                flex: 7,
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _buildPackagesList(controller),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Mobile layout (with filter drawer)
+  Widget _buildMobileLayout(BuildContext context) {
+    return Consumer<TourPackagesController>(
+      builder: (context, controller, child) {
+        return Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            title: Text(
+              'Tour Packages',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: const Color.fromARGB(255, 81, 131, 246),
+            centerTitle: true,
+            actions: [
+              if (_searchController.text.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    controller.clearSearch();
+                  },
+                ),
+              IconButton(
+                icon: const Icon(Icons.filter_list),
+                onPressed: () {
+                  _scaffoldKey.currentState?.openEndDrawer();
+                },
+              ),
+            ],
+          ),
+          endDrawer: Drawer(
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: _buildFilterSection(context),
+          ),
+          body: Container(
+            padding: const EdgeInsets.all(16.0),
+            child: _buildPackagesList(controller),
+          ),
+        );
+      },
     );
   }
 }

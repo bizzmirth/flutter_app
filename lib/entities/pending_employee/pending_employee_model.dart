@@ -5,6 +5,7 @@ part 'pending_employee_model.g.dart';
 @collection
 class PendingEmployeeModel {
   Id? id = Isar.autoIncrement;
+  String? regId;
   String? name;
   String? mobileNumber;
   String? email;
@@ -18,6 +19,7 @@ class PendingEmployeeModel {
   String? zone;
   String? branch;
   String? reportingManager;
+  String? reportingManagerName;
 
   String? profilePicture; // this will be image path
   String? idProof; // this will be image path

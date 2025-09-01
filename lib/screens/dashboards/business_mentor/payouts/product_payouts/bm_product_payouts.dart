@@ -1,7 +1,8 @@
+import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class BMProductPayoutsPage extends StatefulWidget {
@@ -38,11 +39,7 @@ class _BMProductPayoutsPageState extends State<BMProductPayoutsPage> {
         appBar: AppBar(
           title: Text(
             'Product Payouts',
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
+            style: Appwidget.poppinsAppBarTitle(),
           ),
           centerTitle: true,
           backgroundColor: Colors.blueAccent,
@@ -116,8 +113,7 @@ class _BMProductPayoutsPageState extends State<BMProductPayoutsPage> {
                         DataColumn(label: Text("Total Payable")),
                         DataColumn(label: Text("Remarks")),
                       ],
-                      source:
-                          MyTEProductionPayoutDataSource(TErecruitmentpayout),
+                      source: CustReferenceAllPayoutDataSource(dummyPayoutData),
                       rowsPerPage: _rowsPerPage,
                       availableRowsPerPage: [5, 10, 15, 20, 25],
                       onRowsPerPageChanged: (value) {

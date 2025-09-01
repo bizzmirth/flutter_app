@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -98,11 +99,7 @@ class _BookNowPageState extends State<BookNowPage> {
       appBar: AppBar(
         title: Text(
           'Book Now',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -124,11 +121,7 @@ class _BookNowPageState extends State<BookNowPage> {
             children: [
               Text(
                 "Book Your Tour",
-                style: GoogleFonts.poppins(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                style: Appwidget.poppinsHeadline(),
               ),
               const SizedBox(height: 20),
               _buildDropdown('Customer ID *',

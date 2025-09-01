@@ -19,8 +19,11 @@ class RegisteredEmployeeModel {
   String? zone;
   String? branch;
   String? reportingManager;
+  String? reportingManagerName;
 
   String? profilePicture;
   String? idProof;
   String? bankDetails;
+
+  String? userType;
 }

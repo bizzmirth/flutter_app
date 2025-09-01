@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/entities/pending_business_mentor/pending_business_mentor_model.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/pending_techno_enterprise/pending_techno_enterprise_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
@@ -27,7 +28,8 @@ class IsarService {
         [
           PendingEmployeeModelSchema,
           RegisteredEmployeeModelSchema,
-          PendingTechnoEnterpriseModelSchema
+          PendingTechnoEnterpriseModelSchema,
+          PendingBusinessMentorModelSchema
         ],
         inspector: true,
         directory: dir.path,
@@ -79,7 +81,7 @@ class IsarService {
       });
       return updated;
     } catch (e) {
-      print("Error updating ${T.toString()}: $e");
+      Logger.error("Error updating ${T.toString()}: $e");
       return false;
     }
   }

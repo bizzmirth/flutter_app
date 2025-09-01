@@ -1,17 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bizzmirth_app/controllers/employee_controller.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
-import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/all_employees_page.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddEmployeePage extends StatefulWidget {
   final PendingEmployeeModel? pendingEmployee;
@@ -61,25 +63,215 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   final GlobalKey<FormFieldState> _emailKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _addressKey = GlobalKey<FormFieldState>();
 
+  String? selectedDepartmentId = "";
+  String? selectedDesignationId = "";
+  String selectedManagerRegId = "";
+  String? selectedZoneId = "";
+  String? selectedBranchId = "";
+  List<Map<String, dynamic>> departments = [];
+  List<Map<String, dynamic>> designations = [];
+  List<Map<String, dynamic>> zones = [];
+  List<Map<String, dynamic>> branches = [];
+  List<RegisteredEmployeeModel> reportingManager = [];
+  List<String> reportingManagerNames = [];
+  Map<String, String> managerNameToRegIdMap = {};
+
   String _selectedCountryCode = '+91';
 
-  void _populatePendingEmployeeForm(PendingEmployeeModel employee) {
+  Future<void> _loadDepartments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final departmentDataString = prefs.getString('departmentData');
+
+      if (departmentDataString != null) {
+        final List<dynamic> departmentData = json.decode(departmentDataString);
+
+        setState(() {
+          departments = departmentData
+              .map<Map<String, dynamic>>((dept) => {
+                    'id': dept['id'].toString(),
+                    'dept_name': dept['dept_name'].toString()
+                  })
+              .toList();
+          Logger.success("departmetss :: $departments");
+        });
+      } else {}
+    } catch (e) {
+      Logger.error('Error loading departments: $e');
+    }
+  }
+
+  Future<void> _loadDesignations() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final designationDataString = prefs.getString('designationData');
+
+      if (designationDataString != null) {
+        final List<dynamic> designationData = json.decode(
+          designationDataString,
+        );
+
+        setState(() {
+          designations = designationData
+              .map<Map<String, dynamic>>(
+                (desg) => {
+                  'id': desg['id'].toString(),
+                  'designation_name':
+                      desg['designation_name'].toString(), // match the key name
+                },
+              )
+              .toList();
+          Logger.success("designationss :: $designations");
+        });
+      }
+    } catch (e) {
+      Logger.error('Error loading designations: $e');
+    }
+  }
+
+  Future<void> _loadReportingManager() async {
+    try {
+      reportingManager = await _isarService.getAll<RegisteredEmployeeModel>();
+
+      reportingManager = reportingManager
+          .where((employee) => employee.userType == "24")
+          .toList();
+
+      reportingManagerNames = [];
+      managerNameToRegIdMap = {};
+
+      for (var rm in reportingManager) {
+        Logger.success("reporting manager ${rm.name} userType: ${rm.userType}");
+        reportingManagerNames.add(rm.name!);
+        managerNameToRegIdMap[rm.name!] = rm.regId!;
+      }
+
+      setState(() {}); // Refresh UI after loading data
+    } catch (e) {
+      Logger.error("Error fetching Reporting Manager: $e");
+    }
+  }
+
+  Future<void> _getZones() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await employeeController.apiGetZone();
+      final zoneDataString = prefs.getString('zones');
+
+      if (zoneDataString != null) {
+        final List<dynamic> zoneData = json.decode(zoneDataString);
+        setState(() {
+          zones = zoneData
+              .map<Map<String, dynamic>>((zone) => {
+                    'id': zone['id'].toString(),
+                    'zone_name': zone['zone_name'].toString()
+                  })
+              .toList();
+        });
+        Logger.success("zones :: $zones");
+      } else {
+        Logger.error("No Zone data found");
+      }
+    } catch (e) {
+      Logger.error('Error fetching Zone: $e');
+    }
+  }
+
+  Future<void> _getBranches(String zoneId) async {
+    try {
+      setState(() {
+        // Clear previous branches when a new zone is selected
+        branches = [];
+        _selectedBranch = "---- Select Branch * ----"; // Reset selected branch
+      });
+
+      await employeeController.apiGetBranchs(zoneId);
+
+      final prefs = await SharedPreferences.getInstance();
+      final branchDataString = prefs.getString('branches_$zoneId');
+
+      if (branchDataString != "---- Select Branch * ----") {
+        final List<dynamic> branchData = json.decode(branchDataString!);
+        setState(() {
+          branches = branchData
+              .map<Map<String, dynamic>>((branch) => {
+                    'id': branch['id'].toString(),
+                    'branch_name': branch['branch_name'].toString()
+                  })
+              .toList();
+          _selectedBranch = branches[0]['branch_name'];
+          selectedBranchId = branches[0]['id'];
+        });
+        Logger.success("branches :: $branches");
+      } else {
+        Logger.warning("No branches found for the selected zone");
+      }
+    } catch (e) {
+      Logger.error('Error fetching branches: $e');
+    }
+  }
+
+  void _populatePendingEmployeeForm(PendingEmployeeModel employee) async {
     _firstController.text = employee.name?.split(" ").first ?? '';
     _lastnameController.text = employee.name?.split(" ").last ?? '';
     _mobileController.text = employee.mobileNumber!;
     _emailController.text = employee.email!;
     _addressController.text = employee.address!;
     _selectedGender = employee.gender!;
-    _selectedDepartment = employee.department!;
-    _selectedDesignation = employee.designation!;
-    _selectedZone = employee.zone!;
-    _selectedBranch = employee.branch!;
-    _selectedManager = employee.reportingManager!;
+
+    if (employee.department != null) {
+      _selectedDepartment =
+          (await getDepartmentNameById(employee.department!)) ??
+              "---- Select Department * ----";
+      selectedDepartmentId = employee.department!;
+    }
+    selectedDepartmentId = employee.department;
+    // _selectedDepartment = employee.department!;
+    if (employee.designation != null) {
+      _selectedDesignation =
+          (await getDesignationById(employee.designation!)) ??
+              "---- Select Department * ----";
+      selectedDesignationId = employee.designation!;
+    }
+    if (employee.reportingManager != null) {
+      _selectedManager =
+          (await getReportingManagerNameById(employee.reportingManager!)) ??
+              "---- Select Reporting Manager * ----";
+      selectedManagerRegId = employee.reportingManager!;
+    }
+    if (employee.zone != null) {
+      // First get the zone name
+      _selectedZone =
+          (await getZoneById(employee.zone!)) ?? "---- Select Zone * ----";
+      selectedZoneId = employee.zone!;
+
+      // Now fetch branches for this zone
+      if (selectedZoneId!.isNotEmpty) {
+        await _getBranches(selectedZoneId!);
+
+        if (employee.branch != null) {
+          if (employee.branch!.contains(RegExp(r'^\d+$'))) {
+          } else {
+            _selectedBranch = employee.branch!;
+          }
+
+          bool branchExists = branches
+              .any((branch) => branch['branch_name'] == _selectedBranch);
+
+          if (!branchExists) {
+            _selectedBranch = "---- Select Branch * ----";
+            Logger.warning(
+                "Branch '${employee.branch}' not found in loaded branches for zone '${employee.zone}'");
+          }
+        } else {
+          _selectedBranch = "---- Select Branch * ----";
+        }
+      }
+    }
     // dobForApi = employee.dateOfBirth!;
     // dojForApi = employee.dateOfJoining!;
 
     try {
-      // Check if DOB is already in API format (yyyy-MM-dd)
       if (employee.dateOfBirth != null &&
           employee.dateOfBirth!.contains('-') &&
           employee.dateOfBirth!.split('-').length == 3 &&
@@ -113,30 +305,51 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         _dojController.text = DateFormat('dd-MM-yyyy').format(dojDate);
       }
     } catch (e) {
-      print("Error parsing dates during form population: $e");
+      Logger.error("Error parsing dates during form population: $e");
       // Fallback to original values if parsing fails
       dobForApi = employee.dateOfBirth;
       dojForApi = employee.dateOfJoining;
-      // Still attempt to display in the right format
       _dobController.text = employee.dateOfBirth ?? '';
       _dojController.text = employee.dateOfJoining ?? '';
     }
 
     if (employee.profilePicture != null) {
-      selectedFiles["Profile Picture"] =
-          "https://testca.uniqbizz.com/uploading/${employee.profilePicture!}";
+      // Check if it already starts with the base URL
+      if (employee.profilePicture!
+          .startsWith("https://testca.uniqbizz.com/uploading/")) {
+        selectedFiles["Profile Picture"] = employee.profilePicture!;
+      } else {
+        selectedFiles["Profile Picture"] =
+            "https://testca.uniqbizz.com/uploading/${employee.profilePicture!}";
+      }
+      Logger.success(selectedFiles["Profile Picture"]);
     }
+
     if (employee.idProof != null) {
-      selectedFiles["ID Proof"] =
-          "https://testca.uniqbizz.com/uploading/${employee.idProof!}";
+      // Check if it already starts with the base URL
+      if (employee.idProof!
+          .startsWith("https://testca.uniqbizz.com/uploading/")) {
+        selectedFiles["ID Proof"] = employee.idProof!;
+      } else {
+        selectedFiles["ID Proof"] =
+            "https://testca.uniqbizz.com/uploading/${employee.idProof!}";
+      }
+      Logger.success(selectedFiles["ID Proof"]);
     }
+
     if (employee.bankDetails != null) {
-      selectedFiles["Bank Details"] =
-          "https://testca.uniqbizz.com/uploading/${employee.bankDetails!}";
+      if (employee.bankDetails!
+          .startsWith("https://testca.uniqbizz.com/uploading/")) {
+        selectedFiles["Bank Details"] = employee.bankDetails!;
+      } else {
+        selectedFiles["Bank Details"] =
+            "https://testca.uniqbizz.com/uploading/${employee.bankDetails!}";
+      }
+      Logger.success(selectedFiles["Bank Details"]);
     }
   }
 
-  void _populateRegisteredEmployeeForm(RegisteredEmployeeModel employee) {
+  void _populateRegisteredEmployeeForm(RegisteredEmployeeModel employee) async {
     _firstController.text = employee.name?.split(" ").first ?? '';
     _lastnameController.text = employee.name?.split(" ").last ?? '';
     _mobileController.text = employee.mobileNumber!;
@@ -145,11 +358,53 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     _dobController.text = employee.dateOfBirth!;
     _dojController.text = employee.dateOfJoining!;
     _selectedGender = employee.gender!;
-    _selectedDepartment = employee.department!;
-    _selectedDesignation = employee.designation!;
-    _selectedZone = employee.zone!;
-    _selectedBranch = employee.branch!;
-    _selectedManager = employee.reportingManager!;
+    if (employee.department != null) {
+      _selectedDepartment =
+          (await getDepartmentNameById(employee.department!)) ??
+              "---- Select Department * ----";
+      selectedDepartmentId = employee.department!;
+    }
+    if (employee.designation != null) {
+      _selectedDesignation =
+          (await getDesignationById(employee.designation!)) ??
+              "---- Select Department * ----";
+      selectedDesignationId = employee.designation!;
+    }
+    if (employee.zone != null) {
+      // First get the zone name
+      _selectedZone =
+          (await getZoneById(employee.zone!)) ?? "---- Select Zone * ----";
+      selectedZoneId = employee.zone!;
+
+      // Now fetch branches for this zone
+      if (selectedZoneId!.isNotEmpty) {
+        await _getBranches(selectedZoneId!);
+
+        if (employee.branch != null) {
+          if (employee.branch!.contains(RegExp(r'^\d+$'))) {
+          } else {
+            _selectedBranch = employee.branch!;
+          }
+
+          bool branchExists = branches
+              .any((branch) => branch['branch_name'] == _selectedBranch);
+
+          if (!branchExists) {
+            _selectedBranch = "---- Select Branch * ----";
+            Logger.warning(
+                "Branch '${employee.branch}' not found in loaded branches for zone '${employee.zone}'");
+          }
+        } else {
+          _selectedBranch = "---- Select Branch * ----";
+        }
+      }
+    }
+    if (employee.reportingManager != null) {
+      _selectedManager =
+          (await getReportingManagerNameById(employee.reportingManager!)) ??
+              "---- Select Reporting Manager * ----";
+      selectedManagerRegId = employee.reportingManager!;
+    }
 
     try {
       // Convert from display format to API format
@@ -160,7 +415,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       dobForApi = DateFormat('yyyy-MM-dd').format(dobDate);
       dojForApi = DateFormat('yyyy-MM-dd').format(dojDate);
     } catch (e) {
-      print("Error parsing dates during form population: $e");
+      Logger.error("Error parsing dates during form population: $e");
       // Fallback to original values if parsing fails
       dobForApi = employee.dateOfBirth;
       dojForApi = employee.dateOfJoining;
@@ -196,11 +451,59 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         "Bank Details": null,
       };
     }
+    _loadDepartments();
+    _loadDesignations();
+    _loadReportingManager();
+    _getZones();
   }
 
   void updatePendingEmployee() async {
     try {
       if (_formKey.currentState!.validate()) {
+        String? profilePicturePath;
+        String? idProofPath;
+        String? bankDetailsPath;
+
+        if (selectedFiles["Profile Picture"] != null) {
+          if (selectedFiles["Profile Picture"] is File) {
+            File fileObj = selectedFiles["Profile Picture"] as File;
+            await employeeController.uploadImage(
+                context, 'profile_pic', fileObj.path);
+            profilePicturePath =
+                extractPathSegment(fileObj.path, 'profile_pic/');
+          } else {
+            profilePicturePath = extractPathSegment(
+                selectedFiles["Profile Picture"], 'profile_pic/');
+          }
+        }
+
+        if (selectedFiles["ID Proof"] != null) {
+          if (selectedFiles["ID Proof"] is File) {
+            File fileObj = selectedFiles["ID Proof"] as File;
+            await employeeController.uploadImage(
+                context, 'id_proof', fileObj.path);
+            idProofPath = extractPathSegment(fileObj.path, 'id_proof');
+          } else {
+            idProofPath =
+                extractPathSegment(selectedFiles["ID Proof"], 'id_proof');
+          }
+        }
+
+        if (selectedFiles["Bank Details"] != null) {
+          if (selectedFiles["Bank Details"] is File) {
+            File fileObj = selectedFiles["Bank Details"] as File;
+            await employeeController.uploadImage(
+                context, 'passbook', fileObj.path);
+            bankDetailsPath = extractPathSegment(fileObj.path, 'passbook/');
+          } else {
+            bankDetailsPath =
+                extractPathSegment(selectedFiles["Bank Details"], 'passbook/');
+          }
+        }
+
+        Logger.success(
+            "Images Path: $profilePicturePath :: $idProofPath :: $bankDetailsPath");
+
         int? id = widget.pendingEmployee!.id;
         PendingEmployeeModel updatePendingEmployee = PendingEmployeeModel()
           ..id = id
@@ -212,14 +515,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           ..dateOfBirth = dobForApi
           ..dateOfJoining = dojForApi
           ..status = 2
-          ..department = _selectedDepartment
-          ..designation = _selectedDesignation
-          ..zone = _selectedZone
-          ..branch = _selectedBranch
-          ..reportingManager = _selectedManager
-          ..profilePicture = selectedFiles["Profile Picture"]
-          ..idProof = selectedFiles["ID Proof"]
-          ..bankDetails = selectedFiles["Bank Details"];
+          ..department = selectedDepartmentId
+          ..designation = selectedDesignationId
+          ..zone = selectedZoneId
+          ..branch = selectedBranchId
+          ..reportingManager = selectedManagerRegId
+          ..profilePicture = profilePicturePath
+          ..idProof = idProofPath
+          ..bankDetails = bankDetailsPath;
 
         final updated = await _isarService.update<PendingEmployeeModel>(
             updatePendingEmployee, id!);
@@ -241,6 +544,29 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   void updateRegisteredEmployee() async {
     try {
       if (_formKey.currentState!.validate()) {
+        String? profilePicturePath;
+        String? idProofPath;
+        String? bankDetailsPath;
+
+        if (selectedFiles["Profile Picture"] != null) {
+          await employeeController.uploadImage(
+              context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+          profilePicturePath = selectedFiles["Profile Picture"]!.path;
+        }
+
+        // Upload ID Proof if selected
+        if (selectedFiles["ID Proof"] != null) {
+          await employeeController.uploadImage(
+              context, 'id_proof', selectedFiles["ID Proof"]!.path);
+          idProofPath = selectedFiles["ID Proof"]!.path;
+        }
+
+        // Upload Bank Details if selected
+        if (selectedFiles["Bank Details"] != null) {
+          await employeeController.uploadImage(
+              context, 'passbook', selectedFiles["Bank Details"]!.path);
+          bankDetailsPath = selectedFiles["Bank Details"]!.path;
+        }
         int? id = widget.registerEmployee!.id;
         Logger.success(
             "Date of joining and date of birth $dobForApi $dojForApi");
@@ -256,14 +582,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               ..dateOfBirth = dobForApi
               ..dateOfJoining = dojForApi
               ..status = 1
-              ..department = _selectedDepartment
-              ..designation = _selectedDesignation
-              ..zone = _selectedZone
-              ..branch = _selectedBranch
-              ..reportingManager = _selectedManager
-              ..profilePicture = selectedFiles["Profile Picture"]
-              ..idProof = selectedFiles["ID Proof"]
-              ..bankDetails = selectedFiles["Bank Details"];
+              ..department = selectedDepartmentId
+              ..designation = selectedDesignationId
+              ..zone = selectedZoneId
+              ..branch = selectedBranchId
+              ..reportingManager = selectedManagerRegId
+              ..profilePicture = profilePicturePath
+              ..idProof = idProofPath
+              ..bankDetails = bankDetailsPath;
 
         final updated = await _isarService.update<RegisteredEmployeeModel>(
             updateRegisteredEmployee, id!);
@@ -349,7 +675,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   //       Logger.success("Picked file for $fileType: ${file.name}");
   //     }
   //   } catch (e) {
-  //     print("Error picking file: $e");
+  //     Logger.error("Error picking file: $e");
   //   }
   // }
 
@@ -360,21 +686,18 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       'mobile': _mobileKey,
       'email': _emailKey,
       'address': _addressKey,
-      // Add all your other fields here
     };
 
-    // Check each field for validation errors
     for (final entry in fieldKeys.entries) {
       final fieldState = entry.value.currentState;
       if (fieldState != null && fieldState.hasError) {
-        // Found an error, scroll to this field
         Scrollable.ensureVisible(
           entry.value.currentContext!,
           duration: Duration(milliseconds: 500),
           curve: Curves.easeInOut,
-          alignment: 0.0, // Adjust this value to position the field in the view
+          alignment: 0.0,
         );
-        break; // Stop after finding the first error
+        break;
       }
     }
   }
@@ -387,7 +710,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         _scrollToFirstError();
         ToastHelper.showErrorToast(
             context: context, title: "Please Fill all the required fields");
-        return; // Stop the submission process
+        return;
       }
       if (_formKey.currentState!.validate()) {
         // if (true) {
@@ -395,21 +718,16 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         String? idProofPath;
         String? bankDetailsPath;
 
-        // Upload Profile Picture if selected
         if (selectedFiles["Profile Picture"] != null) {
           await employeeController.uploadImage(
               context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
           profilePicturePath = selectedFiles["Profile Picture"]!.path;
         }
-
-        // Upload ID Proof if selected
         if (selectedFiles["ID Proof"] != null) {
           await employeeController.uploadImage(
               context, 'id_proof', selectedFiles["ID Proof"]!.path);
           idProofPath = selectedFiles["ID Proof"]!.path;
         }
-
-        // Upload Bank Details if selected
         if (selectedFiles["Bank Details"] != null) {
           await employeeController.uploadImage(
               context, 'passbook', selectedFiles["Bank Details"]!.path);
@@ -425,11 +743,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           ..dateOfBirth = dobForApi
           ..dateOfJoining = dojForApi
           ..status = 2
-          ..department = _selectedDepartment
-          ..designation = _selectedDesignation
-          ..zone = _selectedZone
-          ..branch = _selectedBranch
-          ..reportingManager = _selectedManager
+          ..department = selectedDepartmentId
+          ..designation = selectedDesignationId
+          ..zone = selectedZoneId
+          ..branch = selectedBranchId
+          ..reportingManager = selectedManagerRegId
           ..profilePicture = profilePicturePath
           ..idProof = idProofPath
           ..bankDetails = bankDetailsPath;
@@ -485,7 +803,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
     selectedFiles.clear();
 
-    // Refresh UI if needed
     setState(() {});
   }
 
@@ -530,9 +847,38 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     List<String> items,
     String selectedValue,
     Function(String?) onValueChanged, {
-    String? Function(String?)? validator, // Add this parameter
+    String? Function(String?)? validator,
+    String? emptyMessage, // Add this parameter for empty message
   }) {
     String defaultOption = "---- Select $label ----"; // Default placeholder
+
+    // Handle empty items list with emptyMessage
+    if (items.isEmpty && emptyMessage != null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: TextStyle(
+                    color: const Color.fromARGB(255, 255, 255, 255)
+                        .withOpacity(0.8))),
+            Container(
+              padding: EdgeInsets.all(12),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child:
+                  Text(emptyMessage, style: TextStyle(color: Colors.red[300])),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Original implementation for non-empty lists
     if (!items.contains(selectedValue) && selectedValue != defaultOption) {
       selectedValue = defaultOption;
     }
@@ -586,11 +932,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       appBar: AppBar(
         title: Text(
           appBarTitle,
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
@@ -809,7 +1151,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       .format(pickedDate);
 
                                   // Log the date in yyyy-MM-dd format
-                                  print(
+                                  Logger.error(
                                       "Selected DOB (for API/logging): $dobForApi");
 
                                   // Set the display format in the text field
@@ -886,7 +1228,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   }
                                 } catch (e) {
                                   // If parsing fails, use current date
-                                  print("Error parsing date: $e");
+                                  Logger.error("Error parsing date: $e");
                                   initialDate = DateTime.now();
                                 }
                               }
@@ -904,7 +1246,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     DateFormat('dd-MM-yyyy').format(pickedDate);
                                 dojForApi =
                                     DateFormat('yyyy-MM-dd').format(pickedDate);
-                                print(
+                                Logger.error(
                                     "Selected DOJ (for API/logging): $dojForApi");
 
                                 setState(() {
@@ -915,61 +1257,141 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  _buildDropdown('Department *', ['1', '2', '3', '4', '5', '7'],
-                      _selectedDepartment, validator: (value) {
-                    if (value == null ||
-                        value == "---- Select Department * ----") {
-                      return 'Please select a department';
-                    }
-                    return null;
-                  }, (value) => setState(() => _selectedDepartment = value!)),
+                  _buildDropdown(
+                    'Department *',
+                    departments
+                        .map<String>((dept) => dept['dept_name'])
+                        .toList(),
+                    _selectedDepartment,
+                    validator: (value) {
+                      if (value == null ||
+                          value == "---- Select Department * ----") {
+                        return 'Please select a department';
+                      }
+                      return null;
+                    },
+                    (value) {
+                      setState(() {
+                        _selectedDepartment = value!;
+                        final selectedDept = departments.firstWhere(
+                          (dept) => dept['dept_name'] == value,
+                          orElse: () => {'id': '', 'dept_name': ''},
+                        );
+                        selectedDepartmentId = selectedDept['id'];
+                        if (selectedDept['id'] != '') {
+                          selectedDepartmentId = selectedDept['id'];
+                          Logger.success(
+                              'Selected Department ID: $selectedDepartmentId');
+                        } else {
+                          Logger.success(
+                              'Error: Department ID not found for $value');
+                        }
+                      });
+                    },
+                  ),
                   SizedBox(height: 10),
                   _buildDropdown(
                       'Designation *',
-                      ['1', '2', '3', '4', '5', '7'],
+                      designations
+                          .map<String>((desg) => desg['designation_name'])
+                          .toList(),
                       _selectedDesignation, validator: (value) {
                     if (value == null ||
                         value == "---- Select Designation * ----") {
                       return 'Please select a designation';
                     }
                     return null;
-                  }, (value) => setState(() => _selectedDesignation = value!)),
+                  },
+                      (value) => setState(() {
+                            _selectedDesignation = value!;
+                            final selectedDesg = designations.firstWhere(
+                              (desg) => desg['designation_name'] == value,
+                              orElse: () => {'id': '', 'designation_name': ''},
+                            );
+                            selectedDesignationId = selectedDesg['id'];
+                            if (selectedDesg['id'] != '') {
+                              selectedDepartmentId = selectedDesg['id'];
+                              Logger.success(
+                                  'Selected Designation ID: $selectedDesignationId');
+                            } else {
+                              Logger.success(
+                                  'Error: Designation ID not found for $value');
+                            }
+                          })),
                   SizedBox(height: 10),
                   _buildDropdown(
-                      'Zone *', ['1', '2', '3', '4', '5', '7'], _selectedZone,
-                      validator: (value) {
+                      'Zone *',
+                      zones.map<String>((zone) => zone['zone_name']).toList(),
+                      _selectedZone, validator: (value) {
                     if (value == null || value == "---- Select Zone * ----") {
                       return 'Please select a zone';
                     }
                     return null;
-                  }, (value) => setState(() => _selectedZone = value!)),
+                  },
+                      (value) => setState(() {
+                            _selectedZone = value!;
+                            final selectedZone = zones.firstWhere(
+                              (zone) => zone['zone_name'] == value,
+                              orElse: () => {'id': '', 'zone_name': ''},
+                            );
+                            selectedZoneId = selectedZone['id'];
+                            Logger.warning(
+                                'Selected Zone : $_selectedZone and selected zone ID : $selectedZoneId');
+                            if (selectedZoneId != null) {
+                              _getBranches(selectedZoneId!);
+                            }
+                          })),
                   SizedBox(height: 10),
-                  _buildDropdown('Branch *', ['1', '2', '3', '4', '5', '7'],
+                  _buildDropdown(
+                      'Branch *',
+                      branches.isEmpty
+                          ? []
+                          : branches
+                              .map<String>((branch) => branch['branch_name'])
+                              .toList(),
                       _selectedBranch, validator: (value) {
+                    if (branches.isEmpty) {
+                      return null; // Don't validate if no branches are available
+                    }
                     if (value == null || value == "---- Select Branch * ----") {
                       return 'Please select a branch';
                     }
                     return null;
-                  }, (value) => setState(() => _selectedBranch = value!)),
+                  },
+                      (value) => setState(() {
+                            _selectedBranch = value!;
+                            final selectedBranch = branches.firstWhere(
+                              (branch) => branch['branch_name'] == value,
+                              orElse: () => {'id': '', 'branch_name': ''},
+                            );
+                            selectedBranchId = selectedBranch['id'];
+                          }),
+                      emptyMessage:
+                          "No branches available for the selected zone"),
                   SizedBox(height: 10),
                   _buildDropdown(
                       'Reporting Manager *',
-                      ['John Doe', 'Jane Smith', 'Alice Brown'],
+                      reportingManagerNames, // Use the filtered list of manager names
                       _selectedManager, validator: (value) {
                     if (value == null ||
                         value == "---- Select Reporting Manager * ----") {
                       return 'Please select a reporting manager';
                     }
                     return null;
-                  }, (value) => setState(() => _selectedManager = value!)),
+                  },
+                      (value) => setState(() {
+                            _selectedManager = value!;
+                            selectedManagerRegId =
+                                managerNameToRegIdMap[_selectedManager] ?? "";
+
+                            // Now you can use selectedManagerRegId for saving or other purposes
+                            Logger.success(
+                                "Selected manager: $_selectedManager, ID: $selectedManagerRegId");
+                          })),
                   SizedBox(height: 20),
                   Text(
                     "Attachments",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: Appwidget.normalSubTitle(),
                   ),
                   SizedBox(height: 10),
                   _buildUploadButton("Profile Picture"),

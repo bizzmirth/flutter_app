@@ -1,27 +1,127 @@
+import 'package:bizzmirth_app/screens/dashboards/admin/admin_dashboard.dart';
+import 'package:bizzmirth_app/screens/dashboards/business_channel_head/business_channel_head.dart';
+import 'package:bizzmirth_app/screens/dashboards/business_development_manager/business_development_manager.dart';
+import 'package:bizzmirth_app/screens/dashboards/business_mentor/business_mentor.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
+import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// ✅ **Side Navigation Drawer**
-class SideNavDrawer extends StatelessWidget {
+class SideNavDrawer extends StatefulWidget {
   const SideNavDrawer({super.key});
+
+  @override
+  State<SideNavDrawer> createState() => _SideNavDrawerState();
+}
+
+class _SideNavDrawerState extends State<SideNavDrawer> {
+  String? userType = '';
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserType();
+  }
+
+  void getUserType() async {
+    final getUserType = await SharedPrefHelper().getUserType();
+    Logger.info("User Type from Shared Preferences: $getUserType");
+
+    setState(() {
+      userType = getUserType;
+      isLoading = false;
+    });
+  }
+
+  void _navigateToDashboard(BuildContext context, String userType) {
+    switch (userType) {
+      case "Admin":
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const AdminDashboard()),
+        );
+        break;
+      case "Customer":
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CDashboardPage()),
+        );
+        break;
+      case "Travel Consultant":
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const TCDashboardPage()),
+        );
+        break;
+      case "Techno Enterprise":
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const TEDashboardPage()),
+        );
+        break;
+      case "Business Channel manager":
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const BCHDashboardPage()),
+        );
+        break;
+      case "Business Development Manager":
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const BDMDashboardPage()),
+        );
+        break;
+      case "Business Mentor":
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const BMDashboardPage()),
+        );
+        break;
+    }
+  }
+
+  String _getDashboardTitle(String userType) {
+    switch (userType) {
+      case "Admin":
+        return "My Admin Dashboard";
+      case "Customer":
+        return "My Customer Dashboard";
+      case "Travel Consultant":
+        return "My Travel Consultant Dashboard";
+      case "Techno Enterprise":
+        return "My Techno Enterprise Dashboard";
+      case "Business Channel manager":
+        return "My Business Channel Head Dashboard";
+      case "Business Development Manager":
+        return "My Business Development Manager Dashboard";
+      case "Business Mentor":
+        return "My Business Mentor Dashboard";
+      default:
+        return "My Dashboard";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: Column(
         children: [
-          // Fixed Drawer Header with NO white space issues
           Container(
-            width: double.infinity, // Ensures full width
-            color: Color.fromARGB(255, 81, 131, 246), // Background color
+            width: double.infinity,
+            color: Color.fromARGB(255, 81, 131, 246),
             padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     backgroundImage: AssetImage('assets/user_image.jpg'),
                     radius: 30,
                   ),
@@ -57,106 +157,47 @@ class SideNavDrawer extends StatelessWidget {
                     Navigator.pop(context);
                   },
                 ),
-                // ListTile(
-                //   leading: Icon(Icons.favorite, color: Colors.red),
-                //   title: Text("Wishlist"),
-                //   onTap: () {},
-                // ),
-                // ListTile(
-                //   leading: Icon(Icons.dashboard, color: Colors.orange),
-                //   title: Text("My Admin Dashboard"),
-                //   onTap: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(builder: (context) => AdminDashboard()),
-                //     );
-                //   },
-                // ),
-                // ListTile(
-                //   leading: Icon(Icons.dashboard, color: Colors.orange),
-                //   title: Text("My Business Channel Head Dashboard"),
-                //   onTap: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           builder: (context) => BCHDashboardPage()),
-                //     );
-                //   },
-                // ),
-                // ListTile(
-                //   leading: Icon(Icons.dashboard, color: Colors.orange),
-                //   title: Text("My Business Development Manager Dashboard"),
-                //   onTap: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           builder: (context) => BDMDashboardPage()),
-                //     );
-                //   },
-                // ),
-                // ListTile(
-                //   leading: Icon(Icons.dashboard, color: Colors.orange),
-                //   title: Text("My Business Mentor Dashboard"),
-                //   onTap: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           builder: (context) => BMDashboardPage()),
-                //     );
-                //   },
-                // ),
-                // ListTile(
-                //   leading: Icon(Icons.dashboard, color: Colors.orange),
-                //   title: Text("My Techno Enterprise Dashboard"),
-                //   onTap: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           builder: (context) => TEDashboardPage()),
-                //     );
-                //   },
-                // ),
-                // ListTile(
-                //   leading: Icon(Icons.dashboard, color: Colors.orange),
-                //   title: Text("My Travel Consultant Dashboard"),
-                //   onTap: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           builder: (context) => TCDashboardPage()),
-                //     );
-                //   },
-                // ),
-                // ListTile(
-                //   leading: Icon(Icons.dashboard, color: Colors.orange),
-                //   title: Text("My Customer Dashboard"),
-                //   onTap: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(builder: (context) => CDashboardPage()),
-                //     );
-                //   },
-                // ),
-                // ListTile(
-                //   leading: Icon(Icons.person, color: Colors.green),
-                //   title: Text("Profile"),
-                //   onTap: () {},
-                // ),
+                // Show loading indicator while fetching user type
+                if (isLoading)
+                  ListTile(
+                    leading: CircularProgressIndicator(),
+                    title: Text("Loading..."),
+                  ),
+                if (!isLoading && userType != null && userType!.isNotEmpty)
+                  ListTile(
+                    leading: Icon(Icons.dashboard, color: Colors.orange),
+                    title: Text(_getDashboardTitle(userType!)),
+                    onTap: () {
+                      _navigateToDashboard(context, userType!);
+                    },
+                  ),
+
                 Divider(),
                 ListTile(
-                  leading: Icon(Icons.logout, color: Colors.black),
-                  title: Text("Log in"),
+                  leading: Icon(
+                    (userType != null && userType!.isNotEmpty)
+                        ? Icons.logout
+                        : Icons.login,
+                    color: Colors.black,
+                  ),
+                  title: Text((userType != null && userType!.isNotEmpty)
+                      ? "Log out"
+                      : "Log in"),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
+                    if (userType != null && userType!.isNotEmpty) {
+                      _handleLogout();
+                    } else {
+                      // Handle login
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    }
                   },
                 ),
               ],
             ),
           ),
-          // Logo at the Bottom (ALWAYS sticks there)
           Container(
             padding: EdgeInsets.all(16.0),
             child: Image.asset(
@@ -167,5 +208,13 @@ class SideNavDrawer extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _handleLogout() async {
+    await SharedPrefHelper().removeDetails();
+    setState(() {
+      userType = '';
+    });
+    Logger.info("User logged out successfully");
   }
 }
