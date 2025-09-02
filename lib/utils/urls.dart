@@ -18,7 +18,7 @@ class AppUrls {
   static String get getFilteredTourPackages =>
       "$baseUrl/packages/filtered_package.php";
 
-  static String get getBestDeals => "$baseUrl/packages/best_deals.php";
+  static String get getBestDeals => "$baseUrl/packages/best_destinations.php";
 
   static String get getTourPackageDetails =>
       "$baseUrl/packages/view_package_details/package_details.php";
