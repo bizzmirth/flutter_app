@@ -164,7 +164,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
   void _onPendingSearchChanged(String searchTerm) {
     setState(() {
-      searchController.text = searchTerm; // ✅ Update the controller
+      searchController.text = searchTerm;
     });
     _applyPendingFilters(searchTerm: searchTerm);
   }
