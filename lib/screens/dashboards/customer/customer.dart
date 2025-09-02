@@ -3,6 +3,7 @@
 import 'package:bizzmirth_app/controllers/customer_controller.dart';
 import 'package:bizzmirth_app/controllers/profile_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_top_referral_customers.dart';
+import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/contact_us/contact_us.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
@@ -52,16 +53,116 @@ class _CDashboardPageState extends State<CDashboardPage> {
   bool _isInitializing = false;
   String? _cachedRegDate;
 
+  TextEditingController searchController = TextEditingController();
+  DateTime? fromDate;
+  DateTime? toDate;
+  String? fromDateError;
+  String? toDateError;
+
+  List<TopCustomerRefereralModel> filteredCustomers = [];
+
   @override
   void initState() {
     super.initState();
     _initializeDashboardData();
+    _initializeTopFilteredCustomers();
     _confettiController =
         ConfettiController(duration: const Duration(seconds: 3));
   }
 
+  void _initializeTopFilteredCustomers() {
+    final customerController = context.read<CustomerController>();
+    setState(() {
+      filteredCustomers = List.from(customerController.topCustomerRefererals);
+    });
+  }
+
+  void _onTopCustomerSearchChanged(String searchTerm) {
+    _applyTopCustomerFilters(
+        searchTerm: searchTerm, fromDate: fromDate, toDate: toDate);
+  }
+
+  void _onTopCustomerDateChanged(DateTime? from, DateTime? to) {
+    setState(() {
+      fromDate = from;
+      toDate = to;
+    });
+    _applyTopCustomerFilters(
+        searchTerm: searchController.text, fromDate: from, toDate: to);
+  }
+
+  void _onTopCustomerClearFilters() {
+    setState(() {
+      searchController.clear();
+      fromDate = null;
+      toDate = null;
+      filteredCustomers =
+          List.from(context.read<CustomerController>().topCustomerRefererals);
+    });
+  }
+
+  void _applyTopCustomerFilters(
+      {String? searchTerm, DateTime? fromDate, DateTime? toDate}) {
+    final customerController =
+        Provider.of<CustomerController>(context, listen: false);
+
+    if (customerController.topCustomerRefererals.isEmpty) {
+      return;
+    }
+
+    setState(() {
+      filteredCustomers =
+          customerController.topCustomerRefererals.where((customer) {
+        bool matchesSearch = true;
+        bool matchesDateRange = true;
+
+        // Search filter
+        if (searchTerm != null && searchTerm.isNotEmpty) {
+          String searchTermLower = searchTerm.toLowerCase();
+          matchesSearch =
+              customer.name?.toLowerCase().contains(searchTermLower) == true ||
+                  customer.status?.toLowerCase().contains(searchTermLower) ==
+                      true;
+        }
+
+        // Date range filter
+        if (fromDate != null || toDate != null) {
+          if (customer.registeredDate != null &&
+              customer.registeredDate!.isNotEmpty) {
+            try {
+              // Assuming the date format is the same as your pending customers
+              // If different, adjust the DateFormat accordingly
+              DateTime? customerDate = DateTime.parse(customer.registeredDate!);
+
+              if (fromDate != null && customerDate.isBefore(fromDate)) {
+                matchesDateRange = false;
+              }
+              if (toDate != null &&
+                  customerDate.isAfter(toDate.add(Duration(days: 1)))) {
+                matchesDateRange = false;
+              }
+            } catch (e) {
+              Logger.error(
+                  "Error parsing top customer date: ${customer.registeredDate} - $e");
+              if (fromDate != null || toDate != null) {
+                matchesDateRange = false;
+              }
+            }
+          } else {
+            if (fromDate != null || toDate != null) {
+              matchesDateRange = false;
+            }
+          }
+        }
+
+        return matchesSearch && matchesDateRange;
+      }).toList();
+    });
+  }
+
   Future<void> _onRefreshDashboard() async {
     _initializeDashboardData();
+    _initializeTopFilteredCustomers();
   }
 
   @override
@@ -175,6 +276,18 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Widget premiumSelectWidget(String type) {
     final isTablet = MediaQuery.of(context).size.width > 600;
     final customerController = context.read<CustomerController>();
+    String userCount = filteredCustomers.isEmpty &&
+            (searchController.text.isEmpty &&
+                fromDate == null &&
+                toDate == null)
+        ? customerController.topCustomerRefererals.length.toString()
+        : filteredCustomers.length.toString();
+    final topCustomers = filteredCustomers.isEmpty &&
+            (searchController.text.isEmpty &&
+                fromDate == null &&
+                toDate == null)
+        ? customerController.topCustomerRefererals
+        : filteredCustomers;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       PremiumSelectCard(
         title: "Premium Select Customer",
@@ -256,8 +369,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
             Divider(thickness: 1, color: Colors.black26),
             FilterBar(
-              userCount:
-                  customerController.topCustomerRefererals.length.toString(),
+              userCount: userCount,
+              onSearchChanged: _onTopCustomerSearchChanged,
+              onDateRangeChanged: _onTopCustomerDateChanged,
+              onClearFilters: _onTopCustomerClearFilters,
             ),
             Card(
               elevation: 5,
@@ -305,11 +420,9 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             : ListView.builder(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
-                                itemCount: customerController
-                                    .topCustomerRefererals.length,
+                                itemCount: topCustomers.length,
                                 itemBuilder: (context, index) {
-                                  final customer = customerController
-                                      .topCustomerRefererals[index];
+                                  final customer = topCustomers[index];
                                   return Container(
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 6),
@@ -1389,6 +1502,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Widget premiumWidget(String type) {
     final isTablet = MediaQuery.of(context).size.width > 600;
     final customerController = context.read<CustomerController>();
+    final topCustomers = filteredCustomers;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       PremiumSelectCard(
         title: "Premium Customer",
@@ -1466,15 +1580,17 @@ class _CDashboardPageState extends State<CDashboardPage> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  "Top Customers Referral",
+                  "Top Customers Referrals",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
             Divider(thickness: 1, color: Colors.black26),
             FilterBar(
-              userCount:
-                  customerController.topCustomerRefererals.length.toString(),
+              userCount: filteredCustomers.length.toString(),
+              onSearchChanged: _onTopCustomerSearchChanged,
+              onDateRangeChanged: _onTopCustomerDateChanged,
+              onClearFilters: _onTopCustomerClearFilters,
             ),
             Card(
               elevation: 5,
@@ -1501,8 +1617,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                     DataColumn(label: Text("Active/Inactive")),
                                   ],
                                   source: CustTopReferralCustomers(
-                                      customers: customerController
-                                          .topCustomerRefererals),
+                                      customers: filteredCustomers),
                                   rowsPerPage: _rowsPerPage,
                                   availableRowsPerPage: [5, 10, 15, 20, 25],
                                   onRowsPerPageChanged: (value) {
@@ -1522,11 +1637,9 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             : ListView.builder(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
-                                itemCount: customerController
-                                    .topCustomerRefererals.length,
+                                itemCount: topCustomers.length,
                                 itemBuilder: (context, index) {
-                                  final customer = customerController
-                                      .topCustomerRefererals[index];
+                                  final customer = topCustomers[index];
                                   return Container(
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 6),
@@ -1709,6 +1822,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Widget premiumSelectLiteWidget(String type) {
     final isTablet = MediaQuery.of(context).size.width > 600;
     final customerController = context.read<CustomerController>();
+    String userCount = filteredCustomers.isEmpty &&
+            (searchController.text.isEmpty &&
+                fromDate == null &&
+                toDate == null)
+        ? customerController.topCustomerRefererals.length.toString()
+        : filteredCustomers.length.toString();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       PremiumSelectCard(
         title: "Premium Select Lite Customer",
@@ -1790,8 +1909,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
             Divider(thickness: 1, color: Colors.black26),
             FilterBar(
-              userCount:
-                  customerController.topCustomerRefererals.length.toString(),
+              userCount: userCount,
+              onSearchChanged: _onTopCustomerSearchChanged,
+              onDateRangeChanged: _onTopCustomerDateChanged,
+              onClearFilters: _onTopCustomerClearFilters,
             ),
             Card(
               elevation: 5,
@@ -2026,6 +2147,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Widget neoSelectWidget(String type) {
     final isTablet = MediaQuery.of(context).size.width > 600;
     final customerController = context.read<CustomerController>();
+    String userCount = filteredCustomers.isEmpty &&
+            (searchController.text.isEmpty &&
+                fromDate == null &&
+                toDate == null)
+        ? customerController.topCustomerRefererals.length.toString()
+        : filteredCustomers.length.toString();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       PremiumSelectCard(
         title: "Neo Select Customer",
@@ -2107,8 +2234,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
             Divider(thickness: 1, color: Colors.black26),
             FilterBar(
-              userCount:
-                  customerController.topCustomerRefererals.length.toString(),
+              userCount: userCount,
+              onSearchChanged: _onTopCustomerSearchChanged,
+              onDateRangeChanged: _onTopCustomerDateChanged,
+              onClearFilters: _onTopCustomerClearFilters,
             ),
             Card(
               elevation: 5,

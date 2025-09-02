@@ -265,27 +265,30 @@ class CustProductPayoutController extends ChangeNotifier {
     }
   }
 
-  void apiGetTotalPayouts() async {
+  void apiGetTotalPayouts({int? month, int? year}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final fullUrl = AppUrls.getPayoutsProduct;
+      final fullUrl = AppUrls.getTotalPayoutsProduct;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final now = DateTime.now();
+      final selectedMonth = month ?? now.month;
+      final selectedYear = year ?? now.year;
+
       final Map<String, dynamic> body = {
-        "action": "total",
         "userId": userId,
-        "userType": "10"
+        "month": selectedMonth.toString().padLeft(2, '0'),
+        "year": selectedYear.toString()
       };
+
       final encodeBody = jsonEncode(body);
       Logger.warning("Total Payouts Request Body: $encodeBody");
 
       final response = await http.post(Uri.parse(fullUrl),
-          headers: {
-            'Content-Type': 'application/json'
-          }, // Added missing headers
-          body: encodeBody);
+          headers: {'Content-Type': 'application/json'}, body: encodeBody);
 
       Logger.success("Response from total payouts: ${response.body}");
       Logger.success("Get total payouts product URL: $fullUrl");
@@ -313,13 +316,11 @@ class CustProductPayoutController extends ChangeNotifier {
               for (var transaction in transactions) {
                 try {
                   final payout = CustProductPayoutModel.fromJson(transaction);
-                  _totalAllPayouts.add(
-                      payout); // Changed from _allPayouts to _totalAllPayouts
+                  _totalAllPayouts.add(payout);
                 } catch (e, s) {
                   Logger.error("Error parsing total payout transaction: $e");
                   Logger.error("Transaction data: $transaction");
                   Logger.error("StackTrace: $s");
-                  // Continue processing other transactions even if one fails
                 }
               }
             }

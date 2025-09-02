@@ -761,7 +761,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
         child: Scaffold(
           appBar: AppBar(
             title: Text(
-              'View Referral Customernbs',
+              'View Referral Customers',
               style: Appwidget.poppinsAppBarTitle(),
             ),
             centerTitle: true,
