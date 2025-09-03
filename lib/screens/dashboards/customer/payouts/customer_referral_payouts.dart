@@ -8,6 +8,7 @@ import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:provider/provider.dart';
 
 class CustomerReferralPayouts extends StatefulWidget {
@@ -26,21 +27,26 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
   String? userId;
+  DateTime? _selectedDateTime;
 
   Future<void> _selectDate(BuildContext context) async {
-    DateTime? picked = await showDatePicker(
+    DateTime now = DateTime.now();
+    DateTime? picked = await showMonthPicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(
-        2030,
-      ),
+      firstDate: DateTime(2020, 1),
+      lastDate: now,
+      initialDate: _selectedDateTime ?? now,
     );
+
     if (picked != null) {
       setState(() {
+        _selectedDateTime = picked;
         selectedDate = DateFormat("MMMM, yyyy").format(picked);
       });
-      Logger.success("selected Date : $selectedDate");
+      final controller =
+          Provider.of<CustReferralPayoutController>(context, listen: false);
+      controller.apiGetTotalPayouts(month: picked.month, year: picked.year);
+      Logger.success("selected Date : ${picked.month}, year: ${picked.year}");
     }
   }
 

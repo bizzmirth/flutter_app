@@ -287,8 +287,11 @@ class CustProductPayoutController extends ChangeNotifier {
       final encodeBody = jsonEncode(body);
       Logger.warning("Total Payouts Request Body: $encodeBody");
 
-      final response = await http.post(Uri.parse(fullUrl),
-          headers: {'Content-Type': 'application/json'}, body: encodeBody);
+      final response = await http.post(
+        Uri.parse(fullUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: encodeBody,
+      );
 
       Logger.success("Response from total payouts: ${response.body}");
       Logger.success("Get total payouts product URL: $fullUrl");
@@ -296,45 +299,43 @@ class CustProductPayoutController extends ChangeNotifier {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
 
-        if (responseData['status'] == 'success' &&
-            responseData['data'] != null) {
-          final data = responseData['data'];
-          Logger.success("Data fetched successfully for all payouts: $data");
+        if (responseData['status'] == true) {
+          Logger.success("Data fetched successfully for total payouts");
 
+          // ✅ Adjusted fields based on new API structure
           _totalAllPayouts.clear();
-          _totalPayout = data['totalAmount']?.toString() ?? '0';
 
-          if (data['transactions'] is List) {
-            final transactions = data['transactions'] as List;
+          _totalPayout = responseData['total_payout']?.toString() ?? '0';
 
-            if (transactions.isEmpty) {
-              Logger.warning("No transactions found for total payouts");
+          // ✅ Records handling
+          if (responseData['records'] is List) {
+            final records = responseData['records'] as List;
+
+            if (records.isEmpty) {
+              Logger.warning("No records found for total payouts");
             } else {
-              Logger.info(
-                  "Processing ${transactions.length} total payout transactions");
+              Logger.info("Processing ${records.length} payout records");
 
-              for (var transaction in transactions) {
+              for (var record in records) {
                 try {
-                  final payout = CustProductPayoutModel.fromJson(transaction);
+                  final payout = CustProductPayoutModel.fromJson(record);
                   _totalAllPayouts.add(payout);
                 } catch (e, s) {
-                  Logger.error("Error parsing total payout transaction: $e");
-                  Logger.error("Transaction data: $transaction");
+                  Logger.error("Error parsing payout record: $e");
+                  Logger.error("Record data: $record");
                   Logger.error("StackTrace: $s");
                 }
               }
             }
 
             Logger.success(
-                "Successfully processed ${_totalAllPayouts.length} total payout transactions");
+                "Successfully processed ${_totalAllPayouts.length} payout records");
           } else {
-            Logger.warning(
-                "Transactions field is not a list or is missing for total payouts");
+            Logger.warning("Records field is not a list or is missing");
           }
         } else {
           Logger.error(
-              "API returned unsuccessful status or no data for total payouts");
-          Logger.error("Response status: ${responseData['status']}");
+              "API returned unsuccessful status for total payouts ${response.body}");
           _error = "No total payout data available.";
         }
       } else {

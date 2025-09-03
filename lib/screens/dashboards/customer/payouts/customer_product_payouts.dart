@@ -27,6 +27,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
   late String? userId;
+  DateTime? _selectedDateTime;
 
   @override
   void initState() {
@@ -90,11 +91,12 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
       context: context,
       firstDate: DateTime(2020, 1),
       lastDate: now,
-      initialDate: now,
+      initialDate: _selectedDateTime ?? now,
     );
 
     if (pickedDate != null) {
       setState(() {
+        _selectedDateTime = pickedDate;
         selectedDate = DateFormat("MMMM, yyyy").format(pickedDate);
       });
 
