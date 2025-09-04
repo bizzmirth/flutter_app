@@ -13,12 +13,13 @@ class AppUrls {
 
   // ==================== HOMEPAGE TOUR PACKAGE DETAILS ====================
   static String get getTourPackages =>
-      "$baseUrl/packages/best_destinations.php";
+      "https://ca.uniqbizz.com/api/packages/best_destinations.php";
 
   static String get getFilteredTourPackages =>
       "$baseUrl/packages/filtered_package.php";
 
-  static String get getBestDeals => "$baseUrl/packages/best_deals.php";
+  static String get getBestDeals =>
+      "https://ca.uniqbizz.com/api/packages/best_deals.php";
 
   static String get getTourPackageDetails =>
       "$baseUrl/packages/view_package_details/package_details.php";
@@ -61,6 +62,9 @@ class AppUrls {
   // ==================== CUSTOMER PRODUCT PAYOUTS ENDPOINTS ====================
   static String get getAllPayoutsProduct =>
       "$baseUrl/payouts/product_payouts/customer_all_payouts.php";
+
+  static String get getTotalPayoutsProduct =>
+      "$baseUrl/payouts/product_payouts/customer_total_payout.php";
 
   static String get getPayoutsProduct =>
       "$baseUrl/payouts/product_payouts/customer_payouts.php"; // this is used to call all previous,next and all

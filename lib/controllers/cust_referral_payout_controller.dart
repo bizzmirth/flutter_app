@@ -208,7 +208,7 @@ class CustReferralPayoutController extends ChangeNotifier {
     }
   }
 
-  void apiGetTotalPayouts() async {
+  void apiGetTotalPayouts({int? month, int? year}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -217,18 +217,19 @@ class CustReferralPayoutController extends ChangeNotifier {
       final fullUrl = AppUrls.getTotalPayoutsReference;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final now = DateTime.now();
-      final nextMonth = (now.month % 12).toString().padLeft(2, '0');
-      final currentYear = now.year.toString();
+      final selectedMonth = month ?? now.month;
+      final selecyedYear = year ?? now.year;
       final Map<String, dynamic> body = {
         "userId": userId,
-        "month": nextMonth,
-        "year": currentYear
+        "month": selectedMonth.toString().padLeft(2, '0'),
+        "year": selecyedYear.toString()
       };
       final encodeBody = jsonEncode(body);
       Logger.warning("Fetching total payouts for userId: $encodeBody");
       final response = await http.post(Uri.parse(fullUrl),
           headers: {"Content-Type": "application/json"}, body: encodeBody);
       Logger.success("Response from total payouts: ${response.body}");
+      Logger.success("get total payouts URL: $fullUrl");
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final payoutRecords = data['records'] as List<dynamic>?;
