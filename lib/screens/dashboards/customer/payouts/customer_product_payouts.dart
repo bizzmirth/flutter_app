@@ -4,10 +4,12 @@ import 'package:bizzmirth_app/data_source/cust_product_payout_data_source.dart';
 import 'package:bizzmirth_app/models/cust_product_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:provider/provider.dart';
 
 class CustProductPayoutsPage extends StatefulWidget {
@@ -25,6 +27,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
   late String? userId;
+  DateTime? _selectedDateTime;
 
   @override
   void initState() {
@@ -82,16 +85,28 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    DateTime? picked = await showDatePicker(
+    DateTime now = DateTime.now();
+
+    DateTime? pickedDate = await showMonthPicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      firstDate: DateTime(2020, 1),
+      lastDate: now,
+      initialDate: _selectedDateTime ?? now,
     );
-    if (picked != null) {
+
+    if (pickedDate != null) {
       setState(() {
-        selectedDate = DateFormat("MMMM, yyyy").format(picked);
+        _selectedDateTime = pickedDate;
+        selectedDate = DateFormat("MMMM, yyyy").format(pickedDate);
       });
+
+      final controller =
+          Provider.of<CustProductPayoutController>(context, listen: false);
+      controller.apiGetTotalPayouts(
+          month: pickedDate.month, year: pickedDate.year);
+
+      Logger.success(
+          "Api called with month: ${pickedDate.month}, year: ${pickedDate.year}");
     }
   }
 

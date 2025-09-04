@@ -164,7 +164,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
   void _onPendingSearchChanged(String searchTerm) {
     setState(() {
-      searchController.text = searchTerm; // ✅ Update the controller
+      searchController.text = searchTerm;
     });
     _applyPendingFilters(searchTerm: searchTerm);
   }
@@ -761,7 +761,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
         child: Scaffold(
           appBar: AppBar(
             title: Text(
-              'View Referral Customernbs',
+              'View Referral Customers',
               style: Appwidget.poppinsAppBarTitle(),
             ),
             centerTitle: true,
