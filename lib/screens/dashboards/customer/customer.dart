@@ -5,6 +5,7 @@ import 'package:bizzmirth_app/controllers/profile_controller.dart';
 import 'package:bizzmirth_app/data_source/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/contact_us/contact_us.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_referral_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
@@ -2709,17 +2710,17 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
                     //commented order history since in v1 we wont be including it.
 
-                    // ListTile(
-                    //   leading: Icon(Icons.history),
-                    //   title: Text('Order History'),
-                    //   onTap: () {
-                    //     Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //           builder: (context) => OrderHistory()),
-                    //     );
-                    //   },
-                    // ),
+                    ListTile(
+                      leading: Icon(Icons.history),
+                      title: Text('Order History'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OrderHistory()),
+                        );
+                      },
+                    ),
                     const Divider(),
                     Padding(
                       padding: EdgeInsets.zero,
