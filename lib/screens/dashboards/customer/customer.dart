@@ -6,6 +6,7 @@ import 'package:bizzmirth_app/data_source/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/contact_us/contact_us.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_details.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_referral_payouts.dart';
@@ -2846,7 +2847,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => OrderHistory()),
+                              builder: (context) => OrderDetails()),
                         );
                       },
                     ),

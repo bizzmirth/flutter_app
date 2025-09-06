@@ -5,14 +5,14 @@ import 'package:bizzmirth_app/widgets/invoice.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class OrderHistory extends StatefulWidget {
-  const OrderHistory({super.key});
+class OrderDetails extends StatefulWidget {
+  const OrderDetails({super.key});
 
   @override
-  State<OrderHistory> createState() => _OrderHistoryState();
+  State<OrderDetails> createState() => _OrderDetailsState();
 }
 
-class _OrderHistoryState extends State<OrderHistory> {
+class _OrderDetailsState extends State<OrderDetails> {
   @override
   void initState() {
     super.initState();
