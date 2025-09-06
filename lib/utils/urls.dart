@@ -13,19 +13,18 @@ class AppUrls {
 
   // ==================== HOMEPAGE TOUR PACKAGE DETAILS ====================
   static String get getTourPackages =>
-      "https://ca.uniqbizz.com/api/packages/best_destinations.php";
+      "$baseUrl/packages/best_destinations.php";
 
   static String get getFilteredTourPackages =>
       "$baseUrl/packages/filtered_package.php";
 
-  static String get getBestDeals =>
-      "https://ca.uniqbizz.com/api/packages/best_deals.php";
+  static String get getBestDeals => "$baseUrl/packages/best_deals.php";
 
   static String get getTourPackageDetails =>
-      "https://ca.uniqbizz.com/api/packages/view_package_details/package_details.php";
+      "$baseUrl/packages/view_package_details/package_details.php";
 
   // ==================== BASE URL TO GET IMAGES ====================
-  static String get getImageBaseUrl => "https://ca.uniqbizz.com/";
+  static String get getImageBaseUrl => "https://testca.uniqbizz.com/";
 
   // ==================== AUTHENTICATION ENDPOINTS ====================
   static String get login => "$baseUrl/login.php";
