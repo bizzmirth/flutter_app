@@ -2,6 +2,7 @@ import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/screens/more_top_selling_packages/more_top_selling_packages.dart';
 import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -261,7 +262,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
     }
 
     final imageUrl =
-        trip.image != null ? "https://ca.uniqbizz.com/${trip.image}" : null;
+        trip.image != null ? "${AppUrls.getImageBaseUrl}${trip.image}" : null;
 
     return GestureDetector(
       onTap: () {

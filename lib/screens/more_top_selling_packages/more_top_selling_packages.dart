@@ -313,12 +313,12 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
       itemCount: controller.filteredPackages.length,
       itemBuilder: (context, index) {
         final pkg = controller.filteredPackages[index];
-        final imageUrl = "https://ca.uniqbizz.com/${pkg.image}";
+        final imageUrl = "https://testca.uniqbizz.com/${pkg.image}";
 
         // Precache next few images for smoother scrolling
         if (index < controller.filteredPackages.length - 3) {
           final nextPkg = controller.filteredPackages[index + 3];
-          final nextImageUrl = "https://ca.uniqbizz.com/${nextPkg.image}";
+          final nextImageUrl = "https://testca.uniqbizz.com/${nextPkg.image}";
           precacheImage(NetworkImage(nextImageUrl), context);
         }
 

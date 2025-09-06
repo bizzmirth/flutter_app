@@ -2,6 +2,8 @@ import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/models/travel_plan_top_selling_packages.dart';
 import 'package:bizzmirth_app/screens/more_top_selling_packages/more_top_selling_packages.dart';
 import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -80,7 +82,7 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
       if (bestDeals.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           for (final trip in bestDeals) {
-            final imageUrl = "https://ca.uniqbizz.com/${trip.image}";
+            final imageUrl = "${AppUrls.getImageBaseUrl}${trip.image}";
             precacheImage(NetworkImage(imageUrl), context);
           }
         });
@@ -112,7 +114,8 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
               )
             else
               ...bestDeals.map((trip) {
-                final imageUrl = "https://ca.uniqbizz.com/${trip.image}";
+                final imageUrl = "${AppUrls.getImageBaseUrl}${trip.image}";
+                Logger.success("Top selling package image URL: $imageUrl");
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(

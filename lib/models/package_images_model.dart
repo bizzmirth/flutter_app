@@ -38,7 +38,7 @@ class PackagePicture {
   }
 
   // Get full URL if needed (assuming base URL)
-  String getFullImageUrl({String baseUrl = 'https://ca.uniqbizz.com/'}) {
+  String getFullImageUrl({String baseUrl = 'https://testca.uniqbizz.com/'}) {
     if (image.isEmpty) return '';
     if (image.startsWith('http')) return image;
     return '$baseUrl$image';
