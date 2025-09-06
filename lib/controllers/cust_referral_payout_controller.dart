@@ -216,20 +216,26 @@ class CustReferralPayoutController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getTotalPayoutsReference;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final now = DateTime.now();
-      final selectedMonth = month ?? now.month;
-      final selecyedYear = year ?? now.year;
+
+      // Create base body with userId
       final Map<String, dynamic> body = {
         "userId": userId,
-        "month": selectedMonth.toString().padLeft(2, '0'),
-        "year": selecyedYear.toString()
       };
+
+      if (month != null && year != null) {
+        body["month"] = month.toString().padLeft(2, '0');
+        body["year"] = year.toString();
+      }
+
       final encodeBody = jsonEncode(body);
       Logger.warning("Fetching total payouts for userId: $encodeBody");
+
       final response = await http.post(Uri.parse(fullUrl),
           headers: {"Content-Type": "application/json"}, body: encodeBody);
+
       Logger.success("Response from total payouts: ${response.body}");
       Logger.success("get total payouts URL: $fullUrl");
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final payoutRecords = data['records'] as List<dynamic>?;

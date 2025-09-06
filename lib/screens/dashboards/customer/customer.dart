@@ -2785,7 +2785,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     ),
                     if (custtype == 'Premium' ||
                         custtype == 'Premium Select Lite' ||
-                        custtype == 'Neo Select')
+                        custtype == 'Neo Select' ||
+                        custtype == 'Premium Select')
                       ListTile(
                         leading: Icon(Icons.people),
                         title: Text('Referral Customers'),
@@ -2799,7 +2800,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                     if (custtype == 'Premium' ||
                         custtype == 'Premium Select Lite' ||
-                        custtype == 'Neo Select')
+                        custtype == 'Neo Select' ||
+                        custtype == 'Premium Select')
                       ListTile(
                         leading: Icon(Icons.account_balance_wallet),
                         title: Text('My Wallet'),
@@ -2813,7 +2815,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                     if (custtype == 'Premium' ||
                         custtype == 'Premium Select Lite' ||
-                        custtype == 'Neo Select')
+                        custtype == 'Neo Select' ||
+                        custtype == 'Premium Select')
                       ExpansionTile(
                         title: const Text("Payouts"),
                         leading: const Icon(Icons.payment),
@@ -2840,17 +2843,17 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
                     //commented order history since in v1 we wont be including it.
 
-                    ListTile(
-                      leading: Icon(Icons.history),
-                      title: Text('Order History'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OrderDetails()),
-                        );
-                      },
-                    ),
+                    // ListTile(
+                    //   leading: Icon(Icons.history),
+                    //   title: Text('Order History'),
+                    //   onTap: () {
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //           builder: (context) => OrderDetails()),
+                    //     );
+                    //   },
+                    // ),
                     const Divider(),
                     Padding(
                       padding: EdgeInsets.zero,

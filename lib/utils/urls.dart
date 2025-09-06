@@ -22,7 +22,7 @@ class AppUrls {
       "https://ca.uniqbizz.com/api/packages/best_deals.php";
 
   static String get getTourPackageDetails =>
-      "$baseUrl/packages/view_package_details/package_details.php";
+      "https://ca.uniqbizz.com/api/packages/view_package_details/package_details.php";
 
   // ==================== BASE URL TO GET IMAGES ====================
   static String get getImageBaseUrl => "https://ca.uniqbizz.com/";
