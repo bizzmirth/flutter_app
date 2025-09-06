@@ -2843,17 +2843,17 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
                     //commented order history since in v1 we wont be including it.
 
-                    ListTile(
-                      leading: Icon(Icons.history),
-                      title: Text('Order History'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OrderDetails()),
-                        );
-                      },
-                    ),
+                    // ListTile(
+                    //   leading: Icon(Icons.history),
+                    //   title: Text('Order History'),
+                    //   onTap: () {
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //           builder: (context) => OrderDetails()),
+                    //     );
+                    //   },
+                    // ),
                     const Divider(),
                     Padding(
                       padding: EdgeInsets.zero,
