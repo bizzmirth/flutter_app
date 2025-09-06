@@ -34,7 +34,7 @@ class PackageDetailsController extends ChangeNotifier {
   // Check if data is available
   bool get hasData => _packageResponse != null && _packageResponse!.isSuccess;
 
-  void getPackageDetails({String packageId = "160"}) async {
+  void getPackageDetails({String? packageId}) async {
     _isLoading = true;
     _error = null;
     _packageResponse = null;
@@ -46,7 +46,7 @@ class PackageDetailsController extends ChangeNotifier {
       final Map<String, dynamic> body = {"id": packageId};
       final encodeBody = jsonEncode(body);
 
-      Logger.info("Fetching package details for ID: $packageId");
+      Logger.warning("Fetching package details for ID: $encodeBody");
 
       final response = await http.post(
         Uri.parse(fullUrl),

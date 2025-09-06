@@ -57,6 +57,7 @@ class CustReferenceAllPayoutDataSource extends DataTableSource {
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case "credited":
+      case "paid":
         return Colors.green;
       case "pending":
         return Colors.orange;

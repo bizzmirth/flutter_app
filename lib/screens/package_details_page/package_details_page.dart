@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class PackageDetailsPage extends StatefulWidget {
@@ -123,7 +122,10 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
 
       final pictures = controller.packageResponse!.packagePictures;
       final itemCount = pictures.length;
-      final itinerarys = controller.packageResponse?.packageItinerary.first;
+      final packageItinerary =
+          controller.packageResponse?.packageItinerary ?? [];
+      final itinerarys =
+          packageItinerary.isNotEmpty ? packageItinerary.first : null;
 
       return Scaffold(
         appBar: AppBar(
@@ -152,6 +154,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                         bool isActive = index == currentIndex;
                         final picture = pictures[index];
                         final imageUrl = picture.getFullImageUrl();
+                        // Logger.warning("Image URL: $imageUrl");
 
                         return ClipRRect(
                           borderRadius:
@@ -241,18 +244,19 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                           InfoRow(
                             icon: Icons.location_on,
                             iconColor: Colors.teal,
-                            text: controller.packageDetails!.name,
+                            text: controller.packageDetails?.name ?? "",
                           ),
                           InfoRow(
                             icon: Icons.timer,
                             iconColor: Colors.teal,
                             text: formatTourDuration(
-                                controller.packageDetails!.tourDays),
+                                controller.packageDetails?.tourDays ?? ""),
                           ),
                           InfoRow(
                             icon: Icons.landscape,
                             iconColor: Colors.teal,
-                            text: controller.packageDetails!.sightseeingType,
+                            text: controller.packageDetails?.sightseeingType ??
+                                "",
                           ),
                           InfoRow(
                             icon: Icons.directions_car,
@@ -297,12 +301,12 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   PriceRow(
                       label: 'Per Adult Price:',
                       price:
-                          '₹${controller.packagePrice!.totalPackagePricePerAdult}/-',
+                          '₹${controller.packagePrice?.totalPackagePricePerAdult ?? ""}/-',
                       icon: Icons.person),
                   PriceRow(
                       label: 'Per Child Price:',
                       price:
-                          '₹${controller.packagePrice!.totalPackagePricePerChild}/-',
+                          '₹${controller.packagePrice?.totalPackagePricePerChild ?? ""}/-',
                       icon: Icons.child_care),
                 ],
               ),
@@ -323,7 +327,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      controller.packageDetails!.description,
+                      controller.packageDetails?.description ?? "",
                       style: GoogleFonts.poppins(fontSize: 14),
                     ),
                   ],

@@ -2783,7 +2783,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     ),
                     if (custtype == 'Premium' ||
                         custtype == 'Premium Select Lite' ||
-                        custtype == 'Neo Select')
+                        custtype == 'Neo Select' ||
+                        custtype == 'Premium Select')
                       ListTile(
                         leading: Icon(Icons.people),
                         title: Text('Referral Customers'),
@@ -2797,7 +2798,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                     if (custtype == 'Premium' ||
                         custtype == 'Premium Select Lite' ||
-                        custtype == 'Neo Select')
+                        custtype == 'Neo Select' ||
+                        custtype == 'Premium Select')
                       ListTile(
                         leading: Icon(Icons.account_balance_wallet),
                         title: Text('My Wallet'),
@@ -2811,7 +2813,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                     if (custtype == 'Premium' ||
                         custtype == 'Premium Select Lite' ||
-                        custtype == 'Neo Select')
+                        custtype == 'Neo Select' ||
+                        custtype == 'Premium Select')
                       ExpansionTile(
                         title: const Text("Payouts"),
                         leading: const Icon(Icons.payment),
