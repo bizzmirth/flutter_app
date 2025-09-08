@@ -1,8 +1,8 @@
 // ignore_for_file: unnecessary_null_comparison
 
-import 'package:bizzmirth_app/controllers/customer_controller.dart';
-import 'package:bizzmirth_app/controllers/profile_controller.dart';
-import 'package:bizzmirth_app/data_source/cust_top_referral_customers.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/profile_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/contact_us/contact_us.dart';

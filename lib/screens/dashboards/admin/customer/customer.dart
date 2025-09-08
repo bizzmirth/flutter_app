@@ -1,6 +1,6 @@
-import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
-import 'package:bizzmirth_app/data_source/admin_cust_pending_data_source.dart';
-import 'package:bizzmirth_app/data_source/admin_cust_registered_data_source.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_customer_controller.dart';
+import 'package:bizzmirth_app/data_source/admin_data_sources/admin_cust_pending_data_source.dart';
+import 'package:bizzmirth_app/data_source/admin_data_sources/admin_cust_registered_data_source.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/customer/add_customer.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';

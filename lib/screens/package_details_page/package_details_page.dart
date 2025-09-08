@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:bizzmirth_app/controllers/package_details_controller.dart';
+import 'package:bizzmirth_app/controllers/all_packages_controllers/package_details_controller.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';

@@ -1,5 +1,5 @@
-import 'package:bizzmirth_app/controllers/cust_referral_payout_controller.dart';
-import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/cust_referral_payout_controller.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_all_payout_data_source.dart';
 import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';

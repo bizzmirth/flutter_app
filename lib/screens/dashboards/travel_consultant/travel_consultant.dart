@@ -1,3 +1,5 @@
+import 'package:bizzmirth_app/data_source/tc_data_sources/tc_top_customers.dart';
+import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_product_payouts.dart';
@@ -7,7 +9,9 @@ import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
+import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
+import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -19,6 +23,11 @@ class TCDashboardPage extends StatefulWidget {
 }
 
 class _TCDashboardPageState extends State<TCDashboardPage> {
+  int _rowsPerPage = 5; // Default rows per page
+  int _rowsPerPage1 = 5; // Default rows per page
+  static const double dataRowHeight = 50.0;
+  static const double headerHeight = 56.0;
+  static const double paginationHeight = 60.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -170,7 +179,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
+            // _buildHeader(),
             SizedBox(height: 20),
             CustomAnimatedSummaryCards(
               cardData: [
@@ -188,17 +197,75 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                     icon: Icons.account_balance_wallet),
               ],
             ),
+            // SizedBox(height: 20),
+            // ProgressTrackerCard(
+            //   totalSteps: 10,
+            //   currentStep: 3,
+            //   message: "Keep going! You're doing great!",
+            //   progressColor: Colors.orange,
+            // ),
             SizedBox(height: 20),
-            ProgressTrackerCard(
+            ReferralTrackerCard(
               totalSteps: 10,
               currentStep: 3,
-              message: "Keep going! You're doing great!",
-              progressColor: Colors.orange,
+              progressColor: Colors.green,
+            ),
+            SizedBox(height: 20),
+            ReferralTrackerCard(
+              totalSteps: 10,
+              currentStep: 6,
+              progressColor: Colors.purpleAccent,
             ),
             SizedBox(height: 20),
             ImprovedLineChart(),
             SizedBox(height: 20),
-            _buildTopPerformersSection(),
+            // _buildTopPerformersSection(),
+            Divider(thickness: 1, color: Colors.black26),
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Top Customer's List:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            Divider(thickness: 1, color: Colors.black26),
+            FilterBar(),
+            Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: SizedBox(
+                height: (_rowsPerPage * dataRowHeight) +
+                    headerHeight +
+                    paginationHeight,
+                child: PaginatedDataTable(
+                  columnSpacing: 60,
+                  dataRowMinHeight: 40,
+                  columns: [
+                    DataColumn(label: Text("ID")),
+                    DataColumn(label: Text("Full Name")),
+                    DataColumn(label: Text("Date Reg.")),
+                    DataColumn(label: Text("Total CU Ref")),
+                    DataColumn(label: Text("Active/Inactive")),
+                  ],
+                  source: TcTopCustomersDataSource(data: customersTA),
+                  rowsPerPage: _rowsPerPage,
+                  availableRowsPerPage: [5, 10, 15, 20, 25],
+                  onRowsPerPageChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _rowsPerPage = value;
+                      });
+                    }
+                  },
+                  arrowHeadColor: Colors.blue,
+                ),
+              ),
+            ),
+
             SizedBox(height: 20),
             _buildTopPerformersSection1(),
           ],

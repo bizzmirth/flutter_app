@@ -1,6 +1,6 @@
-import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
-import 'package:bizzmirth_app/data_source/cust_product_all_payout_data_source.dart';
-import 'package:bizzmirth_app/data_source/cust_product_payout_data_source.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/cust_product_payout_controller.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_product_all_payout_data_source.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_product_payout_data_source.dart';
 import 'package:bizzmirth_app/models/cust_product_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';

@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:bizzmirth_app/controllers/employee_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_employee_controller.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/add_employees.dart';
@@ -11,14 +10,14 @@ import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class EmployeeDataSource extends DataTableSource {
+class AdminEmployeeDataSource extends DataTableSource {
   final BuildContext context;
   List<PendingEmployeeModel> pendingEmployees;
 
-  EmployeeDataSource(this.context, this.pendingEmployees);
+  AdminEmployeeDataSource(this.context, this.pendingEmployees);
 
   final IsarService isarService = IsarService();
-  final EmployeeController employeeController = EmployeeController();
+  final AdminEmployeeController employeeController = AdminEmployeeController();
   var isLoading = false;
   String name = "";
   final Map<String, String?> _departmentNameCache = {};

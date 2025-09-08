@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bizzmirth_app/controllers/customer_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/approve_tc_payments_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/pending_transactions_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/transactions_history_page.dart';

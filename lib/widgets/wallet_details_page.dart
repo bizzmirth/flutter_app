@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:bizzmirth_app/controllers/cust_wallet_controller.dart';
-import 'package:bizzmirth_app/data_source/cust_booking_points_data_source.dart';
-import 'package:bizzmirth_app/data_source/cust_redeemable_table_data_source.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/cust_wallet_controller.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_booking_points_data_source.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_redeemable_table_data_source.dart';
 import 'package:bizzmirth_app/models/cust_booking_wallet_history_model.dart';
 import 'package:bizzmirth_app/models/cust_redeemable_wallet_history_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';

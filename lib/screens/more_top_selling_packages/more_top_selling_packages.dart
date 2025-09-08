@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
+import 'package:bizzmirth_app/controllers/all_packages_controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/logger.dart';

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_customer_controller.dart';
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/utils/constants.dart';

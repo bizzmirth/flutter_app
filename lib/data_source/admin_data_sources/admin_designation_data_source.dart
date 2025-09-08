@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_designation_department_controller.dart';
 import 'package:bizzmirth_app/models/designation_model.dart';
 import 'package:bizzmirth_app/utils/department_dropdown.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -7,17 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class MyDesigDataSource extends DataTableSource {
+class AdminDesigDataSource extends DataTableSource {
   final List<Designation> _designations;
   final BuildContext context;
-  MyDesigDataSource(this._designations, this.context);
+  AdminDesigDataSource(this._designations, this.context);
   bool isLoading = false;
 
   Future<void> deleteDesignation(Designation designation) async {
     try {
       isLoading = true;
-      final controller =
-          Provider.of<DesignationDepartmentController>(context, listen: false);
+      final controller = Provider.of<AdminDesignationDepartmentController>(
+          context,
+          listen: false);
       await controller.apiDeleteDesignation(designation);
       await controller.fetchDesignations();
       notifyListeners();
@@ -33,8 +34,9 @@ class MyDesigDataSource extends DataTableSource {
   Future<void> restoreDesignation(Designation designation) async {
     try {
       isLoading = true;
-      final controller =
-          Provider.of<DesignationDepartmentController>(context, listen: false);
+      final controller = Provider.of<AdminDesignationDepartmentController>(
+          context,
+          listen: false);
       await controller.apiRestoreDesignation(designation);
       await controller.fetchDesignations();
       notifyListeners();
@@ -138,8 +140,8 @@ class MyDesigDataSource extends DataTableSource {
       bool isEditMode = false}) {
     final TextEditingController nameController =
         TextEditingController(text: designation?.desgName ?? '');
-    final DesignationDepartmentController controller =
-        DesignationDepartmentController();
+    final AdminDesignationDepartmentController controller =
+        AdminDesignationDepartmentController();
     String? selectedDepartmentId = designation?.deptId;
 
     var title = "";
@@ -229,7 +231,7 @@ class MyDesigDataSource extends DataTableSource {
                                   designation?.status);
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 final controller = Provider.of<
-                                        DesignationDepartmentController>(
+                                        AdminDesignationDepartmentController>(
                                     context,
                                     listen: false);
                                 Future.wait([

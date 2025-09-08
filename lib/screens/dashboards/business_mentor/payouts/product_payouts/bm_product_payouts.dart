@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/data_source/cust_all_payout_data_source.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_all_payout_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';

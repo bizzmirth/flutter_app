@@ -1,6 +1,6 @@
-import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
-import 'package:bizzmirth_app/data_source/department_data_source.dart';
-import 'package:bizzmirth_app/data_source/designation_data_source.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_designation_department_controller.dart';
+import 'package:bizzmirth_app/data_source/admin_data_sources/admin_department_data_source.dart';
+import 'package:bizzmirth_app/data_source/admin_data_sources/admin_designation_data_source.dart';
 import 'package:bizzmirth_app/models/department_model.dart';
 import 'package:bizzmirth_app/utils/department_dropdown.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -22,16 +22,17 @@ class _DesignationsPageState extends State<DesignationsPage> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
-  final DesignationDepartmentController controller =
-      DesignationDepartmentController();
+  final AdminDesignationDepartmentController controller =
+      AdminDesignationDepartmentController();
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final controller =
-          Provider.of<DesignationDepartmentController>(context, listen: false);
+      final controller = Provider.of<AdminDesignationDepartmentController>(
+          context,
+          listen: false);
       Future.wait(
           [controller.fetchDepartments(), controller.fetchDesignations()]);
     });
@@ -62,7 +63,8 @@ class _DesignationsPageState extends State<DesignationsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<DesignationDepartmentController>(context);
+    final controller =
+        Provider.of<AdminDesignationDepartmentController>(context);
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
@@ -131,7 +133,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
                           height: (_rowsPerPage * dataRowHeight) +
                               headerHeight +
                               paginationHeight,
-                          child: Consumer<DesignationDepartmentController>(
+                          child: Consumer<AdminDesignationDepartmentController>(
                             builder: (context, value, child) {
                               return PaginatedDataTable(
                                 columnSpacing: 255,
@@ -141,7 +143,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
                                   DataColumn(label: Text("Department Name")),
                                   DataColumn(label: Text("Action"))
                                 ],
-                                source: MyDepartDataSource(
+                                source: AdminDepartDataSource(
                                     controller.departments, context),
                                 rowsPerPage: _rowsPerPage,
                                 availableRowsPerPage: [5, 10, 15, 20, 25],
@@ -212,7 +214,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
                             DataColumn(label: Text("Department")),
                             DataColumn(label: Text("Action"))
                           ],
-                          source: MyDesigDataSource(
+                          source: AdminDesigDataSource(
                               controller.designation, context),
                           rowsPerPage: _rowsPerPage1,
                           availableRowsPerPage: [5, 10, 15, 20, 25],
@@ -388,10 +390,10 @@ class _DesignationsPageState extends State<DesignationsPage> {
                           Navigator.pop(context);
                           Navigator.pop(context);
                           WidgetsBinding.instance.addPostFrameCallback((_) {
-                            final controller =
-                                Provider.of<DesignationDepartmentController>(
-                                    context,
-                                    listen: false);
+                            final controller = Provider.of<
+                                    AdminDesignationDepartmentController>(
+                                context,
+                                listen: false);
                             Future.wait([
                               controller.fetchDepartments(),
                             ]);
@@ -479,7 +481,8 @@ class _DesignationsPageState extends State<DesignationsPage> {
                         nameController.text, selectedDepartmentId);
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       final controller =
-                          Provider.of<DesignationDepartmentController>(context,
+                          Provider.of<AdminDesignationDepartmentController>(
+                              context,
                               listen: false);
                       Future.wait([
                         controller.fetchDesignations(),

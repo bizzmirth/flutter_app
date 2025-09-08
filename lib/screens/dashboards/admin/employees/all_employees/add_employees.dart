@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:bizzmirth_app/controllers/employee_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_employee_controller.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
@@ -55,7 +54,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   String _selectedBranch = "---- Select Branch * ----";
   String _selectedManager = "---- Select Reporting Manager * ----";
   final IsarService _isarService = IsarService();
-  final EmployeeController employeeController = EmployeeController();
+  final AdminEmployeeController employeeController = AdminEmployeeController();
 
   final GlobalKey<FormFieldState> _firstNameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _lastNameKey = GlobalKey<FormFieldState>();

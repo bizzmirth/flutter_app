@@ -1,6 +1,6 @@
-import 'package:bizzmirth_app/controllers/customer_controller.dart';
-import 'package:bizzmirth_app/data_source/cust_pending_data_source.dart';
-import 'package:bizzmirth_app/data_source/cust_reg_data_source.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_pending_data_source.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_reg_data_source.dart';
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';

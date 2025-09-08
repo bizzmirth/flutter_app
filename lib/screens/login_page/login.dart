@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/login_controller.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/login_controller.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/admin_dashboard.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_channel_head/business_channel_head.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_development_manager/business_development_manager.dart';

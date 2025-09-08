@@ -165,7 +165,7 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
                     style: TextStyle(color: Colors.white),
                   ),
                   Spacer(),
-                  Text(data.thisMonthValue!,
+                  Text(data.thisMonthValue ?? "",
                       style: TextStyle(color: Colors.white))
                 ],
               )

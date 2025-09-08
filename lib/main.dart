@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:bizzmirth_app/controllers/admin_busniess_mentor_controller.dart';
-import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
-import 'package:bizzmirth_app/controllers/contact_us_controller.dart';
-import 'package:bizzmirth_app/controllers/cust_order_history_controller.dart';
-import 'package:bizzmirth_app/controllers/cust_product_payout_controller.dart';
-import 'package:bizzmirth_app/controllers/cust_referral_payout_controller.dart';
-import 'package:bizzmirth_app/controllers/cust_wallet_controller.dart';
-import 'package:bizzmirth_app/controllers/customer_controller.dart';
-import 'package:bizzmirth_app/controllers/designation_department_controller.dart';
-import 'package:bizzmirth_app/controllers/employee_controller.dart';
-import 'package:bizzmirth_app/controllers/login_controller.dart';
-import 'package:bizzmirth_app/controllers/package_details_controller.dart';
-import 'package:bizzmirth_app/controllers/profile_controller.dart';
-import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_busniess_mentor_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_customer_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_designation_department_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_employee_controller.dart';
+import 'package:bizzmirth_app/controllers/all_packages_controllers/package_details_controller.dart';
+import 'package:bizzmirth_app/controllers/all_packages_controllers/tour_packages_controller.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/contact_us_controller.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/login_controller.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/profile_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/cust_order_history_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/cust_product_payout_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/cust_referral_payout_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/cust_wallet_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
 import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/models/transactions.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
@@ -122,10 +122,10 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (_) => LoginController()),
         ChangeNotifierProvider(create: (_) => CustomerController()),
-        ChangeNotifierProvider(create: (_) => EmployeeController()),
+        ChangeNotifierProvider(create: (_) => AdminEmployeeController()),
         ChangeNotifierProvider(create: (_) => AdminBusniessMentorController()),
         ChangeNotifierProvider(
-            create: (_) => DesignationDepartmentController()),
+            create: (_) => AdminDesignationDepartmentController()),
         ChangeNotifierProvider(create: (_) => AdminCustomerController()),
         ChangeNotifierProvider(create: (_) => CustProductPayoutController()),
         ChangeNotifierProvider(create: (_) => CustReferralPayoutController()),
@@ -184,6 +184,79 @@ class MyHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
+
+final List<Map<String, dynamic>> customersTA = [
+  {
+    "id": "1",
+    "name": "Savio Vaz",
+    "dateReg": "10/01/2022",
+    "totalCURef": 15,
+    "status": "Active",
+  },
+  {
+    "id": "2",
+    "name": "Pandurang Naik",
+    "dateReg": "15/03/2021",
+    "totalCURef": 7,
+    "status": "Inactive",
+  },
+  {
+    "id": "3",
+    "name": "Nishant C M",
+    "dateReg": "11/06/2025",
+    "totalCURef": 22,
+    "status": "Active",
+  },
+  {
+    "id": "4",
+    "name": "Shravan Apte",
+    "dateReg": "01/03/2025",
+    "totalCURef": 3,
+    "status": "Inactive",
+  },
+  {
+    "id": "5",
+    "name": "Rohan Patil",
+    "dateReg": "25/12/2024",
+    "totalCURef": 10,
+    "status": "Active",
+  },
+  {
+    "id": "6",
+    "name": "Amit Desai",
+    "dateReg": "05/08/2023",
+    "totalCURef": 5,
+    "status": "Inactive",
+  },
+  {
+    "id": "7",
+    "name": "Kiran Naik",
+    "dateReg": "17/11/2022",
+    "totalCURef": 8,
+    "status": "Active",
+  },
+  {
+    "id": "8",
+    "name": "Meera Patil",
+    "dateReg": "22/02/2024",
+    "totalCURef": 12,
+    "status": "Active",
+  },
+  {
+    "id": "9",
+    "name": "Vikram Jadhav",
+    "dateReg": "03/07/2021",
+    "totalCURef": 4,
+    "status": "Inactive",
+  },
+  {
+    "id": "10",
+    "name": "Priya Naik",
+    "dateReg": "30/09/2023",
+    "totalCURef": 6,
+    "status": "Active",
+  },
+];
 
 final List<Map<String, dynamic>> orders = [
   {

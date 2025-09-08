@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:bizzmirth_app/controllers/employee_controller.dart';
-import 'package:bizzmirth_app/data_source/employee_data_source.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_employee_controller.dart';
+import 'package:bizzmirth_app/data_source/admin_data_sources/admin_employee_data_source.dart';
 import 'package:bizzmirth_app/data_source/registered_employee_data_source.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
@@ -30,7 +30,7 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
   late StreamSubscription<void> _registeredEmployeeWatcher;
   List<PendingEmployeeModel> employee = [];
   List<RegisteredEmployeeModel> registeredEmployee = [];
-  final EmployeeController employeeController = EmployeeController();
+  final AdminEmployeeController employeeController = AdminEmployeeController();
   final IsarService isarService = IsarService();
   bool isLoading = true;
 
@@ -98,7 +98,8 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<EmployeeController>(context, listen: false);
+    final controller =
+        Provider.of<AdminEmployeeController>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text('All Employees', style: Appwidget.poppinsAppBarTitle()),
@@ -151,7 +152,7 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
                             DataColumn(label: Text("Status")),
                             DataColumn(label: Text("Action"))
                           ],
-                          source: EmployeeDataSource(context, employee),
+                          source: AdminEmployeeDataSource(context, employee),
                           rowsPerPage: _rowsPerPage,
                           availableRowsPerPage: [5, 10, 15, 20, 25],
                           onRowsPerPageChanged: (value) {

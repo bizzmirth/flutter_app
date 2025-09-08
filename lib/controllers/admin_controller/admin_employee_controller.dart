@@ -12,7 +12,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class EmployeeController extends ChangeNotifier {
+class AdminEmployeeController extends ChangeNotifier {
   final IsarService _isarService = IsarService();
   final String baseUrl =
       'https://testca.uniqbizz.com/api/employees/all_employees';

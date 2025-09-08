@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/cust_order_history_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/cust_order_history_controller.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';

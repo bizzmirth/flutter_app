@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/employee_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_employee_controller.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/add_employees.dart';
@@ -14,7 +14,7 @@ class RegisteredEmployeeDataSource extends DataTableSource {
 
   RegisteredEmployeeDataSource(this.context, this.registeredEmployees);
   final IsarService isarService = IsarService();
-  final EmployeeController employeeController = EmployeeController();
+  final AdminEmployeeController employeeController = AdminEmployeeController();
 
   Future<void> deleteEmployee(idToDelete, {bool showToast = true}) async {
     try {

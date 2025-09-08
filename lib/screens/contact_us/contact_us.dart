@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/contact_us_controller.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/contact_us_controller.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/google_maps_widget.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
