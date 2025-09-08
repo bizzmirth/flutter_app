@@ -88,31 +88,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+    - assets/
     - assets/videos/
     - assets/animations/
-    - assets/
-    - assets/bali.jpg
-    - assets/newyork.jpg
-    - assets/paris.jpg
-    - assets/santorini.jpg
-    - assets/tokyo.jpg
-    - assets/user_image.jpg
-    - assets/bizz_logo.png
-    - assets/uniqbizz.png
-    - assets/bulb.jpg
-    - assets/plant.jpg
-    - assets/cliff.jpg
-    - assets/vietnam.jpg
-    - assets/kashmir.jpg
-    - assets/kerla.jpg
-    - assets/goa.jpg
-    - assets/dubai.jpg
-    - assets/thailand.jpg
-    - assets/1.jpg
-    - assets/2.jpg
-    - assets/3.jpg
-    - assets/4.jpg
-    - assets/5.jpg
 
 flutter_launcher_icons:
   android: true
