@@ -235,7 +235,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                     value: '9',
                     icon: Icons.calendar_today),
                 SummaryCardData(
-                    title: 'MY WALLET',
+                    title: 'Topup Wallet',
                     value: '₹ 2000',
                     icon: Icons.account_balance_wallet),
               ],

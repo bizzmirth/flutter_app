@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bizzmirth_app/models/summarycard.dart';
+import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
 import 'package:flutter/material.dart';
 
@@ -71,6 +72,7 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
 
   Widget _buildCard(SummaryCardData data) {
     bool isWalletCard = data.title.contains('WALLET');
+    bool isTopupWallet = data.title.contains('Topup Wallet');
     bool isCommissionCard = data.title.contains('Commision Earned');
 
     return GestureDetector(
@@ -83,7 +85,18 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
                 ),
               );
             }
-          : null,
+          : isTopupWallet
+              ? () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TopUpWalletPage(
+                        title: "Top Up Wallet",
+                      ),
+                    ),
+                  );
+                }
+              : null,
       child: AnimatedContainer(
         duration: Duration(seconds: 1),
         curve: Curves.easeInOut,
@@ -131,7 +144,7 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  if (isWalletCard)
+                  if (isWalletCard || isTopupWallet)
                     Icon(
                       Icons.arrow_forward_ios,
                       size: 16,
