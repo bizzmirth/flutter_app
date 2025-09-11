@@ -126,7 +126,8 @@ class ProfileController extends ChangeNotifier {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(body),
       );
-
+      Logger.success("Request Body: ${jsonEncode(body)}");
+      Logger.success("Request URL: $fullUrl");
       Logger.success("Response from Profile API: ${response.body}");
 
       if (response.statusCode == 200) {

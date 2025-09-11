@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -77,7 +78,7 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
         }
       }
     } catch (e) {
-      print('Error initializing video $index: $e');
+      Logger.error('Error initializing video $index: $e');
       // Don't rethrow, just continue
     }
   }

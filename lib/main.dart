@@ -5148,16 +5148,16 @@ class _WebViewAppState extends State<WebViewApp> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
-            debugPrint("Loading: $progress%");
+            Logger.warning("Loading: $progress%");
           },
           onPageStarted: (String url) {
-            debugPrint("Started: $url");
+            Logger.warning("Started: $url");
           },
           onPageFinished: (String url) {
-            debugPrint("Finished: $url");
+            Logger.warning("Finished: $url");
           },
           onWebResourceError: (WebResourceError error) {
-            debugPrint("Error: ${error.description}");
+            Logger.warning("Error: ${error.description}");
           },
           onNavigationRequest: (NavigationRequest request) {
             return NavigationDecision.navigate;

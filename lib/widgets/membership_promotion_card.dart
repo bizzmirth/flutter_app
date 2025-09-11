@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -575,10 +576,10 @@ class _PlanCard extends StatelessWidget {
         await launchUrlString(url);
       } else {
         // Handle the case where the URL can't be launched
-        debugPrint('Could not launch $url');
+        Logger.error('Could not launch $url');
       }
     } catch (e) {
-      debugPrint('Error launching URL: $e');
+      Logger.error('Error launching URL: $e');
     }
   }
 }

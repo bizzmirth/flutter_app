@@ -1,13 +1,9 @@
-// ignore_for_file: unnecessary_null_comparison
-
 import 'package:bizzmirth_app/controllers/common_controllers/profile_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
 import 'package:bizzmirth_app/data_source/customer_data_sources/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/contact_us/contact_us.dart';
-import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_details.dart';
-import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_referral_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
@@ -800,8 +796,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
           SizedBox(height: 24),
 
           // Limited preview section with improved design
-          if (customerController.topCustomerRefererals != null &&
-              customerController.topCustomerRefererals.isNotEmpty)
+          if (customerController.topCustomerRefererals.isNotEmpty)
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
