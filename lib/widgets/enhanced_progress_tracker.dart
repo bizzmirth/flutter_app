@@ -17,7 +17,7 @@ class EnhancedProgressTracker extends StatefulWidget {
   });
 
   @override
-  _EnhancedProgressTrackerState createState() =>
+  State<EnhancedProgressTracker> createState() =>
       _EnhancedProgressTrackerState();
 }
 

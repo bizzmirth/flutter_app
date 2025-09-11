@@ -8,8 +8,7 @@ class AddViewTEPage extends StatefulWidget {
   const AddViewTEPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _AddViewTEPageState createState() => _AddViewTEPageState();
+  State<AddViewTEPage> createState() => _AddViewTEPageState();
 }
 
 class _AddViewTEPageState extends State<AddViewTEPage> {

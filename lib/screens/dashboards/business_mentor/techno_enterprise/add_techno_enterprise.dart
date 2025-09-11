@@ -20,8 +20,7 @@ class AddViewTechnoPage extends StatefulWidget {
       this.isEditMode = false});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _AddViewTechnoPageState createState() => _AddViewTechnoPageState();
+  State<AddViewTechnoPage> createState() => _AddViewTechnoPageState();
 }
 
 class _AddViewTechnoPageState extends State<AddViewTechnoPage> {

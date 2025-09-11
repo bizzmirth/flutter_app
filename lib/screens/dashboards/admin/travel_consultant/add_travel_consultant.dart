@@ -8,7 +8,7 @@ class AddTcPage extends StatefulWidget {
   const AddTcPage({super.key});
 
   @override
-  _AddTcPageState createState() => _AddTcPageState();
+  State<AddTcPage> createState() => _AddTcPageState();
 }
 
 class _AddTcPageState extends State<AddTcPage> {

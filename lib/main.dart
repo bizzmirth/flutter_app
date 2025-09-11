@@ -4590,11 +4590,10 @@ class _ViewPackagePageState extends State<ViewPackagePage> {
 
 class AddTAcustPage extends StatefulWidget {
   final bool isHidden;
-  AddTAcustPage({Key? key, required this.isHidden}) : super(key: key);
+  const AddTAcustPage({super.key, required this.isHidden});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _AddTAcustPageState createState() => _AddTAcustPageState();
+  State<AddTAcustPage> createState() => _AddTAcustPageState();
 }
 
 class _AddTAcustPageState extends State<AddTAcustPage> {
@@ -5194,8 +5193,7 @@ class EnquireNowPage extends StatefulWidget {
   const EnquireNowPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _EnquireNowPageState createState() => _EnquireNowPageState();
+  State<EnquireNowPage> createState() => _EnquireNowPageState();
 }
 
 class _EnquireNowPageState extends State<EnquireNowPage> {

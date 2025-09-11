@@ -5,8 +5,7 @@ class PackagePricingScreen extends StatefulWidget {
   const PackagePricingScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _PackagePricingScreenScreenState createState() =>
+  State<PackagePricingScreen> createState() =>
       _PackagePricingScreenScreenState();
 }
 

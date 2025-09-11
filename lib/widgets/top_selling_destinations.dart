@@ -12,7 +12,7 @@ class TopSellingDestinations extends StatefulWidget {
   const TopSellingDestinations({super.key});
 
   @override
-  _TopSellingDestinationsState createState() => _TopSellingDestinationsState();
+  State<TopSellingDestinations> createState() => _TopSellingDestinationsState();
 }
 
 class _TopSellingDestinationsState extends State<TopSellingDestinations>

@@ -24,7 +24,7 @@ class AddcustPage extends StatefulWidget {
       this.isViewMode = false});
 
   @override
-  _AddcustState createState() => _AddcustState();
+  State<AddcustPage> createState() => _AddcustState();
 }
 
 class _AddcustState extends State<AddcustPage> {

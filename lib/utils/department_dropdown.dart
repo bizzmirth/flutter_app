@@ -10,15 +10,15 @@ class DepartmentDropdown extends StatefulWidget {
   final String? initialDepartmentId;
 
   const DepartmentDropdown({
-    Key? key,
+    super.key,
     this.onDepartmentSelected,
     this.isViewMode = false,
     this.initialDepartment,
     this.initialDepartmentId,
-  }) : super(key: key);
+  });
 
   @override
-  _DepartmentDropdownState createState() => _DepartmentDropdownState();
+  State<DepartmentDropdown> createState() => _DepartmentDropdownState();
 }
 
 class _DepartmentDropdownState extends State<DepartmentDropdown> {

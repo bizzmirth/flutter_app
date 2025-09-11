@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TransactionHistoryPage extends StatelessWidget {
   final List<Map<String, String>> transactions;
-  TransactionHistoryPage({required this.transactions});
+  const TransactionHistoryPage({super.key, required this.transactions});
 
   @override
   Widget build(BuildContext context) {

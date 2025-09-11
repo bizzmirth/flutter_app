@@ -8,8 +8,7 @@ class AddbmPage1 extends StatefulWidget {
   const AddbmPage1({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _AddbmState1 createState() => _AddbmState1();
+  State<AddbmPage1> createState() => _AddbmState1();
 }
 
 class _AddbmState1 extends State<AddbmPage1> {

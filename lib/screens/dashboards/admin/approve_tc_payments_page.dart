@@ -5,7 +5,8 @@ class ApprovePaymentsPage extends StatefulWidget {
   final Function(int) approveTransaction;
   final Function(int) rejectTransaction;
 
-  ApprovePaymentsPage({
+  const ApprovePaymentsPage({
+    super.key,
     required this.pendingTransactions,
     required this.approveTransaction,
     required this.rejectTransaction,

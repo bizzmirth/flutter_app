@@ -4,8 +4,7 @@ class PackageItenaryDetails extends StatefulWidget {
   const PackageItenaryDetails({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _PackageItenaryDetailsState createState() => _PackageItenaryDetailsState();
+  State<PackageItenaryDetails> createState() => _PackageItenaryDetailsState();
 }
 
 class _PackageItenaryDetailsState extends State<PackageItenaryDetails> {

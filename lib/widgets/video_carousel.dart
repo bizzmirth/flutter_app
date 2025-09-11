@@ -7,17 +7,17 @@ class FancyVideoSlider extends StatefulWidget {
   final List<String> videoUrls;
 
   const FancyVideoSlider({
-    Key? key,
+    super.key,
     this.tabHeight = 500,
     this.phoneHeight = 250,
     this.videoUrls = const [
       // "https://testca.uniqbizz.com/api/assets/video/slider/info.mp4",
       "https://testca.uniqbizz.com/api/assets/video/slider/travel.mp4",
     ],
-  }) : super(key: key);
+  });
 
   @override
-  _FancyVideoSliderState createState() => _FancyVideoSliderState();
+  State<FancyVideoSlider> createState() => _FancyVideoSliderState();
 }
 
 class _FancyVideoSliderState extends State<FancyVideoSlider> {

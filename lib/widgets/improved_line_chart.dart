@@ -10,7 +10,7 @@ class ImprovedLineChart extends StatefulWidget {
   const ImprovedLineChart({super.key, this.initialYear});
 
   @override
-  _ImprovedLineChartState createState() => _ImprovedLineChartState();
+  State<ImprovedLineChart> createState() => _ImprovedLineChartState();
 }
 
 class _ImprovedLineChartState extends State<ImprovedLineChart> {

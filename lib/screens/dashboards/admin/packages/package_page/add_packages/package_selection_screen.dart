@@ -6,8 +6,7 @@ class PackageSelectionScreen extends StatefulWidget {
   const PackageSelectionScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _PackageSelectionScreenState createState() => _PackageSelectionScreenState();
+  State<PackageSelectionScreen> createState() => _PackageSelectionScreenState();
 }
 
 class _PackageSelectionScreenState extends State<PackageSelectionScreen> {

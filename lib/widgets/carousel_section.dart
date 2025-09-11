@@ -8,8 +8,7 @@ class CarouselSection extends StatefulWidget {
   const CarouselSection({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _CarouselSectionState createState() => _CarouselSectionState();
+  State<CarouselSection> createState() => _CarouselSectionState();
 }
 
 class _CarouselSectionState extends State<CarouselSection> {
@@ -37,52 +36,50 @@ class _CarouselSectionState extends State<CarouselSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          carousel_slider.CarouselSlider.builder(
-            itemCount: imageUrls.length,
-            itemBuilder: (context, index, realIndex) {
-              bool isActive = index == currentIndex;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        carousel_slider.CarouselSlider.builder(
+          itemCount: imageUrls.length,
+          itemBuilder: (context, index, realIndex) {
+            bool isActive = index == currentIndex;
 
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: imageUrls[index],
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          const Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) => const Center(
-                          child: Icon(Icons.error, color: Colors.red)),
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: imageUrls[index],
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        const Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) => const Center(
+                        child: Icon(Icons.error, color: Colors.red)),
+                  ),
+                  if (!isActive)
+                    BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                      child: Container(color: Colors.black.withOpacity(0.3)),
                     ),
-                    if (!isActive)
-                      BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                        child: Container(color: Colors.black.withOpacity(0.3)),
-                      ),
-                  ],
-                ),
-              );
+                ],
+              ),
+            );
+          },
+          options: carousel_slider.CarouselOptions(
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 3),
+            enlargeCenterPage: true,
+            aspectRatio: 16 / 9,
+            viewportFraction: 0.80,
+            onPageChanged: (index, reason) {
+              setState(() {
+                currentIndex = index;
+              });
             },
-            options: carousel_slider.CarouselOptions(
-              autoPlay: true,
-              autoPlayInterval: const Duration(seconds: 3),
-              enlargeCenterPage: true,
-              aspectRatio: 16 / 9,
-              viewportFraction: 0.80,
-              onPageChanged: (index, reason) {
-                setState(() {
-                  currentIndex = index;
-                });
-              },
-            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

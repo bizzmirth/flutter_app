@@ -27,7 +27,7 @@ class AddEmployeePage extends StatefulWidget {
       this.isViewMode = false});
 
   @override
-  _AddEmployeePageState createState() => _AddEmployeePageState();
+  State<AddEmployeePage> createState() => _AddEmployeePageState();
 }
 
 class _AddEmployeePageState extends State<AddEmployeePage> {

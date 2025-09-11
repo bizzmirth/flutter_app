@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class PendingTransactionsPage extends StatefulWidget {
   final List<Map<String, String>> pendingTransactions;
 
-  PendingTransactionsPage({required this.pendingTransactions});
+  const PendingTransactionsPage({super.key, required this.pendingTransactions});
 
   @override
-  _PendingTransactionsPageState createState() =>
+  State<PendingTransactionsPage> createState() =>
       _PendingTransactionsPageState();
 }
 

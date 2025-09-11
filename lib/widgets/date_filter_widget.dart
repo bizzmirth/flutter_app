@@ -2,8 +2,10 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 
 class DateFilterWidget extends StatefulWidget {
+  const DateFilterWidget({super.key});
+
   @override
-  _DateFilterWidgetState createState() => _DateFilterWidgetState();
+  State<DateFilterWidget> createState() => _DateFilterWidgetState();
 }
 
 class _DateFilterWidgetState extends State<DateFilterWidget> {

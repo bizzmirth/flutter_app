@@ -13,8 +13,7 @@ class TopSellingPackages extends StatefulWidget {
   const TopSellingPackages({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _TopSellingPackagesState createState() => _TopSellingPackagesState();
+  State<TopSellingPackages> createState() => _TopSellingPackagesState();
 }
 
 class _TopSellingPackagesState extends State<TopSellingPackages> {

@@ -268,7 +268,7 @@ class ProgressTracker extends StatefulWidget {
   });
 
   @override
-  _ProgressTrackerState createState() => _ProgressTrackerState();
+  State<ProgressTracker> createState() => _ProgressTrackerState();
 }
 
 class _ProgressTrackerState extends State<ProgressTracker> {
@@ -810,7 +810,7 @@ Future<String?> getZoneById(String zoneId) async {
 
 void scrollToFirstFormErrors({
   required BuildContext context,
-  required List<_ValidationTarget> targets,
+  required List<ValidationTarget> targets,
 }) {
   for (final target in targets) {
     if (target.hasError()) {
@@ -827,11 +827,11 @@ void scrollToFirstFormErrors({
   }
 }
 
-class _ValidationTarget {
+class ValidationTarget {
   final GlobalKey key;
   final bool Function() hasError;
 
-  _ValidationTarget({
+  ValidationTarget({
     required this.key,
     required this.hasError,
   });
@@ -842,8 +842,7 @@ class FilterBar1 extends StatefulWidget {
   const FilterBar1({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _FilterBar1State createState() => _FilterBar1State();
+  State<FilterBar1> createState() => _FilterBar1State();
 }
 
 class _FilterBar1State extends State<FilterBar1> {
@@ -1020,8 +1019,7 @@ class FilterBar2 extends StatefulWidget {
   const FilterBar2({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _FilterBar2State createState() => _FilterBar2State();
+  State<FilterBar2> createState() => _FilterBar2State();
 }
 
 class _FilterBar2State extends State<FilterBar2> {

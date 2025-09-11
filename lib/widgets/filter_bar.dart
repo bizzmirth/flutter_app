@@ -18,7 +18,7 @@ class FilterBar extends StatefulWidget {
   });
 
   @override
-  _FilterBarState createState() => _FilterBarState();
+  State<FilterBar> createState() => _FilterBarState();
 }
 
 class _FilterBarState extends State<FilterBar> {

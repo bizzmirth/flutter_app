@@ -8,7 +8,7 @@ class BookNowPage extends StatefulWidget {
   const BookNowPage({super.key});
 
   @override
-  _BookNowPageState createState() => _BookNowPageState();
+  State<BookNowPage> createState() => _BookNowPageState();
 }
 
 class _BookNowPageState extends State<BookNowPage> {

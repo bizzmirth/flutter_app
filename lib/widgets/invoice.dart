@@ -17,7 +17,7 @@ class InvoiceWidget extends StatelessWidget {
   final String currencySymbol;
 
   const InvoiceWidget({
-    Key? key,
+    super.key,
     required this.invoiceNumber,
     required this.bookingNumber,
     required this.paymentStatus,
@@ -32,7 +32,7 @@ class InvoiceWidget extends StatelessWidget {
     required this.tourMembers,
     required this.price,
     this.currencySymbol = '¥',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

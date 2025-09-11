@@ -10,8 +10,7 @@ class AddpackagesPage extends StatefulWidget {
   const AddpackagesPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _AddpackagesState createState() => _AddpackagesState();
+  State<AddpackagesPage> createState() => _AddpackagesState();
 }
 
 class _AddpackagesState extends State<AddpackagesPage> {

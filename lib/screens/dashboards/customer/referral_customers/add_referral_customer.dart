@@ -29,7 +29,7 @@ class AddReferralCustomer extends StatefulWidget {
       this.isEditMode = false});
 
   @override
-  _AddAddReferralCustomerState createState() => _AddAddReferralCustomerState();
+  State<AddReferralCustomer> createState() => _AddAddReferralCustomerState();
 }
 
 class _AddAddReferralCustomerState extends State<AddReferralCustomer> {

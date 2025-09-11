@@ -7,7 +7,7 @@ class AddCategoryPage extends StatefulWidget {
   const AddCategoryPage({super.key});
 
   @override
-  _AddCategoryPageState createState() => _AddCategoryPageState();
+  State<AddCategoryPage> createState() => _AddCategoryPageState();
 }
 
 class _AddCategoryPageState extends State<AddCategoryPage> {

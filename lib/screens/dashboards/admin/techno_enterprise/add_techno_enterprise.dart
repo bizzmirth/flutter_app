@@ -8,7 +8,7 @@ class AddTechnoPage extends StatefulWidget {
   const AddTechnoPage({super.key});
 
   @override
-  _AddAddTechnoPageState createState() => _AddAddTechnoPageState();
+  State<AddTechnoPage> createState() => _AddAddTechnoPageState();
 }
 
 class _AddAddTechnoPageState extends State<AddTechnoPage> {

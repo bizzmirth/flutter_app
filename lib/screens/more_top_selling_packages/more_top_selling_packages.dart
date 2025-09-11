@@ -11,7 +11,7 @@ class TopPackagesPage extends StatefulWidget {
   const TopPackagesPage({super.key});
 
   @override
-  _TopPackagesPageState createState() => _TopPackagesPageState();
+  State<TopPackagesPage> createState() => _TopPackagesPageState();
 }
 
 class _TopPackagesPageState extends State<TopPackagesPage> {

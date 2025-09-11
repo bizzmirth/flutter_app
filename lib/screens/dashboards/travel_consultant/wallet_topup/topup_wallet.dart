@@ -13,7 +13,7 @@ class TopUpWalletPage extends StatefulWidget {
   const TopUpWalletPage({super.key, required this.title});
 
   @override
-  _TopUpWalletPageState createState() => _TopUpWalletPageState();
+  State<TopUpWalletPage> createState() => _TopUpWalletPageState();
 }
 
 class _TopUpWalletPageState extends State<TopUpWalletPage>
