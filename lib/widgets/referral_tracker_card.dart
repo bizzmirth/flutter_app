@@ -33,7 +33,7 @@ class ReferralTrackerCard extends StatelessWidget {
     if (currentStep == 10) {
       return "Europe Trip Unlocked 🎉";
     } else {
-      return "Unlock the Europe Trip";
+      return "Refer and Earn";
     }
   }
 

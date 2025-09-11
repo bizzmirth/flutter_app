@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/data_source/tc_data_sources/tc_top_customers_data_
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_cu_membership_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/product_markup/travel_consultant_product_markup_page.dart';
@@ -189,6 +190,9 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                       _drawerItem(context, Icons.payment, "Product Payouts",
                           TCProductPayoutsPage(),
                           padding: true),
+                      _drawerItem(context, Icons.inventory_2,
+                          "CU Membership Payout", TcCuMembershipPayouts(),
+                          padding: true),
                     ],
                   ),
                   ListTile(
@@ -243,14 +247,17 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                 SummaryCardData(
                     title: 'CUSTOMER REGISTERED',
                     value: '3',
+                    thisMonthValue: "0",
                     icon: Icons.people),
                 SummaryCardData(
                     title: 'TOTAL BOOKING',
                     value: '9',
+                    thisMonthValue: "0",
                     icon: Icons.calendar_today),
                 SummaryCardData(
                     title: 'Topup Wallet',
                     value: '₹ 2000',
+                    thisMonthValue: '₹ 100',
                     icon: Icons.account_balance_wallet),
               ],
             ),
@@ -267,12 +274,12 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
               currentStep: 3,
               progressColor: Colors.green,
             ),
-            SizedBox(height: 20),
-            ReferralTrackerCard(
-              totalSteps: 10,
-              currentStep: 6,
-              progressColor: Colors.purpleAccent,
-            ),
+            // SizedBox(height: 20),
+            // ReferralTrackerCard(
+            //   totalSteps: 10,
+            //   currentStep: 6,
+            //   progressColor: Colors.purpleAccent,
+            // ),
             SizedBox(height: 20),
             ImprovedLineChart(),
             SizedBox(height: 20),
@@ -384,7 +391,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
   }
 
   Widget _buildTopCustomerList() {
-    Color _getStatusColor(String status) {
+    Color getStatusColor(String status) {
       switch (status) {
         case 'Active':
           return Colors.green;
@@ -439,11 +446,11 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: _getStatusColor(topCus['status'])
-                              .withOpacity(0.1),
+                          color:
+                              getStatusColor(topCus['status']).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: _getStatusColor(topCus['status'])
+                            color: getStatusColor(topCus['status'])
                                 .withOpacity(0.3),
                             width: 1,
                           ),
@@ -451,7 +458,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                         child: Text(
                           topCus['status'],
                           style: TextStyle(
-                            color: _getStatusColor(topCus['status']),
+                            color: getStatusColor(topCus['status']),
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                           ),

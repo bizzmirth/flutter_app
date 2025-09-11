@@ -1,4 +1,5 @@
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/add_customer_tc.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
@@ -141,6 +142,18 @@ class _ViewCustomersPageState1 extends State<ViewCustomersPage1> {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddCustomerTc()));
+        },
+        backgroundColor: const Color.fromARGB(255, 153, 198, 250),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50),
+        ),
+        tooltip: "Add New Customer",
+        child: Icon(Icons.add, size: 30),
       ),
     );
   }
