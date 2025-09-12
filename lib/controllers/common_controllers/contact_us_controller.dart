@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -27,9 +26,18 @@ class ContactUsController extends ChangeNotifier {
         "message": message
       };
       final encodeBody = jsonEncode(body);
-      final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
+      final response = await http.post(
+        Uri.parse(fullUrl),
+        body: encodeBody,
+        headers: {'Content-Type': 'application/json'},
+      );
+
       Logger.success("contact us URL: $fullUrl");
-      Logger.success("Requesr body for contact us: $encodeBody");
+      Logger.success("Request body for contact us: $encodeBody");
+
+      // Check if context is still valid before using it
+      if (!context.mounted) return;
+
       if (response.statusCode == 200) {
         Logger.success("Response from contact us ${response.body}");
         final data = jsonDecode(response.body);
@@ -53,7 +61,15 @@ class ContactUsController extends ChangeNotifier {
     } catch (e, s) {
       _error = "Error sending message to the server. $e";
       Logger.error(
-          "Error sending message to the sevrer. Error: $e, Stacktree: $s");
+          "Error sending message to the server. Error: $e, Stacktrace: $s");
+
+      // Check if context is still valid before showing error toast
+      if (context.mounted) {
+        ToastHelper.showErrorToast(
+          context: context,
+          title: "Error sending message to the server.",
+        );
+      }
     } finally {
       _isLoading = false;
       notifyListeners();

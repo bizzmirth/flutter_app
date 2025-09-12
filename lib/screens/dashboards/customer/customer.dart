@@ -176,11 +176,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
       _isInitializing = true;
     });
 
+    final customerController = context.read<CustomerController>();
+    final profileController = context.read<ProfileController>();
+
     try {
       await getCustomerType();
-
-      final customerController = context.read<CustomerController>();
-      final profileController = context.read<ProfileController>();
 
       int attempts = 0;
       while (customerController.isLoading && attempts < 20) {
@@ -1244,7 +1244,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
             if (!hasData) ...[
               SizedBox(height: 12),
-              Container(
+              SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: onTap,
@@ -2467,7 +2467,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
   }
 
   Widget _buildEmptyState() {
-    return Container(
+    return SizedBox(
       height: 200, // Adjust height as needed
       child: Center(
         child: Column(

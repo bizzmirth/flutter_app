@@ -100,7 +100,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
     final width = widget.totalSteps * 60.0 +
         180.0; // 60px per step + 180px for goal container
 
-    return Container(
+    return SizedBox(
       width: width,
       child: Column(
         children: [

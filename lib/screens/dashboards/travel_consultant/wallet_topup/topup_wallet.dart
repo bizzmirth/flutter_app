@@ -19,8 +19,8 @@ class TopUpWalletPage extends StatefulWidget {
 class _TopUpWalletPageState extends State<TopUpWalletPage>
     with SingleTickerProviderStateMixin {
   double _balance = 0;
-  List<Map<String, String>> _transactions = [];
-  List<Map<String, String>> _pendingTransactions = [];
+  final List<Map<String, String>> _transactions = [];
+  final List<Map<String, String>> _pendingTransactions = [];
   late AnimationController _controller;
   String? customerType;
 

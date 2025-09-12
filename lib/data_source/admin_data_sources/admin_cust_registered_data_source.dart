@@ -13,7 +13,7 @@ class MyAdminCustRegDataSource extends DataTableSource {
     if (index >= data.length) return null;
     final customer = data[index];
 
-    String _getStatusText(dynamic status) {
+    String getStatusText(dynamic status) {
       if (status == null) return "Unknown";
 
       String statusStr = status.toString();
@@ -30,7 +30,7 @@ class MyAdminCustRegDataSource extends DataTableSource {
       }
     }
 
-    Color _getStatusColor(String status) {
+    Color getStatusColor(String status) {
       switch (status) {
         case '1':
           return Colors.green;
@@ -103,8 +103,8 @@ class MyAdminCustRegDataSource extends DataTableSource {
     }
 
     final statusValue = customer.status.toString();
-    final statusText = _getStatusText(statusValue);
-    final statusColor = _getStatusColor(statusValue);
+    final statusText = getStatusText(statusValue);
+    final statusColor = getStatusColor(statusValue);
 
     return DataRow(
       cells: [

@@ -236,7 +236,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Adddesdialog(context);
+          adddesdialog(context);
         },
         backgroundColor: const Color.fromARGB(255, 153, 198, 250),
         shape: RoundedRectangleBorder(
@@ -248,7 +248,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
     );
   }
 
-  void Adddesdialog(BuildContext context) {
+  void adddesdialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -287,7 +287,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
                 SizedBox(width: 65), // Adjust spacing between buttons
                 ElevatedButton(
                   onPressed: () {
-                    Adddepartment(context);
+                    adddepartment(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
@@ -303,7 +303,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
                 SizedBox(width: 35), // Adjust spacing between buttons
                 ElevatedButton(
                   onPressed: () {
-                    Adddesignation(context);
+                    adddesignation(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
@@ -324,7 +324,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
     );
   }
 
-  void Adddepartment(BuildContext context,
+  void adddepartment(BuildContext context,
       {Department? department, bool isViewMode = false}) {
     final TextEditingController nameController = TextEditingController();
     showDialog(
@@ -418,7 +418,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
     );
   }
 
-  void Adddesignation(BuildContext context) {
+  void adddesignation(BuildContext context) {
     final TextEditingController nameController = TextEditingController();
     String? selectedDepartmentId = "";
     showDialog(

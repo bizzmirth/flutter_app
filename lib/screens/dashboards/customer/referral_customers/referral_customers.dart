@@ -407,7 +407,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
   // Build card for a single pending customer
   Widget _buildPendingCustomerCard(PendingCustomer customer) {
-    String _getStatusText(String status) {
+    String getStatusText(String status) {
       switch (status) {
         case '1':
           return 'Active';
@@ -418,7 +418,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
       }
     }
 
-    Color _getStatusColor(String status) {
+    Color getStatusColor(String status) {
       switch (status) {
         case '1':
           return Colors.green;
@@ -480,17 +480,17 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(customer.status!).withOpacity(0.1),
+                    color: getStatusColor(customer.status!).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: _getStatusColor(customer.status!).withOpacity(0.3),
+                      color: getStatusColor(customer.status!).withOpacity(0.3),
                       width: 1,
                     ),
                   ),
                   child: Text(
-                    _getStatusText(customer.status!),
+                    getStatusText(customer.status!),
                     style: TextStyle(
-                      color: _getStatusColor(customer.status!),
+                      color: getStatusColor(customer.status!),
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
@@ -544,7 +544,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
   // Build card for a single registered customer
   Widget _buildRegisteredCustomerCard(
       RegisteredCustomer customer, CustomerController customerController) {
-    String _getStatusText(String status) {
+    String getStatusText(String status) {
       switch (status) {
         case '1':
           return 'Active';
@@ -555,7 +555,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
       }
     }
 
-    Color _getStatusColor(String status) {
+    Color getStatusColor(String status) {
       switch (status) {
         case '1':
           return Colors.green;
@@ -698,17 +698,17 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(customer.status!).withOpacity(0.1),
+                    color: getStatusColor(customer.status!).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: _getStatusColor(customer.status!).withOpacity(0.3),
+                      color: getStatusColor(customer.status!).withOpacity(0.3),
                       width: 1,
                     ),
                   ),
                   child: Text(
-                    _getStatusText(customer.status!),
+                    getStatusText(customer.status!),
                     style: TextStyle(
-                      color: _getStatusColor(customer.status!),
+                      color: getStatusColor(customer.status!),
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),

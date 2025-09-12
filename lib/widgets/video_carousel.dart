@@ -54,11 +54,13 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
   Future<void> _initializeController(int index) async {
     if (_isDisposed ||
         index >= widget.videoUrls.length ||
-        _controllers[index] != null) return;
+        _controllers[index] != null) {
+      return;
+    }
 
     try {
-      final controller = VideoPlayerController.network(
-        widget.videoUrls[index],
+      final controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoUrls[index]),
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
@@ -107,8 +109,9 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
     // Initialize current + adjacent
     _initializeController(newPage);
     if (newPage > 0) _initializeController(newPage - 1);
-    if (newPage < widget.videoUrls.length - 1)
+    if (newPage < widget.videoUrls.length - 1) {
       _initializeController(newPage + 1);
+    }
 
     // Play current video when ready
     if (_controllers[newPage] != null &&

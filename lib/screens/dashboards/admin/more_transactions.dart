@@ -32,7 +32,7 @@ class Moretransactions extends StatelessWidget {
                         children: [
                           TextSpan(text: "Payment made towards the "),
                           TextSpan(
-                            text: "${transaction.title}",
+                            text: transaction.title,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           TextSpan(text: " paid amount "),
@@ -42,16 +42,16 @@ class Moretransactions extends StatelessWidget {
                           ),
                           TextSpan(text: " towards "),
                           TextSpan(
-                            text: "${transaction.whom}",
+                            text: transaction.whom,
                           ),
                           TextSpan(text: " via "),
                           TextSpan(
-                            text: "${transaction.via}",
+                            text: transaction.via,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           TextSpan(text: " on "),
                           TextSpan(
-                            text: "${transaction.date}",
+                            text: transaction.date,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],

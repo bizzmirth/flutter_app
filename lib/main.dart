@@ -1410,8 +1410,7 @@ final List<Map<String, String>> recruitmentpayout = [
   },
 ];
 
-// ignore: non_constant_identifier_names
-final List<Map<String, String>> TCrecruitmentpayout = [
+final List<Map<String, String>> tCrecruitmentpayout = [
   {
     "date": "13-Feb-2025",
     "name": "Details xyz",
@@ -1454,7 +1453,7 @@ final List<Map<String, String>> TCrecruitmentpayout = [
   },
 ];
 
-final List<Map<String, String>> BMrecruitmentpayout = [
+final List<Map<String, String>> bMrecruitmentpayout = [
   {
     "date": "13-Feb-2025",
     "name": "Details xyz",

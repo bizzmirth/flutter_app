@@ -62,7 +62,7 @@ class AdminDepartDataSource extends DataTableSource {
     );
   }
 
-  void Adddepartment(BuildContext context,
+  void adddepartment(BuildContext context,
       {Department? department,
       bool isViewMode = false,
       bool isEditMode = false}) {
@@ -204,7 +204,7 @@ class AdminDepartDataSource extends DataTableSource {
               ),
               onTap: () {
                 Logger.success("View Departments ${department.id}");
-                Adddepartment(context,
+                adddepartment(context,
                     department: department, isViewMode: true);
               },
             ),
@@ -216,7 +216,7 @@ class AdminDepartDataSource extends DataTableSource {
               ),
               onTap: () {
                 Logger.success("Editing ${department.id}");
-                Adddepartment(context,
+                adddepartment(context,
                     department: department, isEditMode: true);
               },
             ),

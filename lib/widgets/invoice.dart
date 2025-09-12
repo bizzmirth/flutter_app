@@ -235,7 +235,7 @@ class InvoiceWidget extends StatelessWidget {
                   ),
                 ],
               );
-            }).toList(),
+            }),
           ],
         ),
       ],

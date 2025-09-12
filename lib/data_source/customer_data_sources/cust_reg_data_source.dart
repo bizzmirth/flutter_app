@@ -73,7 +73,7 @@ class MyrefCustRegDataSource extends DataTableSource {
       );
     }
 
-    String _getStatusText(String status) {
+    String getStatusText(String status) {
       switch (status) {
         case '1':
           return 'Active';
@@ -84,7 +84,7 @@ class MyrefCustRegDataSource extends DataTableSource {
       }
     }
 
-    Color _getStatusColor(String status) {
+    Color getStatusColor(String status) {
       switch (status) {
         case '1':
           return Colors.green;
@@ -113,17 +113,17 @@ class MyrefCustRegDataSource extends DataTableSource {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: _getStatusColor(regCustomer.status!).withOpacity(0.1),
+              color: getStatusColor(regCustomer.status!).withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: _getStatusColor(regCustomer.status!).withOpacity(0.3),
+                color: getStatusColor(regCustomer.status!).withOpacity(0.3),
                 width: 1,
               ),
             ),
             child: Text(
-              _getStatusText(regCustomer.status!),
+              getStatusText(regCustomer.status!),
               style: TextStyle(
-                color: _getStatusColor(regCustomer.status!),
+                color: getStatusColor(regCustomer.status!),
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),

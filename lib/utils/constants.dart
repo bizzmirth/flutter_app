@@ -660,7 +660,9 @@ Future<void> _handleUserActionWithBanner(
       if (context.mounted) {
         try {
           ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-        } catch (e) {}
+        } catch (e) {
+          Logger.error("error due to technical issue $e");
+        }
       }
     });
   } else {
@@ -1325,7 +1327,7 @@ Widget buildTripOrRefundNote(
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {

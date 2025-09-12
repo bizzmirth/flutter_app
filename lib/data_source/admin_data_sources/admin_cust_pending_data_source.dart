@@ -20,7 +20,7 @@ class MyAdminCustPendingDataSource extends DataTableSource {
       newStatus = "Deleted";
     }
 
-    String _getStatusText(dynamic status) {
+    String getStatusText(dynamic status) {
       if (status == null) return "Unknown";
 
       if (status is String) {
@@ -44,8 +44,8 @@ class MyAdminCustPendingDataSource extends DataTableSource {
       return status.toString();
     }
 
-    Color _getStatusColor(String status) {
-      String statusText = _getStatusText(status).toLowerCase();
+    Color getStatusColor(String status) {
+      String statusText = getStatusText(status).toLowerCase();
       switch (statusText) {
         case "1":
           return Colors.green;
@@ -140,7 +140,7 @@ class MyAdminCustPendingDataSource extends DataTableSource {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: _getStatusColor(customer.status.toString()),
+              color: getStatusColor(customer.status.toString()),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(

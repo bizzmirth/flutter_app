@@ -37,7 +37,7 @@ class TcProductMarkupDataSource extends DataTableSource {
   }
 
   Widget _buildEditablePriceField(Map<String, dynamic> order, int index) {
-    TextEditingController _controller = TextEditingController(text: "0");
+    TextEditingController controller = TextEditingController(text: "0");
 
     return Row(
       children: [
@@ -45,7 +45,7 @@ class TcProductMarkupDataSource extends DataTableSource {
         SizedBox(
           width: 50,
           child: TextField(
-            controller: _controller,
+            controller: controller,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               isDense: true,
@@ -56,9 +56,9 @@ class TcProductMarkupDataSource extends DataTableSource {
               int? enteredValue = int.tryParse(value);
               if (enteredValue != null) {
                 if (enteredValue > 2000) {
-                  _controller.text = "2000"; // Force max 2000
-                  _controller.selection = TextSelection.fromPosition(
-                    TextPosition(offset: _controller.text.length),
+                  controller.text = "2000"; // Force max 2000
+                  controller.selection = TextSelection.fromPosition(
+                    TextPosition(offset: controller.text.length),
                   );
                 }
               }

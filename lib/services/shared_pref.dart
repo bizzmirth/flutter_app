@@ -2,17 +2,17 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefHelper {
-  static String _userDataTypeKey = "user_data_type";
+  static final String _userDataTypeKey = "user_data_type";
 
-  static String _userTypeKey = "user_type";
+  static final String _userTypeKey = "user_type";
 
-  static String _userEmailKey = "user_email";
+  static final String _userEmailKey = "user_email";
 
-  static String _currUserCustId = "ca_customer_id";
+  static final String _currUserCustId = "ca_customer_id";
 
-  static String _currentUserRegDate = "current_user_reg_date";
+  static final String _currentUserRegDate = "current_user_reg_date";
 
-  static String _customerTypeKey = "customer_type";
+  static final String _customerTypeKey = "customer_type";
 
   Future<void> saveUserDataType(String userDataType) async {
     final prefs = await SharedPreferences.getInstance();

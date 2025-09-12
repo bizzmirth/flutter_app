@@ -39,7 +39,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   int _currentPage =
       0; // Define this at the top inside your StatefulWidget class
-  int _tasksPerPage = 5; // Define tasks per page globally
+  final int _tasksPerPage = 5; // Define tasks per page globally
 
   DateTime _selectedDate = DateTime.now();
   final Map<DateTime, List<Map<String, String>>> _tasks = {};
@@ -47,7 +47,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   int selectedYear = DateTime.now().year;
   Map<String, String> selectedDates = {};
 
-  List<MapEntry<DateTime, Map<String, String>>> _upcomingTasks = [];
+  final List<MapEntry<DateTime, Map<String, String>>> _upcomingTasks = [];
 
   final Map<String, Color> eventTypeColors = {
     "Birthday": Colors.purple,
@@ -728,12 +728,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ),
                     TextSpan(text: " via "),
                     TextSpan(
-                      text: "${transaction.via}",
+                      text: transaction.via,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(text: " on "),
                     TextSpan(
-                      text: "${transaction.date}",
+                      text: transaction.date,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],

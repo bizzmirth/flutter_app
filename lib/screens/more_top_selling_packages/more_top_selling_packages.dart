@@ -22,7 +22,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
   RangeValues _currentRange = const RangeValues(1000, 150000);
   List<String> availableHotelStars = ['3 Star', '4 Star', "5 Star"];
   List<String> selectedHotelStars = [];
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   // For mobile filter drawer
 
   @override

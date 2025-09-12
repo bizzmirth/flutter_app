@@ -19,17 +19,17 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
   TextEditingController totalChildController = TextEditingController();
   TextEditingController totalpriceAdultController = TextEditingController();
   TextEditingController totalpriceChildController = TextEditingController();
-  TextEditingController CompanyController = TextEditingController();
-  TextEditingController TaController = TextEditingController();
-  TextEditingController CustomerController = TextEditingController();
-  TextEditingController TechnocomController = TextEditingController();
-  TextEditingController TechnoinsController = TextEditingController();
-  TextEditingController BCcomController = TextEditingController();
-  TextEditingController BCinsController = TextEditingController();
-  TextEditingController BDMcomController = TextEditingController();
-  TextEditingController BDMinsController = TextEditingController();
-  TextEditingController BCMcomController = TextEditingController();
-  TextEditingController BCMinsController = TextEditingController();
+  TextEditingController companyController = TextEditingController();
+  TextEditingController taController = TextEditingController();
+  TextEditingController customerController = TextEditingController();
+  TextEditingController technocomController = TextEditingController();
+  TextEditingController technoinsController = TextEditingController();
+  TextEditingController bCcomController = TextEditingController();
+  TextEditingController bCinsController = TextEditingController();
+  TextEditingController bDMcomController = TextEditingController();
+  TextEditingController bDMinsController = TextEditingController();
+  TextEditingController bCMcomController = TextEditingController();
+  TextEditingController bCMinsController = TextEditingController();
 
   void _calculateTotal() {
     double adultPrice = double.tryParse(adultPriceController.text) ?? 0;
@@ -44,9 +44,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
   }
 
   void _calculateTotal1() {
-    double companyPrice = double.tryParse(CompanyController.text) ?? 0;
-    double taPrice = double.tryParse(TaController.text) ?? 0;
-    double customerPrice = double.tryParse(CustomerController.text) ?? 0;
+    double companyPrice = double.tryParse(companyController.text) ?? 0;
+    double taPrice = double.tryParse(taController.text) ?? 0;
+    double customerPrice = double.tryParse(customerController.text) ?? 0;
 
     double adultPrice = double.tryParse(adultPriceController.text) ?? 0;
     double childPrice = double.tryParse(childPriceController.text) ?? 0;
@@ -80,20 +80,20 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
     double bcmMarkUpComm = truncateToTwoDecimals((bcmMarkUp * 80) / 100);
     double bcmMarkUpIns = truncateToTwoDecimals((bcmMarkUp * 20) / 100);
 
-    TechnocomController.text = formatNumber(teMarkupComm);
-    TechnoinsController.text = formatNumber(teMarkupIns);
-    BCcomController.text = formatNumber(bmMarkUpComm);
-    BCinsController.text = formatNumber(bmMarkUpIns);
-    BDMcomController.text = formatNumber(bdmMarkUpComm);
-    BDMinsController.text = formatNumber(bdmMarkUpIns);
-    BCMcomController.text = formatNumber(bcmMarkUpComm);
-    BCMinsController.text = formatNumber(bcmMarkUpIns);
+    technocomController.text = formatNumber(teMarkupComm);
+    technoinsController.text = formatNumber(teMarkupIns);
+    bCcomController.text = formatNumber(bmMarkUpComm);
+    bCinsController.text = formatNumber(bmMarkUpIns);
+    bDMcomController.text = formatNumber(bdmMarkUpComm);
+    bDMinsController.text = formatNumber(bdmMarkUpIns);
+    bCMcomController.text = formatNumber(bcmMarkUpComm);
+    bCMinsController.text = formatNumber(bcmMarkUpIns);
 
     // ignore: unnecessary_null_comparison
     if (adultPrice != null && childPrice != null) {
-      if (CompanyController.text.isNotEmpty &&
-          TaController.text.isNotEmpty &&
-          CustomerController.text.isNotEmpty) {
+      if (companyController.text.isNotEmpty &&
+          taController.text.isNotEmpty &&
+          customerController.text.isNotEmpty) {
         double markupCalc = companyPrice +
             taPrice +
             customerPrice +
@@ -330,7 +330,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: CompanyController,
+                            controller: companyController,
                             keyboardType: TextInputType
                                 .number, // ✅ Opens numeric keyboard
                             inputFormatters: [
@@ -358,7 +358,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: TaController,
+                            controller: taController,
                             keyboardType: TextInputType
                                 .number, // ✅ Opens numeric keyboard
                             inputFormatters: [
@@ -386,7 +386,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: CustomerController,
+                            controller: customerController,
                             keyboardType: TextInputType
                                 .number, // ✅ Opens numeric keyboard
                             inputFormatters: [
@@ -443,7 +443,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: TechnocomController,
+                            controller: technocomController,
                             readOnly: true,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
@@ -466,7 +466,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: BCcomController,
+                            controller: bCcomController,
                             readOnly: true,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
@@ -493,7 +493,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: TechnoinsController,
+                            controller: technoinsController,
                             readOnly: true,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
@@ -516,7 +516,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: BCinsController,
+                            controller: bCinsController,
                             readOnly: true,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
@@ -568,7 +568,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: BDMcomController,
+                            controller: bDMcomController,
                             readOnly: true,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
@@ -591,7 +591,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: BCMcomController,
+                            controller: bCMcomController,
                             readOnly: true,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
@@ -618,7 +618,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: BDMinsController,
+                            controller: bDMinsController,
                             readOnly: true,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
@@ -641,7 +641,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: BCMinsController,
+                            controller: bCMinsController,
                             readOnly: true,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(

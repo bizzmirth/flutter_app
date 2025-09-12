@@ -81,7 +81,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
   Future<void> restoreEmployee(idToRestore) async {
     try {
       await isarService.updateStatus<RegisteredEmployeeModel>(idToRestore, 1);
-      Logger.success("Employee ${idToRestore} restored successfully");
+      Logger.success("Employee $idToRestore restored successfully");
       Navigator.pop(context);
     } catch (e) {
       Logger.error("Error restoring employee: $e");

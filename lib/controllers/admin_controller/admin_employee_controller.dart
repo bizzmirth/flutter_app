@@ -27,7 +27,7 @@ class AdminEmployeeController extends ChangeNotifier {
 
   Future<bool> _hasNetwork() async {
     var connectivityResult = await Connectivity().checkConnectivity();
-    return connectivityResult != ConnectivityResult.none;
+    return !connectivityResult.contains(ConnectivityResult.none);
   }
 
   Future<void> fetchAndSavePendingEmployees() async {
