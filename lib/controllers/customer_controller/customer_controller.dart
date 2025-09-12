@@ -487,8 +487,7 @@ class CustomerController extends ChangeNotifier {
     }
   }
 
-  Future<void> uploadImage(
-      context, String folder, String savedImagePath) async {
+  Future<void> uploadImage(String folder, String savedImagePath) async {
     try {
       final fullUrl = AppUrls.uploadImage;
       var request = http.MultipartRequest('POST', Uri.parse(fullUrl));

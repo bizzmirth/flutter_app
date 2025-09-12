@@ -107,10 +107,12 @@ class MyrefCustPendingDataSource extends DataTableSource {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: getStatusColor(pendingCustomer.status!).withOpacity(0.1),
+              color: getStatusColor(pendingCustomer.status!)
+                  .withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: getStatusColor(pendingCustomer.status!).withOpacity(0.3),
+                color: getStatusColor(pendingCustomer.status!)
+                    .withValues(alpha: 0.3),
                 width: 1,
               ),
             ),

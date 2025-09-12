@@ -323,7 +323,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.grey.withValues(alpha: 0.2),
                 spreadRadius: 1,
                 blurRadius: 4,
                 offset: const Offset(0, 2),
@@ -338,7 +338,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                 onTap: () {
                   // Add tap functionality if needed
                 },
-                splashColor: Colors.blue.withOpacity(0.1),
+                splashColor: Colors.blue.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -517,7 +517,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.grey.withValues(alpha: 0.2),
                 spreadRadius: 1,
                 blurRadius: 4,
                 offset: const Offset(0, 2),
@@ -530,7 +530,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
               color: index.isEven ? Colors.grey[50] : Colors.white,
               child: InkWell(
                 onTap: () {},
-                splashColor: Colors.blue.withOpacity(0.1),
+                splashColor: Colors.blue.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -1104,15 +1104,16 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
           borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(
             colors: [
-              colors[_currentColorIndex].withOpacity(0.8),
-              colors[(_currentColorIndex + 1) % colors.length].withOpacity(0.8),
+              colors[_currentColorIndex].withValues(alpha: 0.8),
+              colors[(_currentColorIndex + 1) % colors.length]
+                  .withValues(alpha: 0.8),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: Offset(0, 4),
             ),
@@ -1140,7 +1141,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                     Icon(
                       Icons.arrow_forward_ios,
                       size: 16,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                     ),
                 ],
               ),
@@ -1168,7 +1169,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                     "This Month",
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                     ),
                   ),
                   Spacer(),

@@ -45,10 +45,10 @@ Widget customInputField(
     key: fieldKey,
     decoration: InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+      labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
       prefixIcon: Icon(icon, color: Colors.white),
       filled: true,
-      fillColor: Colors.white.withOpacity(0.2),
+      fillColor: Colors.white.withValues(alpha: 0.2),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -97,7 +97,7 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
       borderRadius: BorderRadius.circular(8),
       boxShadow: [
         BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withValues(alpha: 0.3),
             blurRadius: 5,
             spreadRadius: 2),
       ],
@@ -165,7 +165,7 @@ Widget buildStatCard({
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.1),
+          color: Colors.grey.withValues(alpha: 0.1),
           spreadRadius: 1,
           blurRadius: 4,
           offset: const Offset(0, 2),
@@ -328,7 +328,7 @@ class _ProgressTrackerState extends State<ProgressTracker> {
                             gradient: LinearGradient(
                               colors: [
                                 widget.progressColor,
-                                widget.progressColor.withOpacity(0.7)
+                                widget.progressColor.withValues(alpha: 0.7)
                               ],
                             ),
                             borderRadius: BorderRadius.circular(5),
@@ -1199,7 +1199,7 @@ Widget buildTripOrRefundNote(
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.blueAccent.withOpacity(0.4)),
+          border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.4)),
           boxShadow: [
             BoxShadow(
               color: Colors.black12,
@@ -1347,7 +1347,7 @@ Widget buildTripOrRefundNote(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 4,
-                        shadowColor: Colors.blueAccent.withOpacity(0.3),
+                        shadowColor: Colors.blueAccent.withValues(alpha: 0.3),
                       ),
                       child: Text(
                         'Add Referral',
@@ -1379,7 +1379,7 @@ Widget buildTripOrRefundNote(
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blueAccent.withOpacity(0.4)),
+        border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.4)),
         boxShadow: [
           BoxShadow(
             color: Colors.black12,

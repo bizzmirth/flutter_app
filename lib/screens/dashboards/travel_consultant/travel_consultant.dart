@@ -446,12 +446,12 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color:
-                              getStatusColor(topCus['status']).withOpacity(0.1),
+                          color: getStatusColor(topCus['status'])
+                              .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: getStatusColor(topCus['status'])
-                                .withOpacity(0.3),
+                                .withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),

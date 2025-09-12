@@ -48,13 +48,13 @@ class ReferralTrackerCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             Colors.white,
-            progressColor.withOpacity(0.05),
+            progressColor.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: progressColor.withOpacity(0.15),
+            color: progressColor.withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -91,7 +91,7 @@ class ReferralTrackerCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: progressColor.withOpacity(0.1),
+                color: progressColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -147,7 +147,7 @@ class ReferralTrackerCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: progressColor.withOpacity(0.1),
+                color: progressColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -191,13 +191,13 @@ class ReferralTrackerCard extends StatelessWidget {
           vertical: isTablet ? 16 : 14, horizontal: isTablet ? 20 : 16),
       decoration: BoxDecoration(
         color: currentStep >= totalSteps
-            ? Colors.green.withOpacity(0.1)
-            : progressColor.withOpacity(0.05),
+            ? Colors.green.withValues(alpha: 0.1)
+            : progressColor.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: currentStep >= totalSteps
-              ? Colors.green.withOpacity(0.3)
-              : progressColor.withOpacity(0.2),
+              ? Colors.green.withValues(alpha: 0.3)
+              : progressColor.withValues(alpha: 0.2),
           width: 1,
         ),
       ),

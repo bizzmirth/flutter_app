@@ -33,9 +33,9 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Future<void> _initializeData() async {
+    final profileController = context.read<ProfileController>();
     try {
       await getCustomerType();
-      final profileController = context.read<ProfileController>();
 
       if (profileController.customerType != null &&
           profileController.customerType!.isNotEmpty) {
@@ -184,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -291,7 +291,7 @@ class _ProfilePageState extends State<ProfilePage>
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: Offset(0, 2),
                 ),
@@ -397,7 +397,7 @@ class _ProfilePageState extends State<ProfilePage>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -458,7 +458,7 @@ class _ProfilePageState extends State<ProfilePage>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -720,12 +720,18 @@ class _ProfilePageState extends State<ProfilePage>
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Radio<bool>(
-          value: true,
+        RadioGroup<bool>(
           groupValue: isSelected,
-          onChanged: (value) {},
-          activeColor: Colors.blue[600],
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          onChanged: (bool? value) {
+            setState(() {
+              isSelected = value ?? false;
+            });
+          },
+          child: Radio<bool>(
+            value: true,
+            activeColor: Colors.blue[600],
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
         ),
         Text(
           label,
@@ -764,7 +770,7 @@ class _ProfilePageState extends State<ProfilePage>
                   columnSpacing: isTablet ? 20 : 12,
                   horizontalMargin: isTablet ? 24 : 12,
                   headingRowHeight: isTablet ? 48 : 40,
-                  dataRowHeight: isTablet ? 48 : 40,
+                  dataRowMinHeight: isTablet ? 48 : 40,
                   columns: [
                     DataColumn(
                       label: Text(
@@ -859,7 +865,8 @@ class _ProfilePageState extends State<ProfilePage>
                             padding: EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: _getStatusColor(coupon).withOpacity(0.1),
+                              color: _getStatusColor(coupon)
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(

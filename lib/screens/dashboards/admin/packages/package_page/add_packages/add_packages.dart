@@ -106,7 +106,7 @@ class _AddpackagesState extends State<AddpackagesPage> {
               boxShadow: isActive
                   ? [
                       BoxShadow(
-                        color: Colors.blueAccent.withOpacity(0.7),
+                        color: Colors.blueAccent.withValues(alpha: 0.7),
                         blurRadius: 10,
                         spreadRadius: 2,
                       )

@@ -94,7 +94,7 @@ class _MyAppState extends State<MyApp> {
         alignment: Alignment.bottomCenter,
       );
       await sharedPrefHelper.removeDetails();
-
+      if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),
@@ -4677,13 +4677,14 @@ class _AddTAcustPageState extends State<AddTAcustPage> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8)),
+              color: const Color.fromARGB(255, 255, 255, 255)
+                  .withValues(alpha: 0.8)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.2),
+          fillColor: Colors.white.withValues(alpha: 0.2),
         ),
         dropdownColor: const Color.fromARGB(255, 129, 129, 129),
       ),
@@ -4733,8 +4734,8 @@ class _AddTAcustPageState extends State<AddTAcustPage> {
                       decoration: InputDecoration(
                         labelText: "Customer Reference ID",
                         // ignore: deprecated_member_use
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         filled: true,
                         // ignore: deprecated_member_use
                         fillColor: Colors.white.withOpacity(0.2),
@@ -4754,8 +4755,8 @@ class _AddTAcustPageState extends State<AddTAcustPage> {
                       decoration: InputDecoration(
                         labelText: "Customer Reference Name",
                         // ignore: deprecated_member_use
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         filled: true,
                         // ignore: deprecated_member_use
                         fillColor: Colors.white.withOpacity(0.2),
@@ -4788,7 +4789,7 @@ class _AddTAcustPageState extends State<AddTAcustPage> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 3, horizontal: 10.0),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: DropdownButton<String>(
@@ -4833,9 +4834,9 @@ class _AddTAcustPageState extends State<AddTAcustPage> {
                             decoration: InputDecoration(
                               labelText: "Phone number",
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -4860,14 +4861,14 @@ class _AddTAcustPageState extends State<AddTAcustPage> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Date of Birth *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         suffixIcon: _dateController.text.isNotEmpty
                             ? IconButton(
                                 icon: Icon(Icons.close, color: Colors.white),
@@ -5332,8 +5333,8 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
               Container(
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color:
-                      Colors.white.withOpacity(0.2), // Semi-transparent white
+                  color: Colors.white
+                      .withValues(alpha: 0.2), // Semi-transparent white
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -5342,7 +5343,7 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
                     Text(
                       "Meals Required",
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -5440,7 +5441,7 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
           ),
           Text(
             title,
-            style: TextStyle(color: Colors.white.withOpacity(1)),
+            style: TextStyle(color: Colors.white.withValues(alpha: 1)),
           ),
         ],
       ),
@@ -5461,7 +5462,7 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: DropdownButton<String>(
@@ -5491,10 +5492,11 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
                 style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: "Enter phone number",
-                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                  labelStyle:
+                      TextStyle(color: Colors.white.withValues(alpha: 0.8)),
                   prefixIcon: Icon(Icons.phone, color: Colors.white),
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.2),
+                  fillColor: Colors.white.withValues(alpha: 0.2),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -5541,12 +5543,12 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
           style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+            labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
             prefixIcon: Icon(icon, color: Colors.white),
             suffixIcon: dateController.text.isNotEmpty
                 ? IconButton(
-                    icon:
-                        Icon(Icons.close, color: Colors.white.withOpacity(0.8)),
+                    icon: Icon(Icons.close,
+                        color: Colors.white.withValues(alpha: 0.8)),
                     onPressed: () {
                       setState(() {
                         dateController.clear();
@@ -5555,7 +5557,7 @@ class _EnquireNowPageState extends State<EnquireNowPage> {
                   )
                 : null, // Show clear button only when date is selected
             filled: true,
-            fillColor: Colors.white.withOpacity(0.2),
+            fillColor: Colors.white.withValues(alpha: 0.2),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -5624,7 +5626,7 @@ Widget _customInputRow({
                   child: Text(
                     "12+ Years",
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 12,
                     ),
                   ),
@@ -5654,7 +5656,7 @@ Widget _customInputRow({
                   child: Text(
                     "3-11 Years",
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 12,
                     ),
                   ),
@@ -5684,7 +5686,7 @@ Widget _customInputRow({
                   child: Text(
                     "Under 2 Years",
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 12,
                     ),
                   ),
@@ -5713,10 +5715,10 @@ Widget _customAdultInputField({
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         prefixIcon: Icon(icon, color: Colors.white),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white.withValues(alpha: 0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -5754,16 +5756,17 @@ Widget _customInputField({
     style: TextStyle(color: Colors.white),
     decoration: InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+      labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
       prefixIcon: Icon(icon, color: Colors.white),
       suffixIcon: controller.text.isNotEmpty
           ? IconButton(
-              icon: Icon(Icons.clear, color: Colors.white.withOpacity(0.8)),
+              icon:
+                  Icon(Icons.clear, color: Colors.white.withValues(alpha: 0.8)),
               onPressed: onClear, // Clear input when tapped
             )
           : null,
       filled: true,
-      fillColor: Colors.white.withOpacity(0.2),
+      fillColor: Colors.white.withValues(alpha: 0.2),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,

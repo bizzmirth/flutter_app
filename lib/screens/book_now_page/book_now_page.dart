@@ -53,13 +53,14 @@ class _BookNowPageState extends State<BookNowPage> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8)),
+              color: const Color.fromARGB(255, 255, 255, 255)
+                  .withValues(alpha: 0.8)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.2),
+          fillColor: Colors.white.withValues(alpha: 0.2),
         ),
         dropdownColor: const Color.fromARGB(255, 129, 129, 129),
       ),
@@ -220,7 +221,7 @@ class _BookNowPageState extends State<BookNowPage> {
     return Container(
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -287,7 +288,7 @@ class _BookNowPageState extends State<BookNowPage> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shadowColor: Colors.black.withOpacity(0.1),
+          shadowColor: Colors.black.withValues(alpha: 0.1),
           elevation: 3,
         ),
         child: Text(
@@ -422,7 +423,7 @@ class _BookNowPageState extends State<BookNowPage> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: DropdownButton<String>(
@@ -460,10 +461,11 @@ class _BookNowPageState extends State<BookNowPage> {
                     TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
                 decoration: InputDecoration(
                   labelText: "Enter phone number",
-                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                  labelStyle:
+                      TextStyle(color: Colors.white.withValues(alpha: 0.8)),
                   prefixIcon: Icon(Icons.phone, color: Colors.white),
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.2),
+                  fillColor: Colors.white.withValues(alpha: 0.2),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -508,11 +510,11 @@ class _BookNowPageState extends State<BookNowPage> {
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label, // Keeps label inside without moving
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
 
         prefixIcon: Icon(icon, color: Colors.white),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white.withValues(alpha: 0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -538,12 +540,12 @@ class _BookNowPageState extends State<BookNowPage> {
           style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+            labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
             prefixIcon: Icon(icon, color: Colors.white),
             suffixIcon: dateController.text.isNotEmpty
                 ? IconButton(
-                    icon:
-                        Icon(Icons.close, color: Colors.white.withOpacity(0.8)),
+                    icon: Icon(Icons.close,
+                        color: Colors.white.withValues(alpha: 0.8)),
                     onPressed: () {
                       setState(() {
                         dateController.clear();
@@ -552,7 +554,7 @@ class _BookNowPageState extends State<BookNowPage> {
                   )
                 : null, // Show clear button only when date is selected
             filled: true,
-            fillColor: Colors.white.withOpacity(0.2),
+            fillColor: Colors.white.withValues(alpha: 0.2),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -637,7 +639,7 @@ class _BookNowPageState extends State<BookNowPage> {
                           floatingLabelBehavior: FloatingLabelBehavior.auto,
                           prefixIcon: Icon(icon1, color: Colors.white),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.2),
+                          fillColor: Colors.white.withValues(alpha: 0.2),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -690,7 +692,7 @@ class _BookNowPageState extends State<BookNowPage> {
                           floatingLabelBehavior: FloatingLabelBehavior.auto,
                           prefixIcon: Icon(icon2, color: Colors.white),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.2),
+                          fillColor: Colors.white.withValues(alpha: 0.2),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -734,7 +736,7 @@ class _BookNowPageState extends State<BookNowPage> {
                           floatingLabelBehavior: FloatingLabelBehavior.auto,
                           prefixIcon: Icon(icon3, color: Colors.white),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.2),
+                          fillColor: Colors.white.withValues(alpha: 0.2),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -872,7 +874,7 @@ class _BookNowPageState extends State<BookNowPage> {
           style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+            labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
             prefixIcon: Icon(icon, color: Colors.white),
             suffixIcon: controller.text.isNotEmpty
                 ? IconButton(
@@ -886,7 +888,7 @@ class _BookNowPageState extends State<BookNowPage> {
                   )
                 : null,
             filled: true,
-            fillColor: Colors.white.withOpacity(0.2),
+            fillColor: Colors.white.withValues(alpha: 0.2),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,

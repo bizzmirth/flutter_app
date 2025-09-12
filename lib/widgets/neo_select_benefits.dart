@@ -119,7 +119,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
           borderRadius: BorderRadius.circular(8), // Smaller border radius
           boxShadow: [
             BoxShadow(
-              color: Colors.blue.withOpacity(0.4),
+              color: Colors.blue.withValues(alpha: 0.4),
               blurRadius: 6, // Reduced blur
               offset: const Offset(0, 3), // Smaller offset
             )
@@ -153,13 +153,13 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.purple.withOpacity(0.7),
+                color: Colors.purple.withValues(alpha: 0.7),
                 blurRadius: 20, // Reduced blur
                 spreadRadius: 3, // Reduced spread
                 offset: const Offset(0, 5), // Smaller offset
               ),
               BoxShadow(
-                color: Colors.deepPurpleAccent.withOpacity(0.7),
+                color: Colors.deepPurpleAccent.withValues(alpha: 0.7),
                 blurRadius: 30, // Reduced blur
                 spreadRadius: 5, // Reduced spread
                 offset: const Offset(0, 10), // Smaller offset
@@ -207,7 +207,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                                 fontSize: 18, // Smaller font size
                                 shadows: [
                               Shadow(
-                                color: Colors.black.withOpacity(0.3),
+                                color: Colors.black.withValues(alpha: 0.3),
                                 blurRadius: 4, // Reduced blur
                                 offset: const Offset(0, 1), // Smaller offset
                               )
@@ -229,7 +229,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                       child: Container(
                         padding: const EdgeInsets.all(12), // Reduced padding
                         decoration: BoxDecoration(
-                            color: Colors.deepOrange.withOpacity(0.8),
+                            color: Colors.deepOrange.withValues(alpha: 0.8),
                             borderRadius:
                                 BorderRadius.circular(12), // Smaller radius
                             // border: Border.all(
@@ -237,7 +237,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                             //     width: 1.0), // Thinner border
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.deepOrange.withOpacity(0.2),
+                                color: Colors.deepOrange.withValues(alpha: 0.2),
                                 blurRadius: 8, // Reduced blur
                                 spreadRadius: 1, // Reduced spread
                                 offset: const Offset(0, 2), // Smaller offset
@@ -312,7 +312,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                  color: Colors.orange.withOpacity(0.5),
+                                  color: Colors.orange.withValues(alpha: 0.5),
                                   blurRadius: 15, // Reduced blur
                                   spreadRadius: 3, // Reduced spread
                                   offset: const Offset(0, 3)) // Smaller offset
@@ -335,7 +335,8 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                                     style: TextStyle(
                                         fontSize: 14, // Smaller font
                                         fontWeight: FontWeight.w500,
-                                        color: Colors.white.withOpacity(0.9))),
+                                        color: Colors.white
+                                            .withValues(alpha: 0.9))),
                               ),
                           ],
                         ),

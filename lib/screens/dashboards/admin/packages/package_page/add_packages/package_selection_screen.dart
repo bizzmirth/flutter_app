@@ -67,13 +67,14 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8)),
+              color: const Color.fromARGB(255, 255, 255, 255)
+                  .withValues(alpha: 0.8)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.2),
+          fillColor: Colors.white.withValues(alpha: 0.2),
         ),
         dropdownColor: const Color.fromARGB(255, 129, 129, 129),
       ),
@@ -184,14 +185,14 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Validity Upto *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         suffixIcon: _dateController.text.isNotEmpty
                             ? IconButton(
                                 icon: Icon(Icons.close, color: Colors.white),

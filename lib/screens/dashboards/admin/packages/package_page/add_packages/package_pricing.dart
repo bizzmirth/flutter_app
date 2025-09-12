@@ -181,14 +181,14 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Price for 1 Adult *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                       ),
                     ),
                   ),
@@ -203,14 +203,14 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Price for 1 Child *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                       ),
                     ),
                   ),
@@ -225,14 +225,14 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET GST for Adult & Child : ',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                       ),
                     ),
                   ),
@@ -244,11 +244,10 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Total for Adult : ',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         filled: true,
-                        // ignore: deprecated_member_use
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -264,11 +263,10 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Total for Child : ',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         filled: true,
-                        // ignore: deprecated_member_use
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -285,11 +283,10 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Total Price for Adult : ',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         filled: true,
-                        // ignore: deprecated_member_use
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -305,11 +302,10 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Total Price for Child : ',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         filled: true,
-                        // ignore: deprecated_member_use
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -341,10 +337,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Company *',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -369,10 +364,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Travel Agent *',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -397,10 +391,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Customer *',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -449,10 +442,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Commission',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -472,10 +464,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Commission',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -499,10 +490,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Incentive',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -522,10 +512,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Incentive',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -574,10 +563,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Commission',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -597,10 +585,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Commission',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -624,10 +611,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Incentive',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -647,10 +633,9 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                             decoration: InputDecoration(
                               labelText: 'Incentive',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,

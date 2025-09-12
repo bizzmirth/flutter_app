@@ -175,7 +175,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                             },
                             calendarStyle: CalendarStyle(
                               todayDecoration: BoxDecoration(
-                                color: Colors.blueAccent.withOpacity(0.5),
+                                color: Colors.blueAccent.withValues(alpha: 0.5),
                                 shape: BoxShape.circle,
                               ),
                               selectedDecoration: BoxDecoration(
@@ -288,7 +288,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withValues(alpha: 0.1),
                         spreadRadius: 1,
                         blurRadius: 4,
                         offset: const Offset(0, 2),

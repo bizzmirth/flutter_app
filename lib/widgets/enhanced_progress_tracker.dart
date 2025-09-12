@@ -151,14 +151,14 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                                 gradient: LinearGradient(
                                   colors: [
                                     widget.progressColor,
-                                    widget.progressColor.withOpacity(0.7),
+                                    widget.progressColor.withValues(alpha: 0.7),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(2),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        widget.progressColor.withOpacity(0.3),
+                                    color: widget.progressColor
+                                        .withValues(alpha: 0.3),
                                     blurRadius: 4,
                                     offset: Offset(0, 2),
                                   ),
@@ -190,7 +190,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                                         ? widget.progressColor
                                         : isCurrent
                                             ? widget.progressColor
-                                                .withOpacity(0.3)
+                                                .withValues(alpha: 0.3)
                                             : Colors.white,
                                     border: Border.all(
                                       color: isCompleted || isCurrent
@@ -202,7 +202,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                                         ? [
                                             BoxShadow(
                                               color: widget.progressColor
-                                                  .withOpacity(0.3),
+                                                  .withValues(alpha: 0.3),
                                               blurRadius: 8,
                                               offset: Offset(0, 2),
                                             ),
@@ -284,7 +284,8 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                                 ? LinearGradient(
                                     colors: [
                                       widget.progressColor,
-                                      widget.progressColor.withOpacity(0.8),
+                                      widget.progressColor
+                                          .withValues(alpha: 0.8),
                                     ],
                                   )
                                 : null,
@@ -299,8 +300,8 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                             boxShadow: isGoalReached
                                 ? [
                                     BoxShadow(
-                                      color:
-                                          widget.progressColor.withOpacity(0.4),
+                                      color: widget.progressColor
+                                          .withValues(alpha: 0.4),
                                       blurRadius: 12,
                                       offset: Offset(0, 4),
                                     ),

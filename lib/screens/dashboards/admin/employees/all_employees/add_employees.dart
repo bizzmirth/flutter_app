@@ -466,8 +466,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         if (selectedFiles["Profile Picture"] != null) {
           if (selectedFiles["Profile Picture"] is File) {
             File fileObj = selectedFiles["Profile Picture"] as File;
-            await employeeController.uploadImage(
-                context, 'profile_pic', fileObj.path);
+            await employeeController.uploadImage('profile_pic', fileObj.path);
             profilePicturePath =
                 extractPathSegment(fileObj.path, 'profile_pic/');
           } else {
@@ -479,8 +478,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         if (selectedFiles["ID Proof"] != null) {
           if (selectedFiles["ID Proof"] is File) {
             File fileObj = selectedFiles["ID Proof"] as File;
-            await employeeController.uploadImage(
-                context, 'id_proof', fileObj.path);
+            await employeeController.uploadImage('id_proof', fileObj.path);
             idProofPath = extractPathSegment(fileObj.path, 'id_proof');
           } else {
             idProofPath =
@@ -491,8 +489,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         if (selectedFiles["Bank Details"] != null) {
           if (selectedFiles["Bank Details"] is File) {
             File fileObj = selectedFiles["Bank Details"] as File;
-            await employeeController.uploadImage(
-                context, 'passbook', fileObj.path);
+            await employeeController.uploadImage('passbook', fileObj.path);
             bankDetailsPath = extractPathSegment(fileObj.path, 'passbook/');
           } else {
             bankDetailsPath =
@@ -549,21 +546,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
         if (selectedFiles["Profile Picture"] != null) {
           await employeeController.uploadImage(
-              context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+              'profile_pic', selectedFiles["Profile Picture"]!.path);
           profilePicturePath = selectedFiles["Profile Picture"]!.path;
         }
 
         // Upload ID Proof if selected
         if (selectedFiles["ID Proof"] != null) {
           await employeeController.uploadImage(
-              context, 'id_proof', selectedFiles["ID Proof"]!.path);
+              'id_proof', selectedFiles["ID Proof"]!.path);
           idProofPath = selectedFiles["ID Proof"]!.path;
         }
 
         // Upload Bank Details if selected
         if (selectedFiles["Bank Details"] != null) {
           await employeeController.uploadImage(
-              context, 'passbook', selectedFiles["Bank Details"]!.path);
+              'passbook', selectedFiles["Bank Details"]!.path);
           bankDetailsPath = selectedFiles["Bank Details"]!.path;
         }
         int? id = widget.registerEmployee!.id;
@@ -719,17 +716,17 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
         if (selectedFiles["Profile Picture"] != null) {
           await employeeController.uploadImage(
-              context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+              'profile_pic', selectedFiles["Profile Picture"]!.path);
           profilePicturePath = selectedFiles["Profile Picture"]!.path;
         }
         if (selectedFiles["ID Proof"] != null) {
           await employeeController.uploadImage(
-              context, 'id_proof', selectedFiles["ID Proof"]!.path);
+              'id_proof', selectedFiles["ID Proof"]!.path);
           idProofPath = selectedFiles["ID Proof"]!.path;
         }
         if (selectedFiles["Bank Details"] != null) {
           await employeeController.uploadImage(
-              context, 'passbook', selectedFiles["Bank Details"]!.path);
+              'passbook', selectedFiles["Bank Details"]!.path);
           bankDetailsPath = selectedFiles["Bank Details"]!.path;
         }
 
@@ -861,12 +858,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
             Text(label,
                 style: TextStyle(
                     color: const Color.fromARGB(255, 255, 255, 255)
-                        .withOpacity(0.8))),
+                        .withValues(alpha: 0.8))),
             Container(
               padding: EdgeInsets.all(12),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child:
@@ -904,13 +901,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8)),
+              color: const Color.fromARGB(255, 255, 255, 255)
+                  .withValues(alpha: 0.8)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.2),
+          fillColor: Colors.white.withValues(alpha: 0.2),
         ),
         dropdownColor: const Color.fromARGB(255, 129, 129, 129),
       ),
@@ -988,7 +986,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 3, horizontal: 10.0),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: DropdownButton<String>(
@@ -1047,9 +1045,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                             decoration: InputDecoration(
                               labelText: "Phone number",
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -1105,14 +1103,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Date of Birth *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         suffixIcon: _dobController.text.isNotEmpty &&
                                 !widget
                                     .isViewMode // Only show cancel button if not in view mode
@@ -1187,14 +1185,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Date of Joining *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         suffixIcon: _dojController.text.isNotEmpty &&
                                 !widget.isViewMode
                             ? IconButton(
@@ -1478,7 +1476,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                   height: 100,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ClipRRect(
@@ -1534,10 +1532,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               height: 100,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),

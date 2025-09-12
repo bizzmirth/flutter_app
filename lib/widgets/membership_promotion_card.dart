@@ -43,7 +43,7 @@ class MembershipPromotionCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -222,7 +222,7 @@ class _PlanCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -257,7 +257,7 @@ class _PlanCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 6), // smaller
                         decoration: BoxDecoration(
-                          color: plan.accentColor.withOpacity(0.2),
+                          color: plan.accentColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -285,7 +285,8 @@ class _PlanCard extends StatelessWidget {
                   const SizedBox(height: 5), // extra breathing space
                   Divider(
                     color: isDarkMode
-                        ? Colors.white.withOpacity(0.4) // brighter in dark mode
+                        ? Colors.white
+                            .withValues(alpha: 0.4) // brighter in dark mode
                         : Colors.grey.shade500, // darker in light mode
                     thickness: 0.5, // bolder line
                     height: 24, // ensures spacing above/below

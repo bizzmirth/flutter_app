@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
@@ -106,8 +105,9 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
           borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(
             colors: [
-              colors[_currentColorIndex].withOpacity(0.8),
-              colors[(_currentColorIndex + 1) % colors.length].withOpacity(0.8),
+              colors[_currentColorIndex].withValues(alpha: 0.8),
+              colors[(_currentColorIndex + 1) % colors.length]
+                  .withValues(alpha: 0.8),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -115,7 +115,7 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
           boxShadow: isWalletCard
               ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: Offset(0, 4),
                   ),
@@ -148,7 +148,7 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
                     Icon(
                       Icons.arrow_forward_ios,
                       size: 16,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                     ),
                 ],
               ),

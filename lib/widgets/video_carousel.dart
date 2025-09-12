@@ -192,7 +192,7 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
                     shape: BoxShape.circle,
                     color: _currentPage == index
                         ? Colors.white
-                        : Colors.white.withOpacity(0.5),
+                        : Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
               ),

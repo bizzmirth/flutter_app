@@ -50,21 +50,21 @@ class PremiumSelectCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.orange.shade50.withOpacity(0.7),
-                    Colors.white.withOpacity(0.8),
+                    Colors.orange.shade50.withValues(alpha: 0.7),
+                    Colors.white.withValues(alpha: 0.8),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.orange.withOpacity(0.2),
+                  color: Colors.orange.withValues(alpha: 0.2),
                 ),
               ),
               child: Card(
                 color: Colors.transparent,
                 elevation: 10,
-                shadowColor: Colors.orange.withOpacity(0.4),
+                shadowColor: Colors.orange.withValues(alpha: 0.4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -160,7 +160,7 @@ class PremiumSelectCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.orange.withOpacity(0.3),
+                                color: Colors.orange.withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 spreadRadius: 2,
                                 offset: const Offset(0, 3),
@@ -202,21 +202,21 @@ class PremiumSelectCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.orange.shade50.withOpacity(0.7),
-                    Colors.white.withOpacity(0.8),
+                    Colors.orange.shade50.withValues(alpha: 0.7),
+                    Colors.white.withValues(alpha: 0.8),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.orange.withOpacity(0.2),
+                  color: Colors.orange.withValues(alpha: 0.2),
                 ),
               ),
               child: Card(
                 color: Colors.transparent,
                 elevation: 10,
-                shadowColor: Colors.orange.withOpacity(0.4),
+                shadowColor: Colors.orange.withValues(alpha: 0.4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -281,7 +281,7 @@ class PremiumSelectCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.orange.withOpacity(0.3),
+                                color: Colors.orange.withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 spreadRadius: 2,
                                 offset: const Offset(0, 3),

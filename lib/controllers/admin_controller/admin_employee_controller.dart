@@ -285,8 +285,7 @@ class AdminEmployeeController extends ChangeNotifier {
     }
   }
 
-  Future<void> uploadImage(
-      context, String folder, String savedImagePath) async {
+  Future<void> uploadImage(String folder, String savedImagePath) async {
     try {
       final fullUrl = 'http://testca.uniqbizz.com/api/upload_mobile.php';
       var request = http.MultipartRequest('POST', Uri.parse(fullUrl));
@@ -299,23 +298,6 @@ class AdminEmployeeController extends ChangeNotifier {
       Logger.warning('Raw API response body: $responseBody');
       Logger.success("Upload Api FULL URL: $fullUrl");
       Logger.info('this is reuest $request');
-
-      if (responseBody == '1') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Upload Failed  $responseBody")));
-      } else if (responseBody == '2') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Invalid File Extension  $responseBody")));
-      } else if (responseBody == '3') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("No File Selected  $responseBody")));
-      } else if (responseBody == '4') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("File Size Exceeds 2MB  $responseBody")));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Upload Successful: $responseBody")));
-      }
     } catch (e) {
       Logger.error("Error uploading image: $e");
     }

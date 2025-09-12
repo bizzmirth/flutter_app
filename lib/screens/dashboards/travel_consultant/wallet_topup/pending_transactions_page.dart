@@ -71,7 +71,7 @@ class _PendingTransactionsPageState extends State<PendingTransactionsPage> {
               padding: EdgeInsets.symmetric(vertical: 6),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: Colors.orangeAccent.withOpacity(0.2),
+                color: Colors.orangeAccent.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

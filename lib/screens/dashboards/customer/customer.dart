@@ -429,7 +429,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 4,
                                           offset: Offset(0, 2),
                                         ),
@@ -453,10 +454,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 alignment: Alignment.center,
                                                 decoration: BoxDecoration(
                                                   color: (index + 1) <= 3
-                                                      ? Colors.amber
-                                                          .withOpacity(0.2)
-                                                      : Colors.grey
-                                                          .withOpacity(0.1),
+                                                      ? Colors.amber.withValues(
+                                                          alpha: 0.2)
+                                                      : Colors.grey.withValues(
+                                                          alpha: 0.1),
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
                                                     color: (index + 1) <= 3
@@ -563,13 +564,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                               decoration: BoxDecoration(
                                                 color: _getStatusColor(
                                                         customer.status!)
-                                                    .withOpacity(0.1),
+                                                    .withValues(alpha: 0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                                 border: Border.all(
                                                   color: _getStatusColor(
                                                           customer.status!)
-                                                      .withOpacity(0.3),
+                                                      .withValues(alpha: 0.3),
                                                   width: 1,
                                                 ),
                                               ),
@@ -781,7 +782,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           ),
                           minimumSize: Size(double.infinity, 52),
                           elevation: 2,
-                          shadowColor: Colors.indigo.withOpacity(0.3),
+                          shadowColor: Colors.indigo.withValues(alpha: 0.3),
                         ),
                       ),
 
@@ -1002,7 +1003,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         Container(
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.2),
+                            color: Colors.blue.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(Icons.help_outline,
@@ -1214,7 +1215,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                 Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.2),
+                    color: color.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(icon, color: color, size: 20),
@@ -1292,7 +1293,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
           Container(
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 20),
@@ -1482,7 +1483,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
         leading: Container(
           padding: EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: color),
@@ -1645,7 +1646,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 4,
                                           offset: Offset(0, 2),
                                         ),
@@ -1669,10 +1671,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 alignment: Alignment.center,
                                                 decoration: BoxDecoration(
                                                   color: (index + 1) <= 3
-                                                      ? Colors.amber
-                                                          .withOpacity(0.2)
-                                                      : Colors.grey
-                                                          .withOpacity(0.1),
+                                                      ? Colors.amber.withValues(
+                                                          alpha: 0.2)
+                                                      : Colors.grey.withValues(
+                                                          alpha: 0.1),
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
                                                     color: (index + 1) <= 3
@@ -1779,13 +1781,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                               decoration: BoxDecoration(
                                                 color: _getStatusColor(
                                                         customer.status!)
-                                                    .withOpacity(0.1),
+                                                    .withValues(alpha: 0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                                 border: Border.all(
                                                   color: _getStatusColor(
                                                           customer.status!)
-                                                      .withOpacity(0.3),
+                                                      .withValues(alpha: 0.3),
                                                   width: 1,
                                                 ),
                                               ),
@@ -1970,7 +1972,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 4,
                                           offset: Offset(0, 2),
                                         ),
@@ -1994,10 +1997,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 alignment: Alignment.center,
                                                 decoration: BoxDecoration(
                                                   color: (index + 1) <= 3
-                                                      ? Colors.amber
-                                                          .withOpacity(0.2)
-                                                      : Colors.grey
-                                                          .withOpacity(0.1),
+                                                      ? Colors.amber.withValues(
+                                                          alpha: 0.2)
+                                                      : Colors.grey.withValues(
+                                                          alpha: 0.1),
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
                                                     color: (index + 1) <= 3
@@ -2104,13 +2107,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                               decoration: BoxDecoration(
                                                 color: _getStatusColor(
                                                         customer.status!)
-                                                    .withOpacity(0.1),
+                                                    .withValues(alpha: 0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                                 border: Border.all(
                                                   color: _getStatusColor(
                                                           customer.status!)
-                                                      .withOpacity(0.3),
+                                                      .withValues(alpha: 0.3),
                                                   width: 1,
                                                 ),
                                               ),
@@ -2295,7 +2298,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 4,
                                           offset: Offset(0, 2),
                                         ),
@@ -2319,10 +2323,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 alignment: Alignment.center,
                                                 decoration: BoxDecoration(
                                                   color: (index + 1) <= 3
-                                                      ? Colors.amber
-                                                          .withOpacity(0.2)
-                                                      : Colors.grey
-                                                          .withOpacity(0.1),
+                                                      ? Colors.amber.withValues(
+                                                          alpha: 0.2)
+                                                      : Colors.grey.withValues(
+                                                          alpha: 0.1),
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
                                                     color: (index + 1) <= 3
@@ -2429,13 +2433,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                               decoration: BoxDecoration(
                                                 color: _getStatusColor(
                                                         customer.status!)
-                                                    .withOpacity(0.1),
+                                                    .withValues(alpha: 0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                                 border: Border.all(
                                                   color: _getStatusColor(
                                                           customer.status!)
-                                                      .withOpacity(0.3),
+                                                      .withValues(alpha: 0.3),
                                                   width: 1,
                                                 ),
                                               ),

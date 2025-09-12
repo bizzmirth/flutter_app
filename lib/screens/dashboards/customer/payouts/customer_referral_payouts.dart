@@ -30,6 +30,8 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
   DateTime? _selectedDateTime;
 
   Future<void> _selectDate(BuildContext context) async {
+    final controller =
+        Provider.of<CustReferralPayoutController>(context, listen: false);
     DateTime now = DateTime.now();
     DateTime? picked = await showMonthPicker(
       context: context,
@@ -43,8 +45,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
         _selectedDateTime = picked;
         selectedDate = DateFormat("MMMM, yyyy").format(picked);
       });
-      final controller =
-          Provider.of<CustReferralPayoutController>(context, listen: false);
+
       controller.apiGetTotalPayouts(month: picked.month, year: picked.year);
       Logger.success("selected Date : ${picked.month}, year: ${picked.year}");
     }
@@ -1107,7 +1108,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.1),
+          color: Colors.black.withValues(alpha: 0.1),
           blurRadius: 8,
           offset: const Offset(0, 4),
         ),

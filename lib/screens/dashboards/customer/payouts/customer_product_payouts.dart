@@ -85,6 +85,8 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    final controller =
+        Provider.of<CustProductPayoutController>(context, listen: false);
     DateTime now = DateTime.now();
 
     DateTime? pickedDate = await showMonthPicker(
@@ -100,8 +102,6 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
         selectedDate = DateFormat("MMMM, yyyy").format(pickedDate);
       });
 
-      final controller =
-          Provider.of<CustProductPayoutController>(context, listen: false);
       controller.apiGetTotalPayouts(
           month: pickedDate.month, year: pickedDate.year);
 
@@ -1153,7 +1153,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.1),
+          color: Colors.black.withValues(alpha: 0.1),
           blurRadius: 8,
           offset: const Offset(0, 4),
         ),

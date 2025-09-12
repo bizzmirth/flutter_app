@@ -112,7 +112,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.blueAccent.withOpacity(0.3),
+                    color: Colors.blueAccent.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: Offset(0, 4),
                   ),
@@ -244,9 +244,9 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                 borderRadius: BorderRadius.circular(12),
                 gradient: LinearGradient(
                   colors: [
-                    colors[currentColorIndex].withOpacity(0.8),
+                    colors[currentColorIndex].withValues(alpha: 0.8),
                     colors[(currentColorIndex + 1) % colors.length]
-                        .withOpacity(0.8),
+                        .withValues(alpha: 0.8),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -299,8 +299,8 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.blueAccent.withOpacity(0.8),
-                      Colors.purpleAccent.withOpacity(0.8)
+                      Colors.blueAccent.withValues(alpha: 0.8),
+                      Colors.purpleAccent.withValues(alpha: 0.8)
                     ],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
@@ -308,7 +308,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blueAccent.withOpacity(0.2),
+                      color: Colors.blueAccent.withValues(alpha: 0.2),
                       blurRadius: 6,
                       offset: Offset(0, 2),
                     ),
@@ -362,7 +362,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 blurRadius: 6,
                 offset: Offset(0, 2),
               ),
@@ -411,7 +411,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 blurRadius: 6,
                 offset: Offset(0, 2),
               ),

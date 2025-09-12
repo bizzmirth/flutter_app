@@ -520,7 +520,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 },
                                 calendarStyle: CalendarStyle(
                                   todayDecoration: BoxDecoration(
-                                    color: Colors.blueAccent.withOpacity(0.5),
+                                    color: Colors.blueAccent
+                                        .withValues(alpha: 0.5),
                                     shape: BoxShape.circle,
                                   ),
                                   selectedDecoration: BoxDecoration(

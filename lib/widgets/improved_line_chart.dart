@@ -339,7 +339,7 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                               show: true,
                               gradient: LinearGradient(
                                 colors: [
-                                  Colors.blue.withOpacity(0.3),
+                                  Colors.blue.withValues(alpha: 0.3),
                                   Colors.transparent,
                                 ],
                                 begin: Alignment.topCenter,

@@ -154,7 +154,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.purpleAccent.withOpacity(0.4),
+                            color: Colors.purpleAccent.withValues(alpha: 0.4),
                             blurRadius: 6 * widget.scaleFactor,
                             spreadRadius: 1 * widget.scaleFactor,
                           ),
@@ -238,7 +238,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
                 sigmaX: 4 * widget.scaleFactor,
                 sigmaY: 4 * widget.scaleFactor,
               ),
-              child: Container(color: Colors.white.withOpacity(0.05)),
+              child: Container(color: Colors.white.withValues(alpha: 0.05)),
             ),
             Center(
               child: Icon(
@@ -292,7 +292,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
           Container(
             padding: EdgeInsets.all(16 * widget.scaleFactor),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -326,7 +326,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
                   vertical: 4 * widget.scaleFactor,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12 * widget.scaleFactor),
                 ),
                 child: Text(

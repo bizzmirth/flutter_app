@@ -419,12 +419,12 @@ class _AddbmState extends State<AddbmPage> {
             Text(label,
                 style: TextStyle(
                     color: const Color.fromARGB(255, 255, 255, 255)
-                        .withOpacity(0.8))),
+                        .withValues(alpha: 0.8))),
             Container(
               padding: EdgeInsets.all(12),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child:
@@ -462,13 +462,14 @@ class _AddbmState extends State<AddbmPage> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8)),
+              color: const Color.fromARGB(255, 255, 255, 255)
+                  .withValues(alpha: 0.8)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.2),
+          fillColor: Colors.white.withValues(alpha: 0.2),
         ),
         dropdownColor: const Color.fromARGB(255, 129, 129, 129),
       ),
@@ -1124,7 +1125,7 @@ class _AddbmState extends State<AddbmPage> {
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 3, horizontal: 10.0),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: DropdownButton<String>(
@@ -1179,9 +1180,11 @@ class _AddbmState extends State<AddbmPage> {
                                   decoration: InputDecoration(
                                     labelText: "Phone number",
                                     labelStyle: TextStyle(
-                                        color: Colors.white.withOpacity(0.8)),
+                                        color: Colors.white
+                                            .withValues(alpha: 0.8)),
                                     filled: true,
-                                    fillColor: Colors.white.withOpacity(0.2),
+                                    fillColor:
+                                        Colors.white.withValues(alpha: 0.2),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: BorderSide.none,
@@ -1236,13 +1239,13 @@ class _AddbmState extends State<AddbmPage> {
                             decoration: InputDecoration(
                               labelText: 'Date of Joining *',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
                               ),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               suffixIcon: _dateController.text.isNotEmpty &&
                                       !widget.isViewMode
                                   ? IconButton(
@@ -1469,21 +1472,6 @@ class _AddbmState extends State<AddbmPage> {
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Radio<String>(
-                                        value: package,
-                                        groupValue: _selectedPaymentMode,
-                                        activeColor: Colors
-                                            .white, // Change radio button color
-                                        onChanged: widget.isViewMode
-                                            ? null
-                                            : (value) {
-                                                setState(() {
-                                                  _selectedPaymentMode = value!;
-                                                  Logger.success(
-                                                      "Selected payment Mode: $_selectedPaymentMode");
-                                                });
-                                              },
-                                      ),
                                       Text(
                                         package,
                                         style: TextStyle(
@@ -1608,7 +1596,7 @@ class _AddbmState extends State<AddbmPage> {
                   height: 100,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ClipRRect(
@@ -1701,10 +1689,10 @@ class _AddbmState extends State<AddbmPage> {
               height: 100,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),

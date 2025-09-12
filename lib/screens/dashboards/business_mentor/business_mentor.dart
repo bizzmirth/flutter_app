@@ -414,8 +414,8 @@ class _BMDashboardPageState extends State<BMDashboardPage> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.green
-                                  .withOpacity(0.1), // Light green background
+                              color: Colors.green.withValues(
+                                  alpha: 0.1), // Light green background
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -440,8 +440,8 @@ class _BMDashboardPageState extends State<BMDashboardPage> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.red
-                                  .withOpacity(0.1), // Light red background
+                              color: Colors.red.withValues(
+                                  alpha: 0.1), // Light red background
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(

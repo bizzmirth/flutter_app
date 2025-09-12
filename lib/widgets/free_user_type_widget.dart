@@ -39,14 +39,14 @@ class FreeUserCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.grey.shade200.withOpacity(0.7),
-                    Colors.white.withOpacity(0.8),
+                    Colors.grey.shade200.withValues(alpha: 0.7),
+                    Colors.white.withValues(alpha: 0.8),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                border: Border.all(color: Colors.grey.withValues(alpha: .3)),
               ),
               child: Card(
                 color: Colors.transparent,
@@ -146,14 +146,14 @@ class FreeUserCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.grey.shade200.withOpacity(0.7),
-                    Colors.white.withOpacity(0.8),
+                    Colors.grey.shade200.withValues(alpha: 0.7),
+                    Colors.white.withValues(alpha: 0.8),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
               ),
               child: Card(
                 color: Colors.transparent,

@@ -292,27 +292,27 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
       if (selectedFiles["Profile Picture"] != null) {
         await controller.uploadImage(
-            context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+            'profile_pic', selectedFiles["Profile Picture"]!.path);
       }
       if (selectedFiles["Aadhar Card"] != null) {
         await controller.uploadImage(
-            context, 'aadhar_card', selectedFiles["Aadhar Card"]!.path);
+            'aadhar_card', selectedFiles["Aadhar Card"]!.path);
       }
       if (selectedFiles["Pan Card"] != null) {
         await controller.uploadImage(
-            context, 'pan_card', selectedFiles["Pan Card"]!.path);
+            'pan_card', selectedFiles["Pan Card"]!.path);
       }
       if (selectedFiles["Voting Card"] != null) {
         await controller.uploadImage(
-            context, 'voting_card', selectedFiles["Voting Card"]!.path);
+            'voting_card', selectedFiles["Voting Card"]!.path);
       }
       if (selectedFiles["Bank Passbook"] != null) {
         await controller.uploadImage(
-            context, 'passbook', selectedFiles["Bank Passbook"]!.path);
+            'passbook', selectedFiles["Bank Passbook"]!.path);
       }
       if (selectedFiles["Payment Proof"] != null) {
         await controller.uploadImage(
-            context, 'payment_proof', selectedFiles["Payment Proof"]!.path);
+            'payment_proof', selectedFiles["Payment Proof"]!.path);
       }
 
       if (_selectedPaymentMode == "Cheque") {
@@ -448,32 +448,32 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       if (selectedFiles["Profile Picture"] != null &&
           selectedFiles["Profile Picture"] is File) {
         await controller.uploadImage(
-            context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+            'profile_pic', selectedFiles["Profile Picture"]!.path);
       }
       if (selectedFiles["Aadhar Card"] != null &&
           selectedFiles["Aadhar Card"] is File) {
         await controller.uploadImage(
-            context, 'aadhar_card', selectedFiles["Aadhar Card"]!.path);
+            'aadhar_card', selectedFiles["Aadhar Card"]!.path);
       }
       if (selectedFiles["Pan Card"] != null &&
           selectedFiles["Pan Card"] is File) {
         await controller.uploadImage(
-            context, 'pan_card', selectedFiles["Pan Card"]!.path);
+            'pan_card', selectedFiles["Pan Card"]!.path);
       }
       if (selectedFiles["Voting Card"] != null &&
           selectedFiles["Voting Card"] is File) {
         await controller.uploadImage(
-            context, 'voting_card', selectedFiles["Voting Card"]!.path);
+            'voting_card', selectedFiles["Voting Card"]!.path);
       }
       if (selectedFiles["Bank Passbook"] != null &&
           selectedFiles["Bank Passbook"] is File) {
         await controller.uploadImage(
-            context, 'passbook', selectedFiles["Bank Passbook"]!.path);
+            'passbook', selectedFiles["Bank Passbook"]!.path);
       }
       if (selectedFiles["Payment Proof"] != null &&
           selectedFiles["Payment Proof"] is File) {
         await controller.uploadImage(
-            context, 'payment_proof', selectedFiles["Payment Proof"]!.path);
+            'payment_proof', selectedFiles["Payment Proof"]!.path);
       }
 
       if (_selectedPaymentMode == "Cheque") {
@@ -601,32 +601,32 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       if (selectedFiles["Profile Picture"] != null &&
           selectedFiles["Profile Picture"] is File) {
         await controller.uploadImage(
-            context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+            'profile_pic', selectedFiles["Profile Picture"]!.path);
       }
       if (selectedFiles["Aadhar Card"] != null &&
           selectedFiles["Aadhar Card"] is File) {
         await controller.uploadImage(
-            context, 'aadhar_card', selectedFiles["Aadhar Card"]!.path);
+            'aadhar_card', selectedFiles["Aadhar Card"]!.path);
       }
       if (selectedFiles["Pan Card"] != null &&
           selectedFiles["Pan Card"] is File) {
         await controller.uploadImage(
-            context, 'pan_card', selectedFiles["Pan Card"]!.path);
+            'pan_card', selectedFiles["Pan Card"]!.path);
       }
       if (selectedFiles["Voting Card"] != null &&
           selectedFiles["Voting Card"] is File) {
         await controller.uploadImage(
-            context, 'voting_card', selectedFiles["Voting Card"]!.path);
+            'voting_card', selectedFiles["Voting Card"]!.path);
       }
       if (selectedFiles["Bank Passbook"] != null &&
           selectedFiles["Bank Passbook"] is File) {
         await controller.uploadImage(
-            context, 'passbook', selectedFiles["Bank Passbook"]!.path);
+            'passbook', selectedFiles["Bank Passbook"]!.path);
       }
       if (selectedFiles["Payment Proof"] != null &&
           selectedFiles["Payment Proof"] is File) {
         await controller.uploadImage(
-            context, 'payment_proof', selectedFiles["Payment Proof"]!.path);
+            'payment_proof', selectedFiles["Payment Proof"]!.path);
       }
 
       if (_selectedPaymentMode == "Cheque") {
@@ -1320,12 +1320,12 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
             Text(label,
                 style: TextStyle(
                     color: const Color.fromARGB(255, 255, 255, 255)
-                        .withOpacity(0.8))),
+                        .withValues(alpha: 0.8))),
             Container(
               padding: EdgeInsets.all(15),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(emptyMessage, style: TextStyle(color: Colors.red)),
@@ -1362,13 +1362,14 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8)),
+              color: const Color.fromARGB(255, 255, 255, 255)
+                  .withValues(alpha: 0.8)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.2),
+          fillColor: Colors.white.withValues(alpha: 0.2),
         ),
         dropdownColor: const Color.fromARGB(255, 129, 129, 129),
       ),
@@ -1498,7 +1499,8 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 3, horizontal: 10.0),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.2),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: DropdownButton<String>(
@@ -1548,11 +1550,11 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                       decoration: InputDecoration(
                                         labelText: "Phone number",
                                         labelStyle: TextStyle(
-                                            color:
-                                                Colors.white.withOpacity(0.8)),
+                                            color: Colors.white
+                                                .withValues(alpha: 0.8)),
                                         filled: true,
                                         fillColor:
-                                            Colors.white.withOpacity(0.2),
+                                            Colors.white.withValues(alpha: 0.2),
                                         border: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(12),
@@ -1637,13 +1639,15 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 decoration: InputDecoration(
                                   labelText: 'Date of Birth *',
                                   labelStyle: TextStyle(
-                                      color: Colors.white.withOpacity(0.8)),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.8)),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: BorderSide.none,
                                   ),
                                   filled: true,
-                                  fillColor: Colors.white.withOpacity(0.2),
+                                  fillColor:
+                                      Colors.white.withValues(alpha: 0.2),
                                   suffixIcon: _dateController.text.isNotEmpty
                                       ? IconButton(
                                           icon: Icon(Icons.close,
@@ -1818,7 +1822,8 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
-                                        color: Colors.white.withOpacity(0.2),
+                                        color:
+                                            Colors.white.withValues(alpha: 0.2),
                                       ),
                                     ),
                                     child: Row(
@@ -2025,7 +2030,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                   height: 100,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ClipRRect(
@@ -2116,10 +2121,10 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
               height: 100,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),

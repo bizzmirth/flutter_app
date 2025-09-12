@@ -201,7 +201,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                             '₹${_currentRange.end.toInt()}',
                           ),
                           activeColor: Colors.teal,
-                          inactiveColor: Colors.teal.withOpacity(0.3),
+                          inactiveColor: Colors.teal.withValues(alpha: 0.3),
                           onChanged: (RangeValues values) {
                             setState(() {
                               _currentRange = values;
@@ -232,17 +232,19 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                         '11N - 15N',
                         'Above 15N'
                       ])
-                        RadioListTile(
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          title: Text(duration),
-                          value: duration,
+                        RadioGroup<String>(
                           groupValue: selectedTripDuration,
-                          onChanged: (value) {
+                          onChanged: (String? value) {
                             setState(() {
                               selectedTripDuration = value;
                             });
                           },
+                          child: RadioListTile(
+                            contentPadding: EdgeInsets.zero,
+                            dense: true,
+                            title: Text(duration),
+                            value: duration,
+                          ),
                         ),
                     ],
                   ),

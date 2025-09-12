@@ -171,7 +171,8 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.2),
                                       blurRadius: 4,
                                       spreadRadius: 1,
                                     ),
@@ -210,7 +211,8 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.2),
                                       blurRadius: 4,
                                       spreadRadius: 1,
                                     ),
@@ -283,7 +285,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 6,
               spreadRadius: 1,
             ),
@@ -336,7 +338,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                         colors: [
-                          Colors.black.withOpacity(0.3),
+                          Colors.black.withValues(alpha: 0.3),
                           Colors.transparent,
                         ],
                       ),

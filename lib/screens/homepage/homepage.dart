@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 15,
                   offset: Offset(0, 5),
                   spreadRadius: 2,
@@ -159,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                           gradient: LinearGradient(
                             colors: [
                               Colors.transparent,
-                              Color(0xFF0A3D62).withOpacity(0.5),
+                              Color(0xFF0A3D62).withValues(alpha: 0.5),
                               Colors.transparent,
                             ],
                           ),

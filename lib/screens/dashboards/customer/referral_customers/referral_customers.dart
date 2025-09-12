@@ -480,10 +480,12 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: getStatusColor(customer.status!).withOpacity(0.1),
+                    color:
+                        getStatusColor(customer.status!).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: getStatusColor(customer.status!).withOpacity(0.3),
+                      color: getStatusColor(customer.status!)
+                          .withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -615,6 +617,8 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                             leading: Icon(Icons.edit, color: Colors.blueAccent),
                             title: Text("Edit"),
                             onTap: () async {
+                              final customerCustomerr =
+                                  context.read<CustomerController>();
                               Navigator.pop(context);
 
                               final result = await Navigator.push(
@@ -626,8 +630,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                                   ),
                                 ),
                               );
-                              final customerCustomerr =
-                                  context.read<CustomerController>();
+
                               await customerCustomerr
                                   .apiGetRegisteredCustomers();
                               await customerCustomerr.apiGetPendingCustomers();
@@ -698,10 +701,12 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: getStatusColor(customer.status!).withOpacity(0.1),
+                    color:
+                        getStatusColor(customer.status!).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: getStatusColor(customer.status!).withOpacity(0.3),
+                      color: getStatusColor(customer.status!)
+                          .withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
