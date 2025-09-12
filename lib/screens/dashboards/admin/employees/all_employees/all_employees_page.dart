@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bizzmirth_app/controllers/admin_controller/admin_employee_controller.dart';
-import 'package:bizzmirth_app/data_source/admin_data_sources/admin_employee_data_source.dart';
-import 'package:bizzmirth_app/data_source/registered_employee_data_source.dart';
+import 'package:bizzmirth_app/data_source/admin_data_sources/admin_pending_employee_data_source.dart';
+import 'package:bizzmirth_app/data_source/admin_data_sources/admin_registered_employee_data_source.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/add_employees.dart';
@@ -152,7 +152,8 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
                             DataColumn(label: Text("Status")),
                             DataColumn(label: Text("Action"))
                           ],
-                          source: AdminEmployeeDataSource(context, employee),
+                          source:
+                              AdminPendingEmployeeDataSource(context, employee),
                           rowsPerPage: _rowsPerPage,
                           availableRowsPerPage: [5, 10, 15, 20, 25],
                           onRowsPerPageChanged: (value) {
@@ -211,7 +212,7 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
                                   DataColumn(label: Text("Status")),
                                   DataColumn(label: Text("Action"))
                                 ],
-                                source: RegisteredEmployeeDataSource(
+                                source: AdminRegisteredEmployeeDataSource(
                                     context, registeredEmployee),
                                 rowsPerPage: _rowsPerPage1,
                                 availableRowsPerPage: [5, 10, 15, 20, 25],

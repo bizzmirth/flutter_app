@@ -13,7 +13,7 @@ class TcCuMembershipPayouts extends StatefulWidget {
 
 class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
   String selectedDate = "Select month, year";
-  int _rowsPerPage = 5; // Default rows per page
+  int _rowsPerPage = 5;
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;

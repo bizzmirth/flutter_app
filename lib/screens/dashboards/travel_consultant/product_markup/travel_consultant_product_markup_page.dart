@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/data_source/travel_consultant_product_markup_data_source.dart';
+import 'package:bizzmirth_app/data_source/tc_data_sources/tc_product_markup_data_source.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +116,7 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
                       DataColumn(label: Text("Selling Price")),
                       DataColumn(label: Text("Action"))
                     ],
-                    source: MyProductMarkupDataSource(productmarkup),
+                    source: TcProductMarkupDataSource(productmarkup),
                     rowsPerPage: _rowsPerPage,
                     availableRowsPerPage: [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {

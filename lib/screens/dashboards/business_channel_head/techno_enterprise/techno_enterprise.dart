@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/data_source/pending_techno_enterprise_data_source.dart';
+import 'package:bizzmirth_app/data_source/bch_data_sources/bch_pending_tc_data_source.dart';
 import 'package:bizzmirth_app/entities/pending_techno_enterprise/pending_techno_enterprise_model.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
@@ -74,7 +74,7 @@ class _ViewTEPageState1 extends State<ViewTEPage1> {
                       DataColumn(label: Text("Status")),
                       DataColumn(label: Text("Action")),
                     ],
-                    source: MyViewTechnoPendingDataSource(context,
+                    source: BchPendingTcDataSource(context,
                         orderstechno.cast<PendingTechnoEnterpriseModel>()),
                     rowsPerPage: _rowsPerPage,
                     availableRowsPerPage: [5, 10, 15, 20, 25],

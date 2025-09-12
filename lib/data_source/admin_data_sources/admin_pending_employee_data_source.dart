@@ -10,11 +10,11 @@ import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AdminEmployeeDataSource extends DataTableSource {
+class AdminPendingEmployeeDataSource extends DataTableSource {
   final BuildContext context;
   List<PendingEmployeeModel> pendingEmployees;
 
-  AdminEmployeeDataSource(this.context, this.pendingEmployees);
+  AdminPendingEmployeeDataSource(this.context, this.pendingEmployees);
 
   final IsarService isarService = IsarService();
   final AdminEmployeeController employeeController = AdminEmployeeController();

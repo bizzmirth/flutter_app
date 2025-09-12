@@ -6,10 +6,10 @@ import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class MyViewTechnoPendingDataSource extends DataTableSource {
+class BchPendingTcDataSource extends DataTableSource {
   final BuildContext context;
   final List<PendingTechnoEnterpriseModel> data;
-  MyViewTechnoPendingDataSource(this.context, this.data);
+  BchPendingTcDataSource(this.context, this.data);
 
   final IsarService isarService = IsarService();
 

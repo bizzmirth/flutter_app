@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class MyBMDataSource extends DataTableSource {
+class BMPendingBusinessMentors extends DataTableSource {
   final BuildContext context;
   final List<PendingBusinessMentorModel> data;
-  MyBMDataSource(this.context, this.data);
+  BMPendingBusinessMentors(this.context, this.data);
   final AdminBusniessMentorController controller =
       AdminBusniessMentorController();
 

@@ -8,11 +8,11 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 
-class RegisteredEmployeeDataSource extends DataTableSource {
+class AdminRegisteredEmployeeDataSource extends DataTableSource {
   final BuildContext context;
   List<RegisteredEmployeeModel> registeredEmployees;
 
-  RegisteredEmployeeDataSource(this.context, this.registeredEmployees);
+  AdminRegisteredEmployeeDataSource(this.context, this.registeredEmployees);
   final IsarService isarService = IsarService();
   final AdminEmployeeController employeeController = AdminEmployeeController();
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class MyProductMarkupDataSource extends DataTableSource {
+class TcProductMarkupDataSource extends DataTableSource {
   final List<Map<String, dynamic>> data;
-  MyProductMarkupDataSource(this.data);
+  TcProductMarkupDataSource(this.data);
 
   @override
   DataRow? getRow(int index) {
