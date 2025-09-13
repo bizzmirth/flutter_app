@@ -2682,14 +2682,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
         Provider.of<ProfileController>(context, listen: false);
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-
-        // Show the exit dialog and wait for user response
         final shouldExit = await _showExitDialog();
 
         if (shouldExit) {
-          // Exit the app
           SystemNavigator.pop();
         }
       },

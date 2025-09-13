@@ -10,8 +10,6 @@ class AdminDepartDataSource extends DataTableSource {
   final List<Department> _departments;
   final BuildContext context;
   AdminDepartDataSource(this._departments, this.context);
-  // final DesignationDepartmentController controller =
-  //     DesignationDepartmentController();
 
   bool isLoading = false;
 
@@ -25,8 +23,12 @@ class AdminDepartDataSource extends DataTableSource {
       await controller.fetchDepartments();
       notifyListeners();
       isLoading = false;
-      ToastHelper.showSuccessToast(
-          context: context, title: "Department deleted successfully!");
+
+      // Add mounted check before using context
+      if (context.mounted) {
+        ToastHelper.showSuccessToast(
+            context: context, title: "Department deleted successfully!");
+      }
     } catch (e) {
       Logger.success('Error deleting department: $e');
       isLoading = false;
@@ -41,8 +43,12 @@ class AdminDepartDataSource extends DataTableSource {
       await controller.apiRestoreDepartment(department);
       await controller.fetchDepartments();
       notifyListeners();
-      ToastHelper.showSuccessToast(
-          context: context, title: "Department restored successfully!");
+
+      // Add mounted check before using context
+      if (context.mounted) {
+        ToastHelper.showSuccessToast(
+            context: context, title: "Department restored successfully!");
+      }
     } catch (e) {
       Logger.success('Error restoring department: $e');
     }
@@ -142,23 +148,26 @@ class AdminDepartDataSource extends DataTableSource {
                               await controller.apiEditDepartment(
                                   department?.id,
                                   nameController.text.trim(),
-                                  department
-                                      ?.status // Assuming you want to keep the existing status
-                                  );
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                final controller = Provider.of<
+                                  department?.status);
+
+                              // Store context reference before async operations
+                              if (context.mounted) {
+                                final providerController = Provider.of<
                                         AdminDesignationDepartmentController>(
                                     context,
                                     listen: false);
-                                Future.wait([
-                                  controller.fetchDepartments(),
-                                ]);
-                              });
-                              Navigator.of(context).pop();
-                              ToastHelper.showSuccessToast(
-                                  context: context,
-                                  title: "Department edited successfully!.");
-                              controller.notifyListeners();
+
+                                await providerController.fetchDepartments();
+
+                                // Check mounted again after async operation
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                  ToastHelper.showSuccessToast(
+                                      context: context,
+                                      title: "Department edited successfully!");
+                                }
+                                controller.notifyListeners();
+                              }
                             } catch (e) {
                               Logger.error('Error editing data: $e');
                             }
@@ -183,7 +192,7 @@ class AdminDepartDataSource extends DataTableSource {
     );
   }
 
-// Action Menu Widget
+  // Action Menu Widget
   Widget _buildActionMenu(Department department) {
     return PopupMenuButton<String>(
       onSelected: (value) {
@@ -225,9 +234,13 @@ class AdminDepartDataSource extends DataTableSource {
               child: ListTile(
                 leading: Icon(Icons.delete, color: Colors.red),
                 title: Text("Delete"),
-                onTap: () {
-                  deleteDepartment(department);
-                  Navigator.pop(context);
+                onTap: () async {
+                  // Store context reference and check mounted before async operation
+                  final contextRef = context;
+                  if (contextRef.mounted) {
+                    Navigator.pop(contextRef);
+                  }
+                  await deleteDepartment(department);
                 },
               ),
             ),
@@ -240,9 +253,9 @@ class AdminDepartDataSource extends DataTableSource {
                 leading: Icon(Icons.restore, color: Colors.green),
                 title: Text("Restore"),
               ),
-              onTap: () {
+              onTap: () async {
                 Logger.success("Restoring ${department.id}");
-                restoreDepartment(department);
+                await restoreDepartment(department);
               },
             ),
           ];

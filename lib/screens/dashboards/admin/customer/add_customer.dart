@@ -1151,22 +1151,6 @@ class _AddcustState extends State<AddcustPage> {
                               },
                             ),
                             SizedBox(height: 10),
-                            if (_selectedPaymentMode == "Cheque") ...{
-                              _buildTextField(
-                                  'Check No. *', _chequeNoController),
-                              SizedBox(height: 10),
-                              _buildTextField(
-                                  'Cheque  Date *', _chequeDateController),
-                              SizedBox(height: 10),
-                              _buildTextField(
-                                  'Bank Name *', _bankNameController),
-                              SizedBox(height: 10),
-                            } else if (_selectedPaymentMode == "UPI/NEFT") ...{
-                              _buildTextField('Transaction No. *',
-                                  _transactionIDController),
-                              SizedBox(height: 10),
-                            },
-                            SizedBox(height: 10),
                             _buildDropdown(
                                 'Payment Fee *',
                                 [
@@ -1223,12 +1207,9 @@ class _AddcustState extends State<AddcustPage> {
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Radio<String>(
-                                                value: package,
+                                              RadioGroup<String>(
                                                 groupValue:
                                                     _selectedPaymentMode,
-                                                activeColor: Colors
-                                                    .white, // Change radio button color
                                                 onChanged: (value) {
                                                   setState(() {
                                                     _selectedPaymentMode =
@@ -1237,6 +1218,11 @@ class _AddcustState extends State<AddcustPage> {
                                                         "Selected payment Mode: $_selectedPaymentMode");
                                                   });
                                                 },
+                                                child: Radio<String>(
+                                                  value: package,
+                                                  activeColor: Colors
+                                                      .white, // Radio button color
+                                                ),
                                               ),
                                               Text(
                                                 package,
@@ -1258,6 +1244,23 @@ class _AddcustState extends State<AddcustPage> {
                                   ),
                                 ],
                               ),
+                            SizedBox(height: 10),
+                            if (_selectedPaymentMode == "Cheque") ...{
+                              _buildTextField(
+                                  'Check No. *', _chequeNoController),
+                              SizedBox(height: 10),
+                              _buildTextField(
+                                  'Cheque  Date *', _chequeDateController),
+                              SizedBox(height: 10),
+                              _buildTextField(
+                                  'Bank Name *', _bankNameController),
+                              SizedBox(height: 10),
+                            } else if (_selectedPaymentMode == "UPI/NEFT") ...{
+                              _buildTextField('Transaction No. *',
+                                  _transactionIDController),
+                              SizedBox(height: 10),
+                            },
+                            SizedBox(height: 10),
                             Text(
                               "Attachments",
                               style: TextStyle(

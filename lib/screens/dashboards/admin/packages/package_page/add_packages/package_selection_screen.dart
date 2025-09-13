@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -143,16 +144,30 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Radio<String>(
-                                  value: package,
+                                // Radio<String>(
+                                //   value: package,
+                                //   groupValue: _selectedPackage,
+                                //   activeColor:
+                                //       Colors.white, // Change radio button color
+                                //   onChanged: (value) {
+                                //     setState(() {
+                                //       _selectedPackage = value!;
+                                //     });
+                                //   },
+                                // ),
+                                RadioGroup<String>(
                                   groupValue: _selectedPackage,
-                                  activeColor:
-                                      Colors.white, // Change radio button color
                                   onChanged: (value) {
                                     setState(() {
                                       _selectedPackage = value!;
+                                      Logger.success(
+                                          "Selected Package $_selectedPackage");
                                     });
                                   },
+                                  child: Radio<String>(
+                                    value: package,
+                                    activeColor: Colors.white,
+                                  ),
                                 ),
                                 Text(
                                   package,
@@ -264,25 +279,28 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                         'Quad',
                         'Extra Bed'
                       ])
-                        RadioListTile<String>(
-                          title: Text(
-                            roomType,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          value: roomType, // Assign each radio button a value
-                          groupValue:
-                              selectedRoomType, // The currently selected value
+                        RadioGroup<String>(
+                          groupValue: selectedRoomType,
                           onChanged: (value) {
                             setState(() {
                               selectedRoomType = value; // Update selection
+                              Logger.success(
+                                  "Selected room type: $selectedRoomType");
                             });
                           },
-                          activeColor: Colors
-                              .white, // Change radio button color to white
+                          child: RadioListTile<String>(
+                            title: Text(
+                              roomType,
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            value: roomType, // Assign each radio button a value
+                            activeColor: Colors
+                                .white, // Change radio button color to white
+                          ),
                         ),
                     ],
                   ),
@@ -307,32 +325,37 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                   ),
                   Column(
                     children: [
-                      for (var roomType in [
-                        'Car',
-                        'Bus',
-                        'Train',
-                        'Volvo Bus',
-                      ])
-                        RadioListTile<String>(
-                          title: Text(
-                            roomType,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          value: roomType, // Assign each radio button a value
-                          groupValue:
-                              selectedRoomType1, // The currently selected value
-                          onChanged: (value) {
+                      RadioGroup<String>(
+                        groupValue: selectedRoomType1,
+                        onChanged: (value) {
+                          if (value != null) {
                             setState(() {
-                              selectedRoomType1 = value; // Update selection
+                              selectedRoomType1 = value;
                             });
-                          },
-                          activeColor: Colors
-                              .white, // Change radio button color to white
+                          }
+                        },
+                        child: Column(
+                          children: [
+                            for (var roomType in [
+                              'Car',
+                              'Bus',
+                              'Train',
+                              'Volvo Bus',
+                            ])
+                              RadioListTile<String>(
+                                title: Text(
+                                  roomType,
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                value: roomType,
+                              ),
+                          ],
                         ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 10),

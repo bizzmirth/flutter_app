@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
 
 import 'package:bizzmirth_app/entities/pending_techno_enterprise/pending_techno_enterprise_model.dart';
@@ -348,10 +350,8 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        // ignore: deprecated_member_use
         labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
         filled: true,
-        // ignore: deprecated_member_use
         fillColor: Colors.white.withOpacity(0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -666,16 +666,17 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                                 Radio<String>(
                                   value: package,
                                   groupValue: _selectedPackage,
-                                  activeColor:
-                                      Colors.white, // Change radio button color
+                                  activeColor: Colors.white,
                                   onChanged: widget.isViewMode
-                                      ? null
+                                      ? null // If view mode, disable interaction
                                       : (value) {
-                                          setState(() {
-                                            _selectedPackage = value!;
-                                            Logger.success(
-                                                "Selected package: $_selectedPackage");
-                                          });
+                                          if (value != null) {
+                                            setState(() {
+                                              _selectedPackage = value;
+                                              Logger.success(
+                                                  "Selected package: $_selectedPackage");
+                                            });
+                                          }
                                         },
                                 ),
                                 Text(
@@ -683,12 +684,10 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors
-                                        .white, // Gray out text if disabled
+                                    color: Colors.white,
                                   ),
                                 ),
-                                SizedBox(
-                                    width: 10), // Spacing between radio buttons
+                                SizedBox(width: 10),
                               ],
                             ),
                           );
