@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/controllers/admin_controller/admin_employee_contro
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -598,7 +599,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           Logger.success("Api update status : $apiUpdate");
           ToastHelper.showSuccessToast(title: "Updated Employee Successfully");
 
-          Navigator.pop(context);
+          MyNavigator.pop();
         }
       }
     } catch (e) {
@@ -757,13 +758,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           await _isarService.save<PendingEmployeeModel>(newEmployee);
           Logger.success(
               "Employee saved to API and local database successfully");
-          Navigator.pop(context);
+          MyNavigator.pop();
           ToastHelper.showSuccessToast(title: "Employee Added Successfully");
           _clearFormFields();
         } else {
           await _isarService.save<PendingEmployeeModel>(newEmployee);
           Logger.warning("Employee saved locally but API submission failed");
-          Navigator.pop(context);
+          MyNavigator.pop();
           ToastHelper.showWarningToast(
               title:
                   "Employee saved locally but couldn't be uploaded to server");

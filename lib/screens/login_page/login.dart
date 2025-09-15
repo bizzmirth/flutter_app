@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/loader_widget.dart';
 import 'package:flutter/material.dart';
@@ -49,11 +50,8 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     Future.delayed(const Duration(seconds: 7), () {
-      Navigator.pop(context); // close loader
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => nextPage),
-      );
+      MyNavigator.pop();
+      MyNavigator.pushWidget(nextPage);
     });
   }
 

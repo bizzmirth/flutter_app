@@ -6,6 +6,7 @@ import 'package:bizzmirth_app/controllers/customer_controller/customer_controlle
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -373,7 +374,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
       await controller.apiAddCustomer(newCustomer);
       clearFormFields();
-      Navigator.pop(context, true);
+      MyNavigator.pop(true);
 
       Logger.success("Adding customer: $newCustomer");
     } catch (e, s) {
@@ -688,7 +689,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         ..customerType = customerType;
 
       await controller.apiUpdateRegisteredCustomer(updatedCustomer);
-      Navigator.pop(context, true);
+      MyNavigator.pop(true);
     } catch (e, s) {
       Logger.error("Error updating form: $e, Stacktrace: $s");
     }
@@ -1836,21 +1837,35 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Radio<String>(
-                                                value: package,
-                                                groupValue:
-                                                    _selectedPaymentMode,
-                                                activeColor: Colors
-                                                    .white, // Change radio button color
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    _selectedPaymentMode =
-                                                        value!;
-                                                    Logger.success(
-                                                        "Selected payment Mode: $_selectedPaymentMode");
-                                                  });
-                                                },
-                                              ),
+                                              // Radio<String>(
+                                              //   value: package,
+                                              //   groupValue:
+                                              //       _selectedPaymentMode,
+                                              //   activeColor: Colors
+                                              //       .white, // Change radio button color
+                                              //   onChanged: (value) {
+                                              //     setState(() {
+                                              //       _selectedPaymentMode =
+                                              //           value!;
+                                              //       Logger.success(
+                                              //           "Selected payment Mode: $_selectedPaymentMode");
+                                              //     });
+                                              //   },
+                                              // ),
+                                              RadioGroup<String>(
+                                                  groupValue:
+                                                      _selectedPaymentMode,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      _selectedPaymentMode =
+                                                          value!;
+                                                      Logger.success(
+                                                          "Selected payment Mode: $_selectedPaymentMode");
+                                                    });
+                                                  },
+                                                  child: Radio<String>(
+                                                    value: package,
+                                                  )),
                                               Text(
                                                 package,
                                                 style: TextStyle(

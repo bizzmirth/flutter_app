@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/entities/pending_techno_enterprise/pending_techno_enterprise_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_mentor/techno_enterprise/add_techno_enterprise.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class BchPendingTcDataSource extends DataTableSource {
       await isarService.updateStatus<PendingTechnoEnterpriseModel>(
           idToDelete, 0);
       // employeeController.deletePendingEmployee(idToDelete);
-      Navigator.pop(context);
+      MyNavigator.pop();
       if (showToast) {
         ToastHelper.showSuccessToast(
             title: "Pending Techno Enterprise Deleted.");
@@ -36,7 +37,7 @@ class BchPendingTcDataSource extends DataTableSource {
     try {
       await isarService.updateStatus<PendingTechnoEnterpriseModel>(
           idToRestore, 2);
-      Navigator.pop(context);
+      MyNavigator.pop();
       ToastHelper.showSuccessToast(title: "Techno Enterprise Restored.");
       Logger.success("-------- $context -------- ");
     } catch (e) {

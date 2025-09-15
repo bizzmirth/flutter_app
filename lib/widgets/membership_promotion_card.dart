@@ -1,4 +1,5 @@
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -565,10 +566,12 @@ class _PlanCard extends StatelessWidget {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text("No email app or Gmail available on this device")),
-    );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   const SnackBar(
+    //       content: Text("No email app or Gmail available on this device")),
+    // );
+    ToastHelper.showErrorToast(
+        title: "No email app or Gmail available on this device");
   }
 
   void _launchUrl(String url) async {

@@ -5,6 +5,7 @@ import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.d
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -342,11 +343,8 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
     );
 
     Future.delayed(const Duration(seconds: 7), () {
-      Navigator.pop(context); // close loader
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => nextPage),
-      );
+      MyNavigator.pop();
+      MyNavigator.pushWidget(nextPage);
     });
   }
 
@@ -962,14 +960,14 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
               ? null
               : FloatingActionButton(
                   onPressed: () async {
+                    final customerController =
+                        context.read<CustomerController>();
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const AddReferralCustomer()),
                     );
 
-                    final customerController =
-                        context.read<CustomerController>();
                     await customerController.apiGetRegisteredCustomers();
                     await customerController.apiGetPendingCustomers();
                     // Refresh filtered customers after API calls

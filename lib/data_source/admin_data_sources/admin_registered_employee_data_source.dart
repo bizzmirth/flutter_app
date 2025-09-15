@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.d
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/add_employees.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
@@ -21,7 +22,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
       Logger.warning("Delete process started $idToDelete ------");
       // await isarService.delete<RegisteredEmployeeModel>(idToDelete);
       await isarService.updateStatus<RegisteredEmployeeModel>(idToDelete, 3);
-      Navigator.pop(context);
+      MyNavigator.pop();
       if (showToast) {
         ToastHelper.showSuccessToast(title: "Registered Employee Deleted.");
       }
@@ -66,7 +67,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
     try {
       Logger.warning("Removing employee from table $idToRemove");
       await isarService.delete<RegisteredEmployeeModel>(idToRemove);
-      Navigator.pop(context);
+      MyNavigator.pop();
       if (showToast) {
         ToastHelper.showSuccessToast(title: "Employee Removed.");
       }
@@ -79,7 +80,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
     try {
       await isarService.updateStatus<RegisteredEmployeeModel>(idToRestore, 1);
       Logger.success("Employee $idToRestore restored successfully");
-      Navigator.pop(context);
+      MyNavigator.pop();
     } catch (e) {
       Logger.error("Error restoring employee: $e");
     }
