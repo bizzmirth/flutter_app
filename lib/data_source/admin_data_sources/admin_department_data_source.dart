@@ -26,8 +26,7 @@ class AdminDepartDataSource extends DataTableSource {
 
       // Add mounted check before using context
       if (context.mounted) {
-        ToastHelper.showSuccessToast(
-            context: context, title: "Department deleted successfully!");
+        ToastHelper.showSuccessToast(title: "Department deleted successfully!");
       }
     } catch (e) {
       Logger.success('Error deleting department: $e');
@@ -47,7 +46,7 @@ class AdminDepartDataSource extends DataTableSource {
       // Add mounted check before using context
       if (context.mounted) {
         ToastHelper.showSuccessToast(
-            context: context, title: "Department restored successfully!");
+            title: "Department restored successfully!");
       }
     } catch (e) {
       Logger.success('Error restoring department: $e');
@@ -163,7 +162,6 @@ class AdminDepartDataSource extends DataTableSource {
                                 if (context.mounted) {
                                   Navigator.of(context).pop();
                                   ToastHelper.showSuccessToast(
-                                      context: context,
                                       title: "Department edited successfully!");
                                 }
                                 controller.notifyListeners();

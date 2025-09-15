@@ -865,7 +865,6 @@ class CustomerController extends ChangeNotifier {
           Logger.success("Customer deleted successfully");
 
           ToastHelper.showSuccessToast(
-            context: context,
             title: "Success",
             description: "Customer deleted successfully",
           );
@@ -876,7 +875,6 @@ class CustomerController extends ChangeNotifier {
           _error = "Delete failed: $errorMessage";
 
           ToastHelper.showErrorToast(
-            context: context,
             title: "Delete Failed",
             description: errorMessage,
           );
@@ -887,7 +885,6 @@ class CustomerController extends ChangeNotifier {
         _error = errorMessage;
 
         ToastHelper.showErrorToast(
-          context: context,
           title: "Network Error",
           description: "Failed to delete customer. Please try again.",
         );
@@ -897,7 +894,6 @@ class CustomerController extends ChangeNotifier {
       _error = "Error: $e";
 
       ToastHelper.showErrorToast(
-        context: context,
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
       );
@@ -938,7 +934,6 @@ class CustomerController extends ChangeNotifier {
           Logger.success("Customer Restored successfully");
 
           ToastHelper.showSuccessToast(
-            context: context,
             title: "Success",
             description: "Customer Restored successfully",
           );
@@ -949,7 +944,6 @@ class CustomerController extends ChangeNotifier {
           _error = "Restoring failed: $errorMessage";
 
           ToastHelper.showErrorToast(
-            context: context,
             title: "Restoring Failed",
             description: errorMessage,
           );
@@ -960,7 +954,6 @@ class CustomerController extends ChangeNotifier {
         _error = errorMessage;
 
         ToastHelper.showErrorToast(
-          context: context,
           title: "Network Error",
           description: "Failed to restore customer. Please try again.",
         );

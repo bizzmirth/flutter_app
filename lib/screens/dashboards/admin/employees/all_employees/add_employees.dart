@@ -526,10 +526,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           final apiUpdate = await employeeController
               .updatePendingEmployees(updatePendingEmployee);
           Logger.success("Api update status : $apiUpdate");
-          ToastHelper.showSuccessToast(
-              context: context, title: "Updated Employee Successfully");
+          ToastHelper.showSuccessToast(title: "Updated Employee Successfully");
 
-          Navigator.pop(context);
+          if (mounted) {
+            Navigator.pop(context);
+          }
         }
       }
     } catch (e) {
@@ -595,8 +596,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           final apiUpdate = await employeeController
               .updateRegisterEmployee(updateRegisteredEmployee);
           Logger.success("Api update status : $apiUpdate");
-          ToastHelper.showSuccessToast(
-              context: context, title: "Updated Employee Successfully");
+          ToastHelper.showSuccessToast(title: "Updated Employee Successfully");
 
           Navigator.pop(context);
         }
@@ -705,7 +705,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       if (formState == null || !formState.validate()) {
         _scrollToFirstError();
         ToastHelper.showErrorToast(
-            context: context, title: "Please Fill all the required fields");
+            title: "Please Fill all the required fields");
         return;
       }
       if (_formKey.currentState!.validate()) {
@@ -758,22 +758,19 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           Logger.success(
               "Employee saved to API and local database successfully");
           Navigator.pop(context);
-          ToastHelper.showSuccessToast(
-              context: context, title: "Employee Added Successfully");
+          ToastHelper.showSuccessToast(title: "Employee Added Successfully");
           _clearFormFields();
         } else {
           await _isarService.save<PendingEmployeeModel>(newEmployee);
           Logger.warning("Employee saved locally but API submission failed");
           Navigator.pop(context);
           ToastHelper.showWarningToast(
-              context: context,
               title:
                   "Employee saved locally but couldn't be uploaded to server");
           _clearFormFields();
         }
       } else {
         ToastHelper.showErrorToast(
-            context: context,
             title: "Please fill all the required fields correctly.");
       }
     } catch (e) {

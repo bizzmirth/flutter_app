@@ -43,18 +43,15 @@ class ContactUsController extends ChangeNotifier {
         final data = jsonDecode(response.body);
         if (data["status"] == "success") {
           ToastHelper.showSuccessToast(
-            context: context,
             title: data["message"] ?? "Message sent successfully.",
           );
         } else {
           ToastHelper.showErrorToast(
-            context: context,
             title: data["message"] ?? "Something went wrong.",
           );
         }
       } else {
         ToastHelper.showErrorToast(
-          context: context,
           title: "Server error: ${response.statusCode}",
         );
       }
@@ -66,7 +63,6 @@ class ContactUsController extends ChangeNotifier {
       // Check if context is still valid before showing error toast
       if (context.mounted) {
         ToastHelper.showErrorToast(
-          context: context,
           title: "Error sending message to the server.",
         );
       }

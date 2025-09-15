@@ -258,7 +258,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
         _scrollToFirstError();
         ToastHelper.showErrorToast(
-            context: context,
             title:
                 "Please fill all the required fields and upload required documents");
         return;
@@ -1387,16 +1386,16 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     }
     return Consumer<CustomerController>(
         builder: (context, customerController, child) {
-      return WillPopScope(
-        onWillPop: () async {
-          // When back is pressed, go to ReferralCustomersPage instead of previous page
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => ViewCustomersPage(),
             ),
           );
-          return false; // Prevent default back behavior
         },
         child: Scaffold(
           appBar: AppBar(
@@ -1594,7 +1593,6 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                           .toLowerCase()
                                           .contains("exists")) {
                                     ToastHelper.showWarningToast(
-                                      context: context,
                                       title: "Email Error",
                                       description:
                                           customerController.emailError!,

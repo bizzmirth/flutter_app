@@ -107,7 +107,6 @@ class _LoginPageState extends State<LoginPage> {
 
     if (result["status"] == true) {
       ToastHelper.showSuccessToast(
-        context: context,
         title: "Login Successful",
         description: "Welcome back!",
       );
@@ -116,7 +115,6 @@ class _LoginPageState extends State<LoginPage> {
       _navigateToDashboard(context, result["user_type"]);
     } else {
       ToastHelper.showErrorToast(
-        context: context,
         title: "Login Failed",
         description: result["message"] ?? "An error occurred during login.",
       );
@@ -154,16 +152,16 @@ class _LoginPageState extends State<LoginPage> {
     final isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
 
-    return WillPopScope(
-      onWillPop: () async {
-        // When back is pressed, go to ReferralCustomersPage instead of previous page
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => HomePage(),
           ),
         );
-        return false; // Prevent default back behavior
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -367,16 +365,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildPhoneLayout(BuildContext context, LoginController controller) {
-    return WillPopScope(
-      onWillPop: () async {
-        // When back is pressed, go to ReferralCustomersPage instead of previous page
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) result;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => HomePage(),
           ),
         );
-        return false; // Prevent default back behavior
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,

@@ -181,7 +181,6 @@ class LoginController extends ChangeNotifier {
         isLoading = false;
         notifyListeners();
         ToastHelper.showInfoToast(
-          context: context,
           title: "Login Failed",
           description: errorMessage,
         );
@@ -193,7 +192,6 @@ class LoginController extends ChangeNotifier {
         isLoading = false;
         notifyListeners();
         ToastHelper.showInfoToast(
-          context: context,
           title: "Login Failed",
           description: "Please enter all the fields.",
         );
@@ -205,7 +203,6 @@ class LoginController extends ChangeNotifier {
         isLoading = false;
         notifyListeners();
         ToastHelper.showInfoToast(
-          context: context,
           title: "Login Failed",
           description: "Please enter all the fields.",
         );
@@ -266,7 +263,6 @@ class LoginController extends ChangeNotifier {
         isLoading = false;
         notifyListeners();
         ToastHelper.showErrorToast(
-          context: context,
           title: "Login Failed",
           description: errorMessage,
         );
@@ -281,7 +277,6 @@ class LoginController extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
       ToastHelper.showErrorToast(
-        context: context,
         title: "Login Failed",
         description: errorMessage,
       );

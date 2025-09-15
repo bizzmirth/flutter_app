@@ -23,8 +23,7 @@ class AdminDesigDataSource extends DataTableSource {
       await controller.fetchDesignations();
       notifyListeners();
       isLoading = false;
-      ToastHelper.showSuccessToast(
-          context: context, title: "Designation deleted successfully!");
+      ToastHelper.showSuccessToast(title: "Designation deleted successfully!");
     } catch (e) {
       Logger.error("Error deleting designation");
       isLoading = false;
@@ -41,8 +40,7 @@ class AdminDesigDataSource extends DataTableSource {
       await controller.fetchDesignations();
       notifyListeners();
       isLoading = false;
-      ToastHelper.showSuccessToast(
-          context: context, title: "Designation restored successfully!");
+      ToastHelper.showSuccessToast(title: "Designation restored successfully!");
     } catch (e) {
       Logger.error("Error restoring designation");
       isLoading = false;
@@ -238,9 +236,10 @@ class AdminDesigDataSource extends DataTableSource {
                                   controller.fetchDesignations(),
                                 ]);
                               });
-                              Navigator.of(context).pop();
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                              }
                               ToastHelper.showSuccessToast(
-                                  context: context,
                                   title: "Designation edited successfully!.");
                               controller.notifyListeners();
                             } catch (e) {

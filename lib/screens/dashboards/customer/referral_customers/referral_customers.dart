@@ -752,16 +752,16 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           ? customerController.pendingCustomers.length.toString()
           : filteredPendingCustomers.length.toString();
 
-      return WillPopScope(
-        onWillPop: () async {
-          // When back is pressed, go to HomePage
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => CDashboardPage(),
             ),
           );
-          return false; // Prevent default back behavior
         },
         child: Scaffold(
           appBar: AppBar(

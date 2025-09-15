@@ -8,6 +8,8 @@ import 'package:bizzmirth_app/entities/registered_employee/registered_employee_m
 import 'package:bizzmirth_app/screens/dashboards/admin/employees/all_employees/add_employees.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -67,9 +69,8 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
       await getEmployee();
       await getPendingEmployees();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading data: $e')),
-      );
+      Logger.error("Error loading data: $e");
+      ToastHelper.showErrorToast(title: "Error loading data $e");
     } finally {
       if (mounted) setState(() => isLoading = false);
     }

@@ -23,8 +23,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
       await isarService.updateStatus<RegisteredEmployeeModel>(idToDelete, 3);
       Navigator.pop(context);
       if (showToast) {
-        ToastHelper.showSuccessToast(
-            context: context, title: "Registered Employee Deleted.");
+        ToastHelper.showSuccessToast(title: "Registered Employee Deleted.");
       }
     } catch (e) {
       Logger.error("Error deleting the employee: $e");
@@ -55,8 +54,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
 
       await isarService.save<PendingEmployeeModel>(unRegisterEmployee);
       removeEmployeeFromTable(empRegister.id, showToast: false);
-      ToastHelper.showSuccessToast(
-          context: context, title: "Employee Un-Registered.");
+      ToastHelper.showSuccessToast(title: "Employee Un-Registered.");
       Logger.success("----------- Employee Un-Regisered ${empRegister.name}");
     } catch (e) {
       Logger.error("Error unregistering the employee ${empRegister.name}: $e");
@@ -70,8 +68,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
       await isarService.delete<RegisteredEmployeeModel>(idToRemove);
       Navigator.pop(context);
       if (showToast) {
-        ToastHelper.showSuccessToast(
-            context: context, title: "Employee Removed.");
+        ToastHelper.showSuccessToast(title: "Employee Removed.");
       }
     } catch (e) {
       Logger.error("Error removing employee from table: $e");

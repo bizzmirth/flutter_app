@@ -29,10 +29,11 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
       // await isarService.delete<PendingEmployeeModel>(idToDelete);
       await isarService.updateStatus<PendingEmployeeModel>(idToDelete, 0);
       employeeController.deletePendingEmployee(idToDelete);
-      Navigator.pop(context);
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
       if (showToast) {
-        ToastHelper.showSuccessToast(
-            context: context, title: "Pending Employee Deleted.");
+        ToastHelper.showSuccessToast(title: "Pending Employee Deleted.");
       }
     } catch (e) {
       Logger.error("Failed to delete employee: $e");
@@ -91,8 +92,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
       await employeeController.apiUpdateEmployeeStatus(
           context, empRegister.id, empRegister.email);
 
-      ToastHelper.showSuccessToast(
-          context: context, title: "Employee Registered.");
+      ToastHelper.showSuccessToast(title: "Employee Registered.");
       isLoading = false;
       // Navigator.of(context, rootNavigator: true).pop();
       Logger.success("----------- Employee Regisered ${empRegister.name}");
@@ -108,10 +108,11 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
       Logger.warning("Delete process started $idToRemove ------");
       await isarService.delete<PendingEmployeeModel>(idToRemove);
       // await isarService.updateStatus<PendingEmployeeModel>(idToDelete, 0);
-      Navigator.pop(context);
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
       if (showToast) {
-        ToastHelper.showSuccessToast(
-            context: context, title: "Employee Deleted.");
+        ToastHelper.showSuccessToast(title: "Employee Deleted.");
       }
       Logger.warning("Delete process completed");
     } catch (e) {
@@ -124,7 +125,9 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
   ) async {
     try {
       await isarService.updateStatus<PendingEmployeeModel>(idToRestore, 2);
-      Navigator.pop(context);
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
       Logger.success("-------- $context -------- ");
     } catch (e) {
       Logger.error("Failed to restore employee: $e");

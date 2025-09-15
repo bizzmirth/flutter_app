@@ -87,7 +87,6 @@ class _MyAppState extends State<MyApp> {
       final sharedPrefHelper = SharedPrefHelper();
       Logger.warning("User inactivity timeout triggered");
       ToastHelper.showErrorToast(
-        context: context,
         title: "Session Expired",
         description:
             "You have been inactive for too long. Please log in again.",

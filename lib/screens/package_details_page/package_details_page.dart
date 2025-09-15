@@ -46,7 +46,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
         );
       } else {
         ToastHelper.showErrorToast(
-            context: context, title: "Could not detect WhatsApp on device.");
+            title: "Could not detect WhatsApp on device.");
       }
     }
   }
@@ -572,9 +572,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               right: MediaQuery.of(context).size.width * 0.25,
               child: ElevatedButton(
                 onPressed: () {
-                  ToastHelper.showContactToast(
-                    context: context,
-                  );
+                  ToastHelper.showContactToast();
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -598,7 +596,6 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               child: ElevatedButton(
                 onPressed: () {
                   ToastHelper.showInfoToast(
-                      context: context,
                       title:
                           "Kindly Contact Your Travel Consultant to request Quotation Details");
                 },

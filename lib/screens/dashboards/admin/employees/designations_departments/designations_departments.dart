@@ -491,7 +491,6 @@ class _DesignationsPageState extends State<DesignationsPage> {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
                     ToastHelper.showSuccessToast(
-                        context: context,
                         title: "Designation added successfully!.");
                   },
                   style: ElevatedButton.styleFrom(

@@ -23,7 +23,7 @@ class BchPendingTcDataSource extends DataTableSource {
       Navigator.pop(context);
       if (showToast) {
         ToastHelper.showSuccessToast(
-            context: context, title: "Pending Techno Enterprise Deleted.");
+            title: "Pending Techno Enterprise Deleted.");
       }
     } catch (e) {
       Logger.error("Failed to Pending Techno Enterprise: $e");
@@ -37,8 +37,7 @@ class BchPendingTcDataSource extends DataTableSource {
       await isarService.updateStatus<PendingTechnoEnterpriseModel>(
           idToRestore, 2);
       Navigator.pop(context);
-      ToastHelper.showSuccessToast(
-          context: context, title: "Techno Enterprise Restored.");
+      ToastHelper.showSuccessToast(title: "Techno Enterprise Restored.");
       Logger.success("-------- $context -------- ");
     } catch (e) {
       Logger.error("Failed to restore employee: $e");
