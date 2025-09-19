@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/controllers/admin_controller/admin_employee_contro
 import 'package:bizzmirth_app/controllers/all_packages_controllers/package_details_controller.dart';
 import 'package:bizzmirth_app/controllers/all_packages_controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/controllers/common_controllers/contact_us_controller.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/home_page_controller.dart';
 import 'package:bizzmirth_app/controllers/common_controllers/login_controller.dart';
 import 'package:bizzmirth_app/controllers/common_controllers/profile_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller/cust_order_history_controller.dart';
@@ -119,6 +120,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => HomePageController()),
         ChangeNotifierProvider(create: (_) => LoginController()),
         ChangeNotifierProvider(create: (_) => CustomerController()),
         ChangeNotifierProvider(create: (_) => AdminEmployeeController()),
