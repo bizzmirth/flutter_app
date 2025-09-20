@@ -8,14 +8,17 @@ import 'package:bizzmirth_app/utils/logger.dart';
 
 class HomePageController extends ChangeNotifier {
   List<UserType> _userTypes = [];
+  bool _isLoading = true;
+  String _error = '';
   List<UserType> get userTypes => _userTypes;
-  bool isLoading = true;
-  String error = '';
+  bool get isLoading => _isLoading;
+  String get error => _error;
 
   final SharedPrefHelper _sharedPrefHelper = SharedPrefHelper();
 
   HomePageController() {
     loadUserTypes();
+    Logger.warning("home page controller constructor called");
   }
 
   Future<void> loadUserTypes() async {
@@ -29,7 +32,7 @@ class HomePageController extends ChangeNotifier {
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
         _userTypes = userTypeResponse.data;
-        isLoading = false;
+        _isLoading = false;
         notifyListeners();
 
         Logger.success(
@@ -46,8 +49,8 @@ class HomePageController extends ChangeNotifier {
 
   Future<void> fetchEmployeeTypeFromAPI() async {
     try {
-      isLoading = true;
-      error = '';
+      _isLoading = true;
+      _error = '';
       notifyListeners();
 
       final String url = AppUrls.getAllUserTypes;
@@ -63,19 +66,19 @@ class HomePageController extends ChangeNotifier {
         Logger.success("User types saved to SharedPreferences");
 
         _userTypes = userTypeResponse.data;
-        isLoading = false;
+        _isLoading = false;
         notifyListeners();
       } else {
-        error = 'Failed to load user types. Status: ${response.statusCode}';
-        isLoading = false;
+        _error = 'Failed to load user types. Status: ${response.statusCode}';
+        _isLoading = false;
         notifyListeners();
 
         Logger.error("API Error: Status ${response.statusCode}");
       }
     } catch (e) {
       Logger.error("Error fetching user types from API: $e");
-      error = 'Error fetching user types: $e';
-      isLoading = false;
+      _error = 'Error fetching user types: $e';
+      _isLoading = false;
       notifyListeners();
     }
   }
@@ -89,7 +92,7 @@ class HomePageController extends ChangeNotifier {
     try {
       await _sharedPrefHelper.clearUserDataType();
       _userTypes = [];
-      isLoading = true;
+      _isLoading = true;
       notifyListeners();
       Logger.info("Cached user types cleared");
     } catch (e) {
