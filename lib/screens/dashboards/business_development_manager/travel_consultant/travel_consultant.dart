@@ -34,18 +34,18 @@ class _ViewTCPageState1 extends State<ViewTCPage1> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Divider(thickness: 1, color: Colors.black26),
-              Center(
+              const Divider(thickness: 1, color: Colors.black26),
+              const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "All Pending Travel Consultant List:",
+                    'All Pending Travel Consultant List:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
-              FilterBar(),
+              const Divider(thickness: 1, color: Colors.black26),
+              const FilterBar(),
 
               Card(
                 elevation: 5,
@@ -59,19 +59,19 @@ class _ViewTCPageState1 extends State<ViewTCPage1> {
                   child: PaginatedDataTable(
                     columnSpacing: 20,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("           ")),
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Full Name")),
-                      DataColumn(label: Text("Ref. ID")),
-                      DataColumn(label: Text("Ref. Name")),
-                      DataColumn(label: Text("Joining Date")),
-                      DataColumn(label: Text("Status")),
-                      DataColumn(label: Text("Action"))
+                    columns: const [
+                      DataColumn(label: Text('           ')),
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Full Name')),
+                      DataColumn(label: Text('Ref. ID')),
+                      DataColumn(label: Text('Ref. Name')),
+                      DataColumn(label: Text('Joining Date')),
+                      DataColumn(label: Text('Status')),
+                      DataColumn(label: Text('Action'))
                     ],
                     source: MyViewTCDataSource(tcorders),
                     rowsPerPage: _rowsPerPage,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {
@@ -84,19 +84,19 @@ class _ViewTCPageState1 extends State<ViewTCPage1> {
                 ),
               ),
 
-              SizedBox(height: 35),
-              Divider(thickness: 1, color: Colors.black26),
+              const SizedBox(height: 35),
+              const Divider(thickness: 1, color: Colors.black26),
               // Upcoming Events Section
-              Padding(
+              const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  "All Registered Travel Consultant List:",
+                  'All Registered Travel Consultant List:',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
+              const Divider(thickness: 1, color: Colors.black26),
 
-              FilterBar(),
+              const FilterBar(),
               Card(
                 elevation: 5,
                 shape: RoundedRectangleBorder(
@@ -109,20 +109,20 @@ class _ViewTCPageState1 extends State<ViewTCPage1> {
                   child: PaginatedDataTable(
                     columnSpacing: 20,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("           ")),
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Full Name")),
-                      DataColumn(label: Text("Ref. ID")),
-                      DataColumn(label: Text("Ref. Name")),
-                      DataColumn(label: Text("Joining Date")),
-                      DataColumn(label: Text("Status")),
-                      DataColumn(label: Text("Packages Sold")),
-                      DataColumn(label: Text("Action")),
+                    columns: const [
+                      DataColumn(label: Text('           ')),
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Full Name')),
+                      DataColumn(label: Text('Ref. ID')),
+                      DataColumn(label: Text('Ref. Name')),
+                      DataColumn(label: Text('Joining Date')),
+                      DataColumn(label: Text('Status')),
+                      DataColumn(label: Text('Packages Sold')),
+                      DataColumn(label: Text('Action')),
                     ],
                     source: MyViewTCRegDataSource(tcvieworders1),
                     rowsPerPage: _rowsPerPage1,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {

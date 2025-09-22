@@ -18,7 +18,7 @@ class FilterBar extends StatefulWidget {
   });
 
   @override
-  _FilterBarState createState() => _FilterBarState();
+  State<FilterBar> createState() => _FilterBarState();
 }
 
 class _FilterBarState extends State<FilterBar> {
@@ -40,15 +40,16 @@ class _FilterBarState extends State<FilterBar> {
   }
 
   Future<void> _selectDate(BuildContext context, bool isFromDate) async {
-    DateTime initialDate = isFromDate
+    final DateTime initialDate = isFromDate
         ? fromDate ?? DateTime.now()
         : toDate ?? fromDate ?? DateTime.now();
 
-    DateTime firstDate =
+    final DateTime firstDate =
         isFromDate ? DateTime(2000) : fromDate ?? DateTime(2000);
-    DateTime lastDate = isFromDate ? toDate ?? DateTime(2101) : DateTime(2101);
+    final DateTime lastDate =
+        isFromDate ? toDate ?? DateTime(2101) : DateTime(2101);
 
-    DateTime? pickedDate = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: initialDate,
       firstDate: firstDate,
@@ -107,7 +108,7 @@ class _FilterBarState extends State<FilterBar> {
 
   @override
   Widget build(BuildContext context) {
-    String totalUsers = widget.userCount ?? "0";
+    final String totalUsers = widget.userCount ?? '0';
     final isTablet = MediaQuery.of(context).size.width >= 600;
 
     return Column(
@@ -138,16 +139,16 @@ class _FilterBarState extends State<FilterBar> {
                   Expanded(
                     child: Text(
                       fromDateError!,
-                      style: TextStyle(color: Colors.red, fontSize: 12),
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
                     ),
                   ),
                 if (fromDateError != null && toDateError != null)
-                  Text(" | ", style: TextStyle(color: Colors.red)),
+                  const Text(' | ', style: TextStyle(color: Colors.red)),
                 if (toDateError != null)
                   Expanded(
                     child: Text(
                       toDateError!,
-                      style: TextStyle(color: Colors.red, fontSize: 12),
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
                     ),
                   ),
               ],
@@ -160,14 +161,14 @@ class _FilterBarState extends State<FilterBar> {
   Widget _buildTabletLayout(String totalUsers) {
     return Row(
       children: [
-        SizedBox(width: 15),
+        const SizedBox(width: 15),
         // Search Bar
         Expanded(
           flex: 2,
           child: TextField(
             controller: searchController,
             decoration: InputDecoration(
-              hintText: "Search...",
+              hintText: 'Search...',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
@@ -175,16 +176,15 @@ class _FilterBarState extends State<FilterBar> {
               filled: true,
               fillColor: Colors.white,
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             ),
           ),
         ),
 
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
 
         // From Date Picker
         Expanded(
-          flex: 1,
           child: GestureDetector(
             onTap: () => _selectDate(context, true),
             child: Container(
@@ -192,72 +192,69 @@ class _FilterBarState extends State<FilterBar> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
                 border: fromDateError != null
-                    ? Border.all(color: Colors.red, width: 1)
+                    ? Border.all(color: Colors.red)
                     : null,
               ),
               alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
                 fromDate == null
-                    ? "From Date"
+                    ? 'From Date'
                     : DateFormat.yMMMd().format(fromDate!),
-                style: TextStyle(color: Colors.black54),
+                style: const TextStyle(color: Colors.black54),
               ),
             ),
           ),
         ),
 
-        Text("  --  "),
+        const Text('  --  '),
 
         // To Date Picker
         Expanded(
-          flex: 1,
           child: GestureDetector(
             onTap: () => _selectDate(context, false),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                border: toDateError != null
-                    ? Border.all(color: Colors.red, width: 1)
-                    : null,
+                border:
+                    toDateError != null ? Border.all(color: Colors.red) : null,
               ),
               alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
-                toDate == null ? "To Date" : DateFormat.yMMMd().format(toDate!),
-                style: TextStyle(color: Colors.black54),
+                toDate == null ? 'To Date' : DateFormat.yMMMd().format(toDate!),
+                style: const TextStyle(color: Colors.black54),
               ),
             ),
           ),
         ),
 
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
 
         // Count Users
         Expanded(
-          flex: 1,
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: Text("Count: $totalUsers"),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Text('Count: $totalUsers'),
           ),
         ),
 
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
 
         // Clear Filters Button
         IconButton(
           onPressed: _clearFilters,
-          icon: Icon(Icons.clear, color: Colors.red),
-          tooltip: "Clear Filters",
+          icon: const Icon(Icons.clear, color: Colors.red),
+          tooltip: 'Clear Filters',
         ),
 
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -272,7 +269,7 @@ class _FilterBarState extends State<FilterBar> {
               child: TextField(
                 controller: searchController,
                 decoration: InputDecoration(
-                  hintText: "Search...",
+                  hintText: 'Search...',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -280,20 +277,20 @@ class _FilterBarState extends State<FilterBar> {
                   filled: true,
                   fillColor: Colors.white,
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 ),
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             IconButton(
               onPressed: _clearFilters,
-              icon: Icon(Icons.clear, color: Colors.red),
-              tooltip: "Clear Filters",
+              icon: const Icon(Icons.clear, color: Colors.red),
+              tooltip: 'Clear Filters',
             ),
           ],
         ),
 
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
 
         // Second row: Date pickers and count
         Row(
@@ -307,26 +304,26 @@ class _FilterBarState extends State<FilterBar> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     border: fromDateError != null
-                        ? Border.all(color: Colors.red, width: 1)
+                        ? Border.all(color: Colors.red)
                         : null,
                   ),
                   alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     fromDate == null
-                        ? "From Date"
+                        ? 'From Date'
                         : DateFormat.yMMMd().format(fromDate!),
-                    style: TextStyle(color: Colors.black54, fontSize: 12),
+                    style: const TextStyle(color: Colors.black54, fontSize: 12),
                   ),
                 ),
               ),
             ),
 
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
 
-            Text("--", style: TextStyle(fontSize: 12)),
+            const Text('--', style: TextStyle(fontSize: 12)),
 
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
 
             // To Date Picker
             Expanded(
@@ -337,22 +334,22 @@ class _FilterBarState extends State<FilterBar> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     border: toDateError != null
-                        ? Border.all(color: Colors.red, width: 1)
+                        ? Border.all(color: Colors.red)
                         : null,
                   ),
                   alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     toDate == null
-                        ? "To Date"
+                        ? 'To Date'
                         : DateFormat.yMMMd().format(toDate!),
-                    style: TextStyle(color: Colors.black54, fontSize: 12),
+                    style: const TextStyle(color: Colors.black54, fontSize: 12),
                   ),
                 ),
               ),
             ),
 
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
 
             // Count Users
             Container(
@@ -361,8 +358,9 @@ class _FilterBarState extends State<FilterBar> {
                 borderRadius: BorderRadius.circular(10),
               ),
               alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-              child: Text("Count: $totalUsers", style: TextStyle(fontSize: 12)),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+              child: Text('Count: $totalUsers',
+                  style: const TextStyle(fontSize: 12)),
             ),
           ],
         ),

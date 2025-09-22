@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
+import 'package:bizzmirth_app/controllers/all_packages_controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/screens/more_top_selling_packages/more_top_selling_packages.dart';
 import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -12,7 +12,7 @@ class TopSellingDestinations extends StatefulWidget {
   const TopSellingDestinations({super.key});
 
   @override
-  _TopSellingDestinationsState createState() => _TopSellingDestinationsState();
+  State<TopSellingDestinations> createState() => _TopSellingDestinationsState();
 }
 
 class _TopSellingDestinationsState extends State<TopSellingDestinations>
@@ -40,10 +40,10 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
     // Register route observer if needed
   }
 
-  void getTopTourPackages() async {
+  Future<void> getTopTourPackages() async {
     final controller =
         Provider.of<TourPackagesController>(context, listen: false);
-    controller.apiGetTourPackages();
+    await controller.apiGetTourPackages();
   }
 
   void _updateArrowVisibility() {
@@ -171,7 +171,8 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.2),
                                       blurRadius: 4,
                                       spreadRadius: 1,
                                     ),
@@ -210,7 +211,8 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.2),
                                       blurRadius: 4,
                                       spreadRadius: 1,
                                     ),
@@ -256,13 +258,13 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
         width: isSmallScreen ? 150 : 170,
         margin: const EdgeInsets.symmetric(horizontal: 6),
         child: const Center(
-          child: Text("Invalid trip data"),
+          child: Text('Invalid trip data'),
         ),
       );
     }
 
     final imageUrl =
-        trip.image != null ? "${AppUrls.getImageBaseUrl}${trip.image}" : null;
+        trip.image != null ? '${AppUrls.getImageBaseUrl}${trip.image}' : null;
 
     return GestureDetector(
       onTap: () {
@@ -283,7 +285,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 6,
               spreadRadius: 1,
             ),
@@ -305,7 +307,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                           width: double.infinity,
                           errorWidget: (context, error, stackTrace) {
                             Logger.error(
-                                "Image load error for $imageUrl: $error");
+                                'Image load error for $imageUrl: $error');
                             return Container(
                               height: isSmallScreen ? 85 : 100,
                               width: double.infinity,
@@ -336,7 +338,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                         colors: [
-                          Colors.black.withOpacity(0.3),
+                          Colors.black.withValues(alpha: 0.3),
                           Colors.transparent,
                         ],
                       ),
@@ -350,7 +352,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                 child: Text(
-                  trip.destination ?? "Unknown Destination",
+                  trip.destination ?? 'Unknown Destination',
                   style: TextStyle(
                     fontSize: isSmallScreen ? 12 : 14,
                     fontWeight: FontWeight.w600,
@@ -400,7 +402,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                   color: Colors.blue.shade700, size: isSmallScreen ? 24 : 28),
               const SizedBox(height: 6),
               Text(
-                "View More",
+                'View More',
                 style: TextStyle(
                   fontSize: isSmallScreen ? 12 : 14,
                   fontWeight: FontWeight.w600,

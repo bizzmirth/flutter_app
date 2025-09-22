@@ -7,7 +7,7 @@ class FooterSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.blue.shade900, Colors.blueAccent.shade200],
@@ -18,14 +18,14 @@ class FooterSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Contact Us',
             style: TextStyle(
                 fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-          Row(
+          const Row(
             children: [
               Icon(Icons.email, color: Colors.white, size: 28),
               SizedBox(width: 12),
@@ -33,31 +33,31 @@ class FooterSection extends StatelessWidget {
                   style: TextStyle(color: Colors.white, fontSize: 18)),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-          Row(
+          const Row(
             children: [
               Icon(Icons.phone, color: Colors.white, size: 28),
               SizedBox(width: 12),
-              Text("+91 8010892265 / 0832-2438989",
+              Text('+91 8010892265 / 0832-2438989',
                   style: TextStyle(color: Colors.white, fontSize: 18)),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-          Row(
+          const Row(
             children: [
               Icon(Icons.location_on, color: Colors.white, size: 28),
               SizedBox(width: 12),
               Flexible(
                 child: Text(
-                  "304 - 306, Dempo Towers, Patto Plaza Panaji - Goa - 403001",
+                  '304 - 306, Dempo Towers, Patto Plaza Panaji - Goa - 403001',
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // Get in Touch Button (Navigates to ContactUsPage)
           Center(
@@ -65,18 +65,20 @@ class FooterSection extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ContactUsPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const ContactUsPage()),
                 );
               },
               style: ElevatedButton.styleFrom(
-                foregroundColor: Color.fromARGB(255, 81, 131, 246),
+                foregroundColor: const Color.fromARGB(255, 81, 131, 246),
                 backgroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                textStyle: TextStyle(fontSize: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                textStyle: const TextStyle(fontSize: 16),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25)),
               ),
-              child: Text('Get in Touch'),
+              child: const Text('Get in Touch'),
             ),
           ),
         ],

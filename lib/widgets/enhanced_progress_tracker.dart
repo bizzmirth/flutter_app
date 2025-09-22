@@ -17,7 +17,7 @@ class EnhancedProgressTracker extends StatefulWidget {
   });
 
   @override
-  _EnhancedProgressTrackerState createState() =>
+  State<EnhancedProgressTracker> createState() =>
       _EnhancedProgressTrackerState();
 }
 
@@ -32,11 +32,11 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
   void initState() {
     super.initState();
     _progressController = AnimationController(
-      duration: Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
     _pulseController = AnimationController(
-      duration: Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
 
@@ -70,19 +70,19 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
     }
   }
 
-  void _startStepAnimation() async {
+  Future<void> _startStepAnimation() async {
     _progressController.reset();
     setState(() {
       animatedStep = 0;
     });
 
     for (int i = 0; i <= widget.currentStep; i++) {
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 200));
       if (mounted) {
         setState(() {
           animatedStep = i;
         });
-        _progressController.forward();
+        await _progressController.forward();
       }
     }
   }
@@ -100,7 +100,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
     final width = widget.totalSteps * 60.0 +
         180.0; // 60px per step + 180px for goal container
 
-    return Container(
+    return SizedBox(
       width: width,
       child: Column(
         children: [
@@ -108,7 +108,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
           Container(
             height: 100, // Increased height to accommodate lower positioning
             padding:
-                EdgeInsets.only(top: 0), // Added padding to lower the tracker
+                const EdgeInsets.only(), // Added padding to lower the tracker
             child: Row(
               crossAxisAlignment:
                   CrossAxisAlignment.start, // Align items to top
@@ -138,29 +138,30 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                         right: 16,
                         child: LayoutBuilder(
                           builder: (context, constraints) {
-                            double totalWidth = constraints.maxWidth;
-                            double segmentWidth =
+                            final double totalWidth = constraints.maxWidth;
+                            final double segmentWidth =
                                 totalWidth / widget.totalSteps;
-                            double progressWidth = segmentWidth * animatedStep;
+                            final double progressWidth =
+                                segmentWidth * animatedStep;
 
                             return AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
+                              duration: const Duration(milliseconds: 300),
                               width: progressWidth,
                               height: 4,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
                                     widget.progressColor,
-                                    widget.progressColor.withOpacity(0.7),
+                                    widget.progressColor.withValues(alpha: 0.7),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(2),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        widget.progressColor.withOpacity(0.3),
+                                    color: widget.progressColor
+                                        .withValues(alpha: 0.3),
                                     blurRadius: 4,
-                                    offset: Offset(0, 2),
+                                    offset: const Offset(0, 2),
                                   ),
                                 ],
                               ),
@@ -171,17 +172,17 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                       // Progress dots - positioned lower
                       Row(
                         children: List.generate(widget.totalSteps, (index) {
-                          bool isCompleted = index < animatedStep;
-                          bool isCurrent =
+                          final bool isCompleted = index < animatedStep;
+                          final bool isCurrent =
                               index == animatedStep - 1 && animatedStep > 0;
 
                           return Expanded(
                             child: Column(
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                     height: 23), // Added space to lower dots
                                 AnimatedContainer(
-                                  duration: Duration(milliseconds: 300),
+                                  duration: const Duration(milliseconds: 300),
                                   width: isCompleted || isCurrent ? 24 : 16,
                                   height: isCompleted || isCurrent ? 24 : 16,
                                   decoration: BoxDecoration(
@@ -190,7 +191,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                                         ? widget.progressColor
                                         : isCurrent
                                             ? widget.progressColor
-                                                .withOpacity(0.3)
+                                                .withValues(alpha: 0.3)
                                             : Colors.white,
                                     border: Border.all(
                                       color: isCompleted || isCurrent
@@ -202,15 +203,15 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                                         ? [
                                             BoxShadow(
                                               color: widget.progressColor
-                                                  .withOpacity(0.3),
+                                                  .withValues(alpha: 0.3),
                                               blurRadius: 8,
-                                              offset: Offset(0, 2),
+                                              offset: const Offset(0, 2),
                                             ),
                                           ]
                                         : [],
                                   ),
                                   child: isCompleted
-                                      ? Icon(
+                                      ? const Icon(
                                           Icons.check,
                                           size: 14,
                                           color: Colors.white,
@@ -226,7 +227,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                                             )
                                           : null,
                                 ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 Text(
                                   '${index + 1}',
                                   style: TextStyle(
@@ -250,12 +251,12 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
 
                 // Arrow - aligned with the goal button
                 Padding(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                       top: 30,
                       right:
                           8), // Adjusted top padding to align with goal button
                   child: AnimatedContainer(
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                     child: Icon(
                       Icons.arrow_forward_rounded,
                       color: animatedStep >= widget.totalSteps
@@ -268,23 +269,25 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
 
                 // Goal container
                 Padding(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                       top: 20), // Adjusted top padding to align with arrow
                   child: AnimatedBuilder(
                     animation: _pulseAnimation,
                     builder: (context, child) {
-                      bool isGoalReached = animatedStep >= widget.totalSteps;
+                      final bool isGoalReached =
+                          animatedStep >= widget.totalSteps;
                       return Transform.scale(
                         scale: isGoalReached ? _pulseAnimation.value : 1.0,
                         child: Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
                             gradient: isGoalReached
                                 ? LinearGradient(
                                     colors: [
                                       widget.progressColor,
-                                      widget.progressColor.withOpacity(0.8),
+                                      widget.progressColor
+                                          .withValues(alpha: 0.8),
                                     ],
                                   )
                                 : null,
@@ -299,10 +302,10 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                             boxShadow: isGoalReached
                                 ? [
                                     BoxShadow(
-                                      color:
-                                          widget.progressColor.withOpacity(0.4),
+                                      color: widget.progressColor
+                                          .withValues(alpha: 0.4),
                                       blurRadius: 12,
-                                      offset: Offset(0, 4),
+                                      offset: const Offset(0, 4),
                                     ),
                                   ]
                                 : [],
@@ -320,7 +323,7 @@ class _EnhancedProgressTrackerState extends State<EnhancedProgressTracker>
                                     : Colors.green[600],
                                 size: 18,
                               ),
-                              SizedBox(width: 6),
+                              const SizedBox(width: 6),
                               Text(
                                 widget.goal,
                                 style: TextStyle(

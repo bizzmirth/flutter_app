@@ -5,8 +5,7 @@ class PackagePricingScreen extends StatefulWidget {
   const PackagePricingScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _PackagePricingScreenScreenState createState() =>
+  State<PackagePricingScreen> createState() =>
       _PackagePricingScreenScreenState();
 }
 
@@ -20,37 +19,37 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
   TextEditingController totalChildController = TextEditingController();
   TextEditingController totalpriceAdultController = TextEditingController();
   TextEditingController totalpriceChildController = TextEditingController();
-  TextEditingController CompanyController = TextEditingController();
-  TextEditingController TaController = TextEditingController();
-  TextEditingController CustomerController = TextEditingController();
-  TextEditingController TechnocomController = TextEditingController();
-  TextEditingController TechnoinsController = TextEditingController();
-  TextEditingController BCcomController = TextEditingController();
-  TextEditingController BCinsController = TextEditingController();
-  TextEditingController BDMcomController = TextEditingController();
-  TextEditingController BDMinsController = TextEditingController();
-  TextEditingController BCMcomController = TextEditingController();
-  TextEditingController BCMinsController = TextEditingController();
+  TextEditingController companyController = TextEditingController();
+  TextEditingController taController = TextEditingController();
+  TextEditingController customerController = TextEditingController();
+  TextEditingController technocomController = TextEditingController();
+  TextEditingController technoinsController = TextEditingController();
+  TextEditingController bCcomController = TextEditingController();
+  TextEditingController bCinsController = TextEditingController();
+  TextEditingController bDMcomController = TextEditingController();
+  TextEditingController bDMinsController = TextEditingController();
+  TextEditingController bCMcomController = TextEditingController();
+  TextEditingController bCMinsController = TextEditingController();
 
   void _calculateTotal() {
-    double adultPrice = double.tryParse(adultPriceController.text) ?? 0;
-    double childPrice = double.tryParse(childPriceController.text) ?? 0;
-    double gstPercentage = double.tryParse(gstController.text) ?? 0;
+    final double adultPrice = double.tryParse(adultPriceController.text) ?? 0;
+    final double childPrice = double.tryParse(childPriceController.text) ?? 0;
+    final double gstPercentage = double.tryParse(gstController.text) ?? 0;
 
-    double adultTotal = adultPrice + (adultPrice * gstPercentage / 100);
-    double childTotal = childPrice + (childPrice * gstPercentage / 100);
+    final double adultTotal = adultPrice + (adultPrice * gstPercentage / 100);
+    final double childTotal = childPrice + (childPrice * gstPercentage / 100);
 
     totalAdultController.text = adultTotal.toStringAsFixed(2);
     totalChildController.text = childTotal.toStringAsFixed(2);
   }
 
   void _calculateTotal1() {
-    double companyPrice = double.tryParse(CompanyController.text) ?? 0;
-    double taPrice = double.tryParse(TaController.text) ?? 0;
-    double customerPrice = double.tryParse(CustomerController.text) ?? 0;
+    final double companyPrice = double.tryParse(companyController.text) ?? 0;
+    final double taPrice = double.tryParse(taController.text) ?? 0;
+    final double customerPrice = double.tryParse(customerController.text) ?? 0;
 
-    double adultPrice = double.tryParse(adultPriceController.text) ?? 0;
-    double childPrice = double.tryParse(childPriceController.text) ?? 0;
+    final double adultPrice = double.tryParse(adultPriceController.text) ?? 0;
+    final double childPrice = double.tryParse(childPriceController.text) ?? 0;
 
     double truncateToTwoDecimals(double num) {
       return (num * 100).truncateToDouble() / 100;
@@ -65,37 +64,37 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
       }
     }
 
-    double teMarkup = truncateToTwoDecimals((taPrice * 50) / 100);
-    double teMarkupComm = truncateToTwoDecimals((teMarkup * 60) / 100);
-    double teMarkupIns = truncateToTwoDecimals((teMarkup * 40) / 100);
+    final double teMarkup = truncateToTwoDecimals((taPrice * 50) / 100);
+    final double teMarkupComm = truncateToTwoDecimals((teMarkup * 60) / 100);
+    final double teMarkupIns = truncateToTwoDecimals((teMarkup * 40) / 100);
 
-    double bmMarkUp = truncateToTwoDecimals((teMarkupComm * 30) / 100);
-    double bmMarkUpComm = truncateToTwoDecimals((bmMarkUp * 80) / 100);
-    double bmMarkUpIns = truncateToTwoDecimals((bmMarkUp * 20) / 100);
+    final double bmMarkUp = truncateToTwoDecimals((teMarkupComm * 30) / 100);
+    final double bmMarkUpComm = truncateToTwoDecimals((bmMarkUp * 80) / 100);
+    final double bmMarkUpIns = truncateToTwoDecimals((bmMarkUp * 20) / 100);
 
-    double bdmMarkUp = truncateToTwoDecimals((bmMarkUpComm * 30) / 100);
-    double bdmMarkUpComm = truncateToTwoDecimals((bdmMarkUp * 80) / 100);
-    double bdmMarkUpIns = truncateToTwoDecimals((bdmMarkUp * 20) / 100);
+    final double bdmMarkUp = truncateToTwoDecimals((bmMarkUpComm * 30) / 100);
+    final double bdmMarkUpComm = truncateToTwoDecimals((bdmMarkUp * 80) / 100);
+    final double bdmMarkUpIns = truncateToTwoDecimals((bdmMarkUp * 20) / 100);
 
-    double bcmMarkUp = truncateToTwoDecimals((bdmMarkUpComm * 30) / 100);
-    double bcmMarkUpComm = truncateToTwoDecimals((bcmMarkUp * 80) / 100);
-    double bcmMarkUpIns = truncateToTwoDecimals((bcmMarkUp * 20) / 100);
+    final double bcmMarkUp = truncateToTwoDecimals((bdmMarkUpComm * 30) / 100);
+    final double bcmMarkUpComm = truncateToTwoDecimals((bcmMarkUp * 80) / 100);
+    final double bcmMarkUpIns = truncateToTwoDecimals((bcmMarkUp * 20) / 100);
 
-    TechnocomController.text = formatNumber(teMarkupComm);
-    TechnoinsController.text = formatNumber(teMarkupIns);
-    BCcomController.text = formatNumber(bmMarkUpComm);
-    BCinsController.text = formatNumber(bmMarkUpIns);
-    BDMcomController.text = formatNumber(bdmMarkUpComm);
-    BDMinsController.text = formatNumber(bdmMarkUpIns);
-    BCMcomController.text = formatNumber(bcmMarkUpComm);
-    BCMinsController.text = formatNumber(bcmMarkUpIns);
+    technocomController.text = formatNumber(teMarkupComm);
+    technoinsController.text = formatNumber(teMarkupIns);
+    bCcomController.text = formatNumber(bmMarkUpComm);
+    bCinsController.text = formatNumber(bmMarkUpIns);
+    bDMcomController.text = formatNumber(bdmMarkUpComm);
+    bDMinsController.text = formatNumber(bdmMarkUpIns);
+    bCMcomController.text = formatNumber(bcmMarkUpComm);
+    bCMinsController.text = formatNumber(bcmMarkUpIns);
 
     // ignore: unnecessary_null_comparison
     if (adultPrice != null && childPrice != null) {
-      if (CompanyController.text.isNotEmpty &&
-          TaController.text.isNotEmpty &&
-          CustomerController.text.isNotEmpty) {
-        double markupCalc = companyPrice +
+      if (companyController.text.isNotEmpty &&
+          taController.text.isNotEmpty &&
+          customerController.text.isNotEmpty) {
+        final double markupCalc = companyPrice +
             taPrice +
             customerPrice +
             teMarkupComm +
@@ -107,8 +106,8 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
             bcmMarkUpComm +
             bcmMarkUpIns;
 
-        double totalPriceAdult = markupCalc + adultPrice;
-        double totalPriceChild = markupCalc + childPrice;
+        final double totalPriceAdult = markupCalc + adultPrice;
+        final double totalPriceChild = markupCalc + childPrice;
 
         totalpriceAdultController.text = formatNumber(totalPriceAdult);
         totalpriceChildController.text = formatNumber(totalPriceChild);
@@ -121,15 +120,15 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
   List<String> selectedHotelStars1 = [];
 
   Map<String, String?> selectedFiles = {
-    "Profile Picture": null,
-    "ID Proof": null,
-    "Bank Details": null,
+    'Profile Picture': null,
+    'ID Proof': null,
+    'Bank Details': null,
   };
 
   Widget _buildTextField(String label, {int maxLines = 1}) {
     return TextField(
       maxLines: maxLines,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         // ignore: deprecated_member_use
@@ -166,7 +165,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Pricing Details:",
+                  const Text('Pricing Details:',
                       style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -179,17 +178,17 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           TextInputType.number, // ✅ Opens numeric keyboard
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (_) => _calculateTotal(),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Price for 1 Adult *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                       ),
                     ),
                   ),
@@ -201,17 +200,17 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           TextInputType.number, // ✅ Opens numeric keyboard
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (_) => _calculateTotal(),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Price for 1 Child *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                       ),
                     ),
                   ),
@@ -223,17 +222,17 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           TextInputType.number, // ✅ Opens numeric keyboard
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (_) => _calculateTotal(),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET GST for Adult & Child : ',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                       ),
                     ),
                   ),
@@ -242,14 +241,13 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                     child: TextFormField(
                       controller: totalAdultController,
                       readOnly: true,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Total for Adult : ',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         filled: true,
-                        // ignore: deprecated_member_use
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -262,14 +260,13 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                     child: TextFormField(
                       controller: totalChildController,
                       readOnly: true,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Total for Child : ',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         filled: true,
-                        // ignore: deprecated_member_use
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -277,20 +274,19 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextFormField(
                       controller: totalpriceAdultController,
                       readOnly: true,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Total Price for Adult : ',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         filled: true,
-                        // ignore: deprecated_member_use
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -303,14 +299,13 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                     child: TextFormField(
                       controller: totalpriceChildController,
                       readOnly: true,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Total Price for Child : ',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         filled: true,
-                        // ignore: deprecated_member_use
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -318,8 +313,8 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 40),
-                  Text("Mark-up Price Distribution",
+                  const SizedBox(height: 40),
+                  const Text('Mark-up Price Distribution',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -331,21 +326,20 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: CompanyController,
+                            controller: companyController,
                             keyboardType: TextInputType
                                 .number, // ✅ Opens numeric keyboard
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly
                             ],
                             onChanged: (_) => _calculateTotal1(),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Company *',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -354,26 +348,25 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: TaController,
+                            controller: taController,
                             keyboardType: TextInputType
                                 .number, // ✅ Opens numeric keyboard
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly
                             ],
                             onChanged: (_) => _calculateTotal1(),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Travel Agent *',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -382,26 +375,25 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: CustomerController,
+                            controller: customerController,
                             keyboardType: TextInputType
                                 .number, // ✅ Opens numeric keyboard
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly
                             ],
                             onChanged: (_) => _calculateTotal1(),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Customer *',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -412,13 +404,13 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
-                  Row(
+                  const SizedBox(height: 10),
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
                         child: Center(
-                          child: Text("Techno Enterprise",
+                          child: Text('Techno Enterprise',
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -428,132 +420,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       SizedBox(width: 20),
                       Expanded(
                         child: Center(
-                          child: Text("Business Consultant",
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: TextFormField(
-                            controller: TechnocomController,
-                            readOnly: true,
-                            style: TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              labelText: 'Commission',
-                              labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
-                              filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: TextFormField(
-                            controller: BCcomController,
-                            readOnly: true,
-                            style: TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              labelText: 'Commission',
-                              labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
-                              filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: TextFormField(
-                            controller: TechnoinsController,
-                            readOnly: true,
-                            style: TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              labelText: 'Incentive',
-                              labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
-                              filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: TextFormField(
-                            controller: BCinsController,
-                            readOnly: true,
-                            style: TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              labelText: 'Incentive',
-                              labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
-                              filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: Text("Business Development Manager",
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: Center(
-                          child: Text("Business Channel Manager",
+                          child: Text('Business Consultant',
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -569,16 +436,15 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: BDMcomController,
+                            controller: technocomController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Commission',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -587,21 +453,20 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: BCMcomController,
+                            controller: bCcomController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Commission',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -619,16 +484,15 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: BDMinsController,
+                            controller: technoinsController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Incentive',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -637,21 +501,20 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
-                            controller: BCMinsController,
+                            controller: bCinsController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Incentive',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              // ignore: deprecated_member_use
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -662,13 +525,134 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 10),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Text('Business Development Manager',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: Center(
+                          child: Text('Business Channel Manager',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: bDMcomController,
+                            readOnly: true,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'Commission',
+                              labelStyle: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.8)),
+                              filled: true,
+                              fillColor: Colors.white.withValues(alpha: 0.2),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: bCMcomController,
+                            readOnly: true,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'Commission',
+                              labelStyle: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.8)),
+                              filled: true,
+                              fillColor: Colors.white.withValues(alpha: 0.2),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: bDMinsController,
+                            readOnly: true,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'Incentive',
+                              labelStyle: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.8)),
+                              filled: true,
+                              fillColor: Colors.white.withValues(alpha: 0.2),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: bCMinsController,
+                            readOnly: true,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'Incentive',
+                              labelStyle: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.8)),
+                              filled: true,
+                              fillColor: Colors.white.withValues(alpha: 0.2),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
                   _buildTextField('30+ Days Before Travel (%)'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('15-30 Days Before Travel (%)'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Less Than 15 Days Before Travel (%)'),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

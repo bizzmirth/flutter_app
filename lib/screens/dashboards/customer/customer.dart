@@ -1,13 +1,9 @@
-// ignore_for_file: unnecessary_null_comparison
-
-import 'package:bizzmirth_app/controllers/customer_controller.dart';
-import 'package:bizzmirth_app/controllers/profile_controller.dart';
-import 'package:bizzmirth_app/data_source/cust_top_referral_customers.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/profile_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/contact_us/contact_us.dart';
-import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_details.dart';
-import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_referral_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
@@ -120,7 +116,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
         // Search filter
         if (searchTerm != null && searchTerm.isNotEmpty) {
-          String searchTermLower = searchTerm.toLowerCase();
+          final String searchTermLower = searchTerm.toLowerCase();
           matchesSearch =
               customer.name?.toLowerCase().contains(searchTermLower) == true ||
                   customer.status?.toLowerCase().contains(searchTermLower) ==
@@ -134,18 +130,19 @@ class _CDashboardPageState extends State<CDashboardPage> {
             try {
               // Assuming the date format is the same as your pending customers
               // If different, adjust the DateFormat accordingly
-              DateTime? customerDate = DateTime.parse(customer.registeredDate!);
+              final DateTime customerDate =
+                  DateTime.parse(customer.registeredDate!);
 
               if (fromDate != null && customerDate.isBefore(fromDate)) {
                 matchesDateRange = false;
               }
               if (toDate != null &&
-                  customerDate.isAfter(toDate.add(Duration(days: 1)))) {
+                  customerDate.isAfter(toDate.add(const Duration(days: 1)))) {
                 matchesDateRange = false;
               }
             } catch (e) {
               Logger.error(
-                  "Error parsing top customer date: ${customer.registeredDate} - $e");
+                  'Error parsing top customer date: ${customer.registeredDate} - $e');
               if (fromDate != null || toDate != null) {
                 matchesDateRange = false;
               }
@@ -163,7 +160,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
   }
 
   Future<void> _onRefreshDashboard() async {
-    _initializeDashboardData();
+    await _initializeDashboardData();
     _initializeTopFilteredCustomers();
   }
 
@@ -180,19 +177,19 @@ class _CDashboardPageState extends State<CDashboardPage> {
       _isInitializing = true;
     });
 
+    final customerController = context.read<CustomerController>();
+    final profileController = context.read<ProfileController>();
+
     try {
       await getCustomerType();
 
-      final customerController = context.read<CustomerController>();
-      final profileController = context.read<ProfileController>();
-
       int attempts = 0;
       while (customerController.isLoading && attempts < 20) {
-        await Future.delayed(Duration(milliseconds: 100));
+        await Future.delayed(const Duration(milliseconds: 100));
         attempts++;
       }
 
-      String? regDate = await _getRegistrationDate(customerController);
+      final String? regDate = await _getRegistrationDate(customerController);
 
       if (regDate != null && regDate.isNotEmpty) {
         _cachedRegDate = regDate;
@@ -225,7 +222,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
         custtype = profileController.customerType!;
         // Save it to SharedPreferences for future use
         await SharedPrefHelper().saveCustomerType(custtype);
-        Logger.success("Using customer_type from API: $custtype");
+        Logger.success('Using customer_type from API: $custtype');
       }
 
       if (mounted) {
@@ -251,7 +248,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
       return controller.userRegDate;
     }
 
-    String? sharedPrefDate = await SharedPrefHelper().getCurrentUserRegDate();
+    final String? sharedPrefDate =
+        await SharedPrefHelper().getCurrentUserRegDate();
     if (sharedPrefDate != null && sharedPrefDate.isNotEmpty) {
       Logger.info('Using reg date from SharedPref: $sharedPrefDate');
       return sharedPrefDate;
@@ -262,13 +260,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
   }
 
   Widget bodywidget(String type) {
-    if (type == "Premium") {
+    if (type == 'Premium') {
       return premiumWidget(type);
-    } else if (type == "Premium Select Lite") {
+    } else if (type == 'Premium Select Lite') {
       return premiumSelectLiteWidget(type);
-    } else if (type == "Neo Select") {
+    } else if (type == 'Neo Select') {
       return neoSelectWidget(type);
-    } else if (type == "Premium Select") {
+    } else if (type == 'Premium Select') {
       return premiumSelectWidget(type);
     } else {
       return freeuser();
@@ -278,7 +276,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Widget premiumSelectWidget(String type) {
     final isTablet = MediaQuery.of(context).size.width > 600;
     final customerController = context.read<CustomerController>();
-    String userCount = filteredCustomers.isEmpty &&
+    final String userCount = filteredCustomers.isEmpty &&
             (searchController.text.isEmpty &&
                 fromDate == null &&
                 toDate == null)
@@ -291,14 +289,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
         ? customerController.topCustomerRefererals
         : filteredCustomers;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      PremiumSelectCard(
-        title: "Premium Select Customer",
+      const PremiumSelectCard(
+        title: 'Premium Select Customer',
         description:
-            "Use points and vouchers to unlock premium & standard travel experiences.",
-        firstButtonText: "Premium Select Deals",
-        secondButtonText: "View Your Packages",
+            'Use points and vouchers to unlock premium & standard travel experiences.',
       ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       CustomAnimatedSummaryCards(
         cardData: [
           SummaryCardData(
@@ -323,7 +319,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
               icon: Icons.money),
         ],
       ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       // NeoSelectBenefits(
       //   type: "Premium Select",
       //   amount: 35000,
@@ -333,7 +329,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
       // ),
       // SizedBox(height: 16),
       buildTripOrRefundNote(userType: type, context: context),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       if (_isDashboardInitialized)
         ImprovedLineChart(
           initialYear: _cachedRegDate ?? customerController.userRegDate,
@@ -341,7 +337,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
               'chart_${_cachedRegDate ?? customerController.userRegDate}'),
         )
       else
-        SizedBox(
+        const SizedBox(
           height: 300,
           child: Center(
             child: Column(
@@ -354,22 +350,22 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
           ),
         ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Divider(thickness: 1, color: Colors.black26),
-            Center(
+            const Divider(thickness: 1, color: Colors.black26),
+            const Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  "Top Customers Referral",
+                  'Top Customers Referral',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-            Divider(thickness: 1, color: Colors.black26),
+            const Divider(thickness: 1, color: Colors.black26),
             FilterBar(
               userCount: userCount,
               onSearchChanged: _onTopCustomerSearchChanged,
@@ -387,24 +383,30 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           headerHeight +
                           paginationHeight,
                       child: customerController.isLoading
-                          ? Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator())
                           : customerController.topCustomerRefererals.isEmpty
                               ? _buildEmptyState()
                               : PaginatedDataTable(
-                                  columns: [
-                                    DataColumn(label: Text("Rank")),
-                                    DataColumn(label: Text("Profile Picture")),
-                                    DataColumn(label: Text("Full Name")),
-                                    DataColumn(label: Text("Date Reg")),
-                                    DataColumn(label: Text("Total CU Ref")),
-                                    DataColumn(label: Text("Status")),
-                                    DataColumn(label: Text("Active/Inactive")),
+                                  columns: const [
+                                    DataColumn(label: Text('Rank')),
+                                    DataColumn(label: Text('Profile Picture')),
+                                    DataColumn(label: Text('Full Name')),
+                                    DataColumn(label: Text('Date Reg')),
+                                    DataColumn(label: Text('Total CU Ref')),
+                                    DataColumn(label: Text('Status')),
+                                    DataColumn(label: Text('Active/Inactive')),
                                   ],
                                   source: CustTopReferralCustomers(
                                       customers: customerController
                                           .topCustomerRefererals),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: [5, 10, 15, 20, 25],
+                                  availableRowsPerPage: const [
+                                    5,
+                                    10,
+                                    15,
+                                    20,
+                                    25
+                                  ],
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -433,9 +435,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 4,
-                                          offset: Offset(0, 2),
+                                          offset: const Offset(0, 2),
                                         ),
                                       ],
                                     ),
@@ -457,10 +460,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 alignment: Alignment.center,
                                                 decoration: BoxDecoration(
                                                   color: (index + 1) <= 3
-                                                      ? Colors.amber
-                                                          .withOpacity(0.2)
-                                                      : Colors.grey
-                                                          .withOpacity(0.1),
+                                                      ? Colors.amber.withValues(
+                                                          alpha: 0.2)
+                                                      : Colors.grey.withValues(
+                                                          alpha: 0.1),
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
                                                     color: (index + 1) <= 3
@@ -480,7 +483,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
                                               // Profile picture
                                               CircleAvatar(
@@ -490,7 +493,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 child: getProfileImage(
                                                     customer.profilePic),
                                               ),
-                                              SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
                                               // Name and date
                                               Expanded(
@@ -500,7 +503,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                   children: [
                                                     Text(
                                                       customer.name ?? 'N/A',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.w600,
                                                         fontSize: 16,
@@ -508,7 +511,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
-                                                    SizedBox(height: 4),
+                                                    const SizedBox(height: 4),
                                                     Text(
                                                       customer.registeredDate ??
                                                           'N/A',
@@ -523,7 +526,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                             ],
                                           ),
 
-                                          SizedBox(height: 16),
+                                          const SizedBox(height: 16),
 
                                           // Stats row
                                           Row(
@@ -556,25 +559,26 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                             ],
                                           ),
 
-                                          SizedBox(height: 12),
+                                          const SizedBox(height: 12),
 
                                           // Status badge
                                           Align(
                                             alignment: Alignment.centerRight,
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 12, vertical: 6),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6),
                                               decoration: BoxDecoration(
                                                 color: _getStatusColor(
                                                         customer.status!)
-                                                    .withOpacity(0.1),
+                                                    .withValues(alpha: 0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                                 border: Border.all(
                                                   color: _getStatusColor(
                                                           customer.status!)
-                                                      .withOpacity(0.3),
-                                                  width: 1,
+                                                      .withValues(alpha: 0.3),
                                                 ),
                                               ),
                                               child: Text(
@@ -610,14 +614,14 @@ class _CDashboardPageState extends State<CDashboardPage> {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header with upgrade CTA
-          FreeUserCard(),
+          const FreeUserCard(),
 
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // Stats Cards with improved design
           LayoutBuilder(
@@ -632,7 +636,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     child: _buildStatCard(
                       context: context,
                       title: 'Your Referrals',
-                      value: "Upgrade to view",
+                      value: 'Upgrade to view',
                       icon: Icons.people_outline,
                       color: Colors.blue,
                       hasData: false,
@@ -644,7 +648,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     child: _buildStatCard(
                       context: context,
                       title: 'Available Tours',
-                      value: "Sign Up to know more",
+                      value: 'Sign Up to know more',
                       icon: Icons.explore_outlined,
                       color: Colors.green,
                       hasData: false,
@@ -656,7 +660,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
             },
           ),
 
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // Premium Features Card
           Card(
@@ -693,12 +697,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       // Header with icon
                       Row(
                         children: [
-                          Icon(Icons.workspace_premium,
+                          const Icon(Icons.workspace_premium,
                               size: 24, color: Colors.amber),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              "Unlock Premium Benefits",
+                              'Unlock Premium Benefits',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -711,11 +715,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         ],
                       ),
 
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
                       // Subtitle
                       Text(
-                        "Upgrade your account to access exclusive features:",
+                        'Upgrade your account to access exclusive features:',
                         style: TextStyle(
                           color: isDarkMode
                               ? Colors.white70
@@ -724,7 +728,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         ),
                       ),
 
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                       // Features in a responsive grid
                       LayoutBuilder(
@@ -736,45 +740,45 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
                             shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             childAspectRatio: crossAxisCount == 2 ? 3.5 : 4,
                             children: [
                               _buildFeatureCard(
-                                  "Earn Commission",
+                                  'Earn Commission',
                                   Icons.monetization_on,
                                   Colors.green,
-                                  "Get paid for every successful referral",
+                                  'Get paid for every successful referral',
                                   context),
                               _buildFeatureCard(
-                                  "Premium Tours",
+                                  'Premium Tours',
                                   Icons.star,
                                   Colors.amber,
-                                  "Access exclusive tour packages",
+                                  'Access exclusive tour packages',
                                   context),
                               _buildFeatureCard(
-                                  "Referral Bonuses",
+                                  'Referral Bonuses',
                                   Icons.card_giftcard,
                                   Colors.purple,
-                                  "Special rewards for top referrers",
+                                  'Special rewards for top referrers',
                                   context),
                               _buildFeatureCard(
-                                  "Exclusive Discounts",
+                                  'Exclusive Discounts',
                                   Icons.discount,
                                   Colors.blue,
-                                  "Member-only pricing on all tours",
+                                  'Member-only pricing on all tours',
                                   context),
                             ],
                           );
                         },
                       ),
 
-                      SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
                       // CTA Button with icon
                       ElevatedButton.icon(
                         onPressed: () => _showMembershipOptions(context),
-                        icon: Icon(Icons.rocket_launch, size: 20),
-                        label: Text("Explore Membership Plans"),
+                        icon: const Icon(Icons.rocket_launch, size: 20),
+                        label: const Text('Explore Membership Plans'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: isDarkMode
                               ? Colors.amber.shade700
@@ -783,13 +787,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          minimumSize: Size(double.infinity, 52),
+                          minimumSize: const Size(double.infinity, 52),
                           elevation: 2,
-                          shadowColor: Colors.indigo.withOpacity(0.3),
+                          shadowColor: Colors.indigo.withValues(alpha: 0.3),
                         ),
                       ),
 
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
@@ -797,11 +801,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
           ),
 
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // Limited preview section with improved design
-          if (customerController.topCustomerRefererals != null &&
-              customerController.topCustomerRefererals.isNotEmpty)
+          if (customerController.topCustomerRefererals.isNotEmpty)
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -813,10 +816,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.leaderboard, size: 20, color: Colors.blue),
-                        SizedBox(width: 8),
+                        const Icon(Icons.leaderboard,
+                            size: 20, color: Colors.blue),
+                        const SizedBox(width: 8),
                         Text(
-                          "Top Referrers Preview",
+                          'Top Referrers Preview',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -825,19 +829,20 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                 : Colors.grey.shade800,
                           ),
                         ),
-                        SizedBox(width: 8),
-                        Icon(Icons.lock_outline, size: 16, color: Colors.grey),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.lock_outline,
+                            size: 16, color: Colors.grey),
                       ],
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      "Upgrade to see the full leaderboard and your ranking",
+                      'Upgrade to see the full leaderboard and your ranking',
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontSize: 13,
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     // Show limited preview (first 2 items)
                     Container(
                       height: 180,
@@ -856,15 +861,15 @@ class _CDashboardPageState extends State<CDashboardPage> {
                               size: 48,
                               color: Colors.grey.shade400,
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             Text(
-                              "Upgrade to unlock detailed analytics",
+                              'Upgrade to unlock detailed analytics',
                               style: TextStyle(
                                 color: Colors.grey.shade600,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: () => _showUpgradePrompt(context),
                               style: ElevatedButton.styleFrom(
@@ -874,13 +879,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: Text("Unlock Analytics"),
+                              child: const Text('Unlock Analytics'),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     if (customerController.topCustomerRefererals.length > 2)
                       Center(
                         child: TextButton(
@@ -889,11 +894,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "Upgrade to see all ${customerController.topCustomerRefererals.length} referrers",
-                                style: TextStyle(color: Colors.blue),
+                                'Upgrade to see all ${customerController.topCustomerRefererals.length} referrers',
+                                style: const TextStyle(color: Colors.blue),
                               ),
-                              SizedBox(width: 4),
-                              Icon(Icons.arrow_forward,
+                              const SizedBox(width: 4),
+                              const Icon(Icons.arrow_forward,
                                   size: 16, color: Colors.blue),
                             ],
                           ),
@@ -904,7 +909,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
               ),
             ),
 
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // Analytics preview with improved design
           Card(
@@ -918,10 +923,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.bar_chart, size: 20, color: Colors.blue),
-                      SizedBox(width: 8),
+                      const Icon(Icons.bar_chart, size: 20, color: Colors.blue),
+                      const SizedBox(width: 8),
                       Text(
-                        "Your Activity Preview",
+                        'Your Activity Preview',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -931,7 +936,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Container(
                     height: 180,
                     decoration: BoxDecoration(
@@ -949,15 +954,15 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             size: 48,
                             color: Colors.grey.shade400,
                           ),
-                          SizedBox(height: 12),
+                          const SizedBox(height: 12),
                           Text(
-                            "Upgrade to unlock detailed analytics",
+                            'Upgrade to unlock detailed analytics',
                             style: TextStyle(
                               color: Colors.grey.shade600,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () => _showUpgradePrompt(context),
                             style: ElevatedButton.styleFrom(
@@ -967,7 +972,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: Text("Unlock Analytics"),
+                            child: const Text('Unlock Analytics'),
                           ),
                         ],
                       ),
@@ -978,7 +983,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
           ),
 
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // FAQ section with enhanced design
           Card(
@@ -1005,17 +1010,17 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     Row(
                       children: [
                         Container(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.2),
+                            color: Colors.blue.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.help_outline,
+                          child: const Icon(Icons.help_outline,
                               size: 22, color: Colors.blue),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Text(
-                          "Frequently Asked Questions",
+                          'Frequently Asked Questions',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -1027,10 +1032,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ],
                     ),
 
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
 
                     Text(
-                      "Everything you need to know about our membership program",
+                      'Everything you need to know about our membership program',
                       style: TextStyle(
                         color:
                             isDarkMode ? Colors.white70 : Colors.grey.shade600,
@@ -1038,29 +1043,29 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     // Interactive FAQ items
                     _buildExpandableFAQItem(
-                        "How do I refer friends & family?",
+                        'How do I refer friends & family?',
                         "Upgrade your membership to get started. Once you're a premium member, you can start referring friends and family. You'll earn commissions when they sign up for any tour package.",
                         context),
 
                     _buildExpandableFAQItem(
-                        "What benefits do I get with a membership?",
+                        'What benefits do I get with a membership?',
                         "As a premium member, you'll enjoy: \n• Commission on every successful referral\n• Exclusive access to premium tours\n• Special discounts on all packages\n• Chance to win free trips\n• Referral bonuses and rewards\n• Priority customer support",
                         context),
 
                     _buildExpandableFAQItem(
-                        "How do I upgrade my account?",
+                        'How do I upgrade my account?',
                         "Choose a membership plan that fits your needs and contact our team to complete the upgrade process. We'll guide you through the steps to unlock premium features and start earning immediately.",
                         context),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     // Enhanced CTA section
                     Container(
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: isDarkMode
                             ? Colors.blue.shade900
@@ -1071,11 +1076,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.support_agent,
+                              const Icon(Icons.support_agent,
                                   size: 20, color: Colors.blue),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
-                                "Need more help?",
+                                'Need more help?',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   color: isDarkMode
@@ -1085,9 +1090,9 @@ class _CDashboardPageState extends State<CDashboardPage> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
-                            "Our team is ready to answer all your questions",
+                            'Our team is ready to answer all your questions',
                             style: TextStyle(
                               color: isDarkMode
                                   ? Colors.white70
@@ -1095,13 +1100,14 @@ class _CDashboardPageState extends State<CDashboardPage> {
                               fontSize: 13,
                             ),
                           ),
-                          SizedBox(height: 12),
+                          const SizedBox(height: 12),
                           ElevatedButton(
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ContactUsPage()),
+                                    builder: (context) =>
+                                        const ContactUsPage()),
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -1110,9 +1116,9 @@ class _CDashboardPageState extends State<CDashboardPage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              minimumSize: Size(double.infinity, 48),
+                              minimumSize: const Size(double.infinity, 48),
                             ),
-                            child: Text("Contact Us Now"),
+                            child: const Text('Contact Us Now'),
                           ),
                         ],
                       ),
@@ -1123,7 +1129,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
           ),
 
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -1135,11 +1141,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: isDarkMode ? Colors.grey.shade700 : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 2,
@@ -1199,11 +1205,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isDarkMode ? Colors.grey.shade800 : Colors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 4,
@@ -1217,14 +1223,14 @@ class _CDashboardPageState extends State<CDashboardPage> {
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.2),
+                    color: color.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(icon, color: color, size: 20),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     title,
@@ -1235,10 +1241,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                   ),
                 ),
                 if (!hasData)
-                  Icon(Icons.lock_outline, size: 16, color: Colors.grey),
+                  const Icon(Icons.lock_outline, size: 16, color: Colors.grey),
               ],
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               value,
               style: TextStyle(
@@ -1248,8 +1254,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
               ),
             ),
             if (!hasData) ...[
-              SizedBox(height: 12),
-              Container(
+              const SizedBox(height: 12),
+              SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: onTap,
@@ -1259,11 +1265,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     visualDensity: VisualDensity.compact,
                   ),
-                  child: Text(
-                    "Upgrade to Access",
+                  child: const Text(
+                    'Upgrade to Access',
                     style: TextStyle(fontSize: 12),
                   ),
                 ),
@@ -1283,7 +1289,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
       decoration: BoxDecoration(
         color: isDarkMode ? Colors.grey.shade800 : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 4,
@@ -1291,18 +1297,18 @@ class _CDashboardPageState extends State<CDashboardPage> {
           ),
         ],
       ),
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 20),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1316,7 +1322,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     color: isDarkMode ? Colors.white : Colors.grey.shade800,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   description,
                   style: TextStyle(
@@ -1342,19 +1348,19 @@ class _CDashboardPageState extends State<CDashboardPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.lock_outline, size: 48, color: Colors.blue),
-              SizedBox(height: 16),
-              Text(
-                "Upgrade Required",
+              const Icon(Icons.lock_outline, size: 48, color: Colors.blue),
+              const SizedBox(height: 16),
+              const Text(
+                'Upgrade Required',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
-                "This feature is available for premium members. Upgrade now to access exclusive benefits and analytics.",
+                'This feature is available for premium members. Upgrade now to access exclusive benefits and analytics.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
@@ -1364,12 +1370,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: Text("Later"),
+                      child: const Text('Later'),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -1382,9 +1388,9 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: Text("View Plans"),
+                      child: const Text('View Plans'),
                     ),
                   ),
                 ],
@@ -1400,7 +1406,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) => Container(
@@ -1420,51 +1426,51 @@ class _CDashboardPageState extends State<CDashboardPage> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            Text(
-              "Choose Membership",
+            const SizedBox(height: 16),
+            const Text(
+              'Choose Membership',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildMembershipOption(
-                "Neo Select",
-                "₹11,000",
-                "Neo Select Customer Benefits - Memership Validity period of 10 Years \n - 5 Travel Coupons, each worth ₹3000/-",
+                'Neo Select',
+                '₹11,000',
+                'Neo Select Customer Benefits - Memership Validity period of 10 Years \n - 5 Travel Coupons, each worth ₹3000/-',
                 Icons.star_border,
                 Colors.blue,
                 context),
             _buildMembershipOption(
-                "Premium Select Lite",
-                "₹21,000",
-                "Premium Select Lite Customer - Memership Validity period of 10 Years \n - 5 Travel Coupons, each worth ₹5000/-",
+                'Premium Select Lite',
+                '₹21,000',
+                'Premium Select Lite Customer - Memership Validity period of 10 Years \n - 5 Travel Coupons, each worth ₹5000/-',
                 Icons.star_half,
                 Colors.purple,
                 context),
             _buildMembershipOption(
-                "Premium",
-                "₹30,000",
-                "Premium Customer - Memership Validity period of 10 Years \n - 10 Travel Coupons, each worth ₹3000/-",
+                'Premium',
+                '₹30,000',
+                'Premium Customer - Memership Validity period of 10 Years \n - 10 Travel Coupons, each worth ₹3000/-',
                 Icons.star,
                 Colors.amber,
                 context),
-            SizedBox(height: 20),
-            Divider(),
-            SizedBox(height: 16),
-            Text(
-              "Contact us for more details:",
+            const SizedBox(height: 20),
+            const Divider(),
+            const SizedBox(height: 16),
+            const Text(
+              'Contact us for more details:',
               style: TextStyle(fontWeight: FontWeight.w500),
             ),
-            SizedBox(height: 12),
-            ListTile(
+            const SizedBox(height: 12),
+            const ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.phone, size: 20, color: Colors.blue),
-              title: Text("+91 8010892265 / 0832-2438989",
+              title: Text('+91 8010892265 / 0832-2438989',
                   style: TextStyle(color: Colors.blue)),
             ),
-            ListTile(
+            const ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.email, size: 20, color: Colors.blue),
-              title: Text("support@uniqbizz.com",
+              title: Text('support@uniqbizz.com',
                   style: TextStyle(color: Colors.blue)),
             ),
           ],
@@ -1479,23 +1485,24 @@ class _CDashboardPageState extends State<CDashboardPage> {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: isDarkMode ? Colors.grey.shade800 : Colors.white,
       child: ListTile(
-        contentPadding: EdgeInsets.all(16),
+        contentPadding: const EdgeInsets.all(16),
         leading: Container(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: color),
         ),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(description, style: TextStyle(fontSize: 13)),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(description, style: const TextStyle(fontSize: 13)),
         trailing: Text(price,
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+            style: const TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.green)),
         onTap: () {},
       ),
     );
@@ -1506,14 +1513,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
     final customerController = context.read<CustomerController>();
     final topCustomers = filteredCustomers;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      PremiumSelectCard(
-        title: "Premium Customer",
+      const PremiumSelectCard(
+        title: 'Premium Customer',
         description:
-            "Use points and vouchers to unlock premium & standard travel experiences.",
-        firstButtonText: "Premium Select Deals",
-        secondButtonText: "View Your Packages",
+            'Use points and vouchers to unlock premium & standard travel experiences.',
       ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       CustomAnimatedSummaryCards(
         cardData: [
           SummaryCardData(
@@ -1538,20 +1543,20 @@ class _CDashboardPageState extends State<CDashboardPage> {
               icon: Icons.money),
         ],
       ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       CouponProgressBar(
         currentStep: eligibleCouponsCount,
         confettiController: _confettiController,
         scaleFactor: 0.8,
       ),
-      SizedBox(height: 16),
+      const SizedBox(height: 16),
       ReferralTrackerCard(
         totalSteps: 10,
         currentStep: int.parse(customerController.registerCustomerTotal!),
         progressColor: Colors.green,
       ),
       buildTripOrRefundNote(userType: type, context: context),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       if (_isDashboardInitialized)
         ImprovedLineChart(
           initialYear: _cachedRegDate ?? customerController.userRegDate,
@@ -1559,7 +1564,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
               'chart_${_cachedRegDate ?? customerController.userRegDate}'),
         )
       else
-        SizedBox(
+        const SizedBox(
           height: 300,
           child: Center(
             child: Column(
@@ -1572,22 +1577,22 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
           ),
         ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Divider(thickness: 1, color: Colors.black26),
-            Center(
+            const Divider(thickness: 1, color: Colors.black26),
+            const Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  "Top Customers Referrals",
+                  'Top Customers Referrals',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-            Divider(thickness: 1, color: Colors.black26),
+            const Divider(thickness: 1, color: Colors.black26),
             FilterBar(
               userCount: filteredCustomers.length.toString(),
               onSearchChanged: _onTopCustomerSearchChanged,
@@ -1605,23 +1610,29 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           headerHeight +
                           paginationHeight,
                       child: customerController.isLoading
-                          ? Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator())
                           : customerController.topCustomerRefererals.isEmpty
                               ? _buildEmptyState()
                               : PaginatedDataTable(
-                                  columns: [
-                                    DataColumn(label: Text("Rank")),
-                                    DataColumn(label: Text("Profile Picture")),
-                                    DataColumn(label: Text("Full Name")),
-                                    DataColumn(label: Text("Date Reg")),
-                                    DataColumn(label: Text("Total CU Ref")),
-                                    DataColumn(label: Text("Status")),
-                                    DataColumn(label: Text("Active/Inactive")),
+                                  columns: const [
+                                    DataColumn(label: Text('Rank')),
+                                    DataColumn(label: Text('Profile Picture')),
+                                    DataColumn(label: Text('Full Name')),
+                                    DataColumn(label: Text('Date Reg')),
+                                    DataColumn(label: Text('Total CU Ref')),
+                                    DataColumn(label: Text('Status')),
+                                    DataColumn(label: Text('Active/Inactive')),
                                   ],
                                   source: CustTopReferralCustomers(
                                       customers: filteredCustomers),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: [5, 10, 15, 20, 25],
+                                  availableRowsPerPage: const [
+                                    5,
+                                    10,
+                                    15,
+                                    20,
+                                    25
+                                  ],
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -1650,9 +1661,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 4,
-                                          offset: Offset(0, 2),
+                                          offset: const Offset(0, 2),
                                         ),
                                       ],
                                     ),
@@ -1674,10 +1686,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 alignment: Alignment.center,
                                                 decoration: BoxDecoration(
                                                   color: (index + 1) <= 3
-                                                      ? Colors.amber
-                                                          .withOpacity(0.2)
-                                                      : Colors.grey
-                                                          .withOpacity(0.1),
+                                                      ? Colors.amber.withValues(
+                                                          alpha: 0.2)
+                                                      : Colors.grey.withValues(
+                                                          alpha: 0.1),
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
                                                     color: (index + 1) <= 3
@@ -1697,7 +1709,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
                                               // Profile picture
                                               CircleAvatar(
@@ -1707,7 +1719,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 child: getProfileImage(
                                                     customer.profilePic),
                                               ),
-                                              SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
                                               // Name and date
                                               Expanded(
@@ -1717,7 +1729,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                   children: [
                                                     Text(
                                                       customer.name ?? 'N/A',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.w600,
                                                         fontSize: 16,
@@ -1725,7 +1737,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
-                                                    SizedBox(height: 4),
+                                                    const SizedBox(height: 4),
                                                     Text(
                                                       customer.registeredDate ??
                                                           'N/A',
@@ -1740,7 +1752,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                             ],
                                           ),
 
-                                          SizedBox(height: 16),
+                                          const SizedBox(height: 16),
 
                                           // Stats row
                                           Row(
@@ -1773,25 +1785,26 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                             ],
                                           ),
 
-                                          SizedBox(height: 12),
+                                          const SizedBox(height: 12),
 
                                           // Status badge
                                           Align(
                                             alignment: Alignment.centerRight,
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 12, vertical: 6),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6),
                                               decoration: BoxDecoration(
                                                 color: _getStatusColor(
                                                         customer.status!)
-                                                    .withOpacity(0.1),
+                                                    .withValues(alpha: 0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                                 border: Border.all(
                                                   color: _getStatusColor(
                                                           customer.status!)
-                                                      .withOpacity(0.3),
-                                                  width: 1,
+                                                      .withValues(alpha: 0.3),
                                                 ),
                                               ),
                                               child: Text(
@@ -1824,21 +1837,19 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Widget premiumSelectLiteWidget(String type) {
     final isTablet = MediaQuery.of(context).size.width > 600;
     final customerController = context.read<CustomerController>();
-    String userCount = filteredCustomers.isEmpty &&
+    final String userCount = filteredCustomers.isEmpty &&
             (searchController.text.isEmpty &&
                 fromDate == null &&
                 toDate == null)
         ? customerController.topCustomerRefererals.length.toString()
         : filteredCustomers.length.toString();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      PremiumSelectCard(
-        title: "Premium Select Lite Customer",
+      const PremiumSelectCard(
+        title: 'Premium Select Lite Customer',
         description:
-            "Use points and vouchers to unlock premium & standard travel experiences.",
-        firstButtonText: "Premium Select Deals",
-        secondButtonText: "View Your Packages",
+            'Use points and vouchers to unlock premium & standard travel experiences.',
       ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       CustomAnimatedSummaryCards(
         cardData: [
           SummaryCardData(
@@ -1863,17 +1874,17 @@ class _CDashboardPageState extends State<CDashboardPage> {
               icon: Icons.money),
         ],
       ),
-      SizedBox(height: 20),
-      NeoSelectBenefits(
-        type: "Premium Select Lite",
+      const SizedBox(height: 20),
+      const NeoSelectBenefits(
+        type: 'Premium Select Lite',
         amount: 21000,
         numberOfCoupons: 5,
         valueCoupons: 25000,
         saveAmt: 4000,
       ),
-      SizedBox(height: 16),
+      const SizedBox(height: 16),
       buildTripOrRefundNote(userType: type, context: context),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       if (_isDashboardInitialized)
         ImprovedLineChart(
           initialYear: _cachedRegDate ?? customerController.userRegDate,
@@ -1881,7 +1892,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
               'chart_${_cachedRegDate ?? customerController.userRegDate}'),
         )
       else
-        SizedBox(
+        const SizedBox(
           height: 300,
           child: Center(
             child: Column(
@@ -1894,22 +1905,22 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
           ),
         ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Divider(thickness: 1, color: Colors.black26),
-            Center(
+            const Divider(thickness: 1, color: Colors.black26),
+            const Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  "Top Customers Referral",
+                  'Top Customers Referral',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-            Divider(thickness: 1, color: Colors.black26),
+            const Divider(thickness: 1, color: Colors.black26),
             FilterBar(
               userCount: userCount,
               onSearchChanged: _onTopCustomerSearchChanged,
@@ -1927,24 +1938,30 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           headerHeight +
                           paginationHeight,
                       child: customerController.isLoading
-                          ? Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator())
                           : customerController.topCustomerRefererals.isEmpty
                               ? _buildEmptyState()
                               : PaginatedDataTable(
-                                  columns: [
-                                    DataColumn(label: Text("Rank")),
-                                    DataColumn(label: Text("Profile Picture")),
-                                    DataColumn(label: Text("Full Name")),
-                                    DataColumn(label: Text("Date Reg")),
-                                    DataColumn(label: Text("Total CU Ref")),
-                                    DataColumn(label: Text("Status")),
-                                    DataColumn(label: Text("Active/Inactive")),
+                                  columns: const [
+                                    DataColumn(label: Text('Rank')),
+                                    DataColumn(label: Text('Profile Picture')),
+                                    DataColumn(label: Text('Full Name')),
+                                    DataColumn(label: Text('Date Reg')),
+                                    DataColumn(label: Text('Total CU Ref')),
+                                    DataColumn(label: Text('Status')),
+                                    DataColumn(label: Text('Active/Inactive')),
                                   ],
                                   source: CustTopReferralCustomers(
                                       customers: customerController
                                           .topCustomerRefererals),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: [5, 10, 15, 20, 25],
+                                  availableRowsPerPage: const [
+                                    5,
+                                    10,
+                                    15,
+                                    20,
+                                    25
+                                  ],
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -1975,9 +1992,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 4,
-                                          offset: Offset(0, 2),
+                                          offset: const Offset(0, 2),
                                         ),
                                       ],
                                     ),
@@ -1999,10 +2017,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 alignment: Alignment.center,
                                                 decoration: BoxDecoration(
                                                   color: (index + 1) <= 3
-                                                      ? Colors.amber
-                                                          .withOpacity(0.2)
-                                                      : Colors.grey
-                                                          .withOpacity(0.1),
+                                                      ? Colors.amber.withValues(
+                                                          alpha: 0.2)
+                                                      : Colors.grey.withValues(
+                                                          alpha: 0.1),
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
                                                     color: (index + 1) <= 3
@@ -2022,7 +2040,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
                                               // Profile picture
                                               CircleAvatar(
@@ -2032,7 +2050,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 child: getProfileImage(
                                                     customer.profilePic),
                                               ),
-                                              SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
                                               // Name and date
                                               Expanded(
@@ -2042,7 +2060,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                   children: [
                                                     Text(
                                                       customer.name ?? 'N/A',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.w600,
                                                         fontSize: 16,
@@ -2050,7 +2068,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
-                                                    SizedBox(height: 4),
+                                                    const SizedBox(height: 4),
                                                     Text(
                                                       customer.registeredDate ??
                                                           'N/A',
@@ -2065,7 +2083,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                             ],
                                           ),
 
-                                          SizedBox(height: 16),
+                                          const SizedBox(height: 16),
 
                                           // Stats row
                                           Row(
@@ -2098,25 +2116,26 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                             ],
                                           ),
 
-                                          SizedBox(height: 12),
+                                          const SizedBox(height: 12),
 
                                           // Status badge
                                           Align(
                                             alignment: Alignment.centerRight,
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 12, vertical: 6),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6),
                                               decoration: BoxDecoration(
                                                 color: _getStatusColor(
                                                         customer.status!)
-                                                    .withOpacity(0.1),
+                                                    .withValues(alpha: 0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                                 border: Border.all(
                                                   color: _getStatusColor(
                                                           customer.status!)
-                                                      .withOpacity(0.3),
-                                                  width: 1,
+                                                      .withValues(alpha: 0.3),
                                                 ),
                                               ),
                                               child: Text(
@@ -2149,21 +2168,19 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Widget neoSelectWidget(String type) {
     final isTablet = MediaQuery.of(context).size.width > 600;
     final customerController = context.read<CustomerController>();
-    String userCount = filteredCustomers.isEmpty &&
+    final String userCount = filteredCustomers.isEmpty &&
             (searchController.text.isEmpty &&
                 fromDate == null &&
                 toDate == null)
         ? customerController.topCustomerRefererals.length.toString()
         : filteredCustomers.length.toString();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      PremiumSelectCard(
-        title: "Neo Select Customer",
+      const PremiumSelectCard(
+        title: 'Neo Select Customer',
         description:
-            "Use points and vouchers to unlock premium & standard travel experiences.",
-        firstButtonText: "Premium Select Deals",
-        secondButtonText: "View Your Packages",
+            'Use points and vouchers to unlock premium & standard travel experiences.',
       ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       CustomAnimatedSummaryCards(
         cardData: [
           SummaryCardData(
@@ -2188,17 +2205,17 @@ class _CDashboardPageState extends State<CDashboardPage> {
               icon: Icons.money),
         ],
       ),
-      SizedBox(height: 20),
-      NeoSelectBenefits(
-        type: "Neo Select",
+      const SizedBox(height: 20),
+      const NeoSelectBenefits(
+        type: 'Neo Select',
         amount: 11000,
         numberOfCoupons: 5,
         valueCoupons: 15000,
         saveAmt: 4000,
       ),
-      SizedBox(height: 16),
+      const SizedBox(height: 16),
       buildTripOrRefundNote(userType: type, context: context),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       if (_isDashboardInitialized)
         ImprovedLineChart(
           initialYear: _cachedRegDate ?? customerController.userRegDate,
@@ -2206,7 +2223,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
               'chart_${_cachedRegDate ?? customerController.userRegDate}'),
         )
       else
-        SizedBox(
+        const SizedBox(
           height: 300,
           child: Center(
             child: Column(
@@ -2219,22 +2236,22 @@ class _CDashboardPageState extends State<CDashboardPage> {
             ),
           ),
         ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Divider(thickness: 1, color: Colors.black26),
-            Center(
+            const Divider(thickness: 1, color: Colors.black26),
+            const Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  "Top Customers Referral",
+                  'Top Customers Referral',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-            Divider(thickness: 1, color: Colors.black26),
+            const Divider(thickness: 1, color: Colors.black26),
             FilterBar(
               userCount: userCount,
               onSearchChanged: _onTopCustomerSearchChanged,
@@ -2252,24 +2269,30 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           headerHeight +
                           paginationHeight,
                       child: customerController.isLoading
-                          ? Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator())
                           : customerController.topCustomerRefererals.isEmpty
                               ? _buildEmptyState()
                               : PaginatedDataTable(
-                                  columns: [
-                                    DataColumn(label: Text("Rank")),
-                                    DataColumn(label: Text("Profile Picture")),
-                                    DataColumn(label: Text("Full Name")),
-                                    DataColumn(label: Text("Date Reg")),
-                                    DataColumn(label: Text("Total CU Ref")),
-                                    DataColumn(label: Text("Status")),
-                                    DataColumn(label: Text("Active/Inactive")),
+                                  columns: const [
+                                    DataColumn(label: Text('Rank')),
+                                    DataColumn(label: Text('Profile Picture')),
+                                    DataColumn(label: Text('Full Name')),
+                                    DataColumn(label: Text('Date Reg')),
+                                    DataColumn(label: Text('Total CU Ref')),
+                                    DataColumn(label: Text('Status')),
+                                    DataColumn(label: Text('Active/Inactive')),
                                   ],
                                   source: CustTopReferralCustomers(
                                       customers: customerController
                                           .topCustomerRefererals),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: [5, 10, 15, 20, 25],
+                                  availableRowsPerPage: const [
+                                    5,
+                                    10,
+                                    15,
+                                    20,
+                                    25
+                                  ],
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -2300,9 +2323,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 4,
-                                          offset: Offset(0, 2),
+                                          offset: const Offset(0, 2),
                                         ),
                                       ],
                                     ),
@@ -2324,10 +2348,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 alignment: Alignment.center,
                                                 decoration: BoxDecoration(
                                                   color: (index + 1) <= 3
-                                                      ? Colors.amber
-                                                          .withOpacity(0.2)
-                                                      : Colors.grey
-                                                          .withOpacity(0.1),
+                                                      ? Colors.amber.withValues(
+                                                          alpha: 0.2)
+                                                      : Colors.grey.withValues(
+                                                          alpha: 0.1),
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
                                                     color: (index + 1) <= 3
@@ -2347,7 +2371,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
                                               // Profile picture
                                               CircleAvatar(
@@ -2357,7 +2381,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                 child: getProfileImage(
                                                     customer.profilePic),
                                               ),
-                                              SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
                                               // Name and date
                                               Expanded(
@@ -2367,7 +2391,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                   children: [
                                                     Text(
                                                       customer.name ?? 'N/A',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.w600,
                                                         fontSize: 16,
@@ -2375,7 +2399,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
-                                                    SizedBox(height: 4),
+                                                    const SizedBox(height: 4),
                                                     Text(
                                                       customer.registeredDate ??
                                                           'N/A',
@@ -2390,7 +2414,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                             ],
                                           ),
 
-                                          SizedBox(height: 16),
+                                          const SizedBox(height: 16),
 
                                           // Stats row
                                           Row(
@@ -2423,25 +2447,26 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                             ],
                                           ),
 
-                                          SizedBox(height: 12),
+                                          const SizedBox(height: 12),
 
                                           // Status badge
                                           Align(
                                             alignment: Alignment.centerRight,
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 12, vertical: 6),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6),
                                               decoration: BoxDecoration(
                                                 color: _getStatusColor(
                                                         customer.status!)
-                                                    .withOpacity(0.1),
+                                                    .withValues(alpha: 0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                                 border: Border.all(
                                                   color: _getStatusColor(
                                                           customer.status!)
-                                                      .withOpacity(0.3),
-                                                  width: 1,
+                                                      .withValues(alpha: 0.3),
                                                 ),
                                               ),
                                               child: Text(
@@ -2472,7 +2497,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
   }
 
   Widget _buildEmptyState() {
-    return Container(
+    return SizedBox(
       height: 200, // Adjust height as needed
       child: Center(
         child: Column(
@@ -2483,16 +2508,16 @@ class _CDashboardPageState extends State<CDashboardPage> {
               size: 64,
               color: Colors.grey[400],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              "No referral customers found",
+              'No referral customers found',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
                 color: Colors.grey[600],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               "You haven't referred any customers yet",
               style: TextStyle(
@@ -2509,7 +2534,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Future<void> getCustomerType() async {
     try {
       custtype = await SharedPrefHelper().getCustomerType() ?? '';
-      Logger.success("customer type: $custtype");
+      Logger.success('customer type: $custtype');
       if (mounted) {
         setState(() {});
       }
@@ -2522,7 +2547,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
     return await showDialog<bool>(
           context: context,
           barrierDismissible: false, // Prevents dismissing by tapping outside
-          builder: (BuildContext context) {
+          builder: (context) {
             return AlertDialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
@@ -2584,14 +2609,14 @@ class _CDashboardPageState extends State<CDashboardPage> {
   Widget _buildLoadingState() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(50.0),
+        padding: const EdgeInsets.all(50.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
+            const CircularProgressIndicator(
               color: Colors.blueAccent,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Loading Dashboard...',
               style: TextStyle(
@@ -2599,7 +2624,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                 color: Colors.grey[600],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Please wait while we fetch your data',
               style: TextStyle(
@@ -2683,15 +2708,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
         Provider.of<ProfileController>(context, listen: false);
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-
-        // Show the exit dialog and wait for user response
         final shouldExit = await _showExitDialog();
 
         if (shouldExit) {
-          // Exit the app
-          SystemNavigator.pop();
+          await SystemNavigator.pop();
         }
       },
       child: Scaffold(
@@ -2709,13 +2731,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
             children: [
               Container(
                 width: double.infinity,
-                color: Color.fromARGB(255, 81, 131, 246),
+                color: const Color.fromARGB(255, 81, 131, 246),
                 padding:
                     EdgeInsets.only(top: MediaQuery.of(context).padding.top),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => ProfilePage()));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const ProfilePage()));
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -2723,7 +2745,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CachedNetworkImage(
-                          imageUrl: profileController.profilePic ?? "",
+                          imageUrl: profileController.profilePic ?? '',
                           imageBuilder: (context, imageProvider) =>
                               CircleAvatar(
                             backgroundImage: imageProvider,
@@ -2733,15 +2755,16 @@ class _CDashboardPageState extends State<CDashboardPage> {
                             radius: 30,
                             child: CircularProgressIndicator(strokeWidth: 1.5),
                           ),
-                          errorWidget: (context, url, error) => CircleAvatar(
+                          errorWidget: (context, url, error) =>
+                              const CircleAvatar(
                             backgroundImage:
-                                const AssetImage("assets/default_profile.png"),
+                                AssetImage('assets/default_profile.png'),
                             radius: 30,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Text(
-                          "Welcome, ${profileController.firstName}!",
+                          'Welcome, ${profileController.firstName}!',
                           style: GoogleFonts.roboto(
                             fontSize: 18,
                             color: Colors.white,
@@ -2749,7 +2772,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                           ),
                         ),
                         Text(
-                          "Manage everything efficiently",
+                          'Manage everything efficiently',
                           style: GoogleFonts.roboto(
                             fontSize: 14,
                             color: Colors.white70,
@@ -2764,22 +2787,23 @@ class _CDashboardPageState extends State<CDashboardPage> {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     ListTile(
-                      leading: Icon(Icons.dashboard),
-                      title: Text('Dashboard'),
+                      leading: const Icon(Icons.dashboard),
+                      title: const Text('Dashboard'),
                       onTap: () {
                         Navigator.pop(
                             context); // Just close drawer if already on dashboard
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.home),
-                      title: Text('Home Page'),
+                      leading: const Icon(Icons.home),
+                      title: const Text('Home Page'),
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
+                          MaterialPageRoute(
+                              builder: (context) => const HomePage()),
                         );
                       },
                     ),
@@ -2788,13 +2812,14 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         custtype == 'Neo Select' ||
                         custtype == 'Premium Select')
                       ListTile(
-                        leading: Icon(Icons.people),
-                        title: Text('Referral Customers'),
+                        leading: const Icon(Icons.people),
+                        title: const Text('Referral Customers'),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ViewCustomersPage()),
+                                builder: (context) =>
+                                    const ViewCustomersPage()),
                           );
                         },
                       ),
@@ -2803,13 +2828,14 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         custtype == 'Neo Select' ||
                         custtype == 'Premium Select')
                       ListTile(
-                        leading: Icon(Icons.account_balance_wallet),
-                        title: Text('My Wallet'),
+                        leading: const Icon(Icons.account_balance_wallet),
+                        title: const Text('My Wallet'),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => WalletDetailsPage()),
+                                builder: (context) =>
+                                    const WalletDetailsPage()),
                           );
                         },
                       ),
@@ -2818,25 +2844,25 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         custtype == 'Neo Select' ||
                         custtype == 'Premium Select')
                       ExpansionTile(
-                        title: const Text("Payouts"),
+                        title: const Text('Payouts'),
                         leading: const Icon(Icons.payment),
                         children: [
                           _drawerItem(
                               context,
                               Icons.inventory_2,
-                              "Product Payout",
+                              'Product Payout',
                               CustProductPayoutsPage(
                                 userName:
-                                    "${profileController.firstName} ${profileController.lastName}",
+                                    '${profileController.firstName} ${profileController.lastName}',
                               ),
                               padding: true),
                           _drawerItem(
                               context,
                               Icons.people_alt,
-                              "Referral Payout",
+                              'Referral Payout',
                               CustomerReferralPayouts(
                                   username:
-                                      "${profileController.firstName} ${profileController.lastName}"),
+                                      '${profileController.firstName} ${profileController.lastName}'),
                               padding: true),
                         ],
                       ),
@@ -2858,15 +2884,15 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     Padding(
                       padding: EdgeInsets.zero,
                       child: ListTile(
-                        leading: Icon(
+                        leading: const Icon(
                           Icons.person,
                         ),
-                        title: Text("Profile Page"),
+                        title: const Text('Profile Page'),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ProfilePage()),
+                                builder: (context) => const ProfilePage()),
                           );
                         },
                       ),
@@ -2874,17 +2900,23 @@ class _CDashboardPageState extends State<CDashboardPage> {
                     Padding(
                       padding: EdgeInsets.zero,
                       child: ListTile(
-                        leading: Icon(
+                        leading: const Icon(
                           Icons.power_settings_new_rounded,
                           color: Colors.red,
                         ),
-                        title: Text("Log Out"),
+                        title: const Text('Log Out'),
                         onTap: () async {
-                          SharedPrefHelper().removeDetails();
+                          await SharedPrefHelper().removeDetails();
+
+                          if (!context.mounted) {
+                            return; // 👈 use context.mounted instead of just mounted
+                          }
+
                           await Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => HomePage()),
-                            (Route<dynamic> route) => false,
+                            MaterialPageRoute(
+                                builder: (context) => const HomePage()),
+                            (route) => false,
                           );
                         },
                       ),
@@ -2905,13 +2937,13 @@ class _CDashboardPageState extends State<CDashboardPage> {
                       RefreshIndicator(
                         onRefresh: _onRefreshDashboard,
                         child: SingleChildScrollView(
-                            physics: AlwaysScrollableScrollPhysics(),
-                            padding: EdgeInsets.all(16.0),
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.all(16.0),
                             child: bodywidget(custtype)),
                       ),
 
                       // Confetti overlay (on top of everything)
-                      if (custtype == "Premium")
+                      if (custtype == 'Premium')
                         Positioned.fill(
                           child: IgnorePointer(
                             child: Align(
@@ -2920,7 +2952,6 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                 confettiController: _confettiController,
                                 blastDirectionality:
                                     BlastDirectionality.explosive,
-                                shouldLoop: false,
                                 emissionFrequency: 0.05,
                                 numberOfParticles: 100,
                                 gravity: 0.4,
@@ -2941,7 +2972,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
     return Column(
       children: [
         Icon(icon, size: 20, color: color),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
           value,
           style: TextStyle(
@@ -2968,12 +2999,12 @@ class _CDashboardPageState extends State<CDashboardPage> {
       return Container(
         width: imageSize,
         height: imageSize,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
         ),
         clipBehavior: Clip.antiAlias,
         child: Image.asset(
-          "assets/default_profile.png",
+          'assets/default_profile.png',
           fit: BoxFit.cover,
         ),
       );
@@ -2984,15 +3015,15 @@ class _CDashboardPageState extends State<CDashboardPage> {
       imageUrl = profilePicture;
     } else {
       final newpath = extractPathSegment(profilePicture, 'profile_pic/');
-      imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+      imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
     }
 
-    Logger.success("Final image URL: $imageUrl");
+    Logger.success('Final image URL: $imageUrl');
 
     return Container(
       width: imageSize,
       height: imageSize,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
       ),
       clipBehavior: Clip.antiAlias,
@@ -3003,7 +3034,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
           child: CircularProgressIndicator(strokeWidth: 1.5),
         ),
         errorWidget: (context, url, error) => Image.asset(
-          "assets/default_profile.png",
+          'assets/default_profile.png',
           fit: BoxFit.cover,
         ),
       ),

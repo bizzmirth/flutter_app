@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:bizzmirth_app/controllers/employee_controller.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_employee_controller.dart';
 import 'package:bizzmirth_app/entities/pending_employee/pending_employee_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -28,16 +28,16 @@ class AddEmployeePage extends StatefulWidget {
       this.isViewMode = false});
 
   @override
-  _AddEmployeePageState createState() => _AddEmployeePageState();
+  State<AddEmployeePage> createState() => _AddEmployeePageState();
 }
 
 class _AddEmployeePageState extends State<AddEmployeePage> {
   Map<String, dynamic> selectedFiles = {
-    "Profile Picture": null,
-    "ID Proof": null,
-    "Bank Details": null,
+    'Profile Picture': null,
+    'ID Proof': null,
+    'Bank Details': null,
   };
-  var savedImagePath = "";
+  var savedImagePath = '';
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
@@ -48,14 +48,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   final TextEditingController _dojController = TextEditingController();
   String? dobForApi;
   String? dojForApi;
-  String _selectedGender = "---- Select Gender * ----";
-  String _selectedDepartment = "---- Select Department * ----";
-  String _selectedDesignation = "---- Select Designation * ----";
-  String _selectedZone = "---- Select Zone * ----";
-  String _selectedBranch = "---- Select Branch * ----";
-  String _selectedManager = "---- Select Reporting Manager * ----";
+  String _selectedGender = '---- Select Gender * ----';
+  String _selectedDepartment = '---- Select Department * ----';
+  String _selectedDesignation = '---- Select Designation * ----';
+  String _selectedZone = '---- Select Zone * ----';
+  String _selectedBranch = '---- Select Branch * ----';
+  String _selectedManager = '---- Select Reporting Manager * ----';
   final IsarService _isarService = IsarService();
-  final EmployeeController employeeController = EmployeeController();
+  final AdminEmployeeController employeeController = AdminEmployeeController();
 
   final GlobalKey<FormFieldState> _firstNameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _lastNameKey = GlobalKey<FormFieldState>();
@@ -63,11 +63,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   final GlobalKey<FormFieldState> _emailKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _addressKey = GlobalKey<FormFieldState>();
 
-  String? selectedDepartmentId = "";
-  String? selectedDesignationId = "";
-  String selectedManagerRegId = "";
-  String? selectedZoneId = "";
-  String? selectedBranchId = "";
+  String? selectedDepartmentId = '';
+  String? selectedDesignationId = '';
+  String selectedManagerRegId = '';
+  String? selectedZoneId = '';
+  String? selectedBranchId = '';
   List<Map<String, dynamic>> departments = [];
   List<Map<String, dynamic>> designations = [];
   List<Map<String, dynamic>> zones = [];
@@ -93,7 +93,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     'dept_name': dept['dept_name'].toString()
                   })
               .toList();
-          Logger.success("departmetss :: $departments");
+          Logger.success('departmetss :: $departments');
         });
       } else {}
     } catch (e) {
@@ -121,7 +121,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                 },
               )
               .toList();
-          Logger.success("designationss :: $designations");
+          Logger.success('designationss :: $designations');
         });
       }
     } catch (e) {
@@ -134,21 +134,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       reportingManager = await _isarService.getAll<RegisteredEmployeeModel>();
 
       reportingManager = reportingManager
-          .where((employee) => employee.userType == "24")
+          .where((employee) => employee.userType == '24')
           .toList();
 
       reportingManagerNames = [];
       managerNameToRegIdMap = {};
 
       for (var rm in reportingManager) {
-        Logger.success("reporting manager ${rm.name} userType: ${rm.userType}");
+        Logger.success('reporting manager ${rm.name} userType: ${rm.userType}');
         reportingManagerNames.add(rm.name!);
         managerNameToRegIdMap[rm.name!] = rm.regId!;
       }
 
       setState(() {}); // Refresh UI after loading data
     } catch (e) {
-      Logger.error("Error fetching Reporting Manager: $e");
+      Logger.error('Error fetching Reporting Manager: $e');
     }
   }
 
@@ -168,9 +168,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                   })
               .toList();
         });
-        Logger.success("zones :: $zones");
+        Logger.success('zones :: $zones');
       } else {
-        Logger.error("No Zone data found");
+        Logger.error('No Zone data found');
       }
     } catch (e) {
       Logger.error('Error fetching Zone: $e');
@@ -182,7 +182,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       setState(() {
         // Clear previous branches when a new zone is selected
         branches = [];
-        _selectedBranch = "---- Select Branch * ----"; // Reset selected branch
+        _selectedBranch = '---- Select Branch * ----'; // Reset selected branch
       });
 
       await employeeController.apiGetBranchs(zoneId);
@@ -190,7 +190,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       final prefs = await SharedPreferences.getInstance();
       final branchDataString = prefs.getString('branches_$zoneId');
 
-      if (branchDataString != "---- Select Branch * ----") {
+      if (branchDataString != '---- Select Branch * ----') {
         final List<dynamic> branchData = json.decode(branchDataString!);
         setState(() {
           branches = branchData
@@ -202,18 +202,19 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           _selectedBranch = branches[0]['branch_name'];
           selectedBranchId = branches[0]['id'];
         });
-        Logger.success("branches :: $branches");
+        Logger.success('branches :: $branches');
       } else {
-        Logger.warning("No branches found for the selected zone");
+        Logger.warning('No branches found for the selected zone');
       }
     } catch (e) {
       Logger.error('Error fetching branches: $e');
     }
   }
 
-  void _populatePendingEmployeeForm(PendingEmployeeModel employee) async {
-    _firstController.text = employee.name?.split(" ").first ?? '';
-    _lastnameController.text = employee.name?.split(" ").last ?? '';
+  Future<void> _populatePendingEmployeeForm(
+      PendingEmployeeModel employee) async {
+    _firstController.text = employee.name?.split(' ').first ?? '';
+    _lastnameController.text = employee.name?.split(' ').last ?? '';
     _mobileController.text = employee.mobileNumber!;
     _emailController.text = employee.email!;
     _addressController.text = employee.address!;
@@ -222,7 +223,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     if (employee.department != null) {
       _selectedDepartment =
           (await getDepartmentNameById(employee.department!)) ??
-              "---- Select Department * ----";
+              '---- Select Department * ----';
       selectedDepartmentId = employee.department!;
     }
     selectedDepartmentId = employee.department;
@@ -230,19 +231,19 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     if (employee.designation != null) {
       _selectedDesignation =
           (await getDesignationById(employee.designation!)) ??
-              "---- Select Department * ----";
+              '---- Select Department * ----';
       selectedDesignationId = employee.designation!;
     }
     if (employee.reportingManager != null) {
       _selectedManager =
           (await getReportingManagerNameById(employee.reportingManager!)) ??
-              "---- Select Reporting Manager * ----";
+              '---- Select Reporting Manager * ----';
       selectedManagerRegId = employee.reportingManager!;
     }
     if (employee.zone != null) {
       // First get the zone name
       _selectedZone =
-          (await getZoneById(employee.zone!)) ?? "---- Select Zone * ----";
+          (await getZoneById(employee.zone!)) ?? '---- Select Zone * ----';
       selectedZoneId = employee.zone!;
 
       // Now fetch branches for this zone
@@ -255,16 +256,16 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
             _selectedBranch = employee.branch!;
           }
 
-          bool branchExists = branches
+          final bool branchExists = branches
               .any((branch) => branch['branch_name'] == _selectedBranch);
 
           if (!branchExists) {
-            _selectedBranch = "---- Select Branch * ----";
+            _selectedBranch = '---- Select Branch * ----';
             Logger.warning(
                 "Branch '${employee.branch}' not found in loaded branches for zone '${employee.zone}'");
           }
         } else {
-          _selectedBranch = "---- Select Branch * ----";
+          _selectedBranch = '---- Select Branch * ----';
         }
       }
     }
@@ -282,7 +283,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
             .format(DateFormat('yyyy-MM-dd').parse(employee.dateOfBirth!));
       } else {
         // Date is in display format (dd-MM-yyyy), convert to API format
-        DateTime dobDate =
+        final DateTime dobDate =
             DateFormat('dd-MM-yyyy').parse(employee.dateOfBirth!);
         dobForApi = DateFormat('yyyy-MM-dd').format(dobDate);
         _dobController.text = DateFormat('dd-MM-yyyy').format(dobDate);
@@ -299,13 +300,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
             .format(DateFormat('yyyy-MM-dd').parse(employee.dateOfJoining!));
       } else {
         // Date is in display format, convert to API format
-        DateTime dojDate =
+        final DateTime dojDate =
             DateFormat('dd-MM-yyyy').parse(employee.dateOfJoining!);
         dojForApi = DateFormat('yyyy-MM-dd').format(dojDate);
         _dojController.text = DateFormat('dd-MM-yyyy').format(dojDate);
       }
     } catch (e) {
-      Logger.error("Error parsing dates during form population: $e");
+      Logger.error('Error parsing dates during form population: $e');
       // Fallback to original values if parsing fails
       dobForApi = employee.dateOfBirth;
       dojForApi = employee.dateOfJoining;
@@ -316,42 +317,43 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     if (employee.profilePicture != null) {
       // Check if it already starts with the base URL
       if (employee.profilePicture!
-          .startsWith("https://testca.uniqbizz.com/uploading/")) {
-        selectedFiles["Profile Picture"] = employee.profilePicture!;
+          .startsWith('https://testca.uniqbizz.com/uploading/')) {
+        selectedFiles['Profile Picture'] = employee.profilePicture!;
       } else {
-        selectedFiles["Profile Picture"] =
-            "https://testca.uniqbizz.com/uploading/${employee.profilePicture!}";
+        selectedFiles['Profile Picture'] =
+            'https://testca.uniqbizz.com/uploading/${employee.profilePicture!}';
       }
-      Logger.success(selectedFiles["Profile Picture"]);
+      Logger.success(selectedFiles['Profile Picture']);
     }
 
     if (employee.idProof != null) {
       // Check if it already starts with the base URL
       if (employee.idProof!
-          .startsWith("https://testca.uniqbizz.com/uploading/")) {
-        selectedFiles["ID Proof"] = employee.idProof!;
+          .startsWith('https://testca.uniqbizz.com/uploading/')) {
+        selectedFiles['ID Proof'] = employee.idProof!;
       } else {
-        selectedFiles["ID Proof"] =
-            "https://testca.uniqbizz.com/uploading/${employee.idProof!}";
+        selectedFiles['ID Proof'] =
+            'https://testca.uniqbizz.com/uploading/${employee.idProof!}';
       }
-      Logger.success(selectedFiles["ID Proof"]);
+      Logger.success(selectedFiles['ID Proof']);
     }
 
     if (employee.bankDetails != null) {
       if (employee.bankDetails!
-          .startsWith("https://testca.uniqbizz.com/uploading/")) {
-        selectedFiles["Bank Details"] = employee.bankDetails!;
+          .startsWith('https://testca.uniqbizz.com/uploading/')) {
+        selectedFiles['Bank Details'] = employee.bankDetails!;
       } else {
-        selectedFiles["Bank Details"] =
-            "https://testca.uniqbizz.com/uploading/${employee.bankDetails!}";
+        selectedFiles['Bank Details'] =
+            'https://testca.uniqbizz.com/uploading/${employee.bankDetails!}';
       }
-      Logger.success(selectedFiles["Bank Details"]);
+      Logger.success(selectedFiles['Bank Details']);
     }
   }
 
-  void _populateRegisteredEmployeeForm(RegisteredEmployeeModel employee) async {
-    _firstController.text = employee.name?.split(" ").first ?? '';
-    _lastnameController.text = employee.name?.split(" ").last ?? '';
+  Future<void> _populateRegisteredEmployeeForm(
+      RegisteredEmployeeModel employee) async {
+    _firstController.text = employee.name?.split(' ').first ?? '';
+    _lastnameController.text = employee.name?.split(' ').last ?? '';
     _mobileController.text = employee.mobileNumber!;
     _emailController.text = employee.email!;
     _addressController.text = employee.address!;
@@ -361,19 +363,19 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     if (employee.department != null) {
       _selectedDepartment =
           (await getDepartmentNameById(employee.department!)) ??
-              "---- Select Department * ----";
+              '---- Select Department * ----';
       selectedDepartmentId = employee.department!;
     }
     if (employee.designation != null) {
       _selectedDesignation =
           (await getDesignationById(employee.designation!)) ??
-              "---- Select Department * ----";
+              '---- Select Department * ----';
       selectedDesignationId = employee.designation!;
     }
     if (employee.zone != null) {
       // First get the zone name
       _selectedZone =
-          (await getZoneById(employee.zone!)) ?? "---- Select Zone * ----";
+          (await getZoneById(employee.zone!)) ?? '---- Select Zone * ----';
       selectedZoneId = employee.zone!;
 
       // Now fetch branches for this zone
@@ -386,36 +388,37 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
             _selectedBranch = employee.branch!;
           }
 
-          bool branchExists = branches
+          final bool branchExists = branches
               .any((branch) => branch['branch_name'] == _selectedBranch);
 
           if (!branchExists) {
-            _selectedBranch = "---- Select Branch * ----";
+            _selectedBranch = '---- Select Branch * ----';
             Logger.warning(
                 "Branch '${employee.branch}' not found in loaded branches for zone '${employee.zone}'");
           }
         } else {
-          _selectedBranch = "---- Select Branch * ----";
+          _selectedBranch = '---- Select Branch * ----';
         }
       }
     }
     if (employee.reportingManager != null) {
       _selectedManager =
           (await getReportingManagerNameById(employee.reportingManager!)) ??
-              "---- Select Reporting Manager * ----";
+              '---- Select Reporting Manager * ----';
       selectedManagerRegId = employee.reportingManager!;
     }
 
     try {
       // Convert from display format to API format
-      DateTime dobDate = DateFormat('dd-MM-yyyy').parse(employee.dateOfBirth!);
-      DateTime dojDate =
+      final DateTime dobDate =
+          DateFormat('dd-MM-yyyy').parse(employee.dateOfBirth!);
+      final DateTime dojDate =
           DateFormat('dd-MM-yyyy').parse(employee.dateOfJoining!);
 
       dobForApi = DateFormat('yyyy-MM-dd').format(dobDate);
       dojForApi = DateFormat('yyyy-MM-dd').format(dojDate);
     } catch (e) {
-      Logger.error("Error parsing dates during form population: $e");
+      Logger.error('Error parsing dates during form population: $e');
       // Fallback to original values if parsing fails
       dobForApi = employee.dateOfBirth;
       dojForApi = employee.dateOfJoining;
@@ -423,16 +426,16 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
     // Set the file paths for images in selectedFiles
     if (employee.profilePicture != null) {
-      selectedFiles["Profile Picture"] =
-          "https://testca.uniqbizz.com/uploading/${employee.profilePicture!}";
+      selectedFiles['Profile Picture'] =
+          'https://testca.uniqbizz.com/uploading/${employee.profilePicture!}';
     }
     if (employee.idProof != null) {
-      selectedFiles["ID Proof"] =
-          "https://testca.uniqbizz.com/uploading/${employee.idProof!}";
+      selectedFiles['ID Proof'] =
+          'https://testca.uniqbizz.com/uploading/${employee.idProof!}';
     }
     if (employee.bankDetails != null) {
-      selectedFiles["Bank Details"] =
-          "https://testca.uniqbizz.com/uploading/${employee.bankDetails!}";
+      selectedFiles['Bank Details'] =
+          'https://testca.uniqbizz.com/uploading/${employee.bankDetails!}';
     }
   }
 
@@ -446,9 +449,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     } else {
       // We're adding a new employee, ensure selectedFiles are all null
       selectedFiles = {
-        "Profile Picture": null,
-        "ID Proof": null,
-        "Bank Details": null,
+        'Profile Picture': null,
+        'ID Proof': null,
+        'Bank Details': null,
       };
     }
     _loadDepartments();
@@ -457,120 +460,119 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     _getZones();
   }
 
-  void updatePendingEmployee() async {
+  Future<void> updatePendingEmployee() async {
     try {
       if (_formKey.currentState!.validate()) {
         String? profilePicturePath;
         String? idProofPath;
         String? bankDetailsPath;
 
-        if (selectedFiles["Profile Picture"] != null) {
-          if (selectedFiles["Profile Picture"] is File) {
-            File fileObj = selectedFiles["Profile Picture"] as File;
-            await employeeController.uploadImage(
-                context, 'profile_pic', fileObj.path);
+        if (selectedFiles['Profile Picture'] != null) {
+          if (selectedFiles['Profile Picture'] is File) {
+            final File fileObj = selectedFiles['Profile Picture'] as File;
+            await employeeController.uploadImage('profile_pic', fileObj.path);
             profilePicturePath =
                 extractPathSegment(fileObj.path, 'profile_pic/');
           } else {
             profilePicturePath = extractPathSegment(
-                selectedFiles["Profile Picture"], 'profile_pic/');
+                selectedFiles['Profile Picture'], 'profile_pic/');
           }
         }
 
-        if (selectedFiles["ID Proof"] != null) {
-          if (selectedFiles["ID Proof"] is File) {
-            File fileObj = selectedFiles["ID Proof"] as File;
-            await employeeController.uploadImage(
-                context, 'id_proof', fileObj.path);
+        if (selectedFiles['ID Proof'] != null) {
+          if (selectedFiles['ID Proof'] is File) {
+            final File fileObj = selectedFiles['ID Proof'] as File;
+            await employeeController.uploadImage('id_proof', fileObj.path);
             idProofPath = extractPathSegment(fileObj.path, 'id_proof');
           } else {
             idProofPath =
-                extractPathSegment(selectedFiles["ID Proof"], 'id_proof');
+                extractPathSegment(selectedFiles['ID Proof'], 'id_proof');
           }
         }
 
-        if (selectedFiles["Bank Details"] != null) {
-          if (selectedFiles["Bank Details"] is File) {
-            File fileObj = selectedFiles["Bank Details"] as File;
-            await employeeController.uploadImage(
-                context, 'passbook', fileObj.path);
+        if (selectedFiles['Bank Details'] != null) {
+          if (selectedFiles['Bank Details'] is File) {
+            final File fileObj = selectedFiles['Bank Details'] as File;
+            await employeeController.uploadImage('passbook', fileObj.path);
             bankDetailsPath = extractPathSegment(fileObj.path, 'passbook/');
           } else {
             bankDetailsPath =
-                extractPathSegment(selectedFiles["Bank Details"], 'passbook/');
+                extractPathSegment(selectedFiles['Bank Details'], 'passbook/');
           }
         }
 
         Logger.success(
-            "Images Path: $profilePicturePath :: $idProofPath :: $bankDetailsPath");
+            'Images Path: $profilePicturePath :: $idProofPath :: $bankDetailsPath');
 
-        int? id = widget.pendingEmployee!.id;
-        PendingEmployeeModel updatePendingEmployee = PendingEmployeeModel()
-          ..id = id
-          ..name = '${_firstController.text} ${_lastnameController.text}'
-          ..mobileNumber = _mobileController.text
-          ..email = _emailController.text
-          ..address = _addressController.text
-          ..gender = _selectedGender
-          ..dateOfBirth = dobForApi
-          ..dateOfJoining = dojForApi
-          ..status = 2
-          ..department = selectedDepartmentId
-          ..designation = selectedDesignationId
-          ..zone = selectedZoneId
-          ..branch = selectedBranchId
-          ..reportingManager = selectedManagerRegId
-          ..profilePicture = profilePicturePath
-          ..idProof = idProofPath
-          ..bankDetails = bankDetailsPath;
+        final int? id = widget.pendingEmployee!.id;
+        final PendingEmployeeModel updatePendingEmployee =
+            PendingEmployeeModel()
+              ..id = id
+              ..name = '${_firstController.text} ${_lastnameController.text}'
+              ..mobileNumber = _mobileController.text
+              ..email = _emailController.text
+              ..address = _addressController.text
+              ..gender = _selectedGender
+              ..dateOfBirth = dobForApi
+              ..dateOfJoining = dojForApi
+              ..status = 2
+              ..department = selectedDepartmentId
+              ..designation = selectedDesignationId
+              ..zone = selectedZoneId
+              ..branch = selectedBranchId
+              ..reportingManager = selectedManagerRegId
+              ..profilePicture = profilePicturePath
+              ..idProof = idProofPath
+              ..bankDetails = bankDetailsPath;
 
         final updated = await _isarService.update<PendingEmployeeModel>(
             updatePendingEmployee, id!);
         if (updated) {
           final apiUpdate = await employeeController
               .updatePendingEmployees(updatePendingEmployee);
-          Logger.success("Api update status : $apiUpdate");
-          ToastHelper.showSuccessToast(
-              context: context, title: "Updated Employee Successfully");
+          Logger.success('Api update status : $apiUpdate');
+          ToastHelper.showSuccessToast(title: 'Updated Employee Successfully');
 
-          Navigator.pop(context);
+          if (mounted) {
+            Navigator.pop(context);
+          }
         }
       }
     } catch (e) {
-      Logger.error("Error updating Pending Employe $e");
+      Logger.error('Error updating Pending Employe $e');
     }
   }
 
-  void updateRegisteredEmployee() async {
+  Future<void> updateRegisteredEmployee() async {
     try {
       if (_formKey.currentState!.validate()) {
         String? profilePicturePath;
         String? idProofPath;
         String? bankDetailsPath;
 
-        if (selectedFiles["Profile Picture"] != null) {
+        if (selectedFiles['Profile Picture'] != null) {
           await employeeController.uploadImage(
-              context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
-          profilePicturePath = selectedFiles["Profile Picture"]!.path;
+              'profile_pic', selectedFiles['Profile Picture']!.path);
+          profilePicturePath = selectedFiles['Profile Picture']!.path;
         }
 
         // Upload ID Proof if selected
-        if (selectedFiles["ID Proof"] != null) {
+        if (selectedFiles['ID Proof'] != null) {
           await employeeController.uploadImage(
-              context, 'id_proof', selectedFiles["ID Proof"]!.path);
-          idProofPath = selectedFiles["ID Proof"]!.path;
+              'id_proof', selectedFiles['ID Proof']!.path);
+          idProofPath = selectedFiles['ID Proof']!.path;
         }
 
         // Upload Bank Details if selected
-        if (selectedFiles["Bank Details"] != null) {
+        if (selectedFiles['Bank Details'] != null) {
           await employeeController.uploadImage(
-              context, 'passbook', selectedFiles["Bank Details"]!.path);
-          bankDetailsPath = selectedFiles["Bank Details"]!.path;
+              'passbook', selectedFiles['Bank Details']!.path);
+          bankDetailsPath = selectedFiles['Bank Details']!.path;
         }
-        int? id = widget.registerEmployee!.id;
+        final int? id = widget.registerEmployee!.id;
         Logger.success(
-            "Date of joining and date of birth $dobForApi $dojForApi");
-        RegisteredEmployeeModel updateRegisteredEmployee =
+            'Date of joining and date of birth $dobForApi $dojForApi');
+        final RegisteredEmployeeModel updateRegisteredEmployee =
             RegisteredEmployeeModel()
               ..id = id
               ..regId = widget.registerEmployee?.regId
@@ -594,30 +596,29 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         final updated = await _isarService.update<RegisteredEmployeeModel>(
             updateRegisteredEmployee, id!);
 
-        Logger.warning(":::::$updated");
+        Logger.warning(':::::$updated');
         if (updated) {
           final apiUpdate = await employeeController
               .updateRegisterEmployee(updateRegisteredEmployee);
-          Logger.success("Api update status : $apiUpdate");
-          ToastHelper.showSuccessToast(
-              context: context, title: "Updated Employee Successfully");
+          Logger.success('Api update status : $apiUpdate');
+          ToastHelper.showSuccessToast(title: 'Updated Employee Successfully');
 
-          Navigator.pop(context);
+          MyNavigator.pop();
         }
       }
     } catch (e) {
-      Logger.error("Error updating registered employee $e");
+      Logger.error('Error updating registered employee $e');
     }
   }
 
-  void _pickFile(String fileType) async {
+  Future<void> _pickFile(String fileType) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;
 
-      String originalPath = result.files.single.path!;
+      final String originalPath = result.files.single.path!;
 
       final appDir = await getApplicationDocumentsDirectory();
       final bizmirthDir = Directory('${appDir.path}/bizmirth');
@@ -628,17 +629,17 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
       String subFolderName;
       switch (fileType) {
-        case "Profile Picture":
-          subFolderName = "profile_pic";
+        case 'Profile Picture':
+          subFolderName = 'profile_pic';
           break;
-        case "ID Proof":
-          subFolderName = "id_proof";
+        case 'ID Proof':
+          subFolderName = 'id_proof';
           break;
-        case "Bank Details":
-          subFolderName = "passbook";
+        case 'Bank Details':
+          subFolderName = 'passbook';
           break;
         default:
-          subFolderName = "other_documents";
+          subFolderName = 'other_documents';
       }
 
       // Create the specific subfolder
@@ -658,7 +659,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         selectedFiles[fileType] = File(savedImagePath);
       });
     } catch (e) {
-      Logger.error("Error picking file: $e");
+      Logger.error('Error picking file: $e');
     }
   }
   // void _pickFile(String fileType) async {
@@ -693,23 +694,22 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       if (fieldState != null && fieldState.hasError) {
         Scrollable.ensureVisible(
           entry.value.currentContext!,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
-          alignment: 0.0,
         );
         break;
       }
     }
   }
 
-  void _submitForm() async {
+  Future<void> _submitForm() async {
     try {
       final formState = _formKey.currentState;
 
       if (formState == null || !formState.validate()) {
         _scrollToFirstError();
         ToastHelper.showErrorToast(
-            context: context, title: "Please Fill all the required fields");
+            title: 'Please Fill all the required fields');
         return;
       }
       if (_formKey.currentState!.validate()) {
@@ -718,20 +718,20 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         String? idProofPath;
         String? bankDetailsPath;
 
-        if (selectedFiles["Profile Picture"] != null) {
+        if (selectedFiles['Profile Picture'] != null) {
           await employeeController.uploadImage(
-              context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
-          profilePicturePath = selectedFiles["Profile Picture"]!.path;
+              'profile_pic', selectedFiles['Profile Picture']!.path);
+          profilePicturePath = selectedFiles['Profile Picture']!.path;
         }
-        if (selectedFiles["ID Proof"] != null) {
+        if (selectedFiles['ID Proof'] != null) {
           await employeeController.uploadImage(
-              context, 'id_proof', selectedFiles["ID Proof"]!.path);
-          idProofPath = selectedFiles["ID Proof"]!.path;
+              'id_proof', selectedFiles['ID Proof']!.path);
+          idProofPath = selectedFiles['ID Proof']!.path;
         }
-        if (selectedFiles["Bank Details"] != null) {
+        if (selectedFiles['Bank Details'] != null) {
           await employeeController.uploadImage(
-              context, 'passbook', selectedFiles["Bank Details"]!.path);
-          bankDetailsPath = selectedFiles["Bank Details"]!.path;
+              'passbook', selectedFiles['Bank Details']!.path);
+          bankDetailsPath = selectedFiles['Bank Details']!.path;
         }
 
         final newEmployee = PendingEmployeeModel()
@@ -757,31 +757,28 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
         if (apiSuccess) {
           Logger.success(
-              "Data going in DB is Profile picture $profilePicturePath ID Proof: $idProofPath bank Details : $bankDetailsPath");
+              'Data going in DB is Profile picture $profilePicturePath ID Proof: $idProofPath bank Details : $bankDetailsPath');
           await _isarService.save<PendingEmployeeModel>(newEmployee);
           Logger.success(
-              "Employee saved to API and local database successfully");
-          Navigator.pop(context);
-          ToastHelper.showSuccessToast(
-              context: context, title: "Employee Added Successfully");
+              'Employee saved to API and local database successfully');
+          MyNavigator.pop();
+          ToastHelper.showSuccessToast(title: 'Employee Added Successfully');
           _clearFormFields();
         } else {
           await _isarService.save<PendingEmployeeModel>(newEmployee);
-          Logger.warning("Employee saved locally but API submission failed");
-          Navigator.pop(context);
+          Logger.warning('Employee saved locally but API submission failed');
+          MyNavigator.pop();
           ToastHelper.showWarningToast(
-              context: context,
               title:
                   "Employee saved locally but couldn't be uploaded to server");
           _clearFormFields();
         }
       } else {
         ToastHelper.showErrorToast(
-            context: context,
-            title: "Please fill all the required fields correctly.");
+            title: 'Please fill all the required fields correctly.');
       }
     } catch (e) {
-      Logger.error("Error saving data: $e");
+      Logger.error('Error saving data: $e');
     }
   }
 
@@ -794,12 +791,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     _dobController.clear();
     _dojController.clear();
 
-    _selectedGender = "---- Select Gender * ----";
-    _selectedDepartment = "---- Select Department * ----";
-    _selectedDesignation = "---- Select Designation * ----";
-    _selectedZone = "---- Select Zone * ----";
-    _selectedBranch = "---- Select Branch * ----";
-    _selectedManager = "---- Select Reporting Manager * ----";
+    _selectedGender = '---- Select Gender * ----';
+    _selectedDepartment = '---- Select Department * ----';
+    _selectedDesignation = '---- Select Designation * ----';
+    _selectedZone = '---- Select Zone * ----';
+    _selectedBranch = '---- Select Branch * ----';
+    _selectedManager = '---- Select Reporting Manager * ----';
 
     selectedFiles.clear();
 
@@ -809,7 +806,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   void _removeFile(String fileType) {
     setState(() {
       selectedFiles[fileType] = null;
-      if (fileType == "Profile Picture") {}
+      if (fileType == 'Profile Picture') {}
     });
   }
 
@@ -826,7 +823,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       readOnly: widget.isViewMode,
       controller: controller,
       maxLines: maxLines,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         // ignore: deprecated_member_use
@@ -850,7 +847,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     String? Function(String?)? validator,
     String? emptyMessage, // Add this parameter for empty message
   }) {
-    String defaultOption = "---- Select $label ----"; // Default placeholder
+    final String defaultOption =
+        '---- Select $label ----'; // Default placeholder
 
     // Handle empty items list with emptyMessage
     if (items.isEmpty && emptyMessage != null) {
@@ -862,12 +860,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
             Text(label,
                 style: TextStyle(
                     color: const Color.fromARGB(255, 255, 255, 255)
-                        .withOpacity(0.8))),
+                        .withValues(alpha: 0.8))),
             Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child:
@@ -891,7 +889,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           DropdownMenuItem(
             enabled: widget.isViewMode,
             value: defaultOption, // Placeholder value
-            child: Text(defaultOption, style: TextStyle(color: Colors.white)),
+            child: Text(defaultOption,
+                style: const TextStyle(color: Colors.white)),
           ),
           ...items.map((e) => DropdownMenuItem(
               value: e,
@@ -905,13 +904,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8)),
+              color: const Color.fromARGB(255, 255, 255, 255)
+                  .withValues(alpha: 0.8)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.2),
+          fillColor: Colors.white.withValues(alpha: 0.2),
         ),
         dropdownColor: const Color.fromARGB(255, 129, 129, 129),
       ),
@@ -954,12 +954,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Personal Details",
+                  const Text('Personal Details',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white)),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _customInputField(
                     'First Name *',
                     _firstController,
@@ -971,7 +971,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     },
                     fieldKey: _firstNameKey,
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _customInputField('Last Name *', _lastnameController,
                       validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -979,7 +979,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     }
                     return null;
                   }, fieldKey: _lastNameKey),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
@@ -989,20 +989,20 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 3, horizontal: 10.0),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: DropdownButton<String>(
                             value: _selectedCountryCode,
                             onChanged: widget.isViewMode
                                 ? null
-                                : (String? newValue) {
+                                : (newValue) {
                                     setState(() {
                                       _selectedCountryCode = newValue!;
                                     });
                                   },
-                            items: ["+91", "+1", "+44", "+61", "+971"]
-                                .map((String value) {
+                            items: ['+91', '+1', '+44', '+61', '+971']
+                                .map((value) {
                               return DropdownMenuItem<String>(
                                 enabled: widget.isViewMode,
                                 value: value,
@@ -1011,21 +1011,20 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       50, // Adjust this value to reduce the width of each item
                                   alignment: Alignment.center,
                                   child: Text(value,
-                                      style: TextStyle(
-                                          color: const Color.fromARGB(
+                                      style: const TextStyle(
+                                          color: Color.fromARGB(
                                               255, 255, 255, 255))),
                                 ),
                               );
                             }).toList(),
                             dropdownColor:
                                 const Color.fromARGB(255, 83, 83, 83),
-                            isExpanded: false,
                             underline:
-                                SizedBox(), // Hides the default underline
+                                const SizedBox(), // Hides the default underline
                           ),
                         ),
                         // Phone number text field
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
                             validator: (value) {
@@ -1042,27 +1041,26 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                             keyboardType: TextInputType.phone,
                             maxLength:
                                 10, // Limit to typical phone number length
-                            style: TextStyle(
-                                color:
-                                    const Color.fromARGB(255, 255, 255, 255)),
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 255, 255, 255)),
                             decoration: InputDecoration(
-                              labelText: "Phone number",
+                              labelText: 'Phone number',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
                               ),
-                              counterText: "", // Hide character counter
+                              counterText: '', // Hide character counter
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _customInputField('Email *', _emailController,
                       validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -1074,19 +1072,19 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     // }
                     return null;
                   }, fieldKey: _emailKey),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _customInputField('Address *', _addressController,
                       fieldKey: _addressKey),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildDropdown('Gender *', ['Male', 'Female', 'Other'],
                       validator: (value) {
-                    if (value == null || value == "---- Select Gender * ----") {
+                    if (value == null || value == '---- Select Gender * ----') {
                       return 'Please select a gender';
                     }
                     return null;
                   }, _selectedGender,
                       (value) => setState(() => _selectedGender = value!)),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextFormField(
@@ -1103,27 +1101,25 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       },
                       readOnly: true,
                       enabled: !widget.isViewMode,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Date of Birth *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         suffixIcon: _dobController.text.isNotEmpty &&
                                 !widget
                                     .isViewMode // Only show cancel button if not in view mode
                             ? IconButton(
-                                icon: Icon(Icons.close, color: Colors.white),
+                                icon: const Icon(Icons.close,
+                                    color: Colors.white),
                                 onPressed: () {
-                                  setState(() {
-                                    _dobController
-                                        .clear(); // Clears the date when cancel button is pressed
-                                  });
+                                  setState(_dobController.clear);
                                 },
                               )
                             : null, // Only show cancel button if date is selected and not in view mode
@@ -1131,7 +1127,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       onTap: widget.isViewMode
                           ? null
                           : () async {
-                              DateTime? pickedDate = await showDatePicker(
+                              final DateTime? pickedDate = await showDatePicker(
                                 context: context,
                                 initialDate: _dobController.text.isNotEmpty
                                     ? DateFormat('dd-MM-yyyy')
@@ -1142,7 +1138,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                               );
                               if (pickedDate != null) {
                                 setState(() {
-                                  String displayFormat =
+                                  final String displayFormat =
                                       DateFormat('dd-MM-yyyy')
                                           .format(pickedDate);
 
@@ -1152,7 +1148,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
                                   // Log the date in yyyy-MM-dd format
                                   Logger.error(
-                                      "Selected DOB (for API/logging): $dobForApi");
+                                      'Selected DOB (for API/logging): $dobForApi');
 
                                   // Set the display format in the text field
                                   setState(() {
@@ -1163,8 +1159,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                             },
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Text("Employment Details",
+                  const SizedBox(height: 20),
+                  const Text('Employment Details',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -1185,26 +1181,24 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       },
                       readOnly: true, // Makes the TextFormField non-editable
                       enabled: !widget.isViewMode,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Date of Joining *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         suffixIcon: _dojController.text.isNotEmpty &&
                                 !widget.isViewMode
                             ? IconButton(
-                                icon: Icon(Icons.close, color: Colors.white),
+                                icon: const Icon(Icons.close,
+                                    color: Colors.white),
                                 onPressed: () {
-                                  setState(() {
-                                    _dojController
-                                        .clear(); // Clears the date when cancel button is pressed
-                                  });
+                                  setState(_dojController.clear);
                                 },
                               )
                             : null, // Only show cancel button if date is selected
@@ -1228,13 +1222,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   }
                                 } catch (e) {
                                   // If parsing fails, use current date
-                                  Logger.error("Error parsing date: $e");
+                                  Logger.error('Error parsing date: $e');
                                   initialDate = DateTime.now();
                                 }
                               }
 
                               // Now use the safe initialDate
-                              DateTime? pickedDate = await showDatePicker(
+                              final DateTime? pickedDate = await showDatePicker(
                                 context: context,
                                 initialDate: initialDate,
                                 firstDate: DateTime(1900),
@@ -1242,12 +1236,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                               );
 
                               if (pickedDate != null) {
-                                String displayFormat =
+                                final String displayFormat =
                                     DateFormat('dd-MM-yyyy').format(pickedDate);
                                 dojForApi =
                                     DateFormat('yyyy-MM-dd').format(pickedDate);
                                 Logger.error(
-                                    "Selected DOJ (for API/logging): $dojForApi");
+                                    'Selected DOJ (for API/logging): $dojForApi');
 
                                 setState(() {
                                   _dojController.text = displayFormat;
@@ -1256,7 +1250,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                             },
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                     'Department *',
                     departments
@@ -1265,7 +1259,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     _selectedDepartment,
                     validator: (value) {
                       if (value == null ||
-                          value == "---- Select Department * ----") {
+                          value == '---- Select Department * ----') {
                         return 'Please select a department';
                       }
                       return null;
@@ -1289,7 +1283,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       });
                     },
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                       'Designation *',
                       designations
@@ -1297,7 +1291,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                           .toList(),
                       _selectedDesignation, validator: (value) {
                     if (value == null ||
-                        value == "---- Select Designation * ----") {
+                        value == '---- Select Designation * ----') {
                       return 'Please select a designation';
                     }
                     return null;
@@ -1318,12 +1312,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   'Error: Designation ID not found for $value');
                             }
                           })),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                       'Zone *',
                       zones.map<String>((zone) => zone['zone_name']).toList(),
                       _selectedZone, validator: (value) {
-                    if (value == null || value == "---- Select Zone * ----") {
+                    if (value == null || value == '---- Select Zone * ----') {
                       return 'Please select a zone';
                     }
                     return null;
@@ -1341,7 +1335,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                               _getBranches(selectedZoneId!);
                             }
                           })),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                       'Branch *',
                       branches.isEmpty
@@ -1353,7 +1347,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     if (branches.isEmpty) {
                       return null; // Don't validate if no branches are available
                     }
-                    if (value == null || value == "---- Select Branch * ----") {
+                    if (value == null || value == '---- Select Branch * ----') {
                       return 'Please select a branch';
                     }
                     return null;
@@ -1367,14 +1361,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                             selectedBranchId = selectedBranch['id'];
                           }),
                       emptyMessage:
-                          "No branches available for the selected zone"),
-                  SizedBox(height: 10),
+                          'No branches available for the selected zone'),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                       'Reporting Manager *',
                       reportingManagerNames, // Use the filtered list of manager names
                       _selectedManager, validator: (value) {
                     if (value == null ||
-                        value == "---- Select Reporting Manager * ----") {
+                        value == '---- Select Reporting Manager * ----') {
                       return 'Please select a reporting manager';
                     }
                     return null;
@@ -1382,22 +1376,22 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       (value) => setState(() {
                             _selectedManager = value!;
                             selectedManagerRegId =
-                                managerNameToRegIdMap[_selectedManager] ?? "";
+                                managerNameToRegIdMap[_selectedManager] ?? '';
 
                             // Now you can use selectedManagerRegId for saving or other purposes
                             Logger.success(
-                                "Selected manager: $_selectedManager, ID: $selectedManagerRegId");
+                                'Selected manager: $_selectedManager, ID: $selectedManagerRegId');
                           })),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
-                    "Attachments",
+                    'Attachments',
                     style: Appwidget.normalSubTitle(),
                   ),
-                  SizedBox(height: 10),
-                  _buildUploadButton("Profile Picture"),
-                  _buildUploadButton("ID Proof"),
-                  _buildUploadButton("Bank Details"),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 10),
+                  _buildUploadButton('Profile Picture'),
+                  _buildUploadButton('ID Proof'),
+                  _buildUploadButton('Bank Details'),
+                  const SizedBox(height: 20),
                   if (widget.isEditMode) ...[
                     Center(
                       child: ElevatedButton(
@@ -1411,14 +1405,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                         ),
-                        child: Text(
-                          "Save Changes",
+                        child: const Text(
+                          'Save Changes',
                           style:
                               TextStyle(color: Colors.blueAccent, fontSize: 16),
                         ),
@@ -1430,14 +1424,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                         ),
-                        child: Text(
-                          "Submit",
+                        child: const Text(
+                          'Submit',
                           style:
                               TextStyle(color: Colors.blueAccent, fontSize: 16),
                         ),
@@ -1461,17 +1455,18 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           if (!widget.isViewMode)
             ElevatedButton.icon(
               onPressed: () => _pickFile(fileType),
-              icon: Icon(Icons.upload_file),
-              label: Text("Upload $fileType"),
+              icon: const Icon(Icons.upload_file),
+              label: Text('Upload $fileType'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
             ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           if (selectedFiles[fileType] != null)
             Stack(
               children: [
@@ -1479,7 +1474,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                   height: 100,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ClipRRect(
@@ -1493,7 +1488,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                             selectedFiles[fileType],
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              return Center(
+                              return const Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -1515,12 +1510,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     child: InkWell(
                       onTap: () => _removeFile(fileType),
                       child: Container(
-                        padding: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
                           color: Colors.red,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.close,
                           color: Colors.white,
                           size: 16,
@@ -1535,19 +1530,18 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               height: 100,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
-                  width: 1,
+                  color: Colors.white.withValues(alpha: 0.3),
                 ),
               ),
               child: Center(
                 child: Text(
                   widget.isViewMode
-                      ? "No $fileType available"
-                      : "No $fileType uploaded",
-                  style: TextStyle(
+                      ? 'No $fileType available'
+                      : 'No $fileType uploaded',
+                  style: const TextStyle(
                     color: Colors.white70,
                   ),
                 ),

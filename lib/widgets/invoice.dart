@@ -17,7 +17,7 @@ class InvoiceWidget extends StatelessWidget {
   final String currencySymbol;
 
   const InvoiceWidget({
-    Key? key,
+    super.key,
     required this.invoiceNumber,
     required this.bookingNumber,
     required this.paymentStatus,
@@ -32,7 +32,7 @@ class InvoiceWidget extends StatelessWidget {
     required this.tourMembers,
     required this.price,
     this.currencySymbol = '¥',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class InvoiceWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withValues(alpha: 0.3),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 2),
@@ -147,7 +147,7 @@ class InvoiceWidget extends StatelessWidget {
         const SizedBox(height: 12),
         Table(
           columnWidths: const {
-            0: FlexColumnWidth(1),
+            0: FlexColumnWidth(),
             1: FlexColumnWidth(2),
           },
           children: [
@@ -183,7 +183,7 @@ class InvoiceWidget extends StatelessWidget {
           columnWidths: const {
             0: FlexColumnWidth(0.5),
             1: FlexColumnWidth(2),
-            2: FlexColumnWidth(1),
+            2: FlexColumnWidth(),
             3: FlexColumnWidth(0.5),
           },
           children: [
@@ -235,7 +235,7 @@ class InvoiceWidget extends StatelessWidget {
                   ),
                 ],
               );
-            }).toList(),
+            }),
           ],
         ),
       ],
@@ -246,7 +246,7 @@ class InvoiceWidget extends StatelessWidget {
     return Table(
       columnWidths: const {
         0: FlexColumnWidth(2),
-        1: FlexColumnWidth(1),
+        1: FlexColumnWidth(),
       },
       children: [
         _buildTableRow('Price:', '$currencySymbol$price'),
@@ -274,7 +274,6 @@ class InvoiceWidget extends StatelessWidget {
 
   Widget _buildFooterSection() {
     return const Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           '364 – 356, Europe\'s Towers, Paris Plaza Purifim - Gos - 453501',

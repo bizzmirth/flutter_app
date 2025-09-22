@@ -31,7 +31,6 @@ class IsarService {
           PendingTechnoEnterpriseModelSchema,
           PendingBusinessMentorModelSchema
         ],
-        inspector: true,
         directory: dir.path,
       );
       // Logger.success("✅ Isar initialized successfully! Inspector should appear.");
@@ -75,13 +74,13 @@ class IsarService {
         final existingEntity = await isar.collection<T>().get(id);
         if (existingEntity != null) {
           await isar.collection<T>().put(entity);
-          Logger.success("Updated the employee with id:: $id");
+          Logger.success('Updated the employee with id:: $id');
           updated = true;
         }
       });
       return updated;
     } catch (e) {
-      Logger.error("Error updating ${T.toString()}: $e");
+      Logger.error('Error updating ${T.toString()}: $e');
       return false;
     }
   }
@@ -104,16 +103,16 @@ class IsarService {
                   "Updated status to '$newStatus' for ${T.toString()} with id: $id");
               updated = true;
             } catch (e) {
-              Logger.error("Failed to set status: $e");
+              Logger.error('Failed to set status: $e');
             }
           }
         } else {
-          Logger.warning("No ${T.toString()} found with id: $id");
+          Logger.warning('No ${T.toString()} found with id: $id');
         }
       });
       return updated;
     } catch (e) {
-      Logger.error("Error updating status for ${T.toString()}: $e");
+      Logger.error('Error updating status for ${T.toString()}: $e');
       return false;
     }
   }

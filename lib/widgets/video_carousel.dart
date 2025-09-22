@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -7,17 +8,17 @@ class FancyVideoSlider extends StatefulWidget {
   final List<String> videoUrls;
 
   const FancyVideoSlider({
-    Key? key,
+    super.key,
     this.tabHeight = 500,
     this.phoneHeight = 250,
     this.videoUrls = const [
       // "https://testca.uniqbizz.com/api/assets/video/slider/info.mp4",
-      "https://testca.uniqbizz.com/api/assets/video/slider/travel.mp4",
+      'https://testca.uniqbizz.com/api/assets/video/slider/travel.mp4',
     ],
-  }) : super(key: key);
+  });
 
   @override
-  _FancyVideoSliderState createState() => _FancyVideoSliderState();
+  State<FancyVideoSlider> createState() => _FancyVideoSliderState();
 }
 
 class _FancyVideoSliderState extends State<FancyVideoSlider> {
@@ -40,7 +41,7 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 1);
+    _pageController = PageController();
 
     // Initialize with null controllers
     _controllers =
@@ -53,16 +54,18 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
   Future<void> _initializeController(int index) async {
     if (_isDisposed ||
         index >= widget.videoUrls.length ||
-        _controllers[index] != null) return;
+        _controllers[index] != null) {
+      return;
+    }
 
     try {
-      final controller = VideoPlayerController.network(
-        widget.videoUrls[index],
+      final controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoUrls[index]),
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
-      controller.setVolume(0.0);
-      controller.setLooping(true);
+      await controller.setVolume(0.0);
+      await controller.setLooping(true);
 
       await controller.initialize();
 
@@ -73,11 +76,11 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
 
         // Auto-play if it's the current page
         if (index == _currentPage) {
-          controller.play();
+          await controller.play();
         }
       }
     } catch (e) {
-      print('Error initializing video $index: $e');
+      Logger.error('Error initializing video $index: $e');
       // Don't rethrow, just continue
     }
   }
@@ -106,8 +109,9 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
     // Initialize current + adjacent
     _initializeController(newPage);
     if (newPage > 0) _initializeController(newPage - 1);
-    if (newPage < widget.videoUrls.length - 1)
+    if (newPage < widget.videoUrls.length - 1) {
       _initializeController(newPage + 1);
+    }
 
     // Play current video when ready
     if (_controllers[newPage] != null &&
@@ -153,7 +157,7 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
               if (controller == null || !controller.value.isInitialized) {
                 return Container(
                   color: Colors.black,
-                  child: Center(
+                  child: const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
@@ -183,12 +187,12 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
                 (index) => Container(
                   width: 8,
                   height: 8,
-                  margin: EdgeInsets.symmetric(horizontal: 4),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentPage == index
                         ? Colors.white
-                        : Colors.white.withOpacity(0.5),
+                        : Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
               ),

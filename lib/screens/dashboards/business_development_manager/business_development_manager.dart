@@ -39,20 +39,20 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
           children: [
             Container(
               width: double.infinity,
-              color: Color.fromARGB(255, 81, 131, 246),
+              color: const Color.fromARGB(255, 81, 131, 246),
               padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       backgroundImage: AssetImage('assets/user_image.jpg'),
                       radius: 30,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
-                      "Welcome, Business Development Manager!",
+                      'Welcome, Business Development Manager!',
                       style: GoogleFonts.roboto(
                         fontSize: 18,
                         color: Colors.white,
@@ -60,7 +60,7 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                       ),
                     ),
                     Text(
-                      "Manage everything efficiently",
+                      'Manage everything efficiently',
                       style: GoogleFonts.roboto(
                         fontSize: 14,
                         color: Colors.white70,
@@ -74,79 +74,83 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   ListTile(
-                    leading: Icon(Icons.dashboard),
-                    title: Text('Dashboard'),
+                    leading: const Icon(Icons.dashboard),
+                    title: const Text('Dashboard'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => BDMDashboardPage()),
+                            builder: (context) => const BDMDashboardPage()),
                       );
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.home),
-                    title: Text('Home Page'),
+                    leading: const Icon(Icons.home),
+                    title: const Text('Home Page'),
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()),
                       );
                     },
                   ),
                   ExpansionTile(
-                    title: const Text("Payouts"),
+                    title: const Text('Payouts'),
                     leading: const Icon(Icons.payment),
                     children: [
-                      _drawerItem(context, Icons.payment, "Product Payout",
-                          BDMProductPayoutsPage(),
+                      _drawerItem(context, Icons.payment, 'Product Payout',
+                          const BDMProductPayoutsPage(),
                           padding: true),
-                      _drawerItem(context, Icons.payment, "BDM Payouts",
-                          BDMPayoutsPage(),
+                      _drawerItem(context, Icons.payment, 'BDM Payouts',
+                          const BDMPayoutsPage(),
                           padding: true),
                     ],
                   ),
                   ListTile(
-                    leading: Icon(Icons.people),
-                    title: Text('Business Mentor'),
+                    leading: const Icon(Icons.people),
+                    title: const Text('Business Mentor'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ViewBusinessMentorPage()),
+                            builder: (context) =>
+                                const ViewBusinessMentorPage()),
                       );
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.people),
-                    title: Text('Techno Enterprise'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ViewTEPage1()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.people),
-                    title: Text('Travel Consultant'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ViewTCPage1()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.people),
-                    title: Text('Customer'),
+                    leading: const Icon(Icons.people),
+                    title: const Text('Techno Enterprise'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ViewCustomersPage1()),
+                            builder: (context) => const ViewTEPage1()),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.people),
+                    title: const Text('Travel Consultant'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ViewTCPage1()),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.people),
+                    title: const Text('Customer'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ViewCustomersPage1()),
                       );
                     },
                   ),
@@ -157,17 +161,18 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                         ? const EdgeInsets.only(left: 16.0)
                         : EdgeInsets.zero,
                     child: ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.power_settings_new_rounded,
                         color: Colors.red,
                       ),
-                      title: Text("Log Out"),
+                      title: const Text('Log Out'),
                       onTap: () {
                         SharedPrefHelper().removeDetails();
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
-                          (Route<dynamic> route) => false,
+                          MaterialPageRoute(
+                              builder: (context) => const HomePage()),
+                          (route) => false,
                         );
                       },
                     ),
@@ -179,12 +184,12 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             CustomAnimatedSummaryCards(
               cardData: [
                 SummaryCardData(
@@ -201,18 +206,17 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                     icon: Icons.account_balance_wallet),
               ],
             ),
-            SizedBox(height: 20),
-            ProgressTrackerCard(
+            const SizedBox(height: 20),
+            const ProgressTrackerCard(
               totalSteps: 10,
               currentStep: 3,
               message: "Keep going! You're doing great!",
-              progressColor: Colors.blueAccent,
             ),
-            SizedBox(height: 20),
-            ImprovedLineChart(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            const ImprovedLineChart(),
+            const SizedBox(height: 20),
             _buildTopPerformersSection(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildTopPerformersSection1(),
           ],
         ),
@@ -221,8 +225,8 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
   }
 
   Widget _buildTopPerformersSection() {
-    List<Map<String, dynamic>> departments = [
-      {"name": "Business Mentor", "performers": _getDummyPerformers1()},
+    final List<Map<String, dynamic>> departments = [
+      {'name': 'Business Mentor', 'performers': _getDummyPerformers1()},
     ];
 
     return Column(
@@ -230,8 +234,8 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
       children: [
         GridView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 1,
             crossAxisSpacing: 2,
             mainAxisSpacing: 13,
@@ -239,8 +243,8 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
           ),
           itemCount: departments.length,
           itemBuilder: (context, index) {
-            var dept = departments[index];
-            return _buildDepartmentCard(dept["name"], dept["performers"]);
+            final dept = departments[index];
+            return _buildDepartmentCard(dept['name'], dept['performers']);
           },
         ),
       ],
@@ -248,8 +252,8 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
   }
 
   Widget _buildTopPerformersSection1() {
-    List<Map<String, dynamic>> departments = [
-      {"name": "Booking", "performers": _getDummyPerformers2()},
+    final List<Map<String, dynamic>> departments = [
+      {'name': 'Booking', 'performers': _getDummyPerformers2()},
     ];
 
     return Column(
@@ -257,8 +261,8 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
       children: [
         GridView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 1,
             crossAxisSpacing: 2,
             mainAxisSpacing: 13,
@@ -266,8 +270,8 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
           ),
           itemCount: departments.length,
           itemBuilder: (context, index) {
-            var dept = departments[index];
-            return _buildDepartmentCard1(dept["name"], dept["performers"]);
+            final dept = departments[index];
+            return _buildDepartmentCard1(dept['name'], dept['performers']);
           },
         ),
       ],
@@ -280,7 +284,7 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       elevation: 3,
       child: Padding(
-        padding: EdgeInsets.all(25),
+        padding: const EdgeInsets.all(25),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -289,16 +293,17 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                 Expanded(
                   child: Text(
                     "Top $department's",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-            Divider(),
-            Row(
+            const Divider(),
+            const Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 SizedBox(
@@ -308,74 +313,75 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
             ),
             Row(
               children: [
-                Text(
-                  " Ranks",
+                const Text(
+                  ' Ranks',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 15,
                 ),
-                Text(
-                  " Profile Picture",
+                const Text(
+                  ' Profile Picture',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 25,
                 ),
-                Text(
-                  "Full Name",
+                const Text(
+                  'Full Name',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 30,
                 ),
-                Text(
-                  "Registration Date",
+                const Text(
+                  'Registration Date',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
-                Spacer(),
-                Text(
-                  "Count",
+                const Spacer(),
+                const Text(
+                  'Count',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 TextButton.icon(
                   onPressed: null, // 🔒 Button is disabled
-                  icon: Icon(Icons.check_circle, color: Colors.green),
-                  label: Text("Status", style: TextStyle(color: Colors.black)),
+                  icon: const Icon(Icons.check_circle, color: Colors.green),
+                  label: const Text('Status',
+                      style: TextStyle(color: Colors.black)),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
-                Text(
-                  "Active/Inactive",
+                const Text(
+                  'Active/Inactive',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
-                Spacer(),
+                const Spacer(),
               ],
             ),
-            SizedBox(height: 10),
-            Divider(),
+            const SizedBox(height: 10),
+            const Divider(),
             Expanded(
               child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: performers.length,
                 itemBuilder: (context, rank) {
                   return Row(
                     children: [
                       Image.asset(
-                        "assets/${rank + 1}.jpg", // Rank Image
+                        'assets/${rank + 1}.jpg', // Rank Image
                         width: 53,
                         height: 53,
                       ),
-                      SizedBox(width: 40),
+                      const SizedBox(width: 40),
                       CircleAvatar(
                         backgroundImage:
-                            NetworkImage(performers[rank]["image"]!),
+                            NetworkImage(performers[rank]['image']!),
                       ),
-                      SizedBox(width: 55),
+                      const SizedBox(width: 55),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -383,55 +389,57 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                             width:
                                 120, // Set a fixed width to keep all names aligned
                             child: Text(
-                              performers[rank]["name"]!,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              performers[rank]['name']!,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                               overflow: TextOverflow
                                   .ellipsis, // Ensures long names don't break layout
                               maxLines: 1, // Keeps text on a single line
                             ),
                           ),
-                          Text(
-                            "id3445345",
+                          const Text(
+                            'id3445345',
                             style: TextStyle(color: Color(0xFF495057)),
                           ),
                         ],
                       ),
-                      Spacer(),
+                      const Spacer(),
                       SizedBox(
                         width:
                             85, // Adjust width as needed for better alignment
                         child: Text(
-                          performers[rank]["date"]!,
+                          performers[rank]['date']!,
                           textAlign: TextAlign.center, // Center align text
                         ),
                       ),
-                      SizedBox(width: 35),
-                      Spacer(),
+                      const SizedBox(width: 35),
+                      const Spacer(),
                       Center(
-                        child: Text(performers[rank]["count"]!,
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(performers[rank]['count']!,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
                       ),
-                      SizedBox(width: 55),
-                      Text(
-                        "Active",
+                      const SizedBox(width: 55),
+                      const Text(
+                        'Active',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.green),
                       ),
-                      SizedBox(width: 40),
+                      const SizedBox(width: 40),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           // First Box (Green Background)
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.green
-                                  .withOpacity(0.1), // Light green background
+                              color: Colors.green.withValues(
+                                  alpha: 0.1), // Light green background
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(
-                              "0",
+                            child: const Text(
+                              '0',
                               style: TextStyle(
                                 color: Colors.green, // Green text
                                 fontWeight: FontWeight.bold,
@@ -439,25 +447,25 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                             ),
                           ),
 
-                          SizedBox(width: 5), // Space between boxes
+                          const SizedBox(width: 5), // Space between boxes
 
-                          Text("/",
+                          const Text('/',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)), // Separator
 
-                          SizedBox(width: 5), // Space between boxes
+                          const SizedBox(width: 5), // Space between boxes
 
                           // Second Box (Red Background)
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.red
-                                  .withOpacity(0.1), // Light red background
+                              color: Colors.red.withValues(
+                                  alpha: 0.1), // Light red background
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(
-                              "0",
+                            child: const Text(
+                              '0',
                               style: TextStyle(
                                 color: Colors.red, // Red text
                                 fontWeight: FontWeight.bold,
@@ -466,7 +474,7 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                           ),
                         ],
                       ),
-                      SizedBox(width: 40),
+                      const SizedBox(width: 40),
                     ],
                   );
                 },
@@ -500,7 +508,7 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       elevation: 3,
       child: Padding(
-        padding: EdgeInsets.all(25),
+        padding: const EdgeInsets.all(25),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -509,16 +517,17 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                 Expanded(
                   child: Text(
                     "Current $department's",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-            Divider(),
-            Row(
+            const Divider(),
+            const Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 SizedBox(
@@ -526,67 +535,67 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                 )
               ],
             ),
-            Row(
+            const Row(
               children: [
                 SizedBox(
                   width: 15,
                 ),
                 Text(
-                  " Booking ID",
+                  ' Booking ID',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   width: 25,
                 ),
                 Text(
-                  " Customer Name",
+                  ' Customer Name',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   width: 55,
                 ),
                 Text(
-                  "Package Name",
+                  'Package Name',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   width: 25,
                 ),
                 Text(
-                  "Amount",
+                  'Amount',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   width: 25,
                 ),
                 Text(
-                  "Booking Date",
+                  'Booking Date',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   width: 15,
                 ),
                 Text(
-                  "Travel Date",
+                  'Travel Date',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 Spacer(),
               ],
             ),
-            SizedBox(height: 10),
-            Divider(),
+            const SizedBox(height: 10),
+            const Divider(),
             Expanded(
               child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: performers.length,
                 itemBuilder: (context, rank) {
                   return Row(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 15,
                       ),
-                      Text(performers[rank]["bookingid"]!),
-                      SizedBox(
+                      Text(performers[rank]['bookingid']!),
+                      const SizedBox(
                         width: 45,
                       ),
                       Column(
@@ -596,42 +605,43 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                             width:
                                 120, // Set a fixed width to keep all names aligned
                             child: Text(
-                              performers[rank]["name"]!,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              performers[rank]['name']!,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                               overflow: TextOverflow
                                   .ellipsis, // Ensures long names don't break layout
                               maxLines: 1, // Keeps text on a single line
                             ),
                           ),
                           Text(
-                            performers[rank]["custid"]!,
-                            style: TextStyle(color: Color(0xFF495057)),
+                            performers[rank]['custid']!,
+                            style: const TextStyle(color: Color(0xFF495057)),
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 50,
                       ),
                       Text(
-                        performers[rank]["pname"]!,
+                        performers[rank]['pname']!,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 50,
                       ),
                       Text(
                         "₹${performers[rank]["amt"]!}",
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 36,
                       ),
                       Text(
-                        performers[rank]["bdate"]!,
+                        performers[rank]['bdate']!,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       Text(
-                        performers[rank]["tdate"]!,
+                        performers[rank]['tdate']!,
                       ),
                     ],
                   );
@@ -645,17 +655,18 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white, // White text
-                  backgroundColor:
-                      Color.fromARGB(255, 81, 131, 246), // Same blue as header
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  textStyle:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  backgroundColor: const Color.fromARGB(
+                      255, 81, 131, 246), // Same blue as header
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  textStyle: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
                   elevation: 5, // Slight shadow for better UI feel
                 ),
-                child: Text('View More'),
+                child: const Text('View More'),
               ),
             ),
           ],
@@ -666,7 +677,7 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
 
   Widget _buildHeader() {
     return Text(
-      "Welcome, User!",
+      'Welcome, User!',
       style: GoogleFonts.lato(
         fontSize: 22,
         fontWeight: FontWeight.w700,
@@ -680,34 +691,34 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
 List<Map<String, String>> _getDummyPerformers1() {
   return [
     {
-      "name": "John Doe",
-      "image": "https://randomuser.me/api/portraits/men/1.jpg",
-      "count": "30",
-      "date": "26/06/2024"
+      'name': 'John Doe',
+      'image': 'https://randomuser.me/api/portraits/men/1.jpg',
+      'count': '30',
+      'date': '26/06/2024'
     },
     {
-      "name": "Jane Smith",
-      "image": "https://randomuser.me/api/portraits/women/1.jpg",
-      "count": "30",
-      "date": "26/06/2024"
+      'name': 'Jane Smith',
+      'image': 'https://randomuser.me/api/portraits/women/1.jpg',
+      'count': '30',
+      'date': '26/06/2024'
     },
     {
-      "name": "Alice Brown",
-      "image": "https://randomuser.me/api/portraits/women/2.jpg",
-      "count": "30",
-      "date": "26/06/2024"
+      'name': 'Alice Brown',
+      'image': 'https://randomuser.me/api/portraits/women/2.jpg',
+      'count': '30',
+      'date': '26/06/2024'
     },
     {
-      "name": "Bob White",
-      "image": "https://randomuser.me/api/portraits/men/2.jpg",
-      "count": "30",
-      "date": "26/06/2024"
+      'name': 'Bob White',
+      'image': 'https://randomuser.me/api/portraits/men/2.jpg',
+      'count': '30',
+      'date': '26/06/2024'
     },
     {
-      "name": "Charlie Black",
-      "image": "https://randomuser.me/api/portraits/men/3.jpg",
-      "count": "30",
-      "date": "26/06/2024"
+      'name': 'Charlie Black',
+      'image': 'https://randomuser.me/api/portraits/men/3.jpg',
+      'count': '30',
+      'date': '26/06/2024'
     },
   ];
 }
@@ -715,49 +726,49 @@ List<Map<String, String>> _getDummyPerformers1() {
 List<Map<String, String>> _getDummyPerformers2() {
   return [
     {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
+      'bookingid': 'bid2344234',
+      'name': 'John Doe',
+      'custid': 'cid234',
+      'pname': 'John Doe',
+      'amt': '3000',
+      'bdate': '26/06/2024',
+      'tdate': '26/06/2024'
     },
     {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
+      'bookingid': 'bid2344234',
+      'name': 'John Doe',
+      'custid': 'cid234',
+      'pname': 'John Doe',
+      'amt': '3000',
+      'bdate': '26/06/2024',
+      'tdate': '26/06/2024'
     },
     {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
+      'bookingid': 'bid2344234',
+      'name': 'John Doe',
+      'custid': 'cid234',
+      'pname': 'John Doe',
+      'amt': '3000',
+      'bdate': '26/06/2024',
+      'tdate': '26/06/2024'
     },
     {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
+      'bookingid': 'bid2344234',
+      'name': 'John Doe',
+      'custid': 'cid234',
+      'pname': 'John Doe',
+      'amt': '3000',
+      'bdate': '26/06/2024',
+      'tdate': '26/06/2024'
     },
     {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
+      'bookingid': 'bid2344234',
+      'name': 'John Doe',
+      'custid': 'cid234',
+      'pname': 'John Doe',
+      'amt': '3000',
+      'bdate': '26/06/2024',
+      'tdate': '26/06/2024'
     },
   ];
 }

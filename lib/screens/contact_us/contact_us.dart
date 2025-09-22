@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/contact_us_controller.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/contact_us_controller.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/google_maps_widget.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -6,14 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import '../../utils/constants.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 
 class ContactUsPage extends StatefulWidget {
   const ContactUsPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _ContactUsPageState createState() => _ContactUsPageState();
+  State<ContactUsPage> createState() => _ContactUsPageState();
 }
 
 class _ContactUsPageState extends State<ContactUsPage> {
@@ -29,10 +28,10 @@ class _ContactUsPageState extends State<ContactUsPage> {
     super.initState();
     _controller = WebViewController();
     _controller.loadRequest(Uri.parse(
-        "https://www.openstreetmap.org/export/embed.html?bbox=144.95000000000002%2C-37.82000000000001%2C144.96000000000004%2C-37.81000000000001&layer=mapnik"));
+        'https://www.openstreetmap.org/export/embed.html?bbox=144.95000000000002%2C-37.82000000000001%2C144.96000000000004%2C-37.81000000000001&layer=mapnik'));
   }
 
-  void submitMessageForm(BuildContext context) async {
+  Future<void> submitMessageForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       // ✅ Only runs if all validations pass
       final controller =
@@ -41,8 +40,8 @@ class _ContactUsPageState extends State<ContactUsPage> {
       final String email = emailController.text;
       final String message = messageController.text;
 
-      Logger.success("Send message $name, $email and $message");
-      controller.contactUs(context, name, email, message);
+      Logger.success('Send message $name, $email and $message');
+      await controller.contactUs(context, name, email, message);
       clearInputFields();
     }
   }
@@ -83,11 +82,11 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   const SizedBox(height: 10),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 10,
                         ),
                       ],
@@ -97,19 +96,19 @@ class _ContactUsPageState extends State<ContactUsPage> {
                       child: Column(
                         children: [
                           contactInfo(
-                              Icons.phone, "+91 8010892265 / 0832-2438989"),
+                              Icons.phone, '+91 8010892265 / 0832-2438989'),
                           divider(),
-                          contactInfo(Icons.email, "support@uniqbizz.com"),
+                          contactInfo(Icons.email, 'support@uniqbizz.com'),
                           divider(),
                           contactInfo(Icons.location_on,
-                              "304 - 306, Dempo Towers, Patto Plaza Panaji - Goa - 403001"),
+                              '304 - 306, Dempo Towers, Patto Plaza Panaji - Goa - 403001'),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 25),
                   Text(
-                    "Send Us a Message",
+                    'Send Us a Message',
                     style: GoogleFonts.poppins(
                         fontSize: 22,
                         fontWeight: FontWeight.w600,
@@ -117,7 +116,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   ),
                   const SizedBox(height: 10),
                   controller.isLoading
-                      ? SizedBox(
+                      ? const SizedBox(
                           height: 400,
                           child: Center(
                             child: CircularProgressIndicator(
@@ -128,7 +127,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                       : Column(
                           children: [
                             customInputField(
-                                Icons.person, "Your Name", nameController,
+                                Icons.person, 'Your Name', nameController,
                                 validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your name';
@@ -137,7 +136,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                             }),
                             const SizedBox(height: 15),
                             customInputField(
-                                Icons.email, "Your Email", emailController,
+                                Icons.email, 'Your Email', emailController,
                                 validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your email';
@@ -145,7 +144,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                               return null;
                             }),
                             const SizedBox(height: 15),
-                            customInputField(Icons.message, "Your Message",
+                            customInputField(Icons.message, 'Your Message',
                                 messageController, validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter a message';
@@ -168,7 +167,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                                   ),
                                 ),
                                 child: const Text(
-                                  "Send Message",
+                                  'Send Message',
                                   style: TextStyle(
                                       color: Colors.blueAccent, fontSize: 16),
                                 ),

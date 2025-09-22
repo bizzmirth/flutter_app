@@ -1,6 +1,6 @@
-import 'package:bizzmirth_app/controllers/admin_customer_controller.dart';
-import 'package:bizzmirth_app/data_source/admin_cust_pending_data_source.dart';
-import 'package:bizzmirth_app/data_source/admin_cust_registered_data_source.dart';
+import 'package:bizzmirth_app/controllers/admin_controller/admin_customer_controller.dart';
+import 'package:bizzmirth_app/data_source/admin_data_sources/admin_cust_pending_data_source.dart';
+import 'package:bizzmirth_app/data_source/admin_data_sources/admin_cust_registered_data_source.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/customer/add_customer.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
@@ -51,25 +51,25 @@ class _CustPageState extends State<CustPage> {
             elevation: 0,
           ),
           body: controller.isLoading
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        Divider(thickness: 1, color: Colors.black26),
-                        Center(
+                        const Divider(thickness: 1, color: Colors.black26),
+                        const Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
-                              "All Pending Customer List:",
+                              'All Pending Customer List:',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
-                        Divider(thickness: 1, color: Colors.black26),
-                        FilterBar(),
+                        const Divider(thickness: 1, color: Colors.black26),
+                        const FilterBar(),
                         Card(
                           elevation: 5,
                           shape: RoundedRectangleBorder(
@@ -82,20 +82,20 @@ class _CustPageState extends State<CustPage> {
                             child: PaginatedDataTable(
                               columnSpacing: 30,
                               dataRowMinHeight: 40,
-                              columns: [
-                                DataColumn(label: Text("Image")),
-                                DataColumn(label: Text("ID")),
-                                DataColumn(label: Text("Full Name")),
-                                DataColumn(label: Text("Ref. ID")),
-                                DataColumn(label: Text("Ref. Name")),
-                                DataColumn(label: Text("Joining Date")),
-                                DataColumn(label: Text("Status")),
-                                DataColumn(label: Text("Action"))
+                              columns: const [
+                                DataColumn(label: Text('Image')),
+                                DataColumn(label: Text('ID')),
+                                DataColumn(label: Text('Full Name')),
+                                DataColumn(label: Text('Ref. ID')),
+                                DataColumn(label: Text('Ref. Name')),
+                                DataColumn(label: Text('Joining Date')),
+                                DataColumn(label: Text('Status')),
+                                DataColumn(label: Text('Action'))
                               ],
                               source: MyAdminCustPendingDataSource(
                                   context, controller.pendingCustomer),
                               rowsPerPage: _rowsPerPage,
-                              availableRowsPerPage: [5, 10, 15, 20, 25],
+                              availableRowsPerPage: const [5, 10, 15, 20, 25],
                               onRowsPerPageChanged: (value) {
                                 if (value != null) {
                                   setState(() {
@@ -107,18 +107,18 @@ class _CustPageState extends State<CustPage> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 35),
-                        Divider(thickness: 1, color: Colors.black26),
-                        Padding(
+                        const SizedBox(height: 35),
+                        const Divider(thickness: 1, color: Colors.black26),
+                        const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Text(
-                            "All Registered Customer List:",
+                            'All Registered Customer List:',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
-                        Divider(thickness: 1, color: Colors.black26),
-                        FilterBar(),
+                        const Divider(thickness: 1, color: Colors.black26),
+                        const FilterBar(),
                         Card(
                           elevation: 5,
                           shape: RoundedRectangleBorder(
@@ -131,21 +131,21 @@ class _CustPageState extends State<CustPage> {
                             child: PaginatedDataTable(
                               columnSpacing: 30,
                               dataRowMinHeight: 40,
-                              columns: [
-                                DataColumn(label: Text("Image")),
-                                DataColumn(label: Text("ID")),
-                                DataColumn(label: Text("Full Name")),
-                                DataColumn(label: Text("Ref. ID")),
-                                DataColumn(label: Text("Ref. Name")),
-                                DataColumn(label: Text("Type")),
-                                DataColumn(label: Text("Joining Date")),
-                                DataColumn(label: Text("Status")),
-                                DataColumn(label: Text("Action"))
+                              columns: const [
+                                DataColumn(label: Text('Image')),
+                                DataColumn(label: Text('ID')),
+                                DataColumn(label: Text('Full Name')),
+                                DataColumn(label: Text('Ref. ID')),
+                                DataColumn(label: Text('Ref. Name')),
+                                DataColumn(label: Text('Type')),
+                                DataColumn(label: Text('Joining Date')),
+                                DataColumn(label: Text('Status')),
+                                DataColumn(label: Text('Action'))
                               ],
                               source: MyAdminCustRegDataSource(
                                   context, controller.registeredCustomer),
                               rowsPerPage: _rowsPerPage1,
-                              availableRowsPerPage: [5, 10, 15, 20, 25],
+                              availableRowsPerPage: const [5, 10, 15, 20, 25],
                               onRowsPerPageChanged: (value) {
                                 if (value != null) {
                                   setState(() {
@@ -165,15 +165,15 @@ class _CustPageState extends State<CustPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddcustPage()),
+                MaterialPageRoute(builder: (context) => const AddcustPage()),
               );
             },
             backgroundColor: const Color.fromARGB(255, 153, 198, 250),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(50),
             ),
-            tooltip: "Add New Mentor",
-            child: Icon(Icons.add, size: 30),
+            tooltip: 'Add New Mentor',
+            child: const Icon(Icons.add, size: 30),
           ),
         );
       },

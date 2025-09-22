@@ -1,6 +1,4 @@
-import 'dart:ui';
-
-import 'package:bizzmirth_app/controllers/customer_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -12,7 +10,7 @@ class ImprovedLineChart extends StatefulWidget {
   const ImprovedLineChart({super.key, this.initialYear});
 
   @override
-  _ImprovedLineChartState createState() => _ImprovedLineChartState();
+  State<ImprovedLineChart> createState() => _ImprovedLineChartState();
 }
 
 class _ImprovedLineChartState extends State<ImprovedLineChart> {
@@ -38,17 +36,17 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
       final customerController =
           Provider.of<CustomerController>(context, listen: false);
       if (customerController.isLoading) {
-        await Future.delayed(Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 500));
       }
 
-      String? regDate = await SharedPrefHelper().getCurrentUserRegDate();
+      final String? regDate = await SharedPrefHelper().getCurrentUserRegDate();
 
       Logger.warning(
-          "Registration date from SharedPref: $regDate. Registration date from Parent ${customerController.userRegDate}");
+          'Registration date from SharedPref: $regDate. Registration date from Parent ${customerController.userRegDate}');
       if (regDate == null || regDate.isEmpty) {
         Logger.info(
             'Registration date not available yet, using current year as fallback');
-        int currentYear = DateTime.now().year;
+        final int currentYear = DateTime.now().year;
         setState(() {
           availableYears = [currentYear.toString()];
           selectedYear = currentYear.toString();
@@ -59,7 +57,7 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
         }
         return;
       }
-      List<String> dateParts = regDate.split('-');
+      final List<String> dateParts = regDate.split('-');
       if (dateParts.length != 3) {
         throw Exception(
             'Invalid date format: $regDate. Expected format: DD-MM-YYYY or YYYY-MM-DD');
@@ -72,8 +70,8 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
         registrationYear = int.parse(dateParts[2]);
       }
 
-      int currentYear = DateTime.now().year;
-      List<String> years = [];
+      final int currentYear = DateTime.now().year;
+      final List<String> years = [];
       for (int year = registrationYear; year <= currentYear; year++) {
         years.add(year.toString());
       }
@@ -138,9 +136,9 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
   int getMaxMonth() {
     if (selectedYear == null) return 12;
 
-    int currentYear = DateTime.now().year;
-    int currentMonth = DateTime.now().month;
-    int selectedYearInt = int.parse(selectedYear!);
+    final int currentYear = DateTime.now().year;
+    final int currentMonth = DateTime.now().month;
+    final int selectedYearInt = int.parse(selectedYear!);
 
     // If selected year is current year, show only up to current month
     if (selectedYearInt == currentYear) {
@@ -163,34 +161,34 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           elevation: 3,
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Text(
-                      "Performance Overview",
+                    const Text(
+                      'Performance Overview',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     if (hasError)
                       IconButton(
-                        icon: Icon(Icons.refresh, color: Colors.orange),
+                        icon: const Icon(Icons.refresh, color: Colors.orange),
                         onPressed: _retryLoadAvailableYears,
                         tooltip: 'Retry loading data',
                       ),
                     if (isLoading)
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     else if (availableYears.isNotEmpty)
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
                           borderRadius: BorderRadius.circular(8),
@@ -199,14 +197,14 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: selectedYear,
-                            hint: Text("Select Year"),
-                            items: availableYears.map((String year) {
+                            hint: const Text('Select Year'),
+                            items: availableYears.map((year) {
                               return DropdownMenuItem<String>(
                                 value: year,
                                 child: Text(year),
                               );
                             }).toList(),
-                            onChanged: (String? newValue) async {
+                            onChanged: (newValue) async {
                               setState(() {
                                 selectedYear = newValue;
                               });
@@ -216,21 +214,22 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                                     .apiGetChartData(selectedYear!);
                               }
                             },
-                            icon:
-                                Icon(Icons.arrow_drop_down, color: Colors.grey),
-                            style: TextStyle(color: Colors.black, fontSize: 14),
+                            icon: const Icon(Icons.arrow_drop_down,
+                                color: Colors.grey),
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 14),
                           ),
                         ),
                       ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 // Show error message if there's an error
                 if (hasError && errorMessage != null)
                   Container(
-                    padding: EdgeInsets.all(12),
-                    margin: EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 10),
                     decoration: BoxDecoration(
                       color: Colors.orange.shade50,
                       borderRadius: BorderRadius.circular(8),
@@ -238,8 +237,9 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.warning, color: Colors.orange, size: 20),
-                        SizedBox(width: 8),
+                        const Icon(Icons.warning,
+                            color: Colors.orange, size: 20),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             'Using fallback data. ${errorMessage!}',
@@ -253,7 +253,7 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
 
                 // Chart area
                 if (customerController.isLoading)
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 400,
                     child: Center(
@@ -277,9 +277,7 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                                     .reduce((a, b) => a > b ? a : b) +
                                 2
                             : 10,
-                        gridData: FlGridData(
-                          show: true,
-                          drawVerticalLine: true,
+                        gridData: const FlGridData(
                           verticalInterval: 1,
                           horizontalInterval: 2,
                         ),
@@ -290,18 +288,16 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                               reservedSize: 40,
                               interval: 2,
                               getTitlesWidget: (value, _) => Padding(
-                                padding: EdgeInsets.only(right: 18.0),
+                                padding: const EdgeInsets.only(right: 18.0),
                                 child: Text(
                                   value.toInt().toString(),
-                                  style: TextStyle(fontSize: 12),
+                                  style: const TextStyle(fontSize: 12),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
                             ),
                           ),
-                          rightTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
+                          rightTitles: const AxisTitles(),
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
@@ -310,21 +306,19 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                                 // Only show month labels up to maxMonth
                                 if (value.toInt() <= maxMonth) {
                                   return Padding(
-                                    padding: EdgeInsets.only(top: 6.0),
+                                    padding: const EdgeInsets.only(top: 6.0),
                                     child: Text(
                                       getMonthName(value.toInt()),
-                                      style: TextStyle(fontSize: 12),
+                                      style: const TextStyle(fontSize: 12),
                                       textAlign: TextAlign.center,
                                     ),
                                   );
                                 }
-                                return SizedBox.shrink();
+                                return const SizedBox.shrink();
                               },
                             ),
                           ),
-                          topTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
+                          topTitles: const AxisTitles(),
                         ),
                         borderData: FlBorderData(
                           show: true,
@@ -333,7 +327,6 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                         lineBarsData: [
                           LineChartBarData(
                             spots: chartData,
-                            isCurved: false,
                             color: Colors.blueAccent,
                             barWidth: 4,
                             isStrokeCapRound: true,
@@ -341,7 +334,7 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                               show: true,
                               gradient: LinearGradient(
                                 colors: [
-                                  Colors.blue.withOpacity(0.3),
+                                  Colors.blue.withValues(alpha: 0.3),
                                   Colors.transparent,
                                 ],
                                 begin: Alignment.topCenter,
@@ -349,7 +342,6 @@ class _ImprovedLineChartState extends State<ImprovedLineChart> {
                               ),
                             ),
                             dotData: FlDotData(
-                              show: true,
                               getDotPainter: (spot, percent, barData, index) =>
                                   FlDotCirclePainter(
                                 radius: 4,

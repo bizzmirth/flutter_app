@@ -8,28 +8,29 @@ class BookNowPage extends StatefulWidget {
   const BookNowPage({super.key});
 
   @override
-  _BookNowPageState createState() => _BookNowPageState();
+  State<BookNowPage> createState() => _BookNowPageState();
 }
 
 class _BookNowPageState extends State<BookNowPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  String selectedCountryCode = "+91";
+  String selectedCountryCode = '+91';
   TextEditingController phoneController = TextEditingController();
   TextEditingController tourDateController = TextEditingController();
   TextEditingController adultsController = TextEditingController();
   TextEditingController childrenController = TextEditingController();
   TextEditingController infantController = TextEditingController();
   TextEditingController couponController = TextEditingController();
-  String selectedCoupon = "";
+  String selectedCoupon = '';
   double basePrice = 5000.0;
   double totalPrice = 5000.0;
-  List<String> availableCoupons = ["DISCOUNT10", "SAVE20", "OFFER30"];
-  String couponError = "";
-  String invalidCouponMessage = "";
+  List<String> availableCoupons = ['DISCOUNT10', 'SAVE20', 'OFFER30'];
+  String couponError = '';
+  String invalidCouponMessage = '';
 
   Widget _buildDropdown(String label, List<String> items) {
-    String defaultOption = "---- Select $label ----"; // Default placeholder
+    final String defaultOption =
+        '---- Select $label ----'; // Default placeholder
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -38,7 +39,8 @@ class _BookNowPageState extends State<BookNowPage> {
         items: [
           DropdownMenuItem(
             value: defaultOption, // Placeholder value
-            child: Text(defaultOption, style: TextStyle(color: Colors.white)),
+            child: Text(defaultOption,
+                style: const TextStyle(color: Colors.white)),
           ),
           ...items.map((e) => DropdownMenuItem(
               value: e,
@@ -53,13 +55,14 @@ class _BookNowPageState extends State<BookNowPage> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8)),
+              color: const Color.fromARGB(255, 255, 255, 255)
+                  .withValues(alpha: 0.8)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.2),
+          fillColor: Colors.white.withValues(alpha: 0.2),
         ),
         dropdownColor: const Color.fromARGB(255, 129, 129, 129),
       ),
@@ -71,24 +74,24 @@ class _BookNowPageState extends State<BookNowPage> {
       if (availableCoupons.contains(couponCode)) {
         selectedCoupon = couponCode;
         totalPrice = basePrice;
-        if (couponCode == "DISCOUNT10") {
+        if (couponCode == 'DISCOUNT10') {
           totalPrice *= 0.9;
-        } else if (couponCode == "SAVE20") {
+        } else if (couponCode == 'SAVE20') {
           totalPrice *= 0.8;
-        } else if (couponCode == "OFFER30") {
+        } else if (couponCode == 'OFFER30') {
           totalPrice *= 0.7;
         }
-        invalidCouponMessage = ""; // Clear error message
+        invalidCouponMessage = ''; // Clear error message
         Navigator.pop(context);
       } else {
-        invalidCouponMessage = "Invalid Coupon";
+        invalidCouponMessage = 'Invalid Coupon';
       }
     });
   }
 
   void removeCoupon() {
     setState(() {
-      selectedCoupon = "";
+      selectedCoupon = '';
       totalPrice = basePrice;
     });
   }
@@ -120,16 +123,16 @@ class _BookNowPageState extends State<BookNowPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Book Your Tour",
+                'Book Your Tour',
                 style: Appwidget.poppinsHeadline(),
               ),
               const SizedBox(height: 20),
               _buildDropdown('Customer ID *',
                   ['78687676 Subhash', '78687676 Subhash', '78687676 Subhash']),
               const SizedBox(height: 10),
-              _customInputField(Icons.person, "Full Name"),
+              _customInputField(Icons.person, 'Full Name'),
               const SizedBox(height: 15),
-              _customInputField(Icons.email, "Email ID"),
+              _customInputField(Icons.email, 'Email ID'),
               const SizedBox(height: 15),
               _customPhoneNumberField(
                 selectedCountryCode: selectedCountryCode,
@@ -141,21 +144,21 @@ class _BookNowPageState extends State<BookNowPage> {
                 phoneController: phoneController,
               ),
               const SizedBox(height: 15),
-              _customDatePicker(context, Icons.date_range, "Tour Date"),
+              _customDatePicker(context, Icons.date_range, 'Tour Date'),
               const SizedBox(height: 15),
               _customTravelersInputRow(
                   Icons.group,
-                  "Adults",
+                  'Adults',
                   adultsController,
-                  "12+ Years",
+                  '12+ Years',
                   Icons.child_care,
-                  "Children",
+                  'Children',
                   childrenController,
-                  "3-11 Years",
+                  '3-11 Years',
                   Icons.child_care,
-                  "Infants",
+                  'Infants',
                   infantController,
-                  "Under 2 Years"),
+                  'Under 2 Years'),
               const SizedBox(height: 25),
               _pricingSection(),
               const SizedBox(height: 15),
@@ -167,10 +170,10 @@ class _BookNowPageState extends State<BookNowPage> {
                     onPressed: removeCoupon,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.redAccent,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
                     ),
-                    child: Text("Remove Coupon",
+                    child: const Text('Remove Coupon',
                         style: TextStyle(color: Colors.white, fontSize: 16)),
                   ),
                 ),
@@ -178,15 +181,17 @@ class _BookNowPageState extends State<BookNowPage> {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    int adultsCount = int.tryParse(adultsController.text) ?? 0;
-                    int childrenCount =
+                    final int adultsCount =
+                        int.tryParse(adultsController.text) ?? 0;
+                    final int childrenCount =
                         int.tryParse(childrenController.text) ?? 0;
-                    int infantCount = int.tryParse(infantController.text) ?? 0;
+                    final int infantCount =
+                        int.tryParse(infantController.text) ?? 0;
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
-                            "Your booking request has been submitted....Kindly Proceed with adding Booking Details"),
+                            'Your booking request has been submitted....Kindly Proceed with adding Booking Details'),
                         duration: Duration(seconds: 2),
                       ),
                     );
@@ -198,13 +203,14 @@ class _BookNowPageState extends State<BookNowPage> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                  child: Text(
-                    "Confirm Booking",
+                  child: const Text(
+                    'Confirm Booking',
                     style: TextStyle(color: Colors.blueAccent, fontSize: 16),
                   ),
                 ),
@@ -218,16 +224,16 @@ class _BookNowPageState extends State<BookNowPage> {
 
   Widget _pricingSection() {
     return Container(
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Pricing Details",
+          const Text(
+            'Pricing Details',
             style: TextStyle(
               fontSize: 20,
               color: Colors.white,
@@ -235,18 +241,17 @@ class _BookNowPageState extends State<BookNowPage> {
             ),
           ),
           const SizedBox(height: 10),
-          _pricingRow("Base Price", "₹${basePrice.toStringAsFixed(2)}"),
+          _pricingRow('Base Price', '₹${basePrice.toStringAsFixed(2)}'),
           if (selectedCoupon.isNotEmpty) ...[
             const SizedBox(height: 5),
-            _pricingRow("Coupon Applied", "-$selectedCoupon",
+            _pricingRow('Coupon Applied', '-$selectedCoupon',
                 color: Colors.greenAccent),
           ],
-          Divider(color: Colors.white54),
+          const Divider(color: Colors.white54),
           _pricingRow(
-            "Final Price",
-            "₹${totalPrice.toStringAsFixed(2)}",
+            'Final Price',
+            '₹${totalPrice.toStringAsFixed(2)}',
             isBold: true,
-            color: const Color.fromARGB(255, 255, 255, 255),
           ),
         ],
       ),
@@ -286,15 +291,15 @@ class _BookNowPageState extends State<BookNowPage> {
           backgroundColor: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shadowColor: Colors.black.withOpacity(0.1),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shadowColor: Colors.black.withValues(alpha: 0.1),
           elevation: 3,
         ),
         child: Text(
           selectedCoupon.isNotEmpty
-              ? "Coupon Applied: $selectedCoupon"
-              : "Apply Coupon",
-          style: TextStyle(
+              ? 'Coupon Applied: $selectedCoupon'
+              : 'Apply Coupon',
+          style: const TextStyle(
             color: Colors.blueAccent,
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -308,17 +313,17 @@ class _BookNowPageState extends State<BookNowPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Coupon"),
+        title: const Text('Coupon'),
         content: selectedCoupon.isNotEmpty
             ? Text(
                 "You've already applied: $selectedCoupon. Would you like to remove or change it?",
                 textAlign: TextAlign.center,
               )
-            : Text("Apply a discount coupon to your order."),
+            : const Text('Apply a discount coupon to your order.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Cancel"),
+            child: const Text('Cancel'),
           ),
           if (selectedCoupon.isNotEmpty) ...[
             TextButton(
@@ -326,14 +331,15 @@ class _BookNowPageState extends State<BookNowPage> {
                 removeCoupon();
                 Navigator.pop(context);
               },
-              child: Text("Remove Coupon", style: TextStyle(color: Colors.red)),
+              child: const Text('Remove Coupon',
+                  style: TextStyle(color: Colors.red)),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 _showApplyCouponDialog();
               },
-              child: Text("Change Coupon"),
+              child: const Text('Change Coupon'),
             ),
           ] else
             TextButton(
@@ -341,7 +347,7 @@ class _BookNowPageState extends State<BookNowPage> {
                 Navigator.pop(context);
                 _showApplyCouponDialog();
               },
-              child: Text("Apply Coupon"),
+              child: const Text('Apply Coupon'),
             ),
         ],
       ),
@@ -351,21 +357,21 @@ class _BookNowPageState extends State<BookNowPage> {
   void _showApplyCouponDialog() {
     couponController.clear(); // Clear input field every time popup opens
     setState(() {
-      invalidCouponMessage = ""; // Clear error message
+      invalidCouponMessage = ''; // Clear error message
     });
 
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text("Apply Coupon"),
+          title: const Text('Apply Coupon'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: couponController,
-                decoration: InputDecoration(
-                  labelText: "Enter Coupon Code",
+                decoration: const InputDecoration(
+                  labelText: 'Enter Coupon Code',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -374,7 +380,7 @@ class _BookNowPageState extends State<BookNowPage> {
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
                     invalidCouponMessage,
-                    style: TextStyle(color: Colors.red),
+                    style: const TextStyle(color: Colors.red),
                   ),
                 ),
               const SizedBox(height: 10),
@@ -392,7 +398,7 @@ class _BookNowPageState extends State<BookNowPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel"),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -400,7 +406,7 @@ class _BookNowPageState extends State<BookNowPage> {
                   applyCoupon(couponController.text);
                 });
               },
-              child: Text("Apply"),
+              child: const Text('Apply'),
             ),
           ],
         ),
@@ -420,19 +426,19 @@ class _BookNowPageState extends State<BookNowPage> {
           children: [
             // Country Code Dropdown
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: DropdownButton<String>(
                 value: selectedCountryCode,
-                onChanged: (String? newValue) {
+                onChanged: (newValue) {
                   if (newValue != null) {
                     onCountryCodeChanged(newValue);
                   }
                 },
-                items: ["+91", "+1", "+44", "+61", "+971"].map((String value) {
+                items: ['+91', '+1', '+44', '+61', '+971'].map((value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Container(
@@ -440,16 +446,16 @@ class _BookNowPageState extends State<BookNowPage> {
                           50, // Adjust this value to reduce the width of each item
                       alignment: Alignment.center,
                       child: Text(value,
-                          style: TextStyle(
-                              color: const Color.fromARGB(255, 255, 255, 255))),
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 255, 255, 255))),
                     ),
                   );
                 }).toList(),
                 dropdownColor: const Color.fromARGB(255, 83, 83, 83),
-                underline: SizedBox(),
+                underline: const SizedBox(),
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             // Phone Number Input
             Expanded(
               child: TextField(
@@ -457,18 +463,19 @@ class _BookNowPageState extends State<BookNowPage> {
                 keyboardType: TextInputType.phone,
                 maxLength: 10, // Limit to typical phone number length
                 style:
-                    TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
+                    const TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
                 decoration: InputDecoration(
-                  labelText: "Enter phone number",
-                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-                  prefixIcon: Icon(Icons.phone, color: Colors.white),
+                  labelText: 'Enter phone number',
+                  labelStyle:
+                      TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+                  prefixIcon: const Icon(Icons.phone, color: Colors.white),
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.2),
+                  fillColor: Colors.white.withValues(alpha: 0.2),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  counterText: "", // Hide character counter
+                  counterText: '', // Hide character counter
                 ),
               ),
             ),
@@ -482,7 +489,7 @@ class _BookNowPageState extends State<BookNowPage> {
   Widget _customInputField(IconData icon, String label, {int maxLines = 1}) {
     return TextField(
       maxLines: maxLines,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         // ignore: deprecated_member_use
@@ -508,11 +515,11 @@ class _BookNowPageState extends State<BookNowPage> {
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label, // Keeps label inside without moving
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
 
         prefixIcon: Icon(icon, color: Colors.white),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white.withValues(alpha: 0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -528,38 +535,36 @@ class _BookNowPageState extends State<BookNowPage> {
   }
 
   Widget _customDatePicker(BuildContext context, IconData icon, String label) {
-    TextEditingController dateController = TextEditingController();
+    final TextEditingController dateController = TextEditingController();
 
     return StatefulBuilder(
       builder: (context, setState) {
         return TextField(
           controller: dateController,
           readOnly: true, // Prevent manual input
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+            labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
             prefixIcon: Icon(icon, color: Colors.white),
             suffixIcon: dateController.text.isNotEmpty
                 ? IconButton(
-                    icon:
-                        Icon(Icons.close, color: Colors.white.withOpacity(0.8)),
+                    icon: Icon(Icons.close,
+                        color: Colors.white.withValues(alpha: 0.8)),
                     onPressed: () {
-                      setState(() {
-                        dateController.clear();
-                      });
+                      setState(dateController.clear);
                     },
                   )
                 : null, // Show clear button only when date is selected
             filled: true,
-            fillColor: Colors.white.withOpacity(0.2),
+            fillColor: Colors.white.withValues(alpha: 0.2),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
           ),
           onTap: () async {
-            DateTime? pickedDate = await showDatePicker(
+            final DateTime? pickedDate = await showDatePicker(
               context: context,
               initialDate: DateTime.now(),
               firstDate: DateTime(2000),
@@ -569,7 +574,7 @@ class _BookNowPageState extends State<BookNowPage> {
             if (pickedDate != null) {
               setState(() {
                 dateController.text =
-                    "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+                    '${pickedDate.day}/${pickedDate.month}/${pickedDate.year}';
               });
             }
           },
@@ -591,20 +596,20 @@ class _BookNowPageState extends State<BookNowPage> {
       String label3,
       TextEditingController controller3,
       String subText3) {
-    FocusNode adultFocusNode = FocusNode();
+    final FocusNode adultFocusNode = FocusNode();
 
     // Ensure default value is at least 1
-    if (controller1.text.isEmpty || controller1.text == "0") {
-      controller1.text = "1";
+    if (controller1.text.isEmpty || controller1.text == '0') {
+      controller1.text = '1';
     }
 
     adultFocusNode.addListener(() {
       if (!adultFocusNode.hasFocus) {
-        if (controller1.text.isEmpty || controller1.text == "0") {
-          controller1.text = "1";
+        if (controller1.text.isEmpty || controller1.text == '0') {
+          controller1.text = '1';
           ScaffoldMessenger.of(adultFocusNode.context!).showSnackBar(
             const SnackBar(
-              content: Text("At least 1 adult is required"),
+              content: Text('At least 1 adult is required'),
               duration: Duration(seconds: 2),
             ),
           );
@@ -633,11 +638,11 @@ class _BookNowPageState extends State<BookNowPage> {
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: label1,
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelStyle: const TextStyle(color: Colors.white),
                           floatingLabelBehavior: FloatingLabelBehavior.auto,
                           prefixIcon: Icon(icon1, color: Colors.white),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.2),
+                          fillColor: Colors.white.withValues(alpha: 0.2),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -686,11 +691,11 @@ class _BookNowPageState extends State<BookNowPage> {
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: label2,
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelStyle: const TextStyle(color: Colors.white),
                           floatingLabelBehavior: FloatingLabelBehavior.auto,
                           prefixIcon: Icon(icon2, color: Colors.white),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.2),
+                          fillColor: Colors.white.withValues(alpha: 0.2),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -698,7 +703,7 @@ class _BookNowPageState extends State<BookNowPage> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                BorderSide(color: Colors.blue, width: 2),
+                                const BorderSide(color: Colors.blue, width: 2),
                           ),
                         ),
                       ),
@@ -730,11 +735,11 @@ class _BookNowPageState extends State<BookNowPage> {
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: label3,
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelStyle: const TextStyle(color: Colors.white),
                           floatingLabelBehavior: FloatingLabelBehavior.auto,
                           prefixIcon: Icon(icon3, color: Colors.white),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.2),
+                          fillColor: Colors.white.withValues(alpha: 0.2),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -776,7 +781,7 @@ class _BookNowPageState extends State<BookNowPage> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
-            "Enter Passenger Details",
+            'Enter Passenger Details',
             style:
                 GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
           ),
@@ -787,11 +792,11 @@ class _BookNowPageState extends State<BookNowPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (adultsCount > 0)
-                    _buildPassengerInputs("Adult", adultsCount),
+                    _buildPassengerInputs('Adult', adultsCount),
                   if (childrenCount > 0)
-                    _buildPassengerInputs("Child", childrenCount),
+                    _buildPassengerInputs('Child', childrenCount),
                   if (infantCount > 0)
-                    _buildPassengerInputs("Infant", infantCount),
+                    _buildPassengerInputs('Infant', infantCount),
                 ],
               ),
             ),
@@ -799,7 +804,8 @@ class _BookNowPageState extends State<BookNowPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel", style: TextStyle(color: Colors.redAccent)),
+              child: const Text('Cancel',
+                  style: TextStyle(color: Colors.redAccent)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -808,9 +814,11 @@ class _BookNowPageState extends State<BookNowPage> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueAccent,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
-              child: Text("Confirm", style: TextStyle(color: Colors.white)),
+              child:
+                  const Text('Confirm', style: TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -819,25 +827,25 @@ class _BookNowPageState extends State<BookNowPage> {
   }
 
   Widget _buildPassengerInputs(String type, int count) {
-    List<Widget> inputs = [];
+    final List<Widget> inputs = [];
 
     for (int i = 1; i <= count; i++) {
-      TextEditingController dobController = TextEditingController();
-      TextEditingController ageController = TextEditingController();
+      final TextEditingController dobController = TextEditingController();
+      final TextEditingController ageController = TextEditingController();
       inputs.add(
         Card(
           elevation: 3,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.symmetric(vertical: 8),
+          margin: const EdgeInsets.symmetric(vertical: 8),
           color: const Color.fromARGB(255, 50, 151, 223),
           child: Padding(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "$type $i Details",
+                  '$type $i Details',
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -846,12 +854,12 @@ class _BookNowPageState extends State<BookNowPage> {
                 ),
                 const SizedBox(height: 10),
                 _customInputField(Icons.person,
-                    "Full Name"), // Separate controllers per passenger if needed
+                    'Full Name'), // Separate controllers per passenger if needed
                 const SizedBox(height: 10),
                 _customDatePicker1(
-                    Icons.cake, "Date of Birth", dobController, ageController),
+                    Icons.cake, 'Date of Birth', dobController, ageController),
                 const SizedBox(height: 10),
-                _customInputField1(Icons.cake, "Age", ageController),
+                _customInputField1(Icons.cake, 'Age', ageController),
               ],
             ),
           ),
@@ -869,14 +877,14 @@ class _BookNowPageState extends State<BookNowPage> {
         return TextField(
           controller: controller,
           readOnly: true,
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+            labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
             prefixIcon: Icon(icon, color: Colors.white),
             suffixIcon: controller.text.isNotEmpty
                 ? IconButton(
-                    icon: Icon(Icons.close, color: Colors.white),
+                    icon: const Icon(Icons.close, color: Colors.white),
                     onPressed: () {
                       setState(() {
                         controller.clear();
@@ -886,14 +894,14 @@ class _BookNowPageState extends State<BookNowPage> {
                   )
                 : null,
             filled: true,
-            fillColor: Colors.white.withOpacity(0.2),
+            fillColor: Colors.white.withValues(alpha: 0.2),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
           ),
           onTap: () async {
-            DateTime? pickedDate = await showDatePicker(
+            final DateTime? pickedDate = await showDatePicker(
               context: context,
               initialDate: DateTime.now(),
               firstDate: DateTime(1900),
@@ -903,7 +911,7 @@ class _BookNowPageState extends State<BookNowPage> {
             if (pickedDate != null) {
               setState(() {
                 controller.text = DateFormat('dd/MM/yyyy').format(pickedDate);
-                int age = _calculateAge(pickedDate);
+                final int age = _calculateAge(pickedDate);
                 ageController.text = age.toString();
               });
             }
@@ -914,7 +922,7 @@ class _BookNowPageState extends State<BookNowPage> {
   }
 
   int _calculateAge(DateTime birthDate) {
-    DateTime today = DateTime.now();
+    final DateTime today = DateTime.now();
     int age = today.year - birthDate.year;
     if (today.month < birthDate.month ||
         (today.month == birthDate.month && today.day < birthDate.day)) {

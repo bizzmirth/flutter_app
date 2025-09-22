@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/tour_packages_controller.dart';
+import 'package:bizzmirth_app/controllers/all_packages_controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/models/travel_plan_top_selling_packages.dart';
 import 'package:bizzmirth_app/screens/more_top_selling_packages/more_top_selling_packages.dart';
 import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
@@ -13,8 +13,7 @@ class TopSellingPackages extends StatefulWidget {
   const TopSellingPackages({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _TopSellingPackagesState createState() => _TopSellingPackagesState();
+  State<TopSellingPackages> createState() => _TopSellingPackagesState();
 }
 
 class _TopSellingPackagesState extends State<TopSellingPackages> {
@@ -22,39 +21,39 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
 
   final List<TravelPlanTopSellingPackages> myTrips = [
     TravelPlanTopSellingPackages(
-      destination: "Paris, France",
+      destination: 'Paris, France',
       image: 'assets/paris.jpg',
       description:
           'Join us on an unforgettable trip to Paris! Experience the best of French culture, food, and history.',
-      price: "40,000",
+      price: '40,000',
     ),
     TravelPlanTopSellingPackages(
-      destination: "Bali, Indonesia",
+      destination: 'Bali, Indonesia',
       image: 'assets/bali.jpg',
       description:
           'Discover the serene beaches and rich culture of Bali, Indonesia.',
-      price: "20,000",
+      price: '20,000',
     ),
     TravelPlanTopSellingPackages(
-      destination: "New York, USA",
+      destination: 'New York, USA',
       image: 'assets/newyork.jpg',
       description:
           'Explore the vibrant city of New York, from Times Square to Central Park.',
-      price: "1,00,000",
+      price: '1,00,000',
     ),
     TravelPlanTopSellingPackages(
-      destination: "Tokyo, Japan",
+      destination: 'Tokyo, Japan',
       image: 'assets/tokyo.jpg',
       description:
           'Experience the perfect blend of traditional and modern culture in Tokyo.',
-      price: "2,00,000",
+      price: '2,00,000',
     ),
     TravelPlanTopSellingPackages(
-      destination: "Santorini, Greece",
+      destination: 'Santorini, Greece',
       image: 'assets/santorini.jpg',
       description:
           'Enjoy the beautiful sunset views and whitewashed buildings of Santorini.',
-      price: "1,50,000",
+      price: '1,50,000',
     ),
   ];
 
@@ -66,10 +65,10 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
     });
   }
 
-  void getBestDealsPackages() async {
+  Future<void> getBestDealsPackages() async {
     final controller =
         Provider.of<TourPackagesController>(context, listen: false);
-    controller.apiGetBestDeals();
+    await controller.apiGetBestDeals();
   }
 
   @override
@@ -82,7 +81,7 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
       if (bestDeals.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           for (final trip in bestDeals) {
-            final imageUrl = "${AppUrls.getImageBaseUrl}${trip.image}";
+            final imageUrl = '${AppUrls.getImageBaseUrl}${trip.image}';
             precacheImage(NetworkImage(imageUrl), context);
           }
         });
@@ -108,14 +107,14 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
             else if (bestDeals.isEmpty)
               const Center(
                 child: Text(
-                  "No best deals available at the moment",
+                  'No best deals available at the moment',
                   style: TextStyle(fontSize: 16),
                 ),
               )
             else
               ...bestDeals.map((trip) {
-                final imageUrl = "${AppUrls.getImageBaseUrl}${trip.image}";
-                Logger.success("Top selling package image URL: $imageUrl");
+                final imageUrl = '${AppUrls.getImageBaseUrl}${trip.image}';
+                Logger.success('Top selling package image URL: $imageUrl');
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -153,7 +152,7 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    CircularProgressIndicator(
+                                    const CircularProgressIndicator(
                                       strokeWidth: 2,
                                       valueColor: AlwaysStoppedAnimation<Color>(
                                           Colors.blue),
@@ -201,7 +200,7 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                trip.destination ?? "Destination",
+                                trip.destination ?? 'Destination',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -209,7 +208,7 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                trip.name ?? "Package",
+                                trip.name ?? 'Package',
                                 style: const TextStyle(
                                     color: Colors.grey, fontSize: 14),
                               ),
@@ -226,14 +225,14 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
                                       ),
                                       children: [
                                         const TextSpan(
-                                          text: "Starts From ",
+                                          text: 'Starts From ',
                                           style: TextStyle(
                                             fontWeight: FontWeight.normal,
                                           ),
                                         ),
                                         TextSpan(
                                           text:
-                                              "₹${trip.totalPackagePricePerAdult}",
+                                              '₹${trip.totalPackagePricePerAdult}',
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: Colors.green,
@@ -260,7 +259,7 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                         side: const BorderSide(
-                                            color: Colors.blue, width: 1),
+                                            color: Colors.blue),
                                       ),
                                     ),
                                     child: const Text('View Details'),
@@ -281,7 +280,8 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TopPackagesPage()),
+                    MaterialPageRoute(
+                        builder: (context) => const TopPackagesPage()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

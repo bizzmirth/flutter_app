@@ -19,22 +19,22 @@ List<String> convertStarsToNumbers(List<String> selectedStars) {
 // function to get min duration and max duration from values like "4N - 7N"
 Map<String, String> getTripDurationValues(String? selectedDuration) {
   switch (selectedDuration) {
-    case "Upto 3N":
-      return {"minDuration": "0", "maxDuration": "3", "tripDuration": ""};
-    case "4N - 7N":
-      return {"minDuration": "4", "maxDuration": "7", "tripDuration": ""};
-    case "7N - 11N":
-      return {"minDuration": "7", "maxDuration": "11", "tripDuration": ""};
-    case "11N - 15N":
-      return {"minDuration": "11", "maxDuration": "15", "tripDuration": ""};
-    case "Above 15N":
+    case 'Upto 3N':
+      return {'minDuration': '0', 'maxDuration': '3', 'tripDuration': ''};
+    case '4N - 7N':
+      return {'minDuration': '4', 'maxDuration': '7', 'tripDuration': ''};
+    case '7N - 11N':
+      return {'minDuration': '7', 'maxDuration': '11', 'tripDuration': ''};
+    case '11N - 15N':
+      return {'minDuration': '11', 'maxDuration': '15', 'tripDuration': ''};
+    case 'Above 15N':
       return {
-        "minDuration": "15",
-        "maxDuration": "999", // or whatever max value you want
-        "tripDuration": ""
+        'minDuration': '15',
+        'maxDuration': '999', // or whatever max value you want
+        'tripDuration': ''
       };
     default:
-      return {"minDuration": "0", "maxDuration": "999", "tripDuration": ""};
+      return {'minDuration': '0', 'maxDuration': '999', 'tripDuration': ''};
   }
 }
 
@@ -72,14 +72,14 @@ String capitalize(String input) {
 
 // this function takes tour days as in put and return the correct days and nights. Eg. input 05. output: 5 days 4 nights
 String formatTourDuration(String? tourDays) {
-  if (tourDays == null || tourDays.isEmpty) return "N/A";
+  if (tourDays == null || tourDays.isEmpty) return 'N/A';
 
   // parse and remove leading zeros
   final int days = int.tryParse(tourDays) ?? 0;
-  if (days <= 1) return "N/A"; // since 1 will never come, but just in case
+  if (days <= 1) return 'N/A'; // since 1 will never come, but just in case
 
   final int nights = days - 1;
-  return "$days Days $nights Nights";
+  return '$days Days $nights Nights';
 }
 
 // helper to show the data in the points stype
@@ -90,6 +90,6 @@ List<String> formatItineraryText(String? text) {
       .split('.') // split by period
       .map((e) => e.trim())
       .where((e) => e.isNotEmpty)
-      .map((e) => "- $e.") // add `-` at start & keep period
+      .map((e) => '- $e.') // add `-` at start & keep period
       .toList();
 }

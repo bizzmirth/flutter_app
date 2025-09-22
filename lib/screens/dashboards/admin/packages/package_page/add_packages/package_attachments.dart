@@ -6,8 +6,7 @@ class PackageAttachmentScreen extends StatefulWidget {
   const PackageAttachmentScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _PackageAttachmentScreenState createState() =>
+  State<PackageAttachmentScreen> createState() =>
       _PackageAttachmentScreenState();
 }
 
@@ -18,23 +17,23 @@ class _PackageAttachmentScreenState extends State<PackageAttachmentScreen> {
   List<String> selectedHotelStars1 = [];
 
   Map<String, String?> selectedFiles = {
-    "Package Picture": null,
+    'Package Picture': null,
   };
 
-  void _pickFile(String fileType) async {
+  Future<void> _pickFile(String fileType) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      final FilePickerResult? result = await FilePicker.platform.pickFiles();
       if (result != null && result.files.isNotEmpty) {
-        PlatformFile file = result.files.first;
+        final PlatformFile file = result.files.first;
 
         setState(() {
           selectedFiles[fileType] = file.name; // 🔥 Save selected file name
         });
 
-        Logger.info("Picked file for $fileType: ${file.name}");
+        Logger.info('Picked file for $fileType: ${file.name}');
       }
     } catch (e) {
-      Logger.error("Error picking file: $e");
+      Logger.error('Error picking file: $e');
     }
   }
 
@@ -65,13 +64,13 @@ class _PackageAttachmentScreenState extends State<PackageAttachmentScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Package Images:",
+                  const Text('Package Images:',
                       style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Colors.white)),
-                  SizedBox(height: 10),
-                  _buildUploadButton("Package Picture"),
+                  const SizedBox(height: 10),
+                  _buildUploadButton('Package Picture'),
                 ],
               ),
             ),
@@ -88,17 +87,18 @@ class _PackageAttachmentScreenState extends State<PackageAttachmentScreen> {
         children: [
           ElevatedButton.icon(
             onPressed: () => _pickFile(fileType),
-            icon: Icon(Icons.upload_file),
-            label: Text("Upload $fileType"),
+            icon: const Icon(Icons.upload_file),
+            label: Text('Upload $fileType'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),
               ),
             ),
           ),
-          SizedBox(width: 10), // 🔥 Ensure spacing between button & file name
+          const SizedBox(
+              width: 10), // 🔥 Ensure spacing between button & file name
 
           if (selectedFiles[fileType] !=
               null) // 🔥 Show file name & remove button
@@ -107,12 +107,12 @@ class _PackageAttachmentScreenState extends State<PackageAttachmentScreen> {
               children: [
                 Text(
                   selectedFiles[fileType]!,
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                   overflow: TextOverflow.ellipsis, // 🔥 Avoid overflow issues
                 ),
-                SizedBox(width: 5),
+                const SizedBox(width: 5),
                 IconButton(
-                  icon: Icon(Icons.close, color: Colors.red),
+                  icon: const Icon(Icons.close, color: Colors.red),
                   onPressed: () => _removeFile(fileType), // 🔥 Remove file
                 ),
               ],

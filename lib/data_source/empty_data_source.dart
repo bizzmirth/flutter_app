@@ -8,7 +8,7 @@ class EmptyDataSource extends DataTableSource {
   final double? fontSize;
 
   EmptyDataSource({
-    this.message = "No data available",
+    this.message = 'No data available',
     this.icon = Icons.inbox_outlined,
     required this.columnCount,
     this.messageColor,
@@ -19,9 +19,9 @@ class EmptyDataSource extends DataTableSource {
   DataRow? getRow(int index) {
     if (index == 0) {
       // Create a list of empty DataCell widgets for all columns except the middle one
-      List<DataCell> cells = [];
+      final List<DataCell> cells = [];
 
-      int middleIndex = (columnCount / 2).floor();
+      final int middleIndex = (columnCount / 2).floor();
 
       for (int i = 0; i < columnCount; i++) {
         if (i == middleIndex) {

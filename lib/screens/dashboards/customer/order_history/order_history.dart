@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/cust_order_history_controller.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/cust_order_history_controller.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -21,18 +21,18 @@ class _OrderHistoryState extends State<OrderHistory> {
   DateTime _selectedDate = DateTime.now();
   final Map<DateTime, List<Map<String, Object>>> _tasks = {};
 
-  String selectedFilter = "All";
+  String selectedFilter = 'All';
   int _rowsPerPage = 5;
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
 
   final List<String> filterOptions = [
-    "All",
-    "Pending",
-    "Booked",
-    "Canceled",
-    "Refund"
+    'All',
+    'Pending',
+    'Booked',
+    'Canceled',
+    'Refund'
   ];
 
   @override
@@ -43,10 +43,10 @@ class _OrderHistoryState extends State<OrderHistory> {
     });
   }
 
-  void getOrderHistoryData() async {
+  Future<void> getOrderHistoryData() async {
     final controller =
         Provider.of<CustOrderHistoryController>(context, listen: false);
-    controller.apiGetStatCount();
+    await controller.apiGetStatCount();
   }
 
   @override
@@ -76,8 +76,8 @@ class _OrderHistoryState extends State<OrderHistory> {
                       Expanded(
                         child: buildStatCard(
                           icon: Icons.hourglass_empty,
-                          value: controller.pendingBookingCount ?? "",
-                          label: "Pending Booking",
+                          value: controller.pendingBookingCount ?? '',
+                          label: 'Pending Booking',
                           backgroundColor: const Color(0xFFE8E5FF),
                           iconColor: const Color(0xFF6B46C1),
                         ),
@@ -86,8 +86,8 @@ class _OrderHistoryState extends State<OrderHistory> {
                       Expanded(
                         child: buildStatCard(
                           icon: Icons.check_circle,
-                          value: controller.completedBookingCount ?? "",
-                          label: "Completed Booking",
+                          value: controller.completedBookingCount ?? '',
+                          label: 'Completed Booking',
                           backgroundColor: const Color(0xFFE8E5FF),
                           iconColor: const Color(0xFF10B981),
                         ),
@@ -104,7 +104,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                           icon: Icons.hourglass_empty,
                           value:
                               "₹${double.tryParse(controller.pendingPaymentAmt ?? "0")?.toStringAsFixed(2)}",
-                          label: "Pending Payment",
+                          label: 'Pending Payment',
                           backgroundColor: const Color(0xFFE8E5FF),
                           iconColor: const Color(0xFF6B46C1),
                         ),
@@ -115,7 +115,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                           icon: Icons.check_circle,
                           value:
                               "₹${double.tryParse(controller.completedPaymentAmt ?? '0')?.toStringAsFixed(2)}",
-                          label: "Completed Payment",
+                          label: 'Completed Payment',
                           backgroundColor: const Color(0xFFE8E5FF),
                           iconColor: const Color(0xFF10B981),
                         ),
@@ -124,7 +124,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Divider(thickness: 1, color: Colors.black26),
+                const Divider(thickness: 1, color: Colors.black26),
 
                 // ======= 2. Calendar =======
                 SizedBox(
@@ -133,11 +133,11 @@ class _OrderHistoryState extends State<OrderHistory> {
                     children: [
                       Container(
                         height: 420,
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(color: Colors.black12, blurRadius: 4)
                           ],
                         ),
@@ -147,9 +147,8 @@ class _OrderHistoryState extends State<OrderHistory> {
                           },
                           child: TableCalendar(
                             focusedDay: _selectedDate,
-                            firstDay: DateTime.utc(2020, 1, 1),
+                            firstDay: DateTime.utc(2020),
                             lastDay: DateTime.utc(2030, 12, 31),
-                            calendarFormat: CalendarFormat.month,
                             availableCalendarFormats: const {
                               CalendarFormat.month: 'Month',
                             },
@@ -167,18 +166,18 @@ class _OrderHistoryState extends State<OrderHistory> {
                                       [])
                                   .map((event) {
                                 return {
-                                  "name": event["name"]?.toString() ??
-                                      "Unnamed Event",
-                                  "type": event["type"]?.toString() ?? "other",
+                                  'name': event['name']?.toString() ??
+                                      'Unnamed Event',
+                                  'type': event['type']?.toString() ?? 'other',
                                 };
                               }).toList();
                             },
                             calendarStyle: CalendarStyle(
                               todayDecoration: BoxDecoration(
-                                color: Colors.blueAccent.withOpacity(0.5),
+                                color: Colors.blueAccent.withValues(alpha: 0.5),
                                 shape: BoxShape.circle,
                               ),
-                              selectedDecoration: BoxDecoration(
+                              selectedDecoration: const BoxDecoration(
                                 color: Colors.blueAccent,
                                 shape: BoxShape.circle,
                               ),
@@ -193,13 +192,13 @@ class _OrderHistoryState extends State<OrderHistory> {
                                       return Container(
                                         width: 8,
                                         height: 8,
-                                        margin:
-                                            EdgeInsets.symmetric(horizontal: 1),
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 1),
                                         decoration: BoxDecoration(
                                           color: event is Map<String, Object>
                                               ? _getEventColor(
-                                                  event["type"]?.toString() ??
-                                                      "other")
+                                                  event['type']?.toString() ??
+                                                      'other')
                                               : Colors.grey,
                                           shape: BoxShape.circle,
                                         ),
@@ -207,7 +206,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                     }).toList(),
                                   );
                                 }
-                                return SizedBox.shrink();
+                                return const SizedBox.shrink();
                               },
                             ),
                           ),
@@ -225,14 +224,14 @@ class _OrderHistoryState extends State<OrderHistory> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 1),
                             backgroundColor: Colors.blue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: Text("Today",
+                          child: const Text('Today',
                               style: TextStyle(color: Colors.white)),
                         ),
                       ),
@@ -242,23 +241,21 @@ class _OrderHistoryState extends State<OrderHistory> {
                         bottom: 10,
                         right: 10,
                         child: FloatingActionButton(
-                          onPressed: () {
-                            _showManualAddEventDialog();
-                          },
+                          onPressed: _showManualAddEventDialog,
                           backgroundColor: Colors.blue,
                           mini: true,
-                          child: Icon(Icons.add, color: Colors.white),
+                          child: const Icon(Icons.add, color: Colors.white),
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-                Divider(thickness: 1, color: Colors.black26),
+                const Divider(thickness: 1, color: Colors.black26),
 
                 // ======= 3. Recent Bookings =======
                 Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(8),
@@ -266,11 +263,11 @@ class _OrderHistoryState extends State<OrderHistory> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Recent Bookings",
+                      const Text('Recent Bookings',
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 10),
-                      Divider(thickness: 1),
+                      const SizedBox(height: 10),
+                      const Divider(thickness: 1),
                       SizedBox(
                         height: 350, // Adjust as needed
                         child: _buildRecentBookings(),
@@ -288,7 +285,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withValues(alpha: 0.1),
                         spreadRadius: 1,
                         blurRadius: 4,
                         offset: const Offset(0, 2),
@@ -300,7 +297,6 @@ class _OrderHistoryState extends State<OrderHistory> {
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: filterOptions
                             .map((filter) => _buildFilterTab(
                                 filter, selectedFilter == filter))
@@ -309,8 +305,8 @@ class _OrderHistoryState extends State<OrderHistory> {
 
                       // DateFilterWidget(),
                       const SizedBox(height: 8),
-                      Divider(thickness: 1, color: Colors.black26),
-                      FilterBar(),
+                      const Divider(thickness: 1, color: Colors.black26),
+                      const FilterBar(),
                       Card(
                         elevation: 5,
                         shape: RoundedRectangleBorder(
@@ -323,19 +319,19 @@ class _OrderHistoryState extends State<OrderHistory> {
                           child: PaginatedDataTable(
                             columnSpacing: 35,
                             dataRowMinHeight: 40,
-                            columns: [
-                              DataColumn(label: Text("Image")),
-                              DataColumn(label: Text("ID")),
-                              DataColumn(label: Text("Full Name")),
-                              DataColumn(label: Text("Ref. ID")),
-                              DataColumn(label: Text("Ref. Name")),
-                              DataColumn(label: Text("Joining Date")),
-                              DataColumn(label: Text("Status")),
-                              DataColumn(label: Text("Action"))
+                            columns: const [
+                              DataColumn(label: Text('Image')),
+                              DataColumn(label: Text('ID')),
+                              DataColumn(label: Text('Full Name')),
+                              DataColumn(label: Text('Ref. ID')),
+                              DataColumn(label: Text('Ref. Name')),
+                              DataColumn(label: Text('Joining Date')),
+                              DataColumn(label: Text('Status')),
+                              DataColumn(label: Text('Action'))
                             ],
                             source: ViewMyBMDataSource(ordersBM),
                             rowsPerPage: _rowsPerPage,
-                            availableRowsPerPage: [5, 10, 15, 20, 25],
+                            availableRowsPerPage: const [5, 10, 15, 20, 25],
                             onRowsPerPageChanged: (value) {
                               if (value != null) {
                                 setState(() {
@@ -395,23 +391,23 @@ class _OrderHistoryState extends State<OrderHistory> {
     return ListView(
       children: [
         _buildBookingCard(
-          destination: "Shimla Manali",
-          date: "2025-06-14",
+          destination: 'Shimla Manali',
+          date: '2025-06-14',
           imageUrl:
-              "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=150&h=100&fit=crop",
-          status: "Completed",
-          bookingId: "2025600023",
-          customerName: "Harbhajan Naik",
+              'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=150&h=100&fit=crop',
+          status: 'Completed',
+          bookingId: '2025600023',
+          customerName: 'Harbhajan Naik',
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         _buildBookingCard(
-          destination: "Goa 4N5D",
-          date: "2025-04-22",
+          destination: 'Goa 4N5D',
+          date: '2025-04-22',
           imageUrl:
-              "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=150&h=100&fit=crop",
-          status: "Completed",
-          bookingId: "2025400003",
-          customerName: "Harbhajan Naik",
+              'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=150&h=100&fit=crop',
+          status: 'Completed',
+          bookingId: '2025400003',
+          customerName: 'Harbhajan Naik',
         ),
       ],
     );
@@ -426,10 +422,10 @@ class _OrderHistoryState extends State<OrderHistory> {
     required String customerName,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: 8),
-      padding: EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Color(0xFFE8F5E8),
+        color: const Color(0xFFE8F5E8),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.green.shade200),
       ),
@@ -446,7 +442,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                   color: Colors.green.shade700,
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Text(
                 date,
                 style: TextStyle(
@@ -456,7 +452,7 @@ class _OrderHistoryState extends State<OrderHistory> {
               ),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             children: [
               ClipRRect(
@@ -472,14 +468,14 @@ class _OrderHistoryState extends State<OrderHistory> {
                   ),
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     RichText(
                       text: TextSpan(
-                        style: TextStyle(fontSize: 10),
+                        style: const TextStyle(fontSize: 10),
                         children: [
                           TextSpan(
                             text: customerName,
@@ -489,7 +485,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                             ),
                           ),
                           TextSpan(
-                            text: " has ",
+                            text: ' has ',
                             style: TextStyle(color: Colors.grey.shade700),
                           ),
                           TextSpan(
@@ -500,7 +496,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                             ),
                           ),
                           TextSpan(
-                            text: " the package for ",
+                            text: ' the package for ',
                             style: TextStyle(color: Colors.grey.shade700),
                           ),
                           TextSpan(
@@ -511,11 +507,11 @@ class _OrderHistoryState extends State<OrderHistory> {
                             ),
                           ),
                           TextSpan(
-                            text: " with ",
+                            text: ' with ',
                             style: TextStyle(color: Colors.grey.shade700),
                           ),
                           TextSpan(
-                            text: "Booking ID: $bookingId",
+                            text: 'Booking ID: $bookingId',
                             style: TextStyle(
                               color: Colors.green.shade700,
                               fontWeight: FontWeight.w500,

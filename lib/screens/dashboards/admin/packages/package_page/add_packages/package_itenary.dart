@@ -4,8 +4,7 @@ class PackageItenaryDetails extends StatefulWidget {
   const PackageItenaryDetails({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _PackageItenaryDetailsState createState() => _PackageItenaryDetailsState();
+  State<PackageItenaryDetails> createState() => _PackageItenaryDetailsState();
 }
 
 class _PackageItenaryDetailsState extends State<PackageItenaryDetails> {
@@ -15,27 +14,27 @@ class _PackageItenaryDetailsState extends State<PackageItenaryDetails> {
   void _addDay() {
     setState(() {
       days.add({
-        "title": "",
-        "description": "",
-        "meals": "",
-        "transport": "",
+        'title': '',
+        'description': '',
+        'meals': '',
+        'transport': '',
       });
 
       dayControllers.add({
-        "title": TextEditingController(),
-        "description": TextEditingController(),
-        "meals": TextEditingController(),
-        "transport": TextEditingController(),
+        'title': TextEditingController(),
+        'description': TextEditingController(),
+        'meals': TextEditingController(),
+        'transport': TextEditingController(),
       });
     });
   }
 
   void _removeDay(int index) {
     setState(() {
-      dayControllers[index]["title"]!.dispose();
-      dayControllers[index]["description"]!.dispose();
-      dayControllers[index]["meals"]!.dispose();
-      dayControllers[index]["transport"]!.dispose();
+      dayControllers[index]['title']!.dispose();
+      dayControllers[index]['description']!.dispose();
+      dayControllers[index]['meals']!.dispose();
+      dayControllers[index]['transport']!.dispose();
 
       dayControllers.removeAt(index);
       days.removeAt(index);
@@ -46,9 +45,9 @@ class _PackageItenaryDetailsState extends State<PackageItenaryDetails> {
   List<String> selectedHotelStars1 = [];
 
   Map<String, String?> selectedFiles = {
-    "Profile Picture": null,
-    "ID Proof": null,
-    "Bank Details": null,
+    'Profile Picture': null,
+    'ID Proof': null,
+    'Bank Details': null,
   };
 
   @override
@@ -70,44 +69,43 @@ class _PackageItenaryDetailsState extends State<PackageItenaryDetails> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Itinerary Details:",
+                const Text('Itinerary Details:',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white)),
-                Text(
-                    "This section will contain the information about the package that this product is offering.",
+                const Text(
+                    'This section will contain the information about the package that this product is offering.',
                     style: TextStyle(fontSize: 14, color: Colors.white)),
-                Text(
-                    "NOTE : Number Of Days may look different on deletion of previous DAY, but Days will be listed from first to last in increasing order.",
+                const Text(
+                    'NOTE : Number Of Days may look different on deletion of previous DAY, but Days will be listed from first to last in increasing order.',
                     style: TextStyle(fontSize: 14, color: Colors.redAccent)),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: _addDay,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
                   ),
-                  child:
-                      Text("Add Days", style: TextStyle(color: Colors.white)),
+                  child: const Text('Add Days',
+                      style: TextStyle(color: Colors.white)),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // ✅ Wrap ListView in a Column to prevent internal scrolling
                 Column(
-                  children: List.generate(days.length, (index) {
-                    return _buildDayCard(index);
-                  }),
+                  children: List.generate(days.length, _buildDayCard),
                 ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // ✅ Bottom fields remain in view but still scroll if needed
-                _buildMultilineTextField1("Inclusion *"),
-                _buildMultilineTextField1("Exclusion *"),
-                _buildMultilineTextField1("Remarks (If Any)"),
+                _buildMultilineTextField1('Inclusion *'),
+                _buildMultilineTextField1('Exclusion *'),
+                _buildMultilineTextField1('Remarks (If Any)'),
 
-                SizedBox(height: 20), // Some padding at bottom
+                const SizedBox(height: 20), // Some padding at bottom
               ],
             ),
           ),
@@ -135,7 +133,7 @@ class _PackageItenaryDetailsState extends State<PackageItenaryDetails> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -145,36 +143,39 @@ class _PackageItenaryDetailsState extends State<PackageItenaryDetails> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.green,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    "Day: ${index + 1}", // Renumber dynamically
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    'Day: ${index + 1}', // Renumber dynamically
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
                 ElevatedButton(
                   onPressed: () => _removeDay(index),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   ),
-                  child: Text("Remove", style: TextStyle(color: Colors.white)),
+                  child: const Text('Remove',
+                      style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
-            SizedBox(height: 12),
-            _buildTextField("Title", index, "title"),
-            _buildMultilineTextField("Description", index, "description"),
+            const SizedBox(height: 12),
+            _buildTextField('Title', index, 'title'),
+            _buildMultilineTextField('Description', index, 'description'),
             Row(
               children: [
                 Expanded(
-                    child: _buildTextField("Meals Included", index, "meals")),
-                SizedBox(width: 8),
+                    child: _buildTextField('Meals Included', index, 'meals')),
+                const SizedBox(width: 8),
                 Expanded(
-                    child: _buildTextField("Transport", index, "transport")),
+                    child: _buildTextField('Transport', index, 'transport')),
               ],
             ),
           ],

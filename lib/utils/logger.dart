@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 class Logger {
   static const isEnabled = true;
   static void success(String message) {

@@ -1,13 +1,19 @@
+import 'package:bizzmirth_app/data_source/tc_data_sources/tc_current_booking_data_source.dart';
+import 'package:bizzmirth_app/data_source/tc_data_sources/tc_top_customers_data_source.dart';
+import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_cu_membership_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/product_markup/travel_consultant_product_markup_page.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
+import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
+import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -19,8 +25,56 @@ class TCDashboardPage extends StatefulWidget {
 }
 
 class _TCDashboardPageState extends State<TCDashboardPage> {
+  int _rowsPerPage = 5; // Default rows per page
+  static const double dataRowHeight = 50.0;
+  static const double headerHeight = 56.0;
+  static const double paginationHeight = 60.0;
+  final List<Map<String, dynamic>> tcCurrentBookingDummyData = [
+    {
+      'bookingId': 'BKG001',
+      'customerName': 'John Doe',
+      'packageName': 'Beach Holiday',
+      'amount': 1200.50,
+      'bookingDate': '2025-09-01',
+      'travelDate': '2025-09-15',
+    },
+    {
+      'bookingId': 'BKG002',
+      'customerName': 'Jane Smith',
+      'packageName': 'Mountain Trek',
+      'amount': 850.00,
+      'bookingDate': '2025-09-03',
+      'travelDate': '2025-10-01',
+    },
+    {
+      'bookingId': 'BKG003',
+      'customerName': 'Michael Johnson',
+      'packageName': 'City Tour',
+      'amount': 500.75,
+      'bookingDate': '2025-09-05',
+      'travelDate': '2025-09-20',
+    },
+    {
+      'bookingId': 'BKG004',
+      'customerName': 'Emily Davis',
+      'packageName': 'Safari Adventure',
+      'amount': 2300.00,
+      'bookingDate': '2025-09-07',
+      'travelDate': '2025-11-05',
+    },
+    {
+      'bookingId': 'BKG005',
+      'customerName': 'Robert Wilson',
+      'packageName': 'Cruise Trip',
+      'amount': 1500.25,
+      'bookingDate': '2025-09-09',
+      'travelDate': '2025-10-15',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final isTablet = MediaQuery.of(context).size.width > 600;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -36,20 +90,20 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
           children: [
             Container(
               width: double.infinity,
-              color: Color.fromARGB(255, 81, 131, 246),
+              color: const Color.fromARGB(255, 81, 131, 246),
               padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       backgroundImage: AssetImage('assets/user_image.jpg'),
                       radius: 30,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
-                      "Welcome, Travel Consultant!",
+                      'Welcome, Travel Consultant!',
                       style: GoogleFonts.roboto(
                         fontSize: 18,
                         color: Colors.white,
@@ -57,7 +111,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                       ),
                     ),
                     Text(
-                      "Manage everything efficiently",
+                      'Manage everything efficiently',
                       style: GoogleFonts.roboto(
                         fontSize: 14,
                         color: Colors.white70,
@@ -71,73 +125,91 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   ListTile(
-                    leading: Icon(Icons.dashboard),
-                    title: Text('Dashboard'),
+                    leading: const Icon(Icons.dashboard),
+                    title: const Text('Dashboard'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => TCDashboardPage()),
+                            builder: (context) => const TCDashboardPage()),
                       );
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.home),
-                    title: Text('Home Page'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.attach_money),
-                    title: Text('Markup'),
+                    leading: const Icon(Icons.home),
+                    title: const Text('Home Page'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ProductMarkupPage()),
+                            builder: (context) => const HomePage()),
                       );
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.people),
-                    title: Text('Customer'),
+                    leading: const Icon(Icons.attach_money),
+                    title: const Text('Markup'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ViewCustomersPage1()),
+                            builder: (context) => const ProductMarkupPage()),
                       );
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.wallet),
-                    title: Text('TopUp Wallet'),
+                    leading: const Icon(Icons.people),
+                    title: const Text('Customer'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => TopUpWalletPage(
-                                  title: "Top Up Wallet",
+                            builder: (context) => const ViewCustomersPage1()),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.wallet),
+                    title: const Text('TopUp Wallet'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const TopUpWalletPage(
+                                  title: 'Top Up Wallet',
                                 )),
                       );
                     },
                   ),
                   //ProductPayoutsPage
                   ExpansionTile(
-                    title: const Text("Payouts"),
+                    title: const Text('Payouts'),
                     leading: const Icon(Icons.payment),
                     children: [
-                      _drawerItem(context, Icons.payment, "Product Payouts",
-                          TCProductPayoutsPage(),
+                      _drawerItem(context, Icons.payment, 'Product Payouts',
+                          const TCProductPayoutsPage(),
+                          padding: true),
+                      _drawerItem(context, Icons.inventory_2,
+                          'CU Membership Payout', const TcCuMembershipPayouts(),
                           padding: true),
                     ],
                   ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.person,
+                    ),
+                    title: const Text('Profile Page'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProfilePage()),
+                      );
+                    },
+                  ),
+
                   const Divider(),
                   Padding(
                     padding: false
@@ -145,16 +217,17 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                         ? const EdgeInsets.only(left: 16.0)
                         : EdgeInsets.zero,
                     child: ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.power_settings_new_rounded,
                         color: Colors.red,
                       ),
-                      title: Text("Log Out"),
+                      title: const Text('Log Out'),
                       onTap: () {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
-                          (Route<dynamic> route) => false,
+                          MaterialPageRoute(
+                              builder: (context) => const HomePage()),
+                          (route) => false,
                         );
                       },
                     ),
@@ -166,302 +239,297 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
-            SizedBox(height: 20),
+            // _buildHeader(),
+            const SizedBox(height: 20),
             CustomAnimatedSummaryCards(
               cardData: [
                 SummaryCardData(
                     title: 'CUSTOMER REGISTERED',
                     value: '3',
+                    thisMonthValue: '0',
                     icon: Icons.people),
                 SummaryCardData(
                     title: 'TOTAL BOOKING',
                     value: '9',
+                    thisMonthValue: '0',
                     icon: Icons.calendar_today),
                 SummaryCardData(
-                    title: 'MY WALLET',
+                    title: 'Topup Wallet',
                     value: '₹ 2000',
+                    thisMonthValue: '₹ 100',
                     icon: Icons.account_balance_wallet),
               ],
             ),
-            SizedBox(height: 20),
-            ProgressTrackerCard(
+            // SizedBox(height: 20),
+            // ProgressTrackerCard(
+            //   totalSteps: 10,
+            //   currentStep: 3,
+            //   message: "Keep going! You're doing great!",
+            //   progressColor: Colors.orange,
+            // ),
+            const SizedBox(height: 20),
+            const ReferralTrackerCard(
               totalSteps: 10,
               currentStep: 3,
-              message: "Keep going! You're doing great!",
-              progressColor: Colors.orange,
+              progressColor: Colors.green,
             ),
-            SizedBox(height: 20),
-            ImprovedLineChart(),
-            SizedBox(height: 20),
-            _buildTopPerformersSection(),
-            SizedBox(height: 20),
-            _buildTopPerformersSection1(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTopPerformersSection() {
-    List<Map<String, dynamic>> departments = [
-      {"name": "Customer", "performers": _getDummyPerformers1()},
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GridView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 1,
-            crossAxisSpacing: 2,
-            mainAxisSpacing: 13,
-            childAspectRatio: 1.65,
-          ),
-          itemCount: departments.length,
-          itemBuilder: (context, index) {
-            var dept = departments[index];
-            return _buildDepartmentCard(dept["name"], dept["performers"]);
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTopPerformersSection1() {
-    List<Map<String, dynamic>> departments = [
-      {"name": "Booking", "performers": _getDummyPerformers2()},
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GridView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 1,
-            crossAxisSpacing: 2,
-            mainAxisSpacing: 13,
-            childAspectRatio: 1.7,
-          ),
-          itemCount: departments.length,
-          itemBuilder: (context, index) {
-            var dept = departments[index];
-            return _buildDepartmentCard1(dept["name"], dept["performers"]);
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDepartmentCard(
-      String department, List<Map<String, String>> performers) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      elevation: 3,
-      child: Padding(
-        padding: EdgeInsets.all(25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    "Top $department's",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
+            // SizedBox(height: 20),
+            // ReferralTrackerCard(
+            //   totalSteps: 10,
+            //   currentStep: 6,
+            //   progressColor: Colors.purpleAccent,
+            // ),
+            const SizedBox(height: 20),
+            const ImprovedLineChart(),
+            const SizedBox(height: 20),
+            // _buildTopPerformersSection(),
+            const Divider(thickness: 1, color: Colors.black26),
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Top Customer's List:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  height: 15,
-                )
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  " Ranks",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 15,
-                ),
-                Text(
-                  " Profile Picture",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 25,
-                ),
-                Text(
-                  "Full Name",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 30,
-                ),
-                Text(
-                  "Registration Date",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
-                Text(
-                  "Count",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                TextButton.icon(
-                  onPressed: null, // 🔒 Button is disabled
-                  icon: Icon(Icons.check_circle, color: Colors.green),
-                  label: Text("Status", style: TextStyle(color: Colors.black)),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  "Active/Inactive",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
-              ],
-            ),
-            SizedBox(height: 10),
-            Divider(),
-            Expanded(
-              child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: performers.length,
-                itemBuilder: (context, rank) {
-                  return Row(
-                    children: [
-                      Image.asset(
-                        "assets/${rank + 1}.jpg", // Rank Image
-                        width: 53,
-                        height: 53,
-                      ),
-                      SizedBox(width: 40),
-                      CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(performers[rank]["image"]!),
-                      ),
-                      SizedBox(width: 55),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width:
-                                120, // Set a fixed width to keep all names aligned
-                            child: Text(
-                              performers[rank]["name"]!,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                              overflow: TextOverflow
-                                  .ellipsis, // Ensures long names don't break layout
-                              maxLines: 1, // Keeps text on a single line
-                            ),
-                          ),
-                          Text(
-                            "id3445345",
-                            style: TextStyle(color: Color(0xFF495057)),
-                          ),
-                        ],
-                      ),
-                      Spacer(),
-                      SizedBox(
-                        width:
-                            85, // Adjust width as needed for better alignment
-                        child: Text(
-                          performers[rank]["date"]!,
-                          textAlign: TextAlign.center, // Center align text
-                        ),
-                      ),
-                      SizedBox(width: 35),
-                      Spacer(),
-                      Center(
-                        child: Text(performers[rank]["count"]!,
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                      SizedBox(width: 55),
-                      Text(
-                        "Active",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.green),
-                      ),
-                      SizedBox(width: 40),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // First Box (Green Background)
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.green
-                                  .withOpacity(0.1), // Light green background
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              "0",
-                              style: TextStyle(
-                                color: Colors.green, // Green text
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(width: 5), // Space between boxes
-
-                          Text("/",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)), // Separator
-
-                          SizedBox(width: 5), // Space between boxes
-
-                          // Second Box (Red Background)
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.red
-                                  .withOpacity(0.1), // Light red background
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              "0",
-                              style: TextStyle(
-                                color: Colors.red, // Red text
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 40),
-                    ],
-                  );
-                },
               ),
             ),
+            const Divider(thickness: 1, color: Colors.black26),
+            const FilterBar(),
+            isTablet
+                ? Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: SizedBox(
+                      height: (_rowsPerPage * dataRowHeight) +
+                          headerHeight +
+                          paginationHeight,
+                      child: PaginatedDataTable(
+                        columnSpacing: 60,
+                        dataRowMinHeight: 40,
+                        columns: const [
+                          DataColumn(label: Text('ID')),
+                          DataColumn(label: Text('Full Name')),
+                          DataColumn(label: Text('Date Reg.')),
+                          DataColumn(label: Text('Total CU Ref')),
+                          DataColumn(label: Text('Active/Inactive')),
+                        ],
+                        source: TcTopCustomersDataSource(data: customersTA),
+                        rowsPerPage: _rowsPerPage,
+                        availableRowsPerPage: const [5, 10, 15, 20, 25],
+                        onRowsPerPageChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _rowsPerPage = value;
+                            });
+                          }
+                        },
+                        arrowHeadColor: Colors.blue,
+                      ),
+                    ),
+                  )
+                : _buildTopCustomerList(),
+
+            const SizedBox(height: 20),
+            // _buildTopPerformersSection1(),
+            const Divider(thickness: 1, color: Colors.black26),
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Current Booking's:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const Divider(thickness: 1, color: Colors.black26),
+            const FilterBar(),
+            isTablet
+                ? Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: SizedBox(
+                      height: (_rowsPerPage * dataRowHeight) +
+                          headerHeight +
+                          paginationHeight,
+                      child: PaginatedDataTable(
+                        columnSpacing: 60,
+                        dataRowMinHeight: 40,
+                        columns: const [
+                          DataColumn(label: Text('Booking ID')),
+                          DataColumn(label: Text('Customer Name')),
+                          DataColumn(label: Text('Package Name')),
+                          DataColumn(label: Text('Amount')),
+                          DataColumn(label: Text('Booking Date')),
+                          DataColumn(label: Text('Travel Date')),
+                        ],
+                        source: TcCurrentBookingDataSource(
+                          data: tcCurrentBookingDummyData,
+                        ),
+                        rowsPerPage: _rowsPerPage,
+                        availableRowsPerPage: const [5, 10, 15, 20, 25],
+                        onRowsPerPageChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _rowsPerPage = value;
+                            });
+                          }
+                        },
+                        arrowHeadColor: Colors.blue,
+                      ),
+                    ),
+                  )
+                : _buildCurrentBookingList(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildTopCustomerList() {
+    Color getStatusColor(String status) {
+      switch (status) {
+        case 'Active':
+          return Colors.green;
+        case 'Inactive':
+          return Colors.red;
+        default:
+          return Colors.orange.shade800;
+      }
+    }
+
+    return ListView.builder(
+        itemCount: customersTA.length,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          final topCus = customersTA[index];
+          return Card(
+            elevation: 5,
+            margin: const EdgeInsets.only(bottom: 12),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    topCus['name'] ?? 'N/A',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "ID: ${topCus['id']}",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Date Reg.: ${topCus['dateReg'] ?? "N/A"}",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Total CU Ref: ${topCus['totalCURef'].toString()}",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text('Status: '),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: getStatusColor(topCus['status'])
+                              .withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: getStatusColor(topCus['status'])
+                                .withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Text(
+                          topCus['status'],
+                          style: TextStyle(
+                            color: getStatusColor(topCus['status']),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget _buildCurrentBookingList() {
+    return ListView.builder(
+      physics: tcCurrentBookingDummyData.length > 5
+          ? const AlwaysScrollableScrollPhysics()
+          : const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      itemCount: tcCurrentBookingDummyData.length,
+      itemBuilder: (context, index) {
+        final booking = tcCurrentBookingDummyData[index];
+        return Card(
+          elevation: 5,
+          margin: const EdgeInsets.only(bottom: 12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  booking['customerName'] ?? 'N/A',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "ID: ${booking['bookingId']}",
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Ref. ID: ${booking['packageName'] ?? "N/A"}",
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Ref. Name: ${booking['amount'].toString()}",
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Joining Date: ${booking['bookingDate'] ?? "N/A"}",
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Travel Date: ${booking['travelDate'] ?? "N/A"}",
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -480,271 +548,4 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
       ),
     );
   }
-
-  Widget _buildDepartmentCard1(
-      String department, List<Map<String, String>> performers) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      elevation: 3,
-      child: Padding(
-        padding: EdgeInsets.all(25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    "Current $department's",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  height: 15,
-                )
-              ],
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 15,
-                ),
-                Text(
-                  " Booking ID",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 25,
-                ),
-                Text(
-                  " Customer Name",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 55,
-                ),
-                Text(
-                  "Package Name",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 25,
-                ),
-                Text(
-                  "Amount",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 25,
-                ),
-                Text(
-                  "Booking Date",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 15,
-                ),
-                Text(
-                  "Travel Date",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
-              ],
-            ),
-            SizedBox(height: 10),
-            Divider(),
-            Expanded(
-              child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: performers.length,
-                itemBuilder: (context, rank) {
-                  return Row(
-                    children: [
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Text(performers[rank]["bookingid"]!),
-                      SizedBox(
-                        width: 45,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width:
-                                120, // Set a fixed width to keep all names aligned
-                            child: Text(
-                              performers[rank]["name"]!,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                              overflow: TextOverflow
-                                  .ellipsis, // Ensures long names don't break layout
-                              maxLines: 1, // Keeps text on a single line
-                            ),
-                          ),
-                          Text(
-                            performers[rank]["custid"]!,
-                            style: TextStyle(color: Color(0xFF495057)),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        width: 50,
-                      ),
-                      Text(
-                        performers[rank]["pname"]!,
-                      ),
-                      SizedBox(
-                        width: 50,
-                      ),
-                      Text(
-                        "₹${performers[rank]["amt"]!}",
-                      ),
-                      SizedBox(
-                        width: 36,
-                      ),
-                      Text(
-                        performers[rank]["bdate"]!,
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        performers[rank]["tdate"]!,
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  null;
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, // White text
-                  backgroundColor:
-                      Color.fromARGB(255, 81, 131, 246), // Same blue as header
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  textStyle:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  elevation: 5, // Slight shadow for better UI feel
-                ),
-                child: Text('View More'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Text(
-      "Welcome, User!",
-      style: GoogleFonts.lato(
-        fontSize: 22,
-        fontWeight: FontWeight.w700,
-        color: Colors.black,
-        letterSpacing: 0.2,
-      ),
-    );
-  }
-}
-
-List<Map<String, String>> _getDummyPerformers1() {
-  return [
-    {
-      "name": "John Doe",
-      "image": "https://randomuser.me/api/portraits/men/1.jpg",
-      "count": "30",
-      "date": "26/06/2024"
-    },
-    {
-      "name": "Jane Smith",
-      "image": "https://randomuser.me/api/portraits/women/1.jpg",
-      "count": "30",
-      "date": "26/06/2024"
-    },
-    {
-      "name": "Alice Brown",
-      "image": "https://randomuser.me/api/portraits/women/2.jpg",
-      "count": "30",
-      "date": "26/06/2024"
-    },
-    {
-      "name": "Bob White",
-      "image": "https://randomuser.me/api/portraits/men/2.jpg",
-      "count": "30",
-      "date": "26/06/2024"
-    },
-    {
-      "name": "Charlie Black",
-      "image": "https://randomuser.me/api/portraits/men/3.jpg",
-      "count": "30",
-      "date": "26/06/2024"
-    },
-  ];
-}
-
-List<Map<String, String>> _getDummyPerformers2() {
-  return [
-    {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
-    },
-    {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
-    },
-    {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
-    },
-    {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
-    },
-    {
-      "bookingid": "bid2344234",
-      "name": "John Doe",
-      "custid": "cid234",
-      "pname": "John Doe",
-      "amt": "3000",
-      "bdate": "26/06/2024",
-      "tdate": "26/06/2024"
-    },
-  ];
 }

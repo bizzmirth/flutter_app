@@ -1,3 +1,5 @@
+import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -32,7 +34,6 @@ class MembershipPromotionCard extends StatelessWidget {
           ),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Header
             Container(
@@ -42,7 +43,7 @@ class MembershipPromotionCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -221,7 +222,7 @@ class _PlanCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -256,7 +257,7 @@ class _PlanCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 6), // smaller
                         decoration: BoxDecoration(
-                          color: plan.accentColor.withOpacity(0.2),
+                          color: plan.accentColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -284,7 +285,8 @@ class _PlanCard extends StatelessWidget {
                   const SizedBox(height: 5), // extra breathing space
                   Divider(
                     color: isDarkMode
-                        ? Colors.white.withOpacity(0.4) // brighter in dark mode
+                        ? Colors.white
+                            .withValues(alpha: 0.4) // brighter in dark mode
                         : Colors.grey.shade500, // darker in light mode
                     thickness: 0.5, // bolder line
                     height: 24, // ensures spacing above/below
@@ -529,17 +531,17 @@ class _PlanCard extends StatelessWidget {
     _launchUrl('tel:+918010892265');
   }
 
-  void _handleEmail(BuildContext context, String planName) async {
+  Future<void> _handleEmail(BuildContext context, String planName) async {
     Navigator.pop(context);
 
     final String subject =
-        Uri.encodeComponent("Inquiry about $planName Membership");
+        Uri.encodeComponent('Inquiry about $planName Membership');
     final String body = Uri.encodeComponent(
-        "Hello,\n\nI would like to know more about the $planName Membership.\n\nThanks,");
+        'Hello,\n\nI would like to know more about the $planName Membership.\n\nThanks,');
 
     // ✅ First try native mailto
     final Uri emailUri =
-        Uri.parse("mailto:support@uniqbizz.com?subject=$subject&body=$body");
+        Uri.parse('mailto:support@uniqbizz.com?subject=$subject&body=$body');
 
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri, mode: LaunchMode.externalApplication);
@@ -547,7 +549,7 @@ class _PlanCard extends StatelessWidget {
     }
 
     final Uri gmailUri = Uri.parse(
-        "googlegmail://co?to=support@uniqbizz.com&subject=$subject&body=$body");
+        'googlegmail://co?to=support@uniqbizz.com&subject=$subject&body=$body');
 
     if (await canLaunchUrl(gmailUri)) {
       await launchUrl(gmailUri, mode: LaunchMode.externalApplication);
@@ -556,29 +558,31 @@ class _PlanCard extends StatelessWidget {
 
     // ✅ Fallback Gmail web
     final Uri webGmailUri = Uri.parse(
-        "https://mail.google.com/mail/?view=cm&fs=1&to=support@uniqbizz.com&su=$subject&body=$body");
+        'https://mail.google.com/mail/?view=cm&fs=1&to=support@uniqbizz.com&su=$subject&body=$body');
 
     if (await canLaunchUrl(webGmailUri)) {
       await launchUrl(webGmailUri, mode: LaunchMode.externalApplication);
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text("No email app or Gmail available on this device")),
-    );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   const SnackBar(
+    //       content: Text("No email app or Gmail available on this device")),
+    // );
+    ToastHelper.showErrorToast(
+        title: 'No email app or Gmail available on this device');
   }
 
-  void _launchUrl(String url) async {
+  Future<void> _launchUrl(String url) async {
     try {
       if (await canLaunchUrlString(url)) {
         await launchUrlString(url);
       } else {
         // Handle the case where the URL can't be launched
-        debugPrint('Could not launch $url');
+        Logger.error('Could not launch $url');
       }
     } catch (e) {
-      debugPrint('Error launching URL: $e');
+      Logger.error('Error launching URL: $e');
     }
   }
 }
