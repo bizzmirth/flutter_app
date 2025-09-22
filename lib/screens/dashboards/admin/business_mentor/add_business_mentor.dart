@@ -31,12 +31,12 @@ class AddbmPage extends StatefulWidget {
 
 class _AddbmState extends State<AddbmPage> {
   Map<String, dynamic> selectedFiles = {
-    "Profile Picture": null,
-    "Aadhar Card": null,
-    "Pan Card": null,
-    "Bank Passbook": null,
-    "Voting Card": null,
-    "Payment Proof": null,
+    'Profile Picture': null,
+    'Aadhar Card': null,
+    'Pan Card': null,
+    'Bank Passbook': null,
+    'Voting Card': null,
+    'Payment Proof': null,
   };
 
   final _formKey = GlobalKey<FormState>();
@@ -56,16 +56,16 @@ class _AddbmState extends State<AddbmPage> {
   final TextEditingController _transactionIDController =
       TextEditingController();
   bool isLoading = false;
-  String? selectedDesignationId = "";
-  String? selectedCountryCode = "";
-  String selectedGender = "---- Select Gender ----";
-  String selectedCountry = "---- Select Country ----";
-  String selectedState = "---- Select State ----";
-  String selectedCity = "---- Select City ----";
-  String _selectedDesignation = "---- Select Designation * ----";
-  String _selectedZone = "---- Select Zone * ----";
-  String _selectedBranch = "---- Select Branch * ----";
-  String _selectedPaymentMode = "Cash";
+  String? selectedDesignationId = '';
+  String? selectedCountryCode = '';
+  String selectedGender = '---- Select Gender ----';
+  String selectedCountry = '---- Select Country ----';
+  String selectedState = '---- Select State ----';
+  String selectedCity = '---- Select City ----';
+  String _selectedDesignation = '---- Select Designation * ----';
+  String _selectedZone = '---- Select Zone * ----';
+  String _selectedBranch = '---- Select Branch * ----';
+  String _selectedPaymentMode = 'Cash';
 
   String? _selectedCountryId;
   List<dynamic> _countries = [];
@@ -87,8 +87,8 @@ class _AddbmState extends State<AddbmPage> {
   List<dynamic> _cities = [];
   List<String> _cityNames = [];
 
-  String selectedUserId = "---- User Id & Name * ----";
-  var savedImagePath = "";
+  String selectedUserId = '---- User Id & Name * ----';
+  var savedImagePath = '';
   List<Map<String, dynamic>> _employeesByDesignation = [];
   final IsarService _isarService = IsarService();
 
@@ -96,12 +96,12 @@ class _AddbmState extends State<AddbmPage> {
 
   final TextEditingController _pincodeController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  String selectedRegId = "";
-  String selectedRefName = "";
-  String chequeNo = "";
-  String chequeDate = "";
-  String bankDate = "";
-  String transactionId = "";
+  String selectedRegId = '';
+  String selectedRefName = '';
+  String chequeNo = '';
+  String chequeDate = '';
+  String bankDate = '';
+  String transactionId = '';
 
   String _selectedCountryCode = '+91'; // Default country code
   final _userIdNameKey = GlobalKey<FormFieldState>();
@@ -155,7 +155,7 @@ class _AddbmState extends State<AddbmPage> {
                 },
               )
               .toList();
-          Logger.success("designationss :: $designations");
+          Logger.success('designationss :: $designations');
         });
       }
     } catch (e) {
@@ -167,19 +167,19 @@ class _AddbmState extends State<AddbmPage> {
     try {
       final controller =
           Provider.of<AdminBusniessMentorController>(context, listen: false);
-      List<dynamic> countries = await controller.apiGetCountry();
+      final List<dynamic> countries = await controller.apiGetCountry();
 
       _countries = countries;
 
-      List<String> countryNames = countries
+      final List<String> countryNames = countries
           .map<String>(
-              (country) => country['country_name'] ?? "No Country Available")
+              (country) => country['country_name'] ?? 'No Country Available')
           .toList();
       setState(() {
         _countryNames = countryNames;
       });
     } catch (e) {
-      Logger.error("error fetching countries $e");
+      Logger.error('error fetching countries $e');
     }
   }
 
@@ -187,19 +187,20 @@ class _AddbmState extends State<AddbmPage> {
     try {
       final controller =
           Provider.of<AdminBusniessMentorController>(context, listen: false);
-      List<dynamic> states = await controller.apiGetStates(selectedCountryId);
+      final List<dynamic> states =
+          await controller.apiGetStates(selectedCountryId);
       _states = states;
 
-      List<String> stateNames = states
-          .map<String>((state) => state['state_name'] ?? "No State Available")
+      final List<String> stateNames = states
+          .map<String>((state) => state['state_name'] ?? 'No State Available')
           .toList();
 
       setState(() {
         _stateNames = stateNames;
       });
-      Logger.success("Fetched states from the api $states");
+      Logger.success('Fetched states from the api $states');
     } catch (e) {
-      Logger.success("Error fetching states $e");
+      Logger.success('Error fetching states $e');
     }
   }
 
@@ -207,19 +208,19 @@ class _AddbmState extends State<AddbmPage> {
     try {
       final controller =
           Provider.of<AdminBusniessMentorController>(context, listen: false);
-      List<dynamic> cities = await controller.apiGetCity(selectedStateId);
+      final List<dynamic> cities = await controller.apiGetCity(selectedStateId);
       _cities = cities;
 
-      List<String> citiesNames = cities
-          .map<String>((city) => city['city_name'] ?? "No cities available")
+      final List<String> citiesNames = cities
+          .map<String>((city) => city['city_name'] ?? 'No cities available')
           .toList();
 
       setState(() {
         _cityNames = citiesNames;
       });
-      Logger.success("Fetched cities from the api $cities");
+      Logger.success('Fetched cities from the api $cities');
     } catch (e) {
-      Logger.error("Error fetching states $e");
+      Logger.error('Error fetching states $e');
     }
   }
 
@@ -228,19 +229,19 @@ class _AddbmState extends State<AddbmPage> {
       final controller =
           Provider.of<AdminBusniessMentorController>(context, listen: false);
 
-      List<dynamic> zones = await controller.apiGetZone();
+      final List<dynamic> zones = await controller.apiGetZone();
 
       _zones = zones;
 
-      List<String> zoneNames = zones
-          .map<String>((zone) => zone['zone_name'] ?? "Unknown Zone")
+      final List<String> zoneNames = zones
+          .map<String>((zone) => zone['zone_name'] ?? 'Unknown Zone')
           .toList();
 
       setState(() {
         _zoneNames = zoneNames;
       });
     } catch (e) {
-      Logger.error("Error loading zones: $e");
+      Logger.error('Error loading zones: $e');
     }
   }
 
@@ -250,13 +251,13 @@ class _AddbmState extends State<AddbmPage> {
     final branches = await controller.apiGetBranchs(zoneId);
     _branches = branches;
 
-    List<String> branchNames = branches
-        .map<String>((branch) => branch['branch_name'] ?? "No Branches")
+    final List<String> branchNames = branches
+        .map<String>((branch) => branch['branch_name'] ?? 'No Branches')
         .toList();
     setState(() {
       _branchesNames = branchNames;
     });
-    Logger.success("new branches based on zone $branches");
+    Logger.success('new branches based on zone $branches');
   }
 
   Future<List<Map<String, dynamic>>> getUserByDesignationID(
@@ -278,10 +279,10 @@ class _AddbmState extends State<AddbmPage> {
           .toList();
 
       Logger.success(
-          "Found ${filteredEmployees.length} employees with designation $selectedDesignationId");
+          'Found ${filteredEmployees.length} employees with designation $selectedDesignationId');
       return filteredEmployees;
     } catch (e) {
-      Logger.error("Error getting user by designation: $e");
+      Logger.error('Error getting user by designation: $e');
       return [];
     }
   }
@@ -294,20 +295,20 @@ class _AddbmState extends State<AddbmPage> {
       setState(() {
         _pincodeController.text = pincode;
       });
-      Logger.success("Pincode fetched from the $pincode");
+      Logger.success('Pincode fetched from the $pincode');
     } catch (e) {
-      Logger.error("Error fetching pincode $e");
+      Logger.error('Error fetching pincode $e');
     }
   }
 
-  void _pickFile(String fileType) async {
+  Future<void> _pickFile(String fileType) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;
 
-      String originalPath = result.files.single.path!;
+      final String originalPath = result.files.single.path!;
 
       final appDir = await getApplicationDocumentsDirectory();
       final bizmirthDir = Directory('${appDir.path}/bizmirth');
@@ -318,30 +319,30 @@ class _AddbmState extends State<AddbmPage> {
 
       String subFolderName;
       switch (fileType) {
-        case "Profile Picture":
-          subFolderName = "profile_pic";
+        case 'Profile Picture':
+          subFolderName = 'profile_pic';
           break;
-        case "ID Proof":
-          subFolderName = "id_proof";
+        case 'ID Proof':
+          subFolderName = 'id_proof';
           break;
-        case "Bank Passbook":
-          subFolderName = "passbook";
+        case 'Bank Passbook':
+          subFolderName = 'passbook';
           break;
 
-        case "Aadhar Card":
-          subFolderName = "aadhar_card";
+        case 'Aadhar Card':
+          subFolderName = 'aadhar_card';
           break;
-        case "Pan Card":
-          subFolderName = "pan_card";
+        case 'Pan Card':
+          subFolderName = 'pan_card';
           break;
-        case "Voting Card":
-          subFolderName = "voting_card";
+        case 'Voting Card':
+          subFolderName = 'voting_card';
           break;
-        case "Payment Proof":
-          subFolderName = "payment_proof";
+        case 'Payment Proof':
+          subFolderName = 'payment_proof';
           break;
         default:
-          subFolderName = "other_documents";
+          subFolderName = 'other_documents';
       }
 
       // Create the specific subfolder
@@ -361,7 +362,7 @@ class _AddbmState extends State<AddbmPage> {
         selectedFiles[fileType] = File(savedImagePath);
       });
     } catch (e) {
-      Logger.error("Error picking file: $e");
+      Logger.error('Error picking file: $e');
     }
   }
 
@@ -382,7 +383,7 @@ class _AddbmState extends State<AddbmPage> {
       maxLines: maxLines,
       validator: validator,
       controller: controller,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         // ignore: deprecated_member_use
@@ -407,7 +408,8 @@ class _AddbmState extends State<AddbmPage> {
     String? emptyMessage,
     GlobalKey<FormFieldState>? fieldKey,
   }) {
-    String defaultOption = "---- Select $label ----"; // Default placeholder
+    final String defaultOption =
+        '---- Select $label ----'; // Default placeholder
 
     // Handle empty items list with emptyMessage
     if (items.isEmpty && emptyMessage != null) {
@@ -421,7 +423,7 @@ class _AddbmState extends State<AddbmPage> {
                     color: const Color.fromARGB(255, 255, 255, 255)
                         .withValues(alpha: 0.8))),
             Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.2),
@@ -448,7 +450,8 @@ class _AddbmState extends State<AddbmPage> {
             enabled: widget.isViewMode,
             key: fieldKey,
             value: defaultOption, // Placeholder value
-            child: Text(defaultOption, style: TextStyle(color: Colors.white)),
+            child: Text(defaultOption,
+                style: const TextStyle(color: Colors.white)),
           ),
           ...items.map((e) => DropdownMenuItem(
               value: e,
@@ -493,99 +496,93 @@ class _AddbmState extends State<AddbmPage> {
       'pincode': _pincodeKey,
       'address': _addressKey,
     };
-    if (_selectedDesignation == "---- Select Designation * ----") {
+    if (_selectedDesignation == '---- Select Designation * ----') {
       final RenderObject? renderObject =
           _designationKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _designationKey.currentContext!,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           alignment: 2,
         );
         return;
       }
     }
-    if (selectedUserId == "---- Select User Id & Name * ----") {
+    if (selectedUserId == '---- Select User Id & Name * ----') {
       final RenderObject? renderObject =
           _userIdNameKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _userIdNameKey.currentContext!,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           alignment: 1,
         );
         return;
       }
     }
-    if (selectedGender == "---- Select Gender ----") {
+    if (selectedGender == '---- Select Gender ----') {
       final RenderObject? renderObject =
           _genderKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _genderKey.currentContext!,
-          duration: Duration(milliseconds: 500),
-          alignment: 0.0,
+          duration: const Duration(milliseconds: 500),
         );
         return;
       }
     }
-    if (selectedCountry == "---- Select Country ----") {
+    if (selectedCountry == '---- Select Country ----') {
       final RenderObject? renderObject =
           _countryKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _countryKey.currentContext!,
-          duration: Duration(milliseconds: 500),
-          alignment: 0.0,
+          duration: const Duration(milliseconds: 500),
         );
         return;
       }
     }
-    if (selectedState == "---- Select State ----") {
+    if (selectedState == '---- Select State ----') {
       final RenderObject? renderObject =
           _stateKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _stateKey.currentContext!,
-          duration: Duration(milliseconds: 500),
-          alignment: 0.0,
+          duration: const Duration(milliseconds: 500),
         );
         return;
       }
     }
 
-    if (selectedCity == "---- Select City ----") {
+    if (selectedCity == '---- Select City ----') {
       final RenderObject? renderObject =
           _cityKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _cityKey.currentContext!,
-          duration: Duration(milliseconds: 500),
-          alignment: 0.0,
+          duration: const Duration(milliseconds: 500),
         );
         return;
       }
     }
-    if (_selectedZone == "---- Select Zone * ----") {
+    if (_selectedZone == '---- Select Zone * ----') {
       final RenderObject? renderObject =
           _zoneKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _zoneKey.currentContext!,
-          duration: Duration(milliseconds: 500),
-          alignment: 0.0,
+          duration: const Duration(milliseconds: 500),
         );
         return;
       }
     }
-    if (_selectedBranch == "---- Select Branch * ----") {
+    if (_selectedBranch == '---- Select Branch * ----') {
       final RenderObject? renderObject =
           _branchKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _branchKey.currentContext!,
-          duration: Duration(milliseconds: 500),
-          alignment: 0.0,
+          duration: const Duration(milliseconds: 500),
         );
         return;
       }
@@ -594,12 +591,11 @@ class _AddbmState extends State<AddbmPage> {
     for (final entry in fieldKeys.entries) {
       final fieldState = entry.value.currentState;
       if (fieldState != null && fieldState.hasError) {
-        Logger.error("Found error in field: ${entry.key}");
+        Logger.error('Found error in field: ${entry.key}');
         Scrollable.ensureVisible(
           entry.value.currentContext!,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
-          alignment: 0.0,
         );
         break;
       }
@@ -615,7 +611,7 @@ class _AddbmState extends State<AddbmPage> {
       if (formState == null || !formState.validate()) {
         _scrollToFirstError();
         ToastHelper.showErrorToast(
-            title: "Please Fill all the required fields");
+            title: 'Please Fill all the required fields');
         return;
       }
       if (_formKey.currentState!.validate()) {
@@ -635,65 +631,65 @@ class _AddbmState extends State<AddbmPage> {
         final String paymentMode = _selectedPaymentMode;
         String? formattedDate;
         if (_dateController.text.isNotEmpty) {
-          formattedDate = DateFormat("yyyy-MM-dd").format(
-            DateFormat("dd-MM-yyyy").parse(_dateController.text),
+          formattedDate = DateFormat('yyyy-MM-dd').format(
+            DateFormat('dd-MM-yyyy').parse(_dateController.text),
           );
         }
-        Map<String, String> documentPaths = {};
+        final Map<String, String> documentPaths = {};
         selectedFiles.forEach((key, value) {
           if (value != null) {
-            String filePath = value.path;
+            final String filePath = value.path;
 
             switch (key) {
-              case "Profile Picture":
+              case 'Profile Picture':
                 documentPaths['profilePicture'] = filePath;
                 break;
-              case "Aadhar Card":
+              case 'Aadhar Card':
                 documentPaths['adharCard'] = filePath;
                 break;
-              case "Pan Card":
+              case 'Pan Card':
                 documentPaths['panCard'] = filePath;
                 break;
-              case "Bank Passbook":
+              case 'Bank Passbook':
                 documentPaths['bankPassbook'] = filePath;
                 break;
-              case "Voting Card":
+              case 'Voting Card':
                 documentPaths['votingCard'] = filePath;
                 break;
-              case "Payment Proof":
+              case 'Payment Proof':
                 documentPaths['paymentProof'] = filePath;
             }
           }
         });
-        if (selectedFiles["Profile Picture"] != null) {
+        if (selectedFiles['Profile Picture'] != null) {
           await controller.uploadImage(
-              context, 'profile_pic', selectedFiles["Profile Picture"]!.path);
+              context, 'profile_pic', selectedFiles['Profile Picture']!.path);
         }
-        if (selectedFiles["Aadhar Card"] != null) {
+        if (selectedFiles['Aadhar Card'] != null) {
           await controller.uploadImage(
-              context, 'aadhar_card', selectedFiles["Aadhar Card"]!.path);
+              context, 'aadhar_card', selectedFiles['Aadhar Card']!.path);
         }
-        if (selectedFiles["Pan Card"] != null) {
+        if (selectedFiles['Pan Card'] != null) {
           await controller.uploadImage(
-              context, 'pan_card', selectedFiles["Pan Card"]!.path);
+              context, 'pan_card', selectedFiles['Pan Card']!.path);
         }
-        if (selectedFiles["Voting Card"] != null) {
+        if (selectedFiles['Voting Card'] != null) {
           await controller.uploadImage(
-              context, 'voting_card', selectedFiles["Voting Card"]!.path);
+              context, 'voting_card', selectedFiles['Voting Card']!.path);
         }
-        if (selectedFiles["Bank Passbook"] != null) {
+        if (selectedFiles['Bank Passbook'] != null) {
           await controller.uploadImage(
-              context, 'passbook', selectedFiles["Bank Passbook"]!.path);
+              context, 'passbook', selectedFiles['Bank Passbook']!.path);
         }
-        if (selectedFiles["Payment Proof"] != null) {
+        if (selectedFiles['Payment Proof'] != null) {
           await controller.uploadImage(
-              context, 'payment_proof', selectedFiles["Payment Proof"]!.path);
+              context, 'payment_proof', selectedFiles['Payment Proof']!.path);
         }
-        if (_selectedPaymentMode == "Cheque") {
+        if (_selectedPaymentMode == 'Cheque') {
           chequeNo = _chequeNoController.text;
           chequeDate = _chequeDateController.text;
           bankDate = _bankNameController.text;
-        } else if (_selectedPaymentMode == "UPI/NEFT") {
+        } else if (_selectedPaymentMode == 'UPI/NEFT') {
           transactionId = _transactionIDController.text;
         }
 
@@ -724,11 +720,11 @@ class _AddbmState extends State<AddbmPage> {
           ..chequeDate = chequeDate
           ..bankName = bankDate
           ..transactionNo = transactionId
-          ..profilePicture = documentPaths["profilePicture"]
-          ..adharCard = documentPaths["adharCard"]
-          ..panCard = documentPaths["panCard"]
-          ..bankPassbook = documentPaths["bankPassbook"]
-          ..votingCard = documentPaths["votingCard"]
+          ..profilePicture = documentPaths['profilePicture']
+          ..adharCard = documentPaths['adharCard']
+          ..panCard = documentPaths['panCard']
+          ..bankPassbook = documentPaths['bankPassbook']
+          ..votingCard = documentPaths['votingCard']
           ..paymentProof = documentPaths['paymentProof'];
 
         await _isarService.save<PendingBusinessMentorModel>(newBusinessMentor);
@@ -737,7 +733,7 @@ class _AddbmState extends State<AddbmPage> {
         Navigator.pop(context);
       }
     } catch (e) {
-      Logger.error("Error submitting form: $e");
+      Logger.error('Error submitting form: $e');
     }
   }
 
@@ -759,14 +755,15 @@ class _AddbmState extends State<AddbmPage> {
     _dateController.clear();
   }
 
-  void _populatePendingBuinessMentor(
+  Future<void> _populatePendingBuinessMentor(
       PendingBusinessMentorModel busniessMentor) async {
     try {
       isLoading = true;
-      Logger.success("Populated Gender is ${busniessMentor.gender}");
+      Logger.success('Populated Gender is ${busniessMentor.gender}');
 
       _refNoController.text = busniessMentor.referenceNo!;
-      String? refname = await getNameByReferenceNo(busniessMentor.referenceNo!);
+      final String? refname =
+          await getNameByReferenceNo(busniessMentor.referenceNo!);
       _refNameController.text = refname!;
       _firstNameController.text = busniessMentor.firstName!;
       _lastNameController.text = busniessMentor.lastName!;
@@ -797,7 +794,7 @@ class _AddbmState extends State<AddbmPage> {
         selectedCountry =
             countryObject['country_name'] ?? '---- Select Country ----';
         Logger.success(
-            "Set selected country to: $selectedCountry with ID: $_selectedCountryId");
+            'Set selected country to: $selectedCountry with ID: $_selectedCountryId');
       });
 
       await _loadStates(_selectedCountryId);
@@ -812,7 +809,7 @@ class _AddbmState extends State<AddbmPage> {
       setState(() {
         selectedState = stateObject['state_name'] ?? '---- Select State ----';
         Logger.success(
-            "Set selected state to: $selectedState with ID: $_selectedStateId");
+            'Set selected state to: $selectedState with ID: $_selectedStateId');
       });
 
       await _loadCities(_selectedStateId);
@@ -827,7 +824,7 @@ class _AddbmState extends State<AddbmPage> {
       setState(() {
         selectedCity = cityObject['city_name'] ?? '---- Select City -----';
         Logger.success(
-            "Set selected city $selectedCity with ID: $_selectedCityId");
+            'Set selected city $selectedCity with ID: $_selectedCityId');
       });
 
       await _loadZones();
@@ -840,7 +837,7 @@ class _AddbmState extends State<AddbmPage> {
       setState(() {
         _selectedZone = zoneObject['zone_name'] ?? '---- Select Zone';
         Logger.success(
-            "Set selected zone is $_selectedZone with ID $_selectedZoneId ");
+            'Set selected zone is $_selectedZone with ID $_selectedZoneId ');
       });
 
       await _getBranches(_selectedZoneId!);
@@ -854,78 +851,78 @@ class _AddbmState extends State<AddbmPage> {
       setState(() {
         _selectedBranch = branchObject['branch_name'] ?? '---- Select Branch';
         Logger.success(
-            "Set selected branch to $_selectedBranch with ID: $_selectedBranchId");
+            'Set selected branch to $_selectedBranch with ID: $_selectedBranchId');
       });
       if (busniessMentor.profilePicture != null) {
         if (busniessMentor.profilePicture!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Profile Picture"] = busniessMentor.profilePicture!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Profile Picture'] = busniessMentor.profilePicture!;
         } else {
-          selectedFiles["Profile Picture"] =
-              "https://testca.uniqbizz.com/uploading/${busniessMentor.profilePicture!}";
+          selectedFiles['Profile Picture'] =
+              'https://testca.uniqbizz.com/uploading/${busniessMentor.profilePicture!}';
         }
-        Logger.success(selectedFiles["Profile Picture"]);
+        Logger.success(selectedFiles['Profile Picture']);
       }
       if (busniessMentor.adharCard != null) {
         if (busniessMentor.adharCard!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Aadhar Card"] = busniessMentor.adharCard!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Aadhar Card'] = busniessMentor.adharCard!;
         } else {
-          selectedFiles["Aadhar Card"] =
-              "https://testca.uniqbizz.com/uploading/${busniessMentor.adharCard!}";
+          selectedFiles['Aadhar Card'] =
+              'https://testca.uniqbizz.com/uploading/${busniessMentor.adharCard!}';
         }
-        Logger.success(selectedFiles["Aadhar Card"]);
+        Logger.success(selectedFiles['Aadhar Card']);
       }
       if (busniessMentor.panCard != null) {
         if (busniessMentor.panCard!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Pan Card"] = busniessMentor.panCard!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Pan Card'] = busniessMentor.panCard!;
         } else {
-          selectedFiles["Pan Card"] =
-              "https://testca.uniqbizz.com/uploading/${busniessMentor.panCard!}";
+          selectedFiles['Pan Card'] =
+              'https://testca.uniqbizz.com/uploading/${busniessMentor.panCard!}';
         }
-        Logger.success(selectedFiles["Pan Card"]);
+        Logger.success(selectedFiles['Pan Card']);
       }
       if (busniessMentor.bankPassbook != null) {
         if (busniessMentor.bankPassbook!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Bank Passbook"] = busniessMentor.bankPassbook!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Bank Passbook'] = busniessMentor.bankPassbook!;
         } else {
-          selectedFiles["Bank Passbook"] =
-              "https://testca.uniqbizz.com/uploading/${busniessMentor.bankPassbook!}";
+          selectedFiles['Bank Passbook'] =
+              'https://testca.uniqbizz.com/uploading/${busniessMentor.bankPassbook!}';
         }
-        Logger.success(selectedFiles["Bank Passbook"]);
+        Logger.success(selectedFiles['Bank Passbook']);
       }
       if (busniessMentor.votingCard != null) {
         if (busniessMentor.votingCard!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Voting Card"] = busniessMentor.votingCard!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Voting Card'] = busniessMentor.votingCard!;
         } else {
-          selectedFiles["Voting Card"] =
-              "https://testca.uniqbizz.com/uploading/${busniessMentor.votingCard!}";
+          selectedFiles['Voting Card'] =
+              'https://testca.uniqbizz.com/uploading/${busniessMentor.votingCard!}';
         }
-        Logger.success(selectedFiles["Voting Card"]);
+        Logger.success(selectedFiles['Voting Card']);
       }
       if (busniessMentor.paymentProof != null) {
         if (busniessMentor.paymentProof!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Payment Proof"] = busniessMentor.paymentProof!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Payment Proof'] = busniessMentor.paymentProof!;
         } else {
-          selectedFiles["Payment Proof"] =
-              "https://testca.uniqbizz.com/uploading/${busniessMentor.paymentProof!}";
+          selectedFiles['Payment Proof'] =
+              'https://testca.uniqbizz.com/uploading/${busniessMentor.paymentProof!}';
         }
-        Logger.success(selectedFiles["Payment Proof"]);
+        Logger.success(selectedFiles['Payment Proof']);
       }
     } catch (e, stacktrace) {
-      Logger.error("Error populating business mentor: $e");
-      Logger.error("Stacktrace: $stacktrace");
+      Logger.error('Error populating business mentor: $e');
+      Logger.error('Stacktrace: $stacktrace');
     } finally {
       isLoading = false;
       setState(() {});
     }
   }
 
-  void updatePendingBusinessMentor() async {
+  Future<void> updatePendingBusinessMentor() async {
     try {
       isLoading = true;
       // String? newProfilePicturePath;
@@ -935,9 +932,9 @@ class _AddbmState extends State<AddbmPage> {
       // String? newVotingCardPath;
       // String? newPaymentProofPath;
     } catch (e) {
-      Logger.error("Error updating pending business mentor : $e");
+      Logger.error('Error updating pending business mentor : $e');
     } finally {
-      Logger.success("finally reached to finally");
+      Logger.success('finally reached to finally');
       isLoading = false;
       setState(() {});
     }
@@ -963,7 +960,7 @@ class _AddbmState extends State<AddbmPage> {
         elevation: 0,
       ),
       body: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : Container(
@@ -982,7 +979,7 @@ class _AddbmState extends State<AddbmPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         widget.isViewMode || widget.isEditMode
                             ? _buildTextField(
                                 'Reference ID *',
@@ -996,13 +993,13 @@ class _AddbmState extends State<AddbmPage> {
                                       designations
                                           .map<String>(
                                             (desg) =>
-                                                desg['desg_name'] ?? "nothing",
+                                                desg['desg_name'] ?? 'nothing',
                                           )
                                           .toList(),
                                       _selectedDesignation, validator: (value) {
                                     if (value == null ||
                                         value ==
-                                            "---- Select Designation * ----") {
+                                            '---- Select Designation * ----') {
                                       return 'Please select a designation';
                                     }
                                     return null;
@@ -1028,15 +1025,15 @@ class _AddbmState extends State<AddbmPage> {
                                                   _employeesByDesignation =
                                                       employees;
                                                   selectedUserId =
-                                                      "---- Select User Id & Name * ----";
+                                                      '---- Select User Id & Name * ----';
                                                 });
                                               });
                                             }
 
                                             Logger.success(
-                                                "Selected Designation $_selectedDesignation and $selectedDesignationId");
+                                                'Selected Designation $_selectedDesignation and $selectedDesignationId');
                                           })),
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                   _buildDropdown(
                                       'User Id & Name *',
                                       fieldKey: _userIdNameKey,
@@ -1051,7 +1048,7 @@ class _AddbmState extends State<AddbmPage> {
                                       selectedUserId, validator: (value) {
                                     if (value == null ||
                                         value ==
-                                            "---- Select User Id & Name * ----") {
+                                            '---- Select User Id & Name * ----') {
                                       return 'Please select a user id and name';
                                     }
                                     return null;
@@ -1060,21 +1057,21 @@ class _AddbmState extends State<AddbmPage> {
                                             selectedUserId = value!;
 
                                             if (value !=
-                                                "---- Select User Id & Name * ----") {
+                                                '---- Select User Id & Name * ----') {
                                               // The regId is before the first " - "
                                               selectedRegId =
-                                                  value.split(" - ")[0];
+                                                  value.split(' - ')[0];
                                               selectedRefName =
-                                                  value.split(" - ")[1];
+                                                  value.split(' - ')[1];
                                               Logger.success(
-                                                  "Selected User RegID: $selectedRegId and Name: $selectedRefName");
+                                                  'Selected User RegID: $selectedRegId and Name: $selectedRefName');
                                               _refNameController.text =
                                                   selectedRefName;
                                             }
                                           })),
                                 ],
                               ),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         _buildTextField('Reference Name *', _refNameController,
                             validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -1082,7 +1079,7 @@ class _AddbmState extends State<AddbmPage> {
                           }
                           return null;
                         }, fieldKey: _refNameKey, forceReadOnly: true),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         _buildTextField('First Name*', _firstNameController,
                             fieldKey: _firstNameKey, validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -1090,7 +1087,7 @@ class _AddbmState extends State<AddbmPage> {
                           }
                           return null;
                         }),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         _buildTextField('Last Name*', _lastNameController,
                             fieldKey: _lastNameKey, validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -1098,7 +1095,7 @@ class _AddbmState extends State<AddbmPage> {
                           }
                           return null;
                         }),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         _buildTextField('Nominee Name*', _nomineeNameController,
                             fieldKey: _nomineeName, validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -1106,7 +1103,7 @@ class _AddbmState extends State<AddbmPage> {
                           }
                           return null;
                         }),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         _buildTextField(
                             'Nominee Relation*', _nomineeRelationController,
                             fieldKey: _nomineeRelation, validator: (value) {
@@ -1115,7 +1112,7 @@ class _AddbmState extends State<AddbmPage> {
                           }
                           return null;
                         }),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Row(
@@ -1130,15 +1127,15 @@ class _AddbmState extends State<AddbmPage> {
                                 ),
                                 child: DropdownButton<String>(
                                   value: _selectedCountryCode,
-                                  onChanged: (String? newValue) {
+                                  onChanged: (newValue) {
                                     setState(() {
                                       _selectedCountryCode = newValue!;
                                       Logger.success(
-                                          "selectedCountryCode : $_selectedCountryCode");
+                                          'selectedCountryCode : $_selectedCountryCode');
                                     });
                                   },
-                                  items: ["+91", "+1", "+44", "+61", "+971"]
-                                      .map((String value) {
+                                  items: ['+91', '+1', '+44', '+61', '+971']
+                                      .map((value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Container(
@@ -1146,21 +1143,20 @@ class _AddbmState extends State<AddbmPage> {
                                             50, // Adjust this value to reduce the width of each item
                                         alignment: Alignment.center,
                                         child: Text(value,
-                                            style: TextStyle(
-                                                color: const Color.fromARGB(
+                                            style: const TextStyle(
+                                                color: Color.fromARGB(
                                                     255, 255, 255, 255))),
                                       ),
                                     );
                                   }).toList(),
                                   dropdownColor:
                                       const Color.fromARGB(255, 83, 83, 83),
-                                  isExpanded: false,
                                   underline:
-                                      SizedBox(), // Hides the default underline
+                                      const SizedBox(), // Hides the default underline
                                 ),
                               ),
                               // Phone number text field
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: TextFormField(
                                   key: _mobileKey,
@@ -1174,11 +1170,11 @@ class _AddbmState extends State<AddbmPage> {
                                   },
                                   maxLength:
                                       10, // Limit to typical phone number length
-                                  style: TextStyle(
-                                      color: const Color.fromARGB(
-                                          255, 255, 255, 255)),
+                                  style: const TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 255, 255, 255)),
                                   decoration: InputDecoration(
-                                    labelText: "Phone number",
+                                    labelText: 'Phone number',
                                     labelStyle: TextStyle(
                                         color: Colors.white
                                             .withValues(alpha: 0.8)),
@@ -1189,14 +1185,14 @@ class _AddbmState extends State<AddbmPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: BorderSide.none,
                                     ),
-                                    counterText: "", // Hide character counter
+                                    counterText: '', // Hide character counter
                                   ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         _buildTextField('Email *', _emailController,
                             fieldKey: _emailKey, validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -1204,7 +1200,7 @@ class _AddbmState extends State<AddbmPage> {
                           }
                           return null;
                         }),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         _buildDropdown(
                             'Gender *',
                             ['Male', 'Female', 'Other'],
@@ -1216,12 +1212,12 @@ class _AddbmState extends State<AddbmPage> {
                                   },
                                 ), validator: (value) {
                           if (value == null ||
-                              value == "---- Select Gender * ----") {
+                              value == '---- Select Gender * ----') {
                             return 'Please select a gender';
                           }
                           return null;
                         }),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
@@ -1235,7 +1231,7 @@ class _AddbmState extends State<AddbmPage> {
                             },
                             readOnly: true,
                             enabled: !widget.isViewMode,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Date of Joining *',
                               labelStyle: TextStyle(
@@ -1249,12 +1245,10 @@ class _AddbmState extends State<AddbmPage> {
                               suffixIcon: _dateController.text.isNotEmpty &&
                                       !widget.isViewMode
                                   ? IconButton(
-                                      icon: Icon(Icons.close,
+                                      icon: const Icon(Icons.close,
                                           color: Colors.white),
                                       onPressed: () {
-                                        setState(() {
-                                          _dateController.clear();
-                                        });
+                                        setState(_dateController.clear);
                                       },
                                     )
                                   : null,
@@ -1271,7 +1265,8 @@ class _AddbmState extends State<AddbmPage> {
                                   }
                                 }
 
-                                DateTime? pickedDate = await showDatePicker(
+                                final DateTime? pickedDate =
+                                    await showDatePicker(
                                   context: context,
                                   initialDate: initialDate,
                                   firstDate: DateTime(1900),
@@ -1284,18 +1279,18 @@ class _AddbmState extends State<AddbmPage> {
                                         DateFormat('dd-MM-yyyy')
                                             .format(pickedDate);
                                     Logger.warning(
-                                        "Selected date ${_dateController.text}");
+                                        'Selected date ${_dateController.text}');
                                   });
                                 }
                               }
                             },
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         _buildDropdown('Country *', _countryNames,
                             fieldKey: _countryKey, validator: (value) {
                           if (value == null ||
-                              value == "---- Select Country * ----") {
+                              value == '---- Select Country * ----') {
                             return 'Please select a Country';
                           }
                           return null;
@@ -1312,15 +1307,15 @@ class _AddbmState extends State<AddbmPage> {
                                     _selectedCountryId =
                                         selectedCountryObject['id'].toString();
                                     Logger.success(
-                                        "selected country is $selectedCountry ID : $_selectedCountryId");
+                                        'selected country is $selectedCountry ID : $_selectedCountryId');
                                   }
                                   _loadStates(_selectedCountryId);
                                 })),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         _buildDropdown('State *', _stateNames,
                             fieldKey: _stateKey, validator: (value) {
                           if (value == null ||
-                              value == "---- Select State * ----") {
+                              value == '---- Select State * ----') {
                             return 'Please select a state';
                           }
                           return null;
@@ -1338,15 +1333,15 @@ class _AddbmState extends State<AddbmPage> {
                                     _selectedStateId =
                                         selectedStateObject['id'].toString();
                                     Logger.success(
-                                        "selected state is $selectedState ID : $_selectedStateId");
+                                        'selected state is $selectedState ID : $_selectedStateId');
                                     _loadCities(_selectedStateId);
                                   }
                                 })),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         _buildDropdown('City *', _cityNames, selectedCity,
                             fieldKey: _cityKey, validator: (value) {
                           if (value == null ||
-                              value == "---- Select City * ----") {
+                              value == '---- Select City * ----') {
                             return 'Please select a city';
                           }
                           return null;
@@ -1360,11 +1355,11 @@ class _AddbmState extends State<AddbmPage> {
                                     _selectedCityId =
                                         selectedCityObject['id'].toString();
                                     Logger.success(
-                                        "selected city is $selectedCity ID : $_selectedCityId");
+                                        'selected city is $selectedCity ID : $_selectedCityId');
                                   }
                                   getPincode(_selectedCityId);
                                 })),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         _buildTextField('Pincode *', _pincodeController,
                             fieldKey: _pincodeKey, validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -1372,7 +1367,7 @@ class _AddbmState extends State<AddbmPage> {
                           }
                           return null;
                         }, forceReadOnly: true),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         _buildTextField(
                           'Address *',
                           _addressController,
@@ -1384,7 +1379,7 @@ class _AddbmState extends State<AddbmPage> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         _buildDropdown(
                           'Zone *',
                           _zoneNames.isEmpty
@@ -1394,7 +1389,7 @@ class _AddbmState extends State<AddbmPage> {
                           fieldKey: _zoneKey,
                           validator: (value) {
                             if (value == null ||
-                                value == "---- Select Zone * ----") {
+                                value == '---- Select Zone * ----') {
                               return 'Please select a zone';
                             }
                             return null;
@@ -1411,13 +1406,13 @@ class _AddbmState extends State<AddbmPage> {
                                 _selectedZoneId =
                                     selectedZoneObject['id'].toString();
                                 Logger.success(
-                                    "Selected Zone: $_selectedZone, ID: $_selectedZoneId");
+                                    'Selected Zone: $_selectedZone, ID: $_selectedZoneId');
                                 _getBranches(_selectedZoneId!);
                               }
                             }
                           }),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         _buildDropdown(
                             'Branch *',
                             _branchesNames.isEmpty
@@ -1426,7 +1421,7 @@ class _AddbmState extends State<AddbmPage> {
                             _selectedBranch,
                             fieldKey: _branchKey, validator: (value) {
                           if (value == null ||
-                              value == "---- Select Branch * ----") {
+                              value == '---- Select Branch * ----') {
                             return 'Please select a branch';
                           }
                           return null;
@@ -1442,25 +1437,25 @@ class _AddbmState extends State<AddbmPage> {
                                     _selectedBranchId =
                                         selectedBranchObject['id'].toString();
                                     Logger.success(
-                                        "selected branch is $_selectedBranch and its Id : $_selectedBranchId");
+                                        'selected branch is $_selectedBranch and its Id : $_selectedBranchId');
                                   }
                                 }),
-                            emptyMessage: "No Branches available"),
-                        SizedBox(height: 20),
+                            emptyMessage: 'No Branches available'),
+                        const SizedBox(height: 20),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             RichText(
-                              text: TextSpan(
-                                text: "Payment Mode * ",
+                              text: const TextSpan(
+                                text: 'Payment Mode * ',
                                 style: TextStyle(
                                     fontSize: 16, color: Colors.white),
                               ),
                             ),
-                            SizedBox(height: 2),
+                            const SizedBox(height: 2),
                             Row(
                               children:
-                                  ["Cash", "Cheque", "UPI/NEFT"].map((package) {
+                                  ['Cash', 'Cheque', 'UPI/NEFT'].map((package) {
                                 return GestureDetector(
                                   onTap: widget.isViewMode
                                       ? null
@@ -1474,14 +1469,14 @@ class _AddbmState extends State<AddbmPage> {
                                     children: [
                                       Text(
                                         package,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
                                           color: Colors
                                               .white, // Gray out text if disabled
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                           width:
                                               10), // Spacing between radio buttons
                                     ],
@@ -1491,49 +1486,49 @@ class _AddbmState extends State<AddbmPage> {
                             ),
                           ],
                         ),
-                        if (_selectedPaymentMode == "Cheque") ...{
+                        if (_selectedPaymentMode == 'Cheque') ...[
                           _buildTextField('Check No. *', _chequeNoController),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           _buildTextField(
                               'Cheque  Date *', _chequeDateController),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           _buildTextField('Bank Name *', _bankNameController),
-                          SizedBox(height: 10),
-                        } else if (_selectedPaymentMode == "UPI/NEFT") ...{
+                          const SizedBox(height: 10),
+                        ] else if (_selectedPaymentMode == 'UPI/NEFT') ...[
                           _buildTextField(
                               'Transaction No. *', _transactionIDController),
-                          SizedBox(height: 10),
-                        },
-                        Text(
-                          "Attachments",
+                          const SizedBox(height: 10),
+                        ],
+                        const Text(
+                          'Attachments',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 10),
-                        _buildUploadButton("Profile Picture"),
-                        _buildUploadButton("Aadhar Card"),
-                        _buildUploadButton("Pan Card"),
-                        _buildUploadButton("Bank Passbook"),
-                        _buildUploadButton("Voting Card"),
-                        _buildUploadButton("Payment Proof"),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 10),
+                        _buildUploadButton('Profile Picture'),
+                        _buildUploadButton('Aadhar Card'),
+                        _buildUploadButton('Pan Card'),
+                        _buildUploadButton('Bank Passbook'),
+                        _buildUploadButton('Voting Card'),
+                        _buildUploadButton('Payment Proof'),
+                        const SizedBox(height: 20),
                         if (widget.isEditMode) ...[
                           Center(
                             child: ElevatedButton(
                               onPressed: () {},
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 12),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(25),
                                 ),
                               ),
-                              child: Text(
-                                "Save Changes",
+                              child: const Text(
+                                'Save Changes',
                                 style: TextStyle(
                                     color: Colors.blueAccent, fontSize: 16),
                               ),
@@ -1547,14 +1542,14 @@ class _AddbmState extends State<AddbmPage> {
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 12),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(25),
                                 ),
                               ),
-                              child: Text(
-                                "Submit",
+                              child: const Text(
+                                'Submit',
                                 style: TextStyle(
                                     color: Colors.blueAccent, fontSize: 16),
                               ),
@@ -1578,17 +1573,18 @@ class _AddbmState extends State<AddbmPage> {
           if (!widget.isViewMode)
             ElevatedButton.icon(
               onPressed: () => _pickFile(fileType),
-              icon: Icon(Icons.upload_file),
-              label: Text("Upload $fileType"),
+              icon: const Icon(Icons.upload_file),
+              label: Text('Upload $fileType'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
             ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           if (selectedFiles[fileType] != null)
             Stack(
               children: [
@@ -1614,7 +1610,7 @@ class _AddbmState extends State<AddbmPage> {
                                 errorBuilder: (context, error, stackTrace) {
                                   // Instead of showing broken image icon for 404s,
                                   // we can show the same UI as "No $fileType uploaded"
-                                  return Center(
+                                  return const Center(
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -1625,7 +1621,7 @@ class _AddbmState extends State<AddbmPage> {
                                         ),
                                         SizedBox(height: 4),
                                         Text(
-                                          "Image unavailable",
+                                          'Image unavailable',
                                           style: TextStyle(
                                             color: Colors.white70,
                                           ),
@@ -1639,7 +1635,7 @@ class _AddbmState extends State<AddbmPage> {
                                 selectedFiles[fileType],
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return Center(
+                                  return const Center(
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -1655,7 +1651,7 @@ class _AddbmState extends State<AddbmPage> {
                                 loadingBuilder:
                                     (context, child, loadingProgress) {
                                   if (loadingProgress == null) return child;
-                                  return Center(
+                                  return const Center(
                                     child: CircularProgressIndicator(),
                                   );
                                 },
@@ -1669,12 +1665,12 @@ class _AddbmState extends State<AddbmPage> {
                     child: InkWell(
                       onTap: () => _removeFile(fileType),
                       child: Container(
-                        padding: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
                           color: Colors.red,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.close,
                           color: Colors.white,
                           size: 16,
@@ -1693,14 +1689,13 @@ class _AddbmState extends State<AddbmPage> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.3),
-                  width: 1,
                 ),
               ),
               child: Center(
                 child: Text(
                   // widget.isViewMode ? "No $fileType available"
-                  "No $fileType uploaded",
-                  style: TextStyle(
+                  'No $fileType uploaded',
+                  style: const TextStyle(
                     color: Colors.white70,
                   ),
                 ),

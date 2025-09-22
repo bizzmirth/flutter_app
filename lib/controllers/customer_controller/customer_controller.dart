@@ -108,7 +108,7 @@ class CustomerController extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        Logger.success("validate email full URL: $fullUrl");
+        Logger.success('validate email full URL: $fullUrl');
         final data = jsonDecode(response.body);
         _emailError = data['status'] == true ? data['message'] : null;
       } else {
@@ -116,7 +116,7 @@ class CustomerController extends ChangeNotifier {
       }
     } catch (e) {
       _emailError = 'Error connecting to server $e';
-      Logger.error("Error checking email: $e");
+      Logger.error('Error checking email: $e');
     }
 
     _isCheckingEmail = false;
@@ -134,9 +134,9 @@ class CustomerController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      String email = await SharedPrefHelper().getUserEmail() ?? "";
+      final String email = await SharedPrefHelper().getUserEmail() ?? '';
       final String url = AppUrls.registeredCustomers;
-      Logger.success("the stored email is $email");
+      Logger.success('the stored email is $email');
 
       final response = await http.get(
         Uri.parse(url),
@@ -149,7 +149,7 @@ class CustomerController extends ChangeNotifier {
         final jsonData = json.decode(response.body);
 
         if (jsonData['status'] == 'success') {
-          List<dynamic> customers = jsonData['data'];
+          final List<dynamic> customers = jsonData['data'];
 
           for (var customer in customers) {
             if (customer['email'] == email) {
@@ -166,12 +166,12 @@ class CustomerController extends ChangeNotifier {
               await SharedPrefHelper().saveCurrentUserRegDate(_userRegDate!);
               setUserCustomerId = _userCustomerId;
 
-              Logger.success("Get customer count URL: $url");
+              Logger.success('Get customer count URL: $url');
               Logger.success(
-                  "Found user with ca_customer_id: $_userCustomerId");
+                  'Found user with ca_customer_id: $_userCustomerId');
               Logger.success("User's ta_reference_no: $_userTaReferenceNo");
-              Logger.success("Customer type: $_customerType");
-              Logger.success("Registration date: $_userRegDate");
+              Logger.success('Customer type: $_customerType');
+              Logger.success('Registration date: $_userRegDate');
               break;
             }
           }
@@ -189,22 +189,22 @@ class CustomerController extends ChangeNotifier {
             Logger.success(
                 "Total customers with ta_reference_no '$_userTaReferenceNo': $_regCustomerCount");
           } else {
-            Logger.error("No customer found with email: $email");
+            Logger.error('No customer found with email: $email');
             _regCustomerCount = 0;
-            _error = "No customer found with email: $email";
+            _error = 'No customer found with email: $email';
           }
         } else {
           Logger.error("API returned error status: ${jsonData['status']}");
           _error = "API returned error status: ${jsonData['status']}";
         }
       } else {
-        Logger.error("HTTP Error: ${response.statusCode} - ${response.body}");
-        _error = "HTTP Error: ${response.statusCode} - ${response.body}";
+        Logger.error('HTTP Error: ${response.statusCode} - ${response.body}');
+        _error = 'HTTP Error: ${response.statusCode} - ${response.body}';
       }
     } catch (e) {
-      Logger.error("Error in getRegCustomerCount: $e");
+      Logger.error('Error in getRegCustomerCount: $e');
       _regCustomerCount = 0;
-      _error = "Error: $e";
+      _error = 'Error: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -219,15 +219,15 @@ class CustomerController extends ChangeNotifier {
       final String fullUrl = AppUrls.dashboardCounts;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final Map<String, dynamic> body = {
-        "userId": userId,
+        'userId': userId,
       };
       final encodeBody = json.encode(body);
 
-      Logger.warning("Request body for dashboard counts: $body");
+      Logger.warning('Request body for dashboard counts: $body');
       final response = await http.post(Uri.parse(fullUrl),
-          body: encodeBody, headers: {"Content-Type": "application/json"});
-      Logger.success("Dashboard counts response: ${response.body}");
-      Logger.success("Dashboard counts URL: $fullUrl");
+          body: encodeBody, headers: {'Content-Type': 'application/json'});
+      Logger.success('Dashboard counts response: ${response.body}');
+      Logger.success('Dashboard counts URL: $fullUrl');
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         if (responseData['status'] == true && responseData['data'] != null) {
@@ -251,16 +251,16 @@ class CustomerController extends ChangeNotifier {
           _pendingCommissionTotal =
               data['commission_earned']['pending'].toString();
         } else {
-          _error = "No data found";
+          _error = 'No data found';
           Logger.error("API responded with no data ${responseData['message']}");
         }
       } else {
         _error = 'HTTP Error: ${response.statusCode}';
-        Logger.error("HTTP Error: ${response.statusCode}");
+        Logger.error('HTTP Error: ${response.statusCode}');
       }
     } catch (e, s) {
-      Logger.error("Error in getDashboardData: $e\n Stacktree: $s");
-      _error = "Error: $e";
+      Logger.error('Error in getDashboardData: $e\n Stacktree: $s');
+      _error = 'Error: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -278,47 +278,47 @@ class CustomerController extends ChangeNotifier {
       _selectedYear = selectedYear;
 
       final Map<String, dynamic> body = {
-        "year": selectedYear,
-        "current_year": 2025,
-        "current_month": 12,
-        "user_id": userId,
-        "user_type": "10",
+        'year': selectedYear,
+        'current_year': 2025,
+        'current_month': 12,
+        'user_id': userId,
+        'user_type': '10',
       };
 
-      Logger.warning("Request body: $body");
+      Logger.warning('Request body: $body');
       final encodeBody = json.encode(body);
-      Logger.warning("Encoded body: $encodeBody");
+      Logger.warning('Encoded body: $encodeBody');
 
       final response = await http.post(
         Uri.parse(url),
         body: encodeBody,
-        headers: {"Content-Type": "application/json"}, // Important!
+        headers: {'Content-Type': 'application/json'}, // Important!
       );
-      Logger.success("Get chart data URL: $url");
-      Logger.success("Raw response body: ${response.body}");
+      Logger.success('Get chart data URL: $url');
+      Logger.success('Raw response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
 
         if (jsonData is List && jsonData.isNotEmpty && jsonData[0] is List) {
           // We got [[0,0,0,...]]
-          List<dynamic> dataArray = jsonData[0];
+          final List<dynamic> dataArray = jsonData[0];
 
           _chartData = dataArray
               .map<double>((item) => (item as num).toDouble())
               .toList();
           Logger.success(
-              "Chart data fetched successfully for year $selectedYear");
-          Logger.info("Chart data: $_chartData");
+              'Chart data fetched successfully for year $selectedYear');
+          Logger.info('Chart data: $_chartData');
         } else {
-          _error = "Unexpected response format";
+          _error = 'Unexpected response format';
           _chartData = List.filled(12, 0.0);
-          Logger.error("Unexpected response format: $jsonData");
+          Logger.error('Unexpected response format: $jsonData');
         }
       }
     } catch (e, s) {
-      Logger.error("Exception in apiGetChartData: $e\n$s");
-      _error = "Exception: $e";
+      Logger.error('Exception in apiGetChartData: $e\n$s');
+      _error = 'Exception: $e';
       _chartData = List.filled(12, 0.0);
     } finally {
       _isLoading = false;
@@ -327,13 +327,13 @@ class CustomerController extends ChangeNotifier {
   }
 
   List<FlSpot> getChartSpots() {
-    int currentYear = DateTime.now().year;
-    int currentMonth = DateTime.now().month;
-    int limit = selectedYear == currentYear.toString()
+    final int currentYear = DateTime.now().year;
+    final int currentMonth = DateTime.now().month;
+    final int limit = selectedYear == currentYear.toString()
         ? currentMonth
         : _chartData.length;
 
-    List<FlSpot> spots = [];
+    final List<FlSpot> spots = [];
 
     for (int i = 0; i < limit && i < _chartData.length; i++) {
       spots.add(FlSpot((i + 1).toDouble(), _chartData[i]));
@@ -352,9 +352,9 @@ class CustomerController extends ChangeNotifier {
 
       final String url = AppUrls.topCustomerReferrals;
 
-      final Map<String, dynamic> body = {"userId": _userCustomerId ?? userId};
+      final Map<String, dynamic> body = {'userId': _userCustomerId ?? userId};
       Logger.warning(
-          "user id from setter : $_userCustomerId and userId from shared prefs: $userId");
+          'user id from setter : $_userCustomerId and userId from shared prefs: $userId');
       final response = await http.post(Uri.parse(url), body: jsonEncode(body));
 
       if (response.statusCode == 200) {
@@ -363,23 +363,23 @@ class CustomerController extends ChangeNotifier {
         if (jsonData['status'] == 'success' && jsonData['data'] != null) {
           _topCustomerRefererals.clear();
 
-          List<dynamic> dataList = jsonData['data'];
+          final List<dynamic> dataList = jsonData['data'];
           _topCustomerRefererals.addAll(
             dataList.map((e) => TopCustomerRefereralModel.fromJson(e)).toList(),
           );
 
-          Logger.success("Top referral list updated: $_topCustomerRefererals");
+          Logger.success('Top referral list updated: $_topCustomerRefererals');
         } else {
-          _error = "No data found";
-          Logger.error("API responded with no data");
+          _error = 'No data found';
+          Logger.error('API responded with no data');
         }
       } else {
-        _error = "HTTP error: ${response.statusCode} - ${response.body}";
-        Logger.error("HTTP error: ${response.statusCode} - ${response.body}");
+        _error = 'HTTP error: ${response.statusCode} - ${response.body}';
+        Logger.error('HTTP error: ${response.statusCode} - ${response.body}');
       }
     } catch (e, s) {
-      Logger.error("Error in apiGetTopCustomerRefererals: $e\n$s");
-      _error = "Exception: $e";
+      Logger.error('Error in apiGetTopCustomerRefererals: $e\n$s');
+      _error = 'Exception: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -407,10 +407,10 @@ class CustomerController extends ChangeNotifier {
         if (jsonData['status'] == 'success' && jsonData['data'] != null) {
           _registeredCustomers.clear();
 
-          List<dynamic> dataList = jsonData['data'];
-          List<RegisteredCustomer> allCustomers =
+          final List<dynamic> dataList = jsonData['data'];
+          final List<RegisteredCustomer> allCustomers =
               dataList.map((e) => RegisteredCustomer.fromJson(e)).toList();
-          List<RegisteredCustomer> filteredCustomers = allCustomers
+          final List<RegisteredCustomer> filteredCustomers = allCustomers
               .where((customer) => customer.referenceNo == userId)
               .toList();
 
@@ -418,20 +418,20 @@ class CustomerController extends ChangeNotifier {
 
           for (var x in _registeredCustomers) {
             Logger.success(
-                "Customer: ${x.name}, Reference No: ${x.referenceNo}");
+                'Customer: ${x.name}, Reference No: ${x.referenceNo}');
           }
-          Logger.success("Registered customer URL: $url");
+          Logger.success('Registered customer URL: $url');
         } else {
-          _error = "No data found";
-          Logger.error("API responded with no data");
+          _error = 'No data found';
+          Logger.error('API responded with no data');
         }
       } else {
-        _error = "HTTP error: ${response.statusCode} - ${response.body}";
-        Logger.error("HTTP error: ${response.statusCode} - ${response.body}");
+        _error = 'HTTP error: ${response.statusCode} - ${response.body}';
+        Logger.error('HTTP error: ${response.statusCode} - ${response.body}');
       }
     } catch (e, s) {
-      Logger.error("Error in apiGetRegisteredCustomers: $e\n$s");
-      _error = "Exception: $e";
+      Logger.error('Error in apiGetRegisteredCustomers: $e\n$s');
+      _error = 'Exception: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -451,15 +451,15 @@ class CustomerController extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        Logger.success("Pending Customer Response data: $jsonData");
+        Logger.success('Pending Customer Response data: $jsonData');
 
         if (jsonData['status'] == 'success' && jsonData['data'] != null) {
           _pendingCustomers.clear();
 
-          List<dynamic> dataList = jsonData['data'];
-          List<PendingCustomer> allCustomers =
+          final List<dynamic> dataList = jsonData['data'];
+          final List<PendingCustomer> allCustomers =
               dataList.map((e) => PendingCustomer.fromJson(e)).toList();
-          List<PendingCustomer> filteredCustomers = allCustomers
+          final List<PendingCustomer> filteredCustomers = allCustomers
               .where((customer) => customer.referenceNo == userId)
               .toList();
 
@@ -467,20 +467,20 @@ class CustomerController extends ChangeNotifier {
 
           for (var x in _pendingCustomers) {
             Logger.success(
-                "Pending Customer: ${x.name}, Reference No: ${x.referenceNo}");
+                'Pending Customer: ${x.name}, Reference No: ${x.referenceNo}');
           }
-          Logger.success("Pending Customer URL: $url");
+          Logger.success('Pending Customer URL: $url');
         } else {
-          _error = "No data found";
-          Logger.error("API responded with no data");
+          _error = 'No data found';
+          Logger.error('API responded with no data');
         }
       } else {
-        _error = "HTTP error: ${response.statusCode} - ${response.body}";
-        Logger.error("HTTP error: ${response.statusCode} - ${response.body}");
+        _error = 'HTTP error: ${response.statusCode} - ${response.body}';
+        Logger.error('HTTP error: ${response.statusCode} - ${response.body}');
       }
     } catch (e, s) {
-      Logger.error("Error in apiGetPendingCustomers: $e\n$s");
-      _error = "Exception: $e";
+      Logger.error('Error in apiGetPendingCustomers: $e\n$s');
+      _error = 'Exception: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -490,15 +490,15 @@ class CustomerController extends ChangeNotifier {
   Future<void> uploadImage(String folder, String savedImagePath) async {
     try {
       final fullUrl = AppUrls.uploadImage;
-      var request = http.MultipartRequest('POST', Uri.parse(fullUrl));
+      final request = http.MultipartRequest('POST', Uri.parse(fullUrl));
       request.files
           .add(await http.MultipartFile.fromPath('file', savedImagePath));
       request.fields['folder'] = folder;
 
-      var response = await request.send();
-      var responseBody = await response.stream.bytesToString();
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
       Logger.warning('Raw API response body: $responseBody');
-      Logger.success("Upload Api FULL URL: $fullUrl");
+      Logger.success('Upload Api FULL URL: $fullUrl');
       Logger.info('this is reuest $request');
 
       // if (responseBody == '1') {
@@ -518,7 +518,7 @@ class CustomerController extends ChangeNotifier {
       //       SnackBar(content: Text("Upload Successful: $responseBody")));
       // }
     } catch (e) {
-      Logger.error("Error uploading image: $e");
+      Logger.error('Error uploading image: $e');
     }
   }
 
@@ -538,70 +538,70 @@ class CustomerController extends ChangeNotifier {
       final newVotingCard =
           extractPathSegment(customer.votingCard!, 'voting_card/');
       final newPaymentProof =
-          extractPathSegment(customer.paymentProof ?? "", 'payment_proof');
+          extractPathSegment(customer.paymentProof ?? '', 'payment_proof');
 
       final fullUrl = AppUrls.addCustomer;
 
-      String oldDob = customer.dob ?? "";
-      DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(oldDob);
-      String newDob = DateFormat("yyyy-MM-dd").format(parsedDate);
+      final String oldDob = customer.dob ?? '';
+      final DateTime parsedDate = DateFormat('dd-MM-yyyy').parse(oldDob);
+      final String newDob = DateFormat('yyyy-MM-dd').format(parsedDate);
 
       final Map<String, dynamic> body = {
-        "ta_user_id_name": customer.taReferenceNo,
-        "ta_reference_name": customer.taReferenceName,
-        "cu_user_id_name": customer.cuRefId,
-        "cu_reference_name": customer.cuRefName,
-        "firstname": customer.firstname,
-        "lastname": customer.lastname,
-        "nominee_name": customer.nomineeName,
-        "nominee_relation": customer.nomineeRelation,
-        "email": customer.email,
-        "dob": newDob,
-        "gender": customer.gender,
-        "country_code": customer.countryCd,
-        "phone": customer.phoneNumber,
-        "country": customer.country,
-        "state": customer.state,
-        "city": customer.city,
-        "pincode": customer.pincode,
-        "address": customer.address,
-        "profile_pic": newProfilePic,
-        "isComplementary": customer.compChek,
-        "aadhar_card": newAdharCard,
-        "pan_card": newPanCard,
-        "passbook": newBankPassbook,
-        "voting_card": newVotingCard,
-        "payment_proof": newPaymentProof,
-        "register_by": "10",
-        "registrant_id": customer.registrant,
-        "paymentMode": customer.paymentMode,
-        "chequeNo": customer.chequeNo,
-        "chequeDate": customer.chequeDate,
-        "bankName": customer.bankName,
-        "transactionNo": customer.transactionNo,
-        "payment_fee": customer.paidAmount,
-        "userId": "undefined",
-        "userType": "10",
-        "editfor": "",
-        "payment_label": customer.customerType,
-        "customer_type": customer.customerType,
+        'ta_user_id_name': customer.taReferenceNo,
+        'ta_reference_name': customer.taReferenceName,
+        'cu_user_id_name': customer.cuRefId,
+        'cu_reference_name': customer.cuRefName,
+        'firstname': customer.firstname,
+        'lastname': customer.lastname,
+        'nominee_name': customer.nomineeName,
+        'nominee_relation': customer.nomineeRelation,
+        'email': customer.email,
+        'dob': newDob,
+        'gender': customer.gender,
+        'country_code': customer.countryCd,
+        'phone': customer.phoneNumber,
+        'country': customer.country,
+        'state': customer.state,
+        'city': customer.city,
+        'pincode': customer.pincode,
+        'address': customer.address,
+        'profile_pic': newProfilePic,
+        'isComplementary': customer.compChek,
+        'aadhar_card': newAdharCard,
+        'pan_card': newPanCard,
+        'passbook': newBankPassbook,
+        'voting_card': newVotingCard,
+        'payment_proof': newPaymentProof,
+        'register_by': '10',
+        'registrant_id': customer.registrant,
+        'paymentMode': customer.paymentMode,
+        'chequeNo': customer.chequeNo,
+        'chequeDate': customer.chequeDate,
+        'bankName': customer.bankName,
+        'transactionNo': customer.transactionNo,
+        'payment_fee': customer.paidAmount,
+        'userId': 'undefined',
+        'userType': '10',
+        'editfor': '',
+        'payment_label': customer.customerType,
+        'customer_type': customer.customerType,
       };
 
-      Logger.warning("Request body: $body");
-      Logger.warning("Encoded body: ${jsonEncode(body)}");
+      Logger.warning('Request body: $body');
+      Logger.warning('Encoded body: ${jsonEncode(body)}');
 
       final response = await http.post(Uri.parse(fullUrl),
           body: jsonEncode(body),
-          headers: {"Content-Type": "application/json"});
-      Logger.success("fullUrl: $fullUrl");
-      Logger.success("status code : ${response.statusCode}");
-      Logger.success("API response: ${response.body}");
+          headers: {'Content-Type': 'application/json'});
+      Logger.success('fullUrl: $fullUrl');
+      Logger.success('status code : ${response.statusCode}');
+      Logger.success('API response: ${response.body}');
       if (response.statusCode == 200) {
-        apiGetPendingCustomers();
+        await apiGetPendingCustomers();
       }
     } catch (e) {
-      Logger.error("Error in apiAddCustomer: $e");
-      _error = "Error: $e";
+      Logger.error('Error in apiAddCustomer: $e');
+      _error = 'Error: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -639,86 +639,86 @@ class CustomerController extends ChangeNotifier {
 
       final newPaymentProof =
           customer.paymentProof?.contains('payment_proof') == true
-              ? extractPathSegment(customer.paymentProof ?? "", 'payment_proof')
+              ? extractPathSegment(customer.paymentProof ?? '', 'payment_proof')
               : customer.paymentProof;
 
       final fullUrl = AppUrls.editCustomers;
 
       final now = DateTime.now();
       final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
-      String oldDob = customer.dob ?? "";
-      DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(oldDob);
-      String newDob = DateFormat("yyyy-MM-dd").format(parsedDate);
+      final String oldDob = customer.dob ?? '';
+      final DateTime parsedDate = DateFormat('dd-MM-yyyy').parse(oldDob);
+      final String newDob = DateFormat('yyyy-MM-dd').format(parsedDate);
 
       final Map<String, dynamic> body = {
-        "id": customer.id, // Include customer ID for update
-        "ta_user_id_name": customer.taReferenceNo,
-        "ta_reference_name": customer.taReferenceName,
-        "cu_user_id_name": customer.cuRefId,
-        "cu_reference_name": customer.cuRefName,
-        "firstname": customer.firstname,
-        "lastname": customer.lastname,
-        "nominee_name": customer.nomineeName,
-        "nominee_relation": customer.nomineeRelation,
-        "email": customer.email,
-        "dob": newDob,
-        "gender": customer.gender,
-        "country_code": customer.countryCd,
-        "phone": customer.phoneNumber,
-        "country": customer.country,
-        "state": customer.state,
-        "city": customer.city,
-        "pincode": customer.pincode,
-        "address": customer.address,
-        "profile_pic": newProfilePic,
-        "isComplementary": customer.compChek,
-        "aadhar_card": newAdharCard,
-        "pan_card": newPanCard,
-        "passbook": newBankPassbook,
-        "voting_card": newVotingCard,
-        "payment_proof": newPaymentProof,
-        "register_by": "10",
-        "registrant_id": customer.registrant,
-        "paymentMode": customer.paymentMode,
-        "chequeNo": customer.chequeNo,
-        "chequeDate": customer.chequeDate,
-        "bankName": customer.bankName,
-        "transactionNo": customer.transactionNo,
-        "payment_fee": customer.paidAmount,
-        "userId": "undefined",
-        "userType": "10",
-        "editfor": "pending",
-        "payment_label": customer.customerType,
-        "customer_type": customer.customerType,
-        "updated_at": formattedDate,
+        'id': customer.id, // Include customer ID for update
+        'ta_user_id_name': customer.taReferenceNo,
+        'ta_reference_name': customer.taReferenceName,
+        'cu_user_id_name': customer.cuRefId,
+        'cu_reference_name': customer.cuRefName,
+        'firstname': customer.firstname,
+        'lastname': customer.lastname,
+        'nominee_name': customer.nomineeName,
+        'nominee_relation': customer.nomineeRelation,
+        'email': customer.email,
+        'dob': newDob,
+        'gender': customer.gender,
+        'country_code': customer.countryCd,
+        'phone': customer.phoneNumber,
+        'country': customer.country,
+        'state': customer.state,
+        'city': customer.city,
+        'pincode': customer.pincode,
+        'address': customer.address,
+        'profile_pic': newProfilePic,
+        'isComplementary': customer.compChek,
+        'aadhar_card': newAdharCard,
+        'pan_card': newPanCard,
+        'passbook': newBankPassbook,
+        'voting_card': newVotingCard,
+        'payment_proof': newPaymentProof,
+        'register_by': '10',
+        'registrant_id': customer.registrant,
+        'paymentMode': customer.paymentMode,
+        'chequeNo': customer.chequeNo,
+        'chequeDate': customer.chequeDate,
+        'bankName': customer.bankName,
+        'transactionNo': customer.transactionNo,
+        'payment_fee': customer.paidAmount,
+        'userId': 'undefined',
+        'userType': '10',
+        'editfor': 'pending',
+        'payment_label': customer.customerType,
+        'customer_type': customer.customerType,
+        'updated_at': formattedDate,
       };
 
-      Logger.warning("Update request body: $body");
-      Logger.warning("Encoded body: ${jsonEncode(body)}");
+      Logger.warning('Update request body: $body');
+      Logger.warning('Encoded body: ${jsonEncode(body)}');
 
       final response = await http.post(Uri.parse(fullUrl),
           body: jsonEncode(body),
-          headers: {"Content-Type": "application/json"});
+          headers: {'Content-Type': 'application/json'});
 
-      Logger.success("Update URL: $fullUrl");
-      Logger.success("Update status code: ${response.statusCode}");
-      Logger.success("Update API response: ${response.body}");
+      Logger.success('Update URL: $fullUrl');
+      Logger.success('Update status code: ${response.statusCode}');
+      Logger.success('Update API response: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         if (responseData['status'] == 'success') {
-          Logger.success("Customer updated successfully");
+          Logger.success('Customer updated successfully');
         } else {
           Logger.error("Update failed: ${responseData['message']}");
           _error = "Update failed: ${responseData['message']}";
         }
       } else {
-        Logger.error("Update failed with status code: ${response.statusCode}");
-        _error = "Update failed with status code: ${response.statusCode}";
+        Logger.error('Update failed with status code: ${response.statusCode}');
+        _error = 'Update failed with status code: ${response.statusCode}';
       }
     } catch (e) {
-      Logger.error("Error in apiUpdateCustomer: $e");
-      _error = "Error: $e";
+      Logger.error('Error in apiUpdateCustomer: $e');
+      _error = 'Error: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -756,78 +756,78 @@ class CustomerController extends ChangeNotifier {
 
       final newPaymentProof =
           customer.paymentProof?.contains('payment_proof') == true
-              ? extractPathSegment(customer.paymentProof ?? "", 'payment_proof')
+              ? extractPathSegment(customer.paymentProof ?? '', 'payment_proof')
               : customer.paymentProof;
 
       final fullUrl = AppUrls.editCustomers;
 
-      String oldDob = customer.dob ?? "";
-      DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(oldDob);
-      String newDob = DateFormat("yyyy-MM-dd").format(parsedDate);
+      final String oldDob = customer.dob ?? '';
+      final DateTime parsedDate = DateFormat('dd-MM-yyyy').parse(oldDob);
+      final String newDob = DateFormat('yyyy-MM-dd').format(parsedDate);
 
       final Map<String, dynamic> body = {
-        "ref_id": customer.referenceNo,
-        "id": customer.caCustomerId,
-        "firstname": customer.firstName,
-        "lastname": customer.lastName,
-        "email": customer.email,
-        "dob": newDob,
-        "gender": customer.gender,
-        "country_code": customer.countryCd,
-        "phone": customer.phoneNumber,
-        "country": customer.country,
-        "state": customer.state,
-        "city": customer.city,
-        "pincode": customer.pincode,
-        "address": customer.address,
-        "profile_pic": newProfilePic,
-        "aadhar_card": newAdharCard,
-        "pan_card": newPanCard,
-        "passbook": newBankPassbook,
-        "voting_card": newVotingCard,
-        "payment_proof": newPaymentProof,
-        "register_by": "10",
-        "registrant_id": customer.registrant,
-        "paymentMode": customer.paymentMode,
-        "chequeNo": customer.chequeNo,
-        "chequeDate": customer.chequeDate,
-        "bankName": customer.bankName,
-        "transactionNo": customer.transactionNo,
-        "payment_fee": customer.paidAmount,
-        "userId": customer.referenceNo,
-        "ta_reference_no": customer.taReferenceNo,
-        "userType": "10",
-        "editfor": "registered",
-        "payment_label": customer.customerType,
-        "customer_type": "undefined",
+        'ref_id': customer.referenceNo,
+        'id': customer.caCustomerId,
+        'firstname': customer.firstName,
+        'lastname': customer.lastName,
+        'email': customer.email,
+        'dob': newDob,
+        'gender': customer.gender,
+        'country_code': customer.countryCd,
+        'phone': customer.phoneNumber,
+        'country': customer.country,
+        'state': customer.state,
+        'city': customer.city,
+        'pincode': customer.pincode,
+        'address': customer.address,
+        'profile_pic': newProfilePic,
+        'aadhar_card': newAdharCard,
+        'pan_card': newPanCard,
+        'passbook': newBankPassbook,
+        'voting_card': newVotingCard,
+        'payment_proof': newPaymentProof,
+        'register_by': '10',
+        'registrant_id': customer.registrant,
+        'paymentMode': customer.paymentMode,
+        'chequeNo': customer.chequeNo,
+        'chequeDate': customer.chequeDate,
+        'bankName': customer.bankName,
+        'transactionNo': customer.transactionNo,
+        'payment_fee': customer.paidAmount,
+        'userId': customer.referenceNo,
+        'ta_reference_no': customer.taReferenceNo,
+        'userType': '10',
+        'editfor': 'registered',
+        'payment_label': customer.customerType,
+        'customer_type': 'undefined',
       };
 
-      Logger.warning("Update request body: $body");
-      Logger.warning("Encoded body: ${jsonEncode(body)}");
+      Logger.warning('Update request body: $body');
+      Logger.warning('Encoded body: ${jsonEncode(body)}');
 
       final response = await http.post(Uri.parse(fullUrl),
           body: jsonEncode(body),
-          headers: {"Content-Type": "application/json"});
+          headers: {'Content-Type': 'application/json'});
 
-      Logger.success("Update URL: $fullUrl");
-      Logger.success("Update status code: ${response.statusCode}");
-      Logger.success("Update API response: ${response.body}");
+      Logger.success('Update URL: $fullUrl');
+      Logger.success('Update status code: ${response.statusCode}');
+      Logger.success('Update API response: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         if (responseData['status'] == 'success') {
-          Logger.success("Customer updated successfully");
+          Logger.success('Customer updated successfully');
         } else {
           Logger.error("Update failed: ${responseData['message']}");
           _error = "Update failed: ${responseData['message']}";
         }
       } else {
-        Logger.error("Update failed with status code: ${response.statusCode}");
-        _error = "Update failed with status code: ${response.statusCode}";
+        Logger.error('Update failed with status code: ${response.statusCode}');
+        _error = 'Update failed with status code: ${response.statusCode}';
       }
     } catch (e) {
-      Logger.error("Error in apiUpdateCustomer: $e");
-      _error = "Error: $e";
+      Logger.error('Error in apiUpdateCustomer: $e');
+      _error = 'Error: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -844,58 +844,58 @@ class CustomerController extends ChangeNotifier {
       final fullUrl = AppUrls.deleteCustomers;
 
       final Map<String, dynamic> body = {
-        "id": customer.id,
-        "fid": customer.taReferenceNo,
-        "refid": customer.caCustomerId,
-        "action": "registered"
+        'id': customer.id,
+        'fid': customer.taReferenceNo,
+        'refid': customer.caCustomerId,
+        'action': 'registered'
       };
 
       final response =
           await http.post(Uri.parse(fullUrl), body: jsonEncode(body));
 
-      Logger.success("Delete URL: $fullUrl");
-      Logger.success("Delete status code: ${response.statusCode}");
-      Logger.success("Delete API response: ${response.body}");
+      Logger.success('Delete URL: $fullUrl');
+      Logger.success('Delete status code: ${response.statusCode}');
+      Logger.success('Delete API response: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
 
         if (responseData['status'] == 'success') {
           await apiGetRegisteredCustomers();
-          Logger.success("Customer deleted successfully");
+          Logger.success('Customer deleted successfully');
 
           ToastHelper.showSuccessToast(
-            title: "Success",
-            description: "Customer deleted successfully",
+            title: 'Success',
+            description: 'Customer deleted successfully',
           );
         } else {
           final errorMessage =
               responseData['message'] ?? 'Unknown error occurred';
-          Logger.error("Delete failed: $errorMessage");
-          _error = "Delete failed: $errorMessage";
+          Logger.error('Delete failed: $errorMessage');
+          _error = 'Delete failed: $errorMessage';
 
           ToastHelper.showErrorToast(
-            title: "Delete Failed",
+            title: 'Delete Failed',
             description: errorMessage,
           );
         }
       } else {
-        final errorMessage = "HTTP Error: ${response.statusCode}";
+        final errorMessage = 'HTTP Error: ${response.statusCode}';
         Logger.error(errorMessage);
         _error = errorMessage;
 
         ToastHelper.showErrorToast(
-          title: "Network Error",
-          description: "Failed to delete customer. Please try again.",
+          title: 'Network Error',
+          description: 'Failed to delete customer. Please try again.',
         );
       }
     } catch (e, s) {
-      Logger.error("Error in apiDeleteCustomer: $e\n$s");
-      _error = "Error: $e";
+      Logger.error('Error in apiDeleteCustomer: $e\n$s');
+      _error = 'Error: $e';
 
       ToastHelper.showErrorToast(
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
       );
     } finally {
       _isLoading = false;
@@ -913,54 +913,54 @@ class CustomerController extends ChangeNotifier {
           AppUrls.deleteCustomers; // restores based on action provided in body
 
       final Map<String, dynamic> body = {
-        "id": customer.id,
-        "fid": customer.taReferenceNo,
-        "refid": customer.caCustomerId,
-        "action": "deactivate"
+        'id': customer.id,
+        'fid': customer.taReferenceNo,
+        'refid': customer.caCustomerId,
+        'action': 'deactivate'
       };
 
       final response =
           await http.post(Uri.parse(fullUrl), body: jsonEncode(body));
 
-      Logger.success("Delete URL: $fullUrl");
-      Logger.success("Delete status code: ${response.statusCode}");
-      Logger.success("Delete API response: ${response.body}");
+      Logger.success('Delete URL: $fullUrl');
+      Logger.success('Delete status code: ${response.statusCode}');
+      Logger.success('Delete API response: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
 
         if (responseData['status'] == 'success') {
           await apiGetRegisteredCustomers();
-          Logger.success("Customer Restored successfully");
+          Logger.success('Customer Restored successfully');
 
           ToastHelper.showSuccessToast(
-            title: "Success",
-            description: "Customer Restored successfully",
+            title: 'Success',
+            description: 'Customer Restored successfully',
           );
         } else {
           final errorMessage =
               responseData['message'] ?? 'Unknown error occurred';
-          Logger.error("Restoring failed: $errorMessage");
-          _error = "Restoring failed: $errorMessage";
+          Logger.error('Restoring failed: $errorMessage');
+          _error = 'Restoring failed: $errorMessage';
 
           ToastHelper.showErrorToast(
-            title: "Restoring Failed",
+            title: 'Restoring Failed',
             description: errorMessage,
           );
         }
       } else {
-        final errorMessage = "HTTP Error: ${response.statusCode}";
+        final errorMessage = 'HTTP Error: ${response.statusCode}';
         Logger.error(errorMessage);
         _error = errorMessage;
 
         ToastHelper.showErrorToast(
-          title: "Network Error",
-          description: "Failed to restore customer. Please try again.",
+          title: 'Network Error',
+          description: 'Failed to restore customer. Please try again.',
         );
       }
     } catch (e, s) {
-      Logger.error("Error in apiRestoreCustomer: $e\n$s");
-      _error = "Error: $e";
+      Logger.error('Error in apiRestoreCustomer: $e\n$s');
+      _error = 'Error: $e';
     } finally {
       _isLoading = false;
       notifyListeners();

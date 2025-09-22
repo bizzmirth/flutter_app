@@ -40,10 +40,10 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
     // Register route observer if needed
   }
 
-  void getTopTourPackages() async {
+  Future<void> getTopTourPackages() async {
     final controller =
         Provider.of<TourPackagesController>(context, listen: false);
-    controller.apiGetTourPackages();
+    await controller.apiGetTourPackages();
   }
 
   void _updateArrowVisibility() {
@@ -258,13 +258,13 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
         width: isSmallScreen ? 150 : 170,
         margin: const EdgeInsets.symmetric(horizontal: 6),
         child: const Center(
-          child: Text("Invalid trip data"),
+          child: Text('Invalid trip data'),
         ),
       );
     }
 
     final imageUrl =
-        trip.image != null ? "${AppUrls.getImageBaseUrl}${trip.image}" : null;
+        trip.image != null ? '${AppUrls.getImageBaseUrl}${trip.image}' : null;
 
     return GestureDetector(
       onTap: () {
@@ -307,7 +307,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                           width: double.infinity,
                           errorWidget: (context, error, stackTrace) {
                             Logger.error(
-                                "Image load error for $imageUrl: $error");
+                                'Image load error for $imageUrl: $error');
                             return Container(
                               height: isSmallScreen ? 85 : 100,
                               width: double.infinity,
@@ -352,7 +352,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                 child: Text(
-                  trip.destination ?? "Unknown Destination",
+                  trip.destination ?? 'Unknown Destination',
                   style: TextStyle(
                     fontSize: isSmallScreen ? 12 : 14,
                     fontWeight: FontWeight.w600,
@@ -402,7 +402,7 @@ class _TopSellingDestinationsState extends State<TopSellingDestinations>
                   color: Colors.blue.shade700, size: isSmallScreen ? 24 : 28),
               const SizedBox(height: 6),
               Text(
-                "View More",
+                'View More',
                 style: TextStyle(
                   fontSize: isSmallScreen ? 12 : 14,
                   fontWeight: FontWeight.w600,

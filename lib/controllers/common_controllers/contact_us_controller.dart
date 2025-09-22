@@ -12,7 +12,7 @@ class ContactUsController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  void contactUs(
+  Future<void> contactUs(
       BuildContext context, String name, String email, String message) async {
     _isLoading = true;
     _error = null;
@@ -21,9 +21,9 @@ class ContactUsController extends ChangeNotifier {
     try {
       final String fullUrl = AppUrls.contactUs;
       final Map<String, dynamic> body = {
-        "name": name,
-        "email": email,
-        "message": message
+        'name': name,
+        'email': email,
+        'message': message
       };
       final encodeBody = jsonEncode(body);
       final response = await http.post(
@@ -32,38 +32,38 @@ class ContactUsController extends ChangeNotifier {
         headers: {'Content-Type': 'application/json'},
       );
 
-      Logger.success("contact us URL: $fullUrl");
-      Logger.success("Request body for contact us: $encodeBody");
+      Logger.success('contact us URL: $fullUrl');
+      Logger.success('Request body for contact us: $encodeBody');
 
       // Check if context is still valid before using it
       if (!context.mounted) return;
 
       if (response.statusCode == 200) {
-        Logger.success("Response from contact us ${response.body}");
+        Logger.success('Response from contact us ${response.body}');
         final data = jsonDecode(response.body);
-        if (data["status"] == "success") {
+        if (data['status'] == 'success') {
           ToastHelper.showSuccessToast(
-            title: data["message"] ?? "Message sent successfully.",
+            title: data['message'] ?? 'Message sent successfully.',
           );
         } else {
           ToastHelper.showErrorToast(
-            title: data["message"] ?? "Something went wrong.",
+            title: data['message'] ?? 'Something went wrong.',
           );
         }
       } else {
         ToastHelper.showErrorToast(
-          title: "Server error: ${response.statusCode}",
+          title: 'Server error: ${response.statusCode}',
         );
       }
     } catch (e, s) {
-      _error = "Error sending message to the server. $e";
+      _error = 'Error sending message to the server. $e';
       Logger.error(
-          "Error sending message to the server. Error: $e, Stacktrace: $s");
+          'Error sending message to the server. Error: $e, Stacktrace: $s');
 
       // Check if context is still valid before showing error toast
       if (context.mounted) {
         ToastHelper.showErrorToast(
-          title: "Error sending message to the server.",
+          title: 'Error sending message to the server.',
         );
       }
     } finally {

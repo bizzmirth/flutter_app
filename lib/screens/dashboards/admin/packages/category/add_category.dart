@@ -12,24 +12,24 @@ class AddCategoryPage extends StatefulWidget {
 
 class _AddCategoryPageState extends State<AddCategoryPage> {
   Map<String, String?> selectedFiles = {
-    "Profile Picture": null,
+    'Profile Picture': null,
   };
   final _formKey = GlobalKey<FormState>();
 
-  void _pickFile(String fileType) async {
+  Future<void> _pickFile(String fileType) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      final FilePickerResult? result = await FilePicker.platform.pickFiles();
       if (result != null && result.files.isNotEmpty) {
-        PlatformFile file = result.files.first;
+        final PlatformFile file = result.files.first;
 
         setState(() {
           selectedFiles[fileType] = file.name; // 🔥 Save selected file name
         });
 
-        Logger.info("Picked file for $fileType: ${file.name}");
+        Logger.info('Picked file for $fileType: ${file.name}');
       }
     } catch (e) {
-      Logger.error("Error picking file: $e");
+      Logger.error('Error picking file: $e');
     }
   }
 
@@ -85,31 +85,31 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                   children: [
                     _buildTextField('Name'),
                     _buildTextField('Description'),
-                    SizedBox(height: 20),
-                    Text(
-                      "Attachments",
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Attachments',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 10),
-                    _buildUploadButton("Profile Picture"),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 10),
+                    _buildUploadButton('Profile Picture'),
+                    const SizedBox(height: 20),
                     Center(
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                         ),
-                        child: Text(
-                          "Save",
+                        child: const Text(
+                          'Save',
                           style:
                               TextStyle(color: Colors.blueAccent, fontSize: 16),
                         ),
@@ -132,17 +132,18 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
         children: [
           ElevatedButton.icon(
             onPressed: () => _pickFile(fileType),
-            icon: Icon(Icons.upload_file),
-            label: Text("Upload $fileType"),
+            icon: const Icon(Icons.upload_file),
+            label: Text('Upload $fileType'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),
               ),
             ),
           ),
-          SizedBox(width: 10), // 🔥 Ensure spacing between button & file name
+          const SizedBox(
+              width: 10), // 🔥 Ensure spacing between button & file name
 
           if (selectedFiles[fileType] !=
               null) // 🔥 Show file name & remove button
@@ -151,12 +152,12 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
               children: [
                 Text(
                   selectedFiles[fileType]!,
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                   overflow: TextOverflow.ellipsis, // 🔥 Avoid overflow issues
                 ),
-                SizedBox(width: 5),
+                const SizedBox(width: 5),
                 IconButton(
-                  icon: Icon(Icons.close, color: Colors.red),
+                  icon: const Icon(Icons.close, color: Colors.red),
                   onPressed: () => _removeFile(fileType), // 🔥 Remove file
                 ),
               ],

@@ -8,10 +8,11 @@ class Moretransactions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int maxTransactionsToShow = 1000;
-    bool hasMoreTransactions = transactions.length > maxTransactionsToShow;
+    final int maxTransactionsToShow = 1000;
+    final bool hasMoreTransactions =
+        transactions.length > maxTransactionsToShow;
     return Scaffold(
-      appBar: AppBar(title: Text("All Transactions")),
+      appBar: AppBar(title: const Text('All Transactions')),
       body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -19,40 +20,41 @@ class Moretransactions extends StatelessWidget {
             children: [
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: hasMoreTransactions
                     ? maxTransactionsToShow
                     : transactions.length,
                 itemBuilder: (context, index) {
-                  var transaction = transactions[index];
+                  final transaction = transactions[index];
                   return ListTile(
-                    leading: Icon(Icons.attach_money, color: Colors.green),
+                    leading:
+                        const Icon(Icons.attach_money, color: Colors.green),
                     title: Text.rich(
                       TextSpan(
                         children: [
-                          TextSpan(text: "Payment made towards the "),
+                          const TextSpan(text: 'Payment made towards the '),
                           TextSpan(
                             text: transaction.title,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          TextSpan(text: " paid amount "),
+                          const TextSpan(text: ' paid amount '),
                           TextSpan(
-                            text: "₹${transaction.amount}",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            text: '₹${transaction.amount}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          TextSpan(text: " towards "),
+                          const TextSpan(text: ' towards '),
                           TextSpan(
                             text: transaction.whom,
                           ),
-                          TextSpan(text: " via "),
+                          const TextSpan(text: ' via '),
                           TextSpan(
                             text: transaction.via,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          TextSpan(text: " on "),
+                          const TextSpan(text: ' on '),
                           TextSpan(
                             text: transaction.date,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),

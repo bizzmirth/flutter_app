@@ -23,9 +23,9 @@ class AdminDesigDataSource extends DataTableSource {
       await controller.fetchDesignations();
       notifyListeners();
       isLoading = false;
-      ToastHelper.showSuccessToast(title: "Designation deleted successfully!");
+      ToastHelper.showSuccessToast(title: 'Designation deleted successfully!');
     } catch (e) {
-      Logger.error("Error deleting designation");
+      Logger.error('Error deleting designation');
       isLoading = false;
     }
   }
@@ -40,9 +40,9 @@ class AdminDesigDataSource extends DataTableSource {
       await controller.fetchDesignations();
       notifyListeners();
       isLoading = false;
-      ToastHelper.showSuccessToast(title: "Designation restored successfully!");
+      ToastHelper.showSuccessToast(title: 'Designation restored successfully!');
     } catch (e) {
-      Logger.error("Error restoring designation");
+      Logger.error('Error restoring designation');
       isLoading = false;
     }
   }
@@ -68,18 +68,19 @@ class AdminDesigDataSource extends DataTableSource {
       onSelected: (value) {
         // Handle menu actions
       },
-      itemBuilder: (BuildContext context) {
+      itemBuilder: (context) {
         List<PopupMenuEntry<String>> menuItems = [];
 
         if (int.tryParse(desgination.status) == 1) {
           menuItems = [
             PopupMenuItem(
-              value: "view",
+              value: 'view',
               child: ListTile(
-                leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-                title: Text("View"),
+                leading:
+                    const Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
+                title: const Text('View'),
                 onTap: () {
-                  Logger.success("View Designation ${desgination.id}");
+                  Logger.success('View Designation ${desgination.id}');
                   Navigator.pop(context);
                   addDesignation(context,
                       designation: desgination, isViewMode: true);
@@ -87,12 +88,12 @@ class AdminDesigDataSource extends DataTableSource {
               ),
             ),
             PopupMenuItem(
-              value: "edit",
+              value: 'edit',
               child: ListTile(
-                leading: Icon(Icons.edit, color: Colors.blueAccent),
-                title: Text("Edit"),
+                leading: const Icon(Icons.edit, color: Colors.blueAccent),
+                title: const Text('Edit'),
                 onTap: () {
-                  Logger.success("Edit Designation ${desgination.id}");
+                  Logger.success('Edit Designation ${desgination.id}');
                   Navigator.pop(context);
                   addDesignation(context,
                       designation: desgination, isEditMode: true);
@@ -100,10 +101,10 @@ class AdminDesigDataSource extends DataTableSource {
               ),
             ),
             PopupMenuItem(
-              value: "delete",
+              value: 'delete',
               child: ListTile(
-                leading: Icon(Icons.delete, color: Colors.red),
-                title: Text("Delete"),
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete'),
                 onTap: () {
                   deleteDesignation(desgination);
                   Navigator.pop(context);
@@ -114,10 +115,10 @@ class AdminDesigDataSource extends DataTableSource {
         } else if (int.tryParse(desgination.status) == 2) {
           menuItems = [
             PopupMenuItem(
-              value: "restore",
+              value: 'restore',
               child: ListTile(
-                leading: Icon(Icons.restore, color: Colors.green),
-                title: Text("Restore"),
+                leading: const Icon(Icons.restore, color: Colors.green),
+                title: const Text('Restore'),
                 onTap: () {
                   restoreDesignation(desgination);
                   Navigator.pop(context);
@@ -128,7 +129,7 @@ class AdminDesigDataSource extends DataTableSource {
         }
         return menuItems;
       },
-      icon: Icon(Icons.more_vert, color: Colors.black54),
+      icon: const Icon(Icons.more_vert, color: Colors.black54),
     );
   }
 
@@ -142,22 +143,21 @@ class AdminDesigDataSource extends DataTableSource {
         AdminDesignationDepartmentController();
     String? selectedDepartmentId = designation?.deptId;
 
-    var title = "";
+    var title = '';
     if (isViewMode) {
-      title = "View Designation";
+      title = 'View Designation';
     } else if (isEditMode) {
-      title = "Edit Designation";
+      title = 'Edit Designation';
     } else {
-      title = "Add Designation";
+      title = 'Add Designation';
     }
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Column(
-            mainAxisSize: MainAxisSize.max,
             children: [
               Text(
                 title,
@@ -175,20 +175,20 @@ class AdminDesigDataSource extends DataTableSource {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               SizedBox(
                 height: 50,
                 child: TextField(
                   controller: nameController,
                   readOnly: isViewMode,
                   decoration: InputDecoration(
-                    hintText: "Enter designation name...",
+                    hintText: 'Enter designation name...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     filled: true,
                     fillColor: isViewMode ? Colors.grey[200] : Colors.white,
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                         horizontal: 15, vertical: 15), // 🔥 Adjust padding
                   ),
                 ),
@@ -240,10 +240,10 @@ class AdminDesigDataSource extends DataTableSource {
                                 Navigator.of(context).pop();
                               }
                               ToastHelper.showSuccessToast(
-                                  title: "Designation edited successfully!.");
+                                  title: 'Designation edited successfully!.');
                               controller.notifyListeners();
                             } catch (e) {
-                              Logger.error("Error editing department");
+                              Logger.error('Error editing department');
                             }
                           }
                         },

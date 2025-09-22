@@ -48,7 +48,7 @@ class TourPackagesController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void apiGetTourPackages() async {
+  Future<void> apiGetTourPackages() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -59,13 +59,13 @@ class TourPackagesController extends ChangeNotifier {
       final response = await http.get(Uri.parse(fullUrl));
 
       if (response.statusCode == 200) {
-        Logger.success("Response from tour details ${response.body}");
+        Logger.success('Response from tour details ${response.body}');
 
         final Map<String, dynamic> decoded =
             jsonDecode(response.body) as Map<String, dynamic>;
 
-        if (decoded["status"] == "success" && decoded["packages"] != null) {
-          final List<dynamic> packageList = decoded["packages"];
+        if (decoded['status'] == 'success' && decoded['packages'] != null) {
+          final List<dynamic> packageList = decoded['packages'];
 
           // _tourPackages =
           //     packageList.map((pkg) => TourPackageModel.fromJson(pkg)).toList();
@@ -78,26 +78,26 @@ class TourPackagesController extends ChangeNotifier {
           // Logger.success(
           //     "Tour packages populated: ${_tourPackages.length} items");
           Logger.success(
-              "Top tour packages populated: ${_topTourPackages.length} items");
-          Logger.success("tour packages full URL: $fullUrl");
+              'Top tour packages populated: ${_topTourPackages.length} items');
+          Logger.success('tour packages full URL: $fullUrl');
         } else {
-          _error = "No packages found";
-          Logger.error("No packages found in response");
+          _error = 'No packages found';
+          Logger.error('No packages found in response');
         }
       } else {
-        _error = "Server error: ${response.statusCode}";
-        Logger.error("Failed with status: ${response.statusCode}");
+        _error = 'Server error: ${response.statusCode}';
+        Logger.error('Failed with status: ${response.statusCode}');
       }
     } catch (e, s) {
-      Logger.error("Error fetching tour packages. Error: $e, Stacktrace: $s");
-      _error = "Error fetching package details $e";
+      Logger.error('Error fetching tour packages. Error: $e, Stacktrace: $s');
+      _error = 'Error fetching package details $e';
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  void apiGetFilteredPackages(
+  Future<void> apiGetFilteredPackages(
       List<String> selectedStars,
       String minBudget,
       String maxBudget,
@@ -111,45 +111,45 @@ class TourPackagesController extends ChangeNotifier {
     try {
       final String fullUrl = AppUrls.getFilteredTourPackages;
       final Map<String, dynamic> body = {
-        "userId": "",
-        "usertype": "",
-        "minPrice": minBudget,
-        "maxPrice": maxBudget,
-        "minDuration": minDuration,
-        "maxDuration": maxDuration,
-        "sort": "",
-        "ratings": selectedStars,
-        "destination": ""
+        'userId': '',
+        'usertype': '',
+        'minPrice': minBudget,
+        'maxPrice': maxBudget,
+        'minDuration': minDuration,
+        'maxDuration': maxDuration,
+        'sort': '',
+        'ratings': selectedStars,
+        'destination': ''
       };
       final encodeBody = json.encode(body);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
-      Logger.success("Encoded body of filtered $encodeBody");
-      Logger.success("get filtered packages full URL: $fullUrl");
+      Logger.success('Encoded body of filtered $encodeBody');
+      Logger.success('get filtered packages full URL: $fullUrl');
 
-      Logger.success("Raw Data fetched from filtered api ${response.body}");
+      Logger.success('Raw Data fetched from filtered api ${response.body}');
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
-        final List<dynamic> packages = jsonData["packages"];
-        Logger.warning("filtered packages : $packages");
+        final List<dynamic> packages = jsonData['packages'];
+        Logger.warning('filtered packages : $packages');
         _tourPackages =
             packages.map((pkg) => TourPackageModel.fromJson(pkg)).toList();
       } else {
-        _error = "Server error : ${response.body}";
-        Logger.error("Server error : ${response.body}");
+        _error = 'Server error : ${response.body}';
+        Logger.error('Server error : ${response.body}');
       }
 
       Logger.warning(
-          "Total Packages after filter applied ${_tourPackages.length}");
+          'Total Packages after filter applied ${_tourPackages.length}');
     } catch (e, s) {
-      _error = "Error fetching filtered data, Error: $e";
-      Logger.error("Error fetching filtered data, Error: $e, Stacktree: $s");
+      _error = 'Error fetching filtered data, Error: $e';
+      Logger.error('Error fetching filtered data, Error: $e, Stacktree: $s');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  void apiGetBestDeals() async {
+  Future<void> apiGetBestDeals() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -157,28 +157,28 @@ class TourPackagesController extends ChangeNotifier {
     try {
       final String fullUrl = AppUrls.getBestDeals;
       final response = await http.get(Uri.parse(fullUrl),
-          headers: {"Content-Type": "application/json"});
+          headers: {'Content-Type': 'application/json'});
       if (response.statusCode == 200) {
-        Logger.success("best details full URL: $fullUrl");
-        Logger.success("Raw response from best deals api : ${response.body}");
+        Logger.success('best details full URL: $fullUrl');
+        Logger.success('Raw response from best deals api : ${response.body}');
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
         if (jsonData['status'] == 'success' && jsonData['packages'] != null) {
-          List<dynamic> bestDeals = jsonData['packages'];
+          final List<dynamic> bestDeals = jsonData['packages'];
           _bestDealPackages = bestDeals
               .take(5)
               .map((bestDeal) => BestDealsModel.fromJson(bestDeal))
               .toList();
         } else {
-          _error = "Error populating entries in the model ${response.body}";
+          _error = 'Error populating entries in the model ${response.body}';
         }
       } else {
-        _error = "Error from the api : ${response.body}";
+        _error = 'Error from the api : ${response.body}';
       }
       Logger.success(
-          "Total Best deals populated is ${_bestDealPackages.length}");
+          'Total Best deals populated is ${_bestDealPackages.length}');
     } catch (e, s) {
-      _error = "Error fetching best deals $e";
-      Logger.error("Error fetching best deals. Error: $e, Stacktree: $s");
+      _error = 'Error fetching best deals $e';
+      Logger.error('Error fetching best deals. Error: $e, Stacktree: $s');
     } finally {
       _isLoading = false;
       notifyListeners();

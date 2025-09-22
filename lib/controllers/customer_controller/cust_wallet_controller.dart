@@ -38,12 +38,12 @@ class CustWalletController extends ChangeNotifier {
       final String fullUrl = AppUrls.getWalletDetails;
       final String? userId = await SharedPrefHelper().getCurrentUserCustId();
 
-      final Map<String, dynamic> body = {"userId": userId};
+      final Map<String, dynamic> body = {'userId': userId};
       final encodeBody = json.encode(body);
 
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
 
-      Logger.success("Response from wallet details: ${response.body}");
+      Logger.success('Response from wallet details: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -63,7 +63,7 @@ class CustWalletController extends ChangeNotifier {
 
           _custRedeemableWalletHistory.clear();
           _custBookingWalletHistory.clear();
-          Logger.success("wallet details full URL: $fullUrl");
+          Logger.success('wallet details full URL: $fullUrl');
 
           final redeemableHistory =
               historyData['redeemable_wallet_history'] as List<dynamic>?;
@@ -74,7 +74,7 @@ class CustWalletController extends ChangeNotifier {
                     CustRedeemableWalletHistory.fromJson(historyJson);
                 _custRedeemableWalletHistory.add(historyModel);
               } catch (e) {
-                Logger.error("Error parsing redeemable wallet history: $e");
+                Logger.error('Error parsing redeemable wallet history: $e');
               }
             }
           }
@@ -88,32 +88,32 @@ class CustWalletController extends ChangeNotifier {
                     CustBookingWalletHistory.fromJson(historyJson);
                 _custBookingWalletHistory.add(historyModel);
               } catch (e) {
-                Logger.error("Error parsing booking wallet history: $e");
+                Logger.error('Error parsing booking wallet history: $e');
               }
             }
           }
           Logger.success(
-              "Successfully populated customer ${_custRedeemableWalletHistory.length} redeemable wallet history records");
+              'Successfully populated customer ${_custRedeemableWalletHistory.length} redeemable wallet history records');
           Logger.success(
-              "Successfully populated ${_custBookingWalletHistory.length} booking wallet history records");
+              'Successfully populated ${_custBookingWalletHistory.length} booking wallet history records');
 
-          Logger.success("Wallet data populated successfully");
+          Logger.success('Wallet data populated successfully');
           Logger.success(
-              "Reference Count - Total: $_referenceCountTotal, This Month: $_referenceCountThisMonth");
+              'Reference Count - Total: $_referenceCountTotal, This Month: $_referenceCountThisMonth');
           Logger.success(
-              "Booking Points - Total: $_bookingPointsCountTotal, This Month: $_bookingPointsCountThisMonth");
+              'Booking Points - Total: $_bookingPointsCountTotal, This Month: $_bookingPointsCountThisMonth');
         } else {
-          _error = data['message'] ?? "Failed to fetch wallet details";
+          _error = data['message'] ?? 'Failed to fetch wallet details';
           Logger.error("API returned error: ${data['message']}");
         }
       } else {
         _error =
-            "Failed to fetch wallet details. Status: ${response.statusCode}";
-        Logger.error("HTTP Error: ${response.statusCode}");
+            'Failed to fetch wallet details. Status: ${response.statusCode}';
+        Logger.error('HTTP Error: ${response.statusCode}');
       }
     } catch (e, s) {
-      _error = "Error fetching wallet details $e";
-      Logger.error("Error fetching wallet details. Error: $e, Stacktree: $s");
+      _error = 'Error fetching wallet details $e';
+      Logger.error('Error fetching wallet details. Error: $e, Stacktree: $s');
     } finally {
       _isLoading = false;
       notifyListeners();

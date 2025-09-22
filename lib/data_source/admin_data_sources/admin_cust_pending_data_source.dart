@@ -12,32 +12,32 @@ class MyAdminCustPendingDataSource extends DataTableSource {
     if (index >= data.length) return null;
     final customer = data[index];
 
-    var newStatus = "";
+    var newStatus = '';
     final status = customer.status.toString();
     if (status == '2') {
-      newStatus = "Pending";
+      newStatus = 'Pending';
     } else if (status == '0') {
-      newStatus = "Deleted";
+      newStatus = 'Deleted';
     }
 
     String getStatusText(dynamic status) {
-      if (status == null) return "Unknown";
+      if (status == null) return 'Unknown';
 
       if (status is String) {
-        if (status.isEmpty) return "Unknown";
+        if (status.isEmpty) return 'Unknown';
         return status;
       }
 
       if (status is int || status is double) {
         switch (status) {
           case 1:
-            return "Completed";
+            return 'Completed';
           case 2:
-            return "Pending";
+            return 'Pending';
           case 0:
-            return "Cancelled";
+            return 'Cancelled';
           default:
-            return "Unknown";
+            return 'Unknown';
         }
       }
 
@@ -45,17 +45,17 @@ class MyAdminCustPendingDataSource extends DataTableSource {
     }
 
     Color getStatusColor(String status) {
-      String statusText = getStatusText(status).toLowerCase();
+      final String statusText = getStatusText(status).toLowerCase();
       switch (statusText) {
-        case "1":
+        case '1':
           return Colors.green;
-        case "2":
+        case '2':
           return Colors.grey;
-        case "pending":
+        case 'pending':
           return Colors.orange;
-        case "0":
+        case '0':
           return Colors.red;
-        case "cancelled":
+        case 'cancelled':
           return Colors.red;
         default:
           return Colors.yellowAccent;
@@ -63,7 +63,7 @@ class MyAdminCustPendingDataSource extends DataTableSource {
     }
 
     String extractPathSegment(String fullPath, String folderPrefix) {
-      int index = fullPath.lastIndexOf(folderPrefix);
+      final int index = fullPath.lastIndexOf(folderPrefix);
       if (index != -1) {
         return fullPath.substring(index);
       }
@@ -76,12 +76,12 @@ class MyAdminCustPendingDataSource extends DataTableSource {
           child: Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
             ),
             clipBehavior: Clip.antiAlias,
             child: Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -93,16 +93,16 @@ class MyAdminCustPendingDataSource extends DataTableSource {
         imageUrl = profilePicture;
       } else {
         final newpath = extractPathSegment(profilePicture, 'profile_pic/');
-        imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+        imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
       }
 
-      Logger.success("Final image URL: $imageUrl");
+      Logger.success('Final image URL: $imageUrl');
 
       return Center(
         child: Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
           clipBehavior: Clip.antiAlias,
@@ -112,7 +112,7 @@ class MyAdminCustPendingDataSource extends DataTableSource {
             errorBuilder: (context, error, stackTrace) {
               // Logger.error("Failed to load image: $error");S
               return Image.asset(
-                "assets/default_profile.png",
+                'assets/default_profile.png',
                 fit: BoxFit.cover,
               );
             },
@@ -132,20 +132,20 @@ class MyAdminCustPendingDataSource extends DataTableSource {
           ),
         ),
         DataCell(Text(customer.id.toString())),
-        DataCell(Text(customer.name ?? "N/A")),
-        DataCell(Text(customer.taReferenceNo ?? "N/A")),
-        DataCell(Text(customer.taReferenceName ?? "N/A")),
-        DataCell(Text(customer.dob ?? "N/A")),
+        DataCell(Text(customer.name ?? 'N/A')),
+        DataCell(Text(customer.taReferenceNo ?? 'N/A')),
+        DataCell(Text(customer.taReferenceName ?? 'N/A')),
+        DataCell(Text(customer.dob ?? 'N/A')),
         DataCell(
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: getStatusColor(customer.status.toString()),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               newStatus,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -158,50 +158,50 @@ class MyAdminCustPendingDataSource extends DataTableSource {
   Widget _buildActionMenu(BuildContext context, PendingCustomer customer) {
     return PopupMenuButton<String>(
       onSelected: (value) {},
-      itemBuilder: (BuildContext context) {
+      itemBuilder: (context) {
         List<PopupMenuEntry<String>> menuItems = [];
 
-        if (customer.status == "2") {
+        if (customer.status == '2') {
           menuItems = [
-            PopupMenuItem(
-              value: "view",
+            const PopupMenuItem(
+              value: 'view',
               child: ListTile(
                 leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-                title: Text("View"),
+                title: Text('View'),
               ),
             ),
-            PopupMenuItem(
-              value: "edit",
+            const PopupMenuItem(
+              value: 'edit',
               child: ListTile(
-                leading: Icon(Icons.edit,
-                    color: const Color.fromARGB(255, 0, 105, 190)),
-                title: Text("Edit"),
+                leading:
+                    Icon(Icons.edit, color: Color.fromARGB(255, 0, 105, 190)),
+                title: Text('Edit'),
               ),
             ),
-            PopupMenuItem(
-              value: "delete",
+            const PopupMenuItem(
+              value: 'delete',
               child: ListTile(
                 leading: Icon(Icons.delete, color: Colors.red),
-                title: Text("Delete"),
+                title: Text('Delete'),
               ),
             ),
-            PopupMenuItem(
-              value: "register",
+            const PopupMenuItem(
+              value: 'register',
               child: ListTile(
                 leading: Icon(Icons.app_registration,
-                    color: const Color.fromARGB(255, 43, 29, 240)),
-                title: Text("Register"),
+                    color: Color.fromARGB(255, 43, 29, 240)),
+                title: Text('Register'),
               ),
             ),
           ];
-        } else if (customer.status == "1") {
+        } else if (customer.status == '1') {
           // Handle other status cases if needed
           menuItems = [
-            PopupMenuItem(
-              value: "view",
+            const PopupMenuItem(
+              value: 'view',
               child: ListTile(
                 leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-                title: Text("View"),
+                title: Text('View'),
               ),
             ),
           ];
@@ -209,7 +209,7 @@ class MyAdminCustPendingDataSource extends DataTableSource {
 
         return menuItems;
       },
-      icon: Icon(Icons.more_vert, color: Colors.black54),
+      icon: const Icon(Icons.more_vert, color: Colors.black54),
     );
   }
 

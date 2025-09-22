@@ -19,12 +19,12 @@ class BMPendingBusinessMentors extends DataTableSource {
         child: Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
           clipBehavior: Clip.antiAlias,
           child: Image.asset(
-            "assets/default_profile.png",
+            'assets/default_profile.png',
             fit: BoxFit.cover,
           ),
         ),
@@ -32,7 +32,7 @@ class BMPendingBusinessMentors extends DataTableSource {
     }
 
     String extractPathSegment(String fullPath, String folderPrefix) {
-      int index = fullPath.lastIndexOf(folderPrefix);
+      final int index = fullPath.lastIndexOf(folderPrefix);
       if (index != -1) {
         return fullPath.substring(index);
       }
@@ -44,16 +44,16 @@ class BMPendingBusinessMentors extends DataTableSource {
       imageUrl = profilePicture;
     } else {
       final newpath = extractPathSegment(profilePicture, 'profile_pic/');
-      imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+      imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
     }
 
-    Logger.success("Final image URL: $imageUrl");
+    Logger.success('Final image URL: $imageUrl');
 
     return Center(
       child: Container(
         width: 40,
         height: 40,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
         ),
         clipBehavior: Clip.antiAlias,
@@ -63,7 +63,7 @@ class BMPendingBusinessMentors extends DataTableSource {
           errorBuilder: (context, error, stackTrace) {
             // Logger.error("Failed to load image: $error");S
             return Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             );
           },
@@ -74,14 +74,14 @@ class BMPendingBusinessMentors extends DataTableSource {
 
   String formatDate(String? date) {
     if (date == null || date.trim().isEmpty) {
-      return "N/A"; // Handle null/empty cases
+      return 'N/A'; // Handle null/empty cases
     }
 
     try {
-      DateTime parsedDate = DateFormat("yyyy-MM-dd").parse(date);
-      return DateFormat("dd-MM-yyyy").format(parsedDate);
+      final DateTime parsedDate = DateFormat('yyyy-MM-dd').parse(date);
+      return DateFormat('dd-MM-yyyy').format(parsedDate);
     } catch (e) {
-      return "Invalid Date";
+      return 'Invalid Date';
     }
   }
 
@@ -89,12 +89,12 @@ class BMPendingBusinessMentors extends DataTableSource {
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
     final businessMentor = data[index];
-    var newStatus = "";
+    var newStatus = '';
     final status = businessMentor.status.toString();
     if (status == '2') {
-      newStatus = "Pending";
+      newStatus = 'Pending';
     } else if (status == '0') {
-      newStatus = "Deleted";
+      newStatus = 'Deleted';
     }
 
     return DataRow(
@@ -109,20 +109,20 @@ class BMPendingBusinessMentors extends DataTableSource {
           ),
         ),
         DataCell(Text(businessMentor.id.toString())),
-        DataCell(Text(businessMentor.name ?? "N/A")),
-        DataCell(Text(businessMentor.referenceNo ?? "N/A")),
-        DataCell(Text(businessMentor.registrant ?? "N/A")),
+        DataCell(Text(businessMentor.name ?? 'N/A')),
+        DataCell(Text(businessMentor.referenceNo ?? 'N/A')),
+        DataCell(Text(businessMentor.registrant ?? 'N/A')),
         DataCell(Text(businessMentor.dob!)),
         DataCell(
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: _getStatusColor(businessMentor.status.toString()),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               newStatus,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -132,23 +132,23 @@ class BMPendingBusinessMentors extends DataTableSource {
   }
 
   String _getStatusText(dynamic status) {
-    if (status == null) return "Unknown";
+    if (status == null) return 'Unknown';
 
     if (status is String) {
-      if (status.isEmpty) return "Unknown";
+      if (status.isEmpty) return 'Unknown';
       return status;
     }
 
     if (status is int || status is double) {
       switch (status) {
         case 1:
-          return "Completed";
+          return 'Completed';
         case 2:
-          return "Pending";
+          return 'Pending';
         case 0:
-          return "Cancelled";
+          return 'Cancelled';
         default:
-          return "Unknown";
+          return 'Unknown';
       }
     }
 
@@ -156,17 +156,17 @@ class BMPendingBusinessMentors extends DataTableSource {
   }
 
   Color _getStatusColor(String status) {
-    String statusText = _getStatusText(status).toLowerCase();
+    final String statusText = _getStatusText(status).toLowerCase();
     switch (statusText) {
-      case "1":
+      case '1':
         return Colors.green;
-      case "2":
+      case '2':
         return Colors.grey;
-      case "pending":
+      case 'pending':
         return Colors.orange;
-      case "0":
+      case '0':
         return Colors.red;
-      case "cancelled":
+      case 'cancelled':
         return Colors.red;
       default:
         return Colors.yellowAccent;
@@ -179,12 +179,13 @@ class BMPendingBusinessMentors extends DataTableSource {
       onSelected: (value) {
         // Handle menu actions
       },
-      itemBuilder: (BuildContext context) => [
+      itemBuilder: (context) => [
         PopupMenuItem(
-          value: "view",
+          value: 'view',
           child: ListTile(
-              leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-              title: Text("View"),
+              leading:
+                  const Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
+              title: const Text('View'),
               onTap: () {
                 // Logger.success(technoEnterprise.name!);
                 Navigator.pop(context);
@@ -200,14 +201,14 @@ class BMPendingBusinessMentors extends DataTableSource {
               }),
         ),
         PopupMenuItem(
-          value: "edit",
+          value: 'edit',
           child: ListTile(
             leading:
-                Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
-            title: Text("Edit"),
+                const Icon(Icons.edit, color: Color.fromARGB(255, 0, 105, 190)),
+            title: const Text('Edit'),
             onTap: () {
               Navigator.pop(context);
-              Logger.success("This is the context : $context");
+              Logger.success('This is the context : $context');
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -220,19 +221,19 @@ class BMPendingBusinessMentors extends DataTableSource {
             },
           ),
         ),
-        PopupMenuItem(
-          value: "delete",
+        const PopupMenuItem(
+          value: 'delete',
           child: ListTile(
             leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
+            title: Text('Delete'),
           ),
         ),
         PopupMenuItem(
-          value: "register",
+          value: 'register',
           child: ListTile(
-            leading: Icon(Icons.app_registration,
-                color: const Color.fromARGB(255, 43, 29, 240)),
-            title: Text("Register"),
+            leading: const Icon(Icons.app_registration,
+                color: Color.fromARGB(255, 43, 29, 240)),
+            title: const Text('Register'),
             onTap: () {
               final controller = Provider.of<AdminBusniessMentorController>(
                   context,
@@ -243,7 +244,7 @@ class BMPendingBusinessMentors extends DataTableSource {
           ),
         ),
       ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
+      icon: const Icon(Icons.more_vert, color: Colors.black54),
     );
   }
 

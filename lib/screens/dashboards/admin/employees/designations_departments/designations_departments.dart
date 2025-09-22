@@ -65,7 +65,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
   Widget build(BuildContext context) {
     final controller =
         Provider.of<AdminDesignationDepartmentController>(context);
-    double screenWidth = MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -81,33 +81,32 @@ class _DesignationsPageState extends State<DesignationsPage> {
         elevation: 0,
       ),
       body: isLoading || controller.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Divider(thickness: 1, color: Colors.black26),
-                    Center(
+                    const Divider(thickness: 1, color: Colors.black26),
+                    const Center(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Text(
-                          "Departments:",
+                          'Departments:',
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
-                    Divider(thickness: 1, color: Colors.black26),
+                    const Divider(thickness: 1, color: Colors.black26),
                     Row(
                       children: [
-                        SizedBox(width: 530),
+                        const SizedBox(width: 530),
                         Expanded(
                           flex: 2,
                           child: TextField(
-                            controller: null,
                             decoration: InputDecoration(
-                              hintText: "Search...",
+                              hintText: 'Search...',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(
                                     10), // Rounded corners
@@ -115,12 +114,12 @@ class _DesignationsPageState extends State<DesignationsPage> {
                               ),
                               filled: true,
                               fillColor: Colors.white,
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 10),
                             ),
                           ),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                       ],
                     ),
 
@@ -138,15 +137,15 @@ class _DesignationsPageState extends State<DesignationsPage> {
                               return PaginatedDataTable(
                                 columnSpacing: 255,
                                 dataRowMinHeight: 40,
-                                columns: [
-                                  DataColumn(label: Text("ID")),
-                                  DataColumn(label: Text("Department Name")),
-                                  DataColumn(label: Text("Action"))
+                                columns: const [
+                                  DataColumn(label: Text('ID')),
+                                  DataColumn(label: Text('Department Name')),
+                                  DataColumn(label: Text('Action'))
                                 ],
                                 source: AdminDepartDataSource(
                                     controller.departments, context),
                                 rowsPerPage: _rowsPerPage,
-                                availableRowsPerPage: [5, 10, 15, 20, 25],
+                                availableRowsPerPage: const [5, 10, 15, 20, 25],
                                 onRowsPerPageChanged: (value) {
                                   if (value != null) {
                                     setState(() {
@@ -160,39 +159,38 @@ class _DesignationsPageState extends State<DesignationsPage> {
                           )),
                     ),
 
-                    SizedBox(height: 50),
-                    Divider(thickness: 1, color: Colors.black26),
+                    const SizedBox(height: 50),
+                    const Divider(thickness: 1, color: Colors.black26),
                     // Upcoming Events Section
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Text(
-                        "Designations:",
+                        'Designations:',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Divider(thickness: 1, color: Colors.black26),
+                    const Divider(thickness: 1, color: Colors.black26),
                     Row(
                       children: [
-                        SizedBox(width: 530),
+                        const SizedBox(width: 530),
                         Expanded(
                           flex: 2,
                           child: TextField(
-                            controller: null,
                             decoration: InputDecoration(
-                              hintText: "Search...",
+                              hintText: 'Search...',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 // No border line
                               ),
                               filled: true,
                               fillColor: Colors.white,
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 10),
                             ),
                           ),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                       ],
                     ),
 
@@ -208,16 +206,16 @@ class _DesignationsPageState extends State<DesignationsPage> {
                         child: PaginatedDataTable(
                           columnSpacing: 127,
                           dataRowMinHeight: 40,
-                          columns: [
-                            DataColumn(label: Text("ID")),
-                            DataColumn(label: Text("Designation")),
-                            DataColumn(label: Text("Department")),
-                            DataColumn(label: Text("Action"))
+                          columns: const [
+                            DataColumn(label: Text('ID')),
+                            DataColumn(label: Text('Designation')),
+                            DataColumn(label: Text('Department')),
+                            DataColumn(label: Text('Action'))
                           ],
                           source: AdminDesigDataSource(
                               controller.designation, context),
                           rowsPerPage: _rowsPerPage1,
-                          availableRowsPerPage: [5, 10, 15, 20, 25],
+                          availableRowsPerPage: const [5, 10, 15, 20, 25],
                           onRowsPerPageChanged: (value) {
                             if (value != null) {
                               setState(() {
@@ -229,7 +227,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
                   ],
                 ),
               ),
@@ -242,8 +240,8 @@ class _DesignationsPageState extends State<DesignationsPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
-        tooltip: "Add Department/Designation",
-        child: Icon(Icons.add, size: 30),
+        tooltip: 'Add Department/Designation',
+        child: const Icon(Icons.add, size: 30),
       ),
     );
   }
@@ -251,16 +249,16 @@ class _DesignationsPageState extends State<DesignationsPage> {
   void adddesdialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.info_outline,
+              const Icon(Icons.info_outline,
                   size: 40, color: Colors.blueAccent), // Info icon
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 'Do you want to add another department or designation?',
                 textAlign: TextAlign.center,
@@ -274,7 +272,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
               mainAxisAlignment:
                   MainAxisAlignment.center, // Adjust this as needed
               children: [
-                SizedBox(width: 45),
+                const SizedBox(width: 45),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close popup
@@ -284,7 +282,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
                     style: GoogleFonts.poppins(fontSize: 14, color: Colors.red),
                   ),
                 ),
-                SizedBox(width: 65), // Adjust spacing between buttons
+                const SizedBox(width: 65), // Adjust spacing between buttons
                 ElevatedButton(
                   onPressed: () {
                     adddepartment(context);
@@ -300,7 +298,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
                         GoogleFonts.poppins(fontSize: 14, color: Colors.white),
                   ),
                 ),
-                SizedBox(width: 35), // Adjust spacing between buttons
+                const SizedBox(width: 35), // Adjust spacing between buttons
                 ElevatedButton(
                   onPressed: () {
                     adddesignation(context);
@@ -329,12 +327,11 @@ class _DesignationsPageState extends State<DesignationsPage> {
     final TextEditingController nameController = TextEditingController();
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Column(
-            mainAxisSize: MainAxisSize.max,
             children: [
               Text(
                 isViewMode ? 'Department Details' : 'Add Department',
@@ -352,21 +349,21 @@ class _DesignationsPageState extends State<DesignationsPage> {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               SizedBox(
                 height: 50,
                 child: TextField(
                   controller: nameController,
                   readOnly: isViewMode,
                   decoration: InputDecoration(
-                    hintText: "Enter department name...",
+                    hintText: 'Enter department name...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     filled: true,
                     fillColor: isViewMode ? Colors.grey[200] : Colors.white,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 15),
                   ),
                 ),
               ),
@@ -420,15 +417,14 @@ class _DesignationsPageState extends State<DesignationsPage> {
 
   void adddesignation(BuildContext context) {
     final TextEditingController nameController = TextEditingController();
-    String? selectedDepartmentId = "";
+    String? selectedDepartmentId = '';
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Column(
-            mainAxisSize: MainAxisSize.max,
             children: [
               Text(
                 'Add Designation',
@@ -446,19 +442,19 @@ class _DesignationsPageState extends State<DesignationsPage> {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
-              SizedBox(height: 10), // 🔥 Add spacing
+              const SizedBox(height: 10), // 🔥 Add spacing
               SizedBox(
                 height: 50, // 🔥 Increase TextBox height
                 child: TextField(
                   controller: nameController,
                   decoration: InputDecoration(
-                    hintText: "Enter designation name...",
+                    hintText: 'Enter designation name...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     filled: true,
                     fillColor: Colors.white,
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                         horizontal: 15, vertical: 15), // 🔥 Adjust padding
                   ),
                 ),
@@ -491,7 +487,7 @@ class _DesignationsPageState extends State<DesignationsPage> {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
                     ToastHelper.showSuccessToast(
-                        title: "Designation added successfully!.");
+                        title: 'Designation added successfully!.');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[400],

@@ -26,7 +26,7 @@ class AdminDepartDataSource extends DataTableSource {
 
       // Add mounted check before using context
       if (context.mounted) {
-        ToastHelper.showSuccessToast(title: "Department deleted successfully!");
+        ToastHelper.showSuccessToast(title: 'Department deleted successfully!');
       }
     } catch (e) {
       Logger.success('Error deleting department: $e');
@@ -46,7 +46,7 @@ class AdminDepartDataSource extends DataTableSource {
       // Add mounted check before using context
       if (context.mounted) {
         ToastHelper.showSuccessToast(
-            title: "Department restored successfully!");
+            title: 'Department restored successfully!');
       }
     } catch (e) {
       Logger.success('Error restoring department: $e');
@@ -75,7 +75,7 @@ class AdminDepartDataSource extends DataTableSource {
         AdminDesignationDepartmentController();
     final TextEditingController nameController =
         TextEditingController(text: department?.deptName ?? '');
-    var title = "";
+    var title = '';
     if (isViewMode) {
       title = 'View Department';
     } else if (isEditMode) {
@@ -85,12 +85,11 @@ class AdminDepartDataSource extends DataTableSource {
     }
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Column(
-            mainAxisSize: MainAxisSize.max,
             children: [
               Text(
                 title,
@@ -108,21 +107,21 @@ class AdminDepartDataSource extends DataTableSource {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               SizedBox(
                 height: 50,
                 child: TextField(
                   controller: nameController,
                   readOnly: isViewMode,
                   decoration: InputDecoration(
-                    hintText: "Enter department name...",
+                    hintText: 'Enter department name...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     filled: true,
                     fillColor: isViewMode ? Colors.grey[200] : Colors.white,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 15),
                   ),
                 ),
               ),
@@ -162,7 +161,7 @@ class AdminDepartDataSource extends DataTableSource {
                                 if (context.mounted) {
                                   Navigator.of(context).pop();
                                   ToastHelper.showSuccessToast(
-                                      title: "Department edited successfully!");
+                                      title: 'Department edited successfully!');
                                 }
                                 controller.notifyListeners();
                               }
@@ -196,42 +195,42 @@ class AdminDepartDataSource extends DataTableSource {
       onSelected: (value) {
         // Handle menu actions here if needed
         Logger.success(
-            "Selected action: $value for department ${department.id}");
+            'Selected action: $value for department ${department.id}');
       },
-      itemBuilder: (BuildContext context) {
+      itemBuilder: (context) {
         List<PopupMenuEntry<String>> menuItems = [];
 
         if (int.tryParse(department.status) == 1) {
           menuItems = [
             PopupMenuItem(
-              value: "view",
-              child: ListTile(
+              value: 'view',
+              child: const ListTile(
                 leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-                title: Text("View"),
+                title: Text('View'),
               ),
               onTap: () {
-                Logger.success("View Departments ${department.id}");
+                Logger.success('View Departments ${department.id}');
                 adddepartment(context,
                     department: department, isViewMode: true);
               },
             ),
             PopupMenuItem(
-              value: "edit",
-              child: ListTile(
+              value: 'edit',
+              child: const ListTile(
                 leading: Icon(Icons.edit, color: Colors.blueAccent),
-                title: Text("Edit"),
+                title: Text('Edit'),
               ),
               onTap: () {
-                Logger.success("Editing ${department.id}");
+                Logger.success('Editing ${department.id}');
                 adddepartment(context,
                     department: department, isEditMode: true);
               },
             ),
             PopupMenuItem(
-              value: "delete",
+              value: 'delete',
               child: ListTile(
-                leading: Icon(Icons.delete, color: Colors.red),
-                title: Text("Delete"),
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete'),
                 onTap: () async {
                   // Store context reference and check mounted before async operation
                   final contextRef = context;
@@ -246,13 +245,13 @@ class AdminDepartDataSource extends DataTableSource {
         } else if (int.tryParse(department.status) == 2) {
           menuItems = [
             PopupMenuItem(
-              value: "restore",
-              child: ListTile(
+              value: 'restore',
+              child: const ListTile(
                 leading: Icon(Icons.restore, color: Colors.green),
-                title: Text("Restore"),
+                title: Text('Restore'),
               ),
               onTap: () async {
-                Logger.success("Restoring ${department.id}");
+                Logger.success('Restoring ${department.id}');
                 await restoreDepartment(department);
               },
             ),
@@ -260,7 +259,7 @@ class AdminDepartDataSource extends DataTableSource {
         }
         return menuItems;
       },
-      icon: Icon(Icons.more_vert, color: Colors.black54),
+      icon: const Icon(Icons.more_vert, color: Colors.black54),
     );
   }
 

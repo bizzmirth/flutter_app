@@ -21,7 +21,7 @@ class CustOrderHistoryController extends ChangeNotifier {
   String? get pendingPaymentAmt => _pendingPaymentAmt;
   String? get completedPaymentAmt => _completedPaymentAmt;
 
-  void apiGetStatCount() async {
+  Future<void> apiGetStatCount() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -30,23 +30,23 @@ class CustOrderHistoryController extends ChangeNotifier {
       final String fullUrl = AppUrls.getOrderHistoryStatCounts;
 
       final String? userId = await SharedPrefHelper().getCurrentUserCustId();
-      final Map<String, dynamic> body = {"userId": userId, "userType": "10"};
+      final Map<String, dynamic> body = {'userId': userId, 'userType': '10'};
       final encodeBody = jsonEncode(body);
       final response = await http.post(Uri.parse(fullUrl),
-          headers: {"Content-Type": "application/json"}, body: encodeBody);
+          headers: {'Content-Type': 'application/json'}, body: encodeBody);
       if (response.statusCode == 200) {
-        Logger.success("Response from order get count api: ${response.body}");
+        Logger.success('Response from order get count api: ${response.body}');
         final Map<String, dynamic> data = jsonDecode(response.body);
-        _pendingBookingCount = data["pending_booking_count"]?.toString();
-        _completedBookingCount = data["completed_booking_count"]?.toString();
-        _pendingPaymentAmt = data["pending_payment_amt"]?.toString();
-        _completedPaymentAmt = data["completed_payment_amt"]?.toString();
+        _pendingBookingCount = data['pending_booking_count']?.toString();
+        _completedBookingCount = data['completed_booking_count']?.toString();
+        _pendingPaymentAmt = data['pending_payment_amt']?.toString();
+        _completedPaymentAmt = data['completed_payment_amt']?.toString();
       } else {
-        Logger.error("Failed with status code: ${response.statusCode}");
+        Logger.error('Failed with status code: ${response.statusCode}');
       }
     } catch (e, s) {
-      _error = "Error fetching order stat counts: $e";
-      Logger.error("Error fetching order stat counts: Error:$e, Stacktree: $s");
+      _error = 'Error fetching order stat counts: $e';
+      Logger.error('Error fetching order stat counts: Error:$e, Stacktree: $s');
     } finally {
       _isLoading = false;
       notifyListeners();

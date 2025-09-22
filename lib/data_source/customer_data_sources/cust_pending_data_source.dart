@@ -22,12 +22,12 @@ class MyrefCustPendingDataSource extends DataTableSource {
           child: Container(
             width: imageSize,
             height: imageSize,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
             ),
             clipBehavior: Clip.antiAlias,
             child: Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -39,16 +39,16 @@ class MyrefCustPendingDataSource extends DataTableSource {
         imageUrl = profilePicture;
       } else {
         final newpath = extractPathSegment(profilePicture, 'profile_pic/');
-        imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+        imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
       }
 
-      Logger.success("Final image URL: $imageUrl");
+      Logger.success('Final image URL: $imageUrl');
 
       return Center(
         child: Container(
           width: imageSize,
           height: imageSize,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
           clipBehavior: Clip.antiAlias,
@@ -59,7 +59,7 @@ class MyrefCustPendingDataSource extends DataTableSource {
               child: CircularProgressIndicator(strokeWidth: 1.5),
             ),
             errorWidget: (context, url, error) => Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -99,13 +99,13 @@ class MyrefCustPendingDataSource extends DataTableSource {
           ),
         ),
         DataCell(Text(pendingCustomer.id.toString())),
-        DataCell(Text(pendingCustomer.name ?? "N/A")),
-        DataCell(Text(pendingCustomer.taReferenceNo ?? "N/A")),
-        DataCell(Text(pendingCustomer.taReferenceName ?? "N/A")),
+        DataCell(Text(pendingCustomer.name ?? 'N/A')),
+        DataCell(Text(pendingCustomer.taReferenceNo ?? 'N/A')),
+        DataCell(Text(pendingCustomer.taReferenceName ?? 'N/A')),
         DataCell(Text(formatDate(pendingCustomer.addedOn))),
         DataCell(
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: getStatusColor(pendingCustomer.status!)
                   .withValues(alpha: 0.1),
@@ -113,7 +113,6 @@ class MyrefCustPendingDataSource extends DataTableSource {
               border: Border.all(
                 color: getStatusColor(pendingCustomer.status!)
                     .withValues(alpha: 0.3),
-                width: 1,
               ),
             ),
             child: Text(

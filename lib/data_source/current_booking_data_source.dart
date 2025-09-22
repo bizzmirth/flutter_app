@@ -9,12 +9,12 @@ class CurrentBookingDataSource extends DataTableSource {
     final entries = data[index];
 
     return DataRow(cells: [
-      DataCell(Text(entries["bookingId"])),
-      DataCell(Text(entries["customerName"])),
-      DataCell(Text(entries["packageName"])),
-      DataCell(Text(entries["amount"].toString())),
-      DataCell(Text(entries["bookingDate"])),
-      DataCell(Text(entries["travelDate"])),
+      DataCell(Text(entries['bookingId'])),
+      DataCell(Text(entries['customerName'])),
+      DataCell(Text(entries['packageName'])),
+      DataCell(Text(entries['amount'].toString())),
+      DataCell(Text(entries['bookingDate'])),
+      DataCell(Text(entries['travelDate'])),
     ]);
   }
 

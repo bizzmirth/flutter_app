@@ -24,10 +24,10 @@ class BchPendingTcDataSource extends DataTableSource {
       MyNavigator.pop();
       if (showToast) {
         ToastHelper.showSuccessToast(
-            title: "Pending Techno Enterprise Deleted.");
+            title: 'Pending Techno Enterprise Deleted.');
       }
     } catch (e) {
-      Logger.error("Failed to Pending Techno Enterprise: $e");
+      Logger.error('Failed to Pending Techno Enterprise: $e');
     }
   }
 
@@ -38,31 +38,31 @@ class BchPendingTcDataSource extends DataTableSource {
       await isarService.updateStatus<PendingTechnoEnterpriseModel>(
           idToRestore, 2);
       MyNavigator.pop();
-      ToastHelper.showSuccessToast(title: "Techno Enterprise Restored.");
-      Logger.success("-------- $context -------- ");
+      ToastHelper.showSuccessToast(title: 'Techno Enterprise Restored.');
+      Logger.success('-------- $context -------- ');
     } catch (e) {
-      Logger.error("Failed to restore employee: $e");
+      Logger.error('Failed to restore employee: $e');
     }
   }
 
   String _getStatusText(dynamic status) {
-    if (status == null) return "Unknown";
+    if (status == null) return 'Unknown';
 
     if (status is String) {
-      if (status.isEmpty) return "Unknown";
+      if (status.isEmpty) return 'Unknown';
       return status;
     }
 
     if (status is int || status is double) {
       switch (status) {
         case 1:
-          return "Completed";
+          return 'Completed';
         case 2:
-          return "Pending";
+          return 'Pending';
         case 0:
-          return "Cancelled";
+          return 'Cancelled';
         default:
-          return "Unknown";
+          return 'Unknown';
       }
     }
 
@@ -70,17 +70,17 @@ class BchPendingTcDataSource extends DataTableSource {
   }
 
   Color _getStatusColor(String status) {
-    String statusText = _getStatusText(status).toLowerCase();
+    final String statusText = _getStatusText(status).toLowerCase();
     switch (statusText) {
-      case "1":
+      case '1':
         return Colors.green;
-      case "2":
+      case '2':
         return Colors.grey;
-      case "pending":
+      case 'pending':
         return Colors.orange;
-      case "0":
+      case '0':
         return Colors.red;
-      case "cancelled":
+      case 'cancelled':
         return Colors.red;
       default:
         return Colors.yellowAccent;
@@ -93,12 +93,12 @@ class BchPendingTcDataSource extends DataTableSource {
         child: Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
           clipBehavior: Clip.antiAlias,
           child: Image.asset(
-            "assets/default_profile.png",
+            'assets/default_profile.png',
             fit: BoxFit.cover,
           ),
         ),
@@ -106,7 +106,7 @@ class BchPendingTcDataSource extends DataTableSource {
     }
 
     String extractPathSegment(String fullPath, String folderPrefix) {
-      int index = fullPath.lastIndexOf(folderPrefix);
+      final int index = fullPath.lastIndexOf(folderPrefix);
       if (index != -1) {
         return fullPath.substring(index);
       }
@@ -118,17 +118,17 @@ class BchPendingTcDataSource extends DataTableSource {
       imageUrl = profilePicture;
     } else {
       final newpath = extractPathSegment(profilePicture, 'profile_pic/');
-      imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+      imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
     }
 
-    Logger.success("Final image URL: $imageUrl");
+    Logger.success('Final image URL: $imageUrl');
 // Action Menu Widget
 
     return Center(
       child: Container(
         width: 40,
         height: 40,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
         ),
         clipBehavior: Clip.antiAlias,
@@ -138,7 +138,7 @@ class BchPendingTcDataSource extends DataTableSource {
           errorBuilder: (context, error, stackTrace) {
             // Logger.error("Failed to load image: $error");S
             return Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             );
           },
@@ -152,17 +152,18 @@ class BchPendingTcDataSource extends DataTableSource {
       onSelected: (value) {
         // Handle menu actions
       },
-      itemBuilder: (BuildContext context) {
+      itemBuilder: (context) {
         List<PopupMenuEntry<String>> menuItems = [];
 
         // If status is 1 (Completed), show all options
         if (technoEnterprise.status == 2) {
           menuItems = [
             PopupMenuItem(
-              value: "view",
+              value: 'view',
               child: ListTile(
-                  leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-                  title: Text("View"),
+                  leading: const Icon(Icons.remove_red_eye_sharp,
+                      color: Colors.blue),
+                  title: const Text('View'),
                   onTap: () {
                     // Logger.success(technoEnterprise.name!);
                     Navigator.pop(context);
@@ -178,11 +179,11 @@ class BchPendingTcDataSource extends DataTableSource {
                   }),
             ),
             PopupMenuItem(
-              value: "edit",
+              value: 'edit',
               child: ListTile(
-                leading: Icon(Icons.edit,
-                    color: const Color.fromARGB(255, 0, 105, 190)),
-                title: Text("Edit"),
+                leading: const Icon(Icons.edit,
+                    color: Color.fromARGB(255, 0, 105, 190)),
+                title: const Text('Edit'),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -198,26 +199,26 @@ class BchPendingTcDataSource extends DataTableSource {
               ),
             ),
             PopupMenuItem(
-              value: "delete",
+              value: 'delete',
               child: ListTile(
-                leading: Icon(Icons.delete, color: Colors.red),
-                title: Text("Delete"),
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete'),
                 onTap: () {
                   Logger.warning(
-                      "------------ Delete ${technoEnterprise.name}------------");
+                      '------------ Delete ${technoEnterprise.name}------------');
                   deleteTechnoEnterprise(technoEnterprise.id);
                 },
               ),
             ),
             PopupMenuItem(
-              value: "register",
+              value: 'register',
               child: ListTile(
-                leading: Icon(Icons.app_registration,
-                    color: const Color.fromARGB(255, 0, 238, 127)),
-                title: Text("Complete"),
+                leading: const Icon(Icons.app_registration,
+                    color: Color.fromARGB(255, 0, 238, 127)),
+                title: const Text('Complete'),
                 onTap: () {
                   Logger.warning(
-                      "------------ Register ${technoEnterprise.name}------------");
+                      '------------ Register ${technoEnterprise.name}------------');
                   // registerEmployee(technoEnterprise);
                 },
               ),
@@ -228,13 +229,13 @@ class BchPendingTcDataSource extends DataTableSource {
         else if (technoEnterprise.status == 0) {
           menuItems = [
             PopupMenuItem(
-              value: "restore",
+              value: 'restore',
               child: ListTile(
-                leading: Icon(Icons.restore, color: Colors.green),
-                title: Text("Restore"),
+                leading: const Icon(Icons.restore, color: Colors.green),
+                title: const Text('Restore'),
                 onTap: () {
                   Logger.warning(
-                      "------------ Restore ${technoEnterprise.name}------------");
+                      '------------ Restore ${technoEnterprise.name}------------');
                   // restoreEmployee(technoEnterprise.id);
                   // Implement your restore logic here
                   // You can change the technoEnterprise's status back to 1 or another status value
@@ -247,20 +248,20 @@ class BchPendingTcDataSource extends DataTableSource {
 
         return menuItems;
       },
-      icon: Icon(Icons.more_vert, color: Colors.black54),
+      icon: const Icon(Icons.more_vert, color: Colors.black54),
     );
   }
 
   String formatDate(String? date) {
     if (date == null || date.trim().isEmpty) {
-      return "N/A"; // Handle null/empty cases
+      return 'N/A'; // Handle null/empty cases
     }
 
     try {
-      DateTime parsedDate = DateFormat("yyyy-MM-dd").parse(date);
-      return DateFormat("dd-MM-yyyy").format(parsedDate);
+      final DateTime parsedDate = DateFormat('yyyy-MM-dd').parse(date);
+      return DateFormat('dd-MM-yyyy').format(parsedDate);
     } catch (e) {
-      return "Invalid Date";
+      return 'Invalid Date';
     }
   }
 
@@ -268,12 +269,12 @@ class BchPendingTcDataSource extends DataTableSource {
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
     final pendingTechnoEnterprise = data[index];
-    var newStatus = "";
+    var newStatus = '';
     final status = pendingTechnoEnterprise.status.toString();
     if (status == '2') {
-      newStatus = "Pending";
+      newStatus = 'Pending';
     } else if (status == '0') {
-      newStatus = "Deleted";
+      newStatus = 'Deleted';
     }
 
     return DataRow(
@@ -288,20 +289,20 @@ class BchPendingTcDataSource extends DataTableSource {
           ),
         ),
         DataCell(Text(pendingTechnoEnterprise.id.toString())),
-        DataCell(Text(pendingTechnoEnterprise.name ?? "N/A")),
-        DataCell(Text(pendingTechnoEnterprise.phoneNumber ?? "N/A")),
-        DataCell(Text(pendingTechnoEnterprise.refName ?? "N/A")),
+        DataCell(Text(pendingTechnoEnterprise.name ?? 'N/A')),
+        DataCell(Text(pendingTechnoEnterprise.phoneNumber ?? 'N/A')),
+        DataCell(Text(pendingTechnoEnterprise.refName ?? 'N/A')),
         DataCell(Text(formatDate(pendingTechnoEnterprise.dob))),
         DataCell(
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: _getStatusColor(pendingTechnoEnterprise.status.toString()),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               newStatus,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),

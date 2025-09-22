@@ -42,7 +42,7 @@ class _CarouselSectionState extends State<CarouselSection> {
         carousel_slider.CarouselSlider.builder(
           itemCount: imageUrls.length,
           itemBuilder: (context, index, realIndex) {
-            bool isActive = index == currentIndex;
+            final bool isActive = index == currentIndex;
 
             return ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -71,8 +71,6 @@ class _CarouselSectionState extends State<CarouselSection> {
             autoPlay: true,
             autoPlayInterval: const Duration(seconds: 3),
             enlargeCenterPage: true,
-            aspectRatio: 16 / 9,
-            viewportFraction: 0.80,
             onPageChanged: (index, reason) {
               setState(() {
                 currentIndex = index;

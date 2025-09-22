@@ -16,7 +16,7 @@ class Appwidget {
   }
 
   static TextStyle normalSubTitle() {
-    return TextStyle(
+    return const TextStyle(
       fontSize: 18,
       fontWeight: FontWeight.bold,
       color: Colors.white,

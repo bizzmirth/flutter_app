@@ -57,40 +57,40 @@ class _LoginPageState extends State<LoginPage> {
 
   void _navigateToDashboard(BuildContext context, String userType) {
     switch (userType) {
-      case "Admin":
+      case 'Admin':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const AdminDashboard()),
         );
         break;
-      case "Customer":
+      case 'Customer':
         navigateWithLoader(context, const CDashboardPage());
         break;
-      case "Travel Consultant":
+      case 'Travel Consultant':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const TCDashboardPage()),
         );
         break;
-      case "Techno Enterprise":
+      case 'Techno Enterprise':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const TEDashboardPage()),
         );
         break;
-      case "Business Channel manager":
+      case 'Business Channel manager':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BCHDashboardPage()),
         );
         break;
-      case "Business Development Manager":
+      case 'Business Development Manager':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BDMDashboardPage()),
         );
         break;
-      case "Business Mentor":
+      case 'Business Mentor':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BMDashboardPage()),
@@ -103,18 +103,18 @@ class _LoginPageState extends State<LoginPage> {
     final controller = Provider.of<LoginController>(context, listen: false);
     final result = await controller.loginUser(context);
 
-    if (result["status"] == true) {
+    if (result['status'] == true) {
       ToastHelper.showSuccessToast(
-        title: "Login Successful",
-        description: "Welcome back!",
+        title: 'Login Successful',
+        description: 'Welcome back!',
       );
 
       if (!context.mounted) return;
-      _navigateToDashboard(context, result["user_type"]);
+      _navigateToDashboard(context, result['user_type']);
     } else {
       ToastHelper.showErrorToast(
-        title: "Login Failed",
-        description: result["message"] ?? "An error occurred during login.",
+        title: 'Login Failed',
+        description: result['message'] ?? 'An error occurred during login.',
       );
     }
   }
@@ -125,15 +125,15 @@ class _LoginPageState extends State<LoginPage> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
         value: controller.selectedUserTypeId, // Default selection
-        hint: Text("Select $label"),
+        hint: Text('Select $label'),
         isExpanded: true,
         items: controller.userTypeNames.map((e) {
           return DropdownMenuItem<String>(
-            value: e["id"],
-            child: Text(e["name"]!),
+            value: e['id'],
+            child: Text(e['name']!),
           );
         }).toList(),
-        onChanged: (value) => controller.setSelectedUserType(value),
+        onChanged: controller.setSelectedUserType,
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: const Icon(Icons.person, color: Colors.blue),
@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => const HomePage(),
           ),
         );
       },
@@ -198,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       // App Logo
                       Image.asset(
-                        "assets/uniqbizz.png",
+                        'assets/uniqbizz.png',
                         height: 100,
                       ),
                       const SizedBox(height: 1),
@@ -288,7 +288,7 @@ class _LoginPageState extends State<LoginPage> {
                                         onChanged: (value) =>
                                             controller.toggleRememberMe(value!),
                                       ),
-                                      const Text("Remember Me"),
+                                      const Text('Remember Me'),
                                     ],
                                   ),
 
@@ -339,8 +339,8 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 50),
 
                       // Footer Text
-                      Text(
-                        "© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays",
+                      const Text(
+                        '© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
@@ -348,7 +348,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       Image.asset(
-                        "assets/bizz_logo.png",
+                        'assets/bizz_logo.png',
                         height: 100,
                       ),
                     ],
@@ -370,7 +370,7 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => const HomePage(),
           ),
         );
       },
@@ -406,13 +406,13 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Column(
                       children: [
-                        SizedBox(height: 160),
+                        const SizedBox(height: 160),
                         // App Logo
                         Image.asset(
-                          "assets/uniqbizz.png",
+                          'assets/uniqbizz.png',
                           height: 40,
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                       ],
                     ),
                     Padding(
@@ -499,7 +499,7 @@ class _LoginPageState extends State<LoginPage> {
                                         onChanged: (value) =>
                                             controller.toggleRememberMe(value!),
                                       ),
-                                      const Text("Remember Me"),
+                                      const Text('Remember Me'),
                                     ],
                                   ),
 
@@ -556,8 +556,8 @@ class _LoginPageState extends State<LoginPage> {
                       child: Column(
                         children: [
                           // Footer Text
-                          Text(
-                            "© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays",
+                          const Text(
+                            '© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays',
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
@@ -567,7 +567,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 10),
                           Image.asset(
-                            "assets/bizz_logo.png",
+                            'assets/bizz_logo.png',
                             height: 70,
                           ),
                         ],

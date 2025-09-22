@@ -17,7 +17,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
   List<Designation> get designation => _designation;
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
-  String baseUrl = "https://testca.uniqbizz.com/api/employees/dept_design";
+  String baseUrl = 'https://testca.uniqbizz.com/api/employees/dept_design';
 
   Future<void> fetchDepartments() async {
     _isLoading = true;
@@ -28,7 +28,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
       final response = await http.get(
         Uri.parse('$baseUrl/department/department.php'),
       );
-      Logger.success("Department API response: ${response.body}");
+      Logger.success('Department API response: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -46,7 +46,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
               _departments.map((dept) => dept.toJson()).toList();
           final isSaved = await prefs.setString(
               'departmentData', json.encode(departmentsJson));
-          Logger.success("Departments saved in SharedPreferences $isSaved");
+          Logger.success('Departments saved in SharedPreferences $isSaved');
         }
       }
     } catch (e) {
@@ -65,7 +65,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final response =
           await http.get(Uri.parse('$baseUrl/designation/designation.php'));
-      Logger.success("Designation API response: ${response.body}");
+      Logger.success('Designation API response: ${response.body}');
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
@@ -78,7 +78,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
               _designation.map((desg) => desg.toJson()).toList();
           final isSaved = await prefs.setString(
               'designationData', json.encode(designationJson));
-          Logger.success("Designations saved in SharedPreferences $isSaved");
+          Logger.success('Designations saved in SharedPreferences $isSaved');
         } else {
           _errorMessage = 'Failed to load departments';
         }
@@ -99,20 +99,20 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      var fullUrl = '$baseUrl/department/edit_department_data.php';
+      final fullUrl = '$baseUrl/department/edit_department_data.php';
       final Map<String, dynamic> data = {
-        "id": id,
-        "name": departmentName,
-        "status": status,
-        "message": "edit"
+        'id': id,
+        'name': departmentName,
+        'status': status,
+        'message': 'edit'
       };
       final encodeBody = json.encode(data);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
-      Logger.success("request body $encodeBody");
-      Logger.success("API response: ${response.body}");
+      Logger.success('request body $encodeBody');
+      Logger.success('API response: ${response.body}');
       Logger.success(fullUrl);
       if (response.statusCode == 200) {
-        Logger.success("Update Successfull");
+        Logger.success('Update Successfull');
         await fetchDepartments();
         notifyListeners();
       }
@@ -127,23 +127,23 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
     _errorMessage = '';
     notifyListeners();
     try {
-      final fullurl = "$baseUrl/department/add_department_data.php";
-      final Map<String, dynamic> data = {"name": name};
+      final fullurl = '$baseUrl/department/add_department_data.php';
+      final Map<String, dynamic> data = {'name': name};
       final encodeBody = json.encode(data);
       final response = await http.post(
         Uri.parse(fullurl),
         body: encodeBody,
       );
 
-      Logger.success("API response: ${response.body}");
-      Logger.warning("Status Code ${response.statusCode}");
+      Logger.success('API response: ${response.body}');
+      Logger.warning('Status Code ${response.statusCode}');
       Logger.success(fullurl);
       if (response.statusCode == 200) {
-        Logger.success("Department added successfully");
+        Logger.success('Department added successfully');
         notifyListeners();
       } else {
         _errorMessage = 'Failed to add department';
-        Logger.error("Error adding department: ${response.body}");
+        Logger.error('Error adding department: ${response.body}');
         notifyListeners();
       }
     } catch (e) {
@@ -154,31 +154,31 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
 
   Future<void> apiEditDesignation(id, name, deptID, status) async {
     _isLoading = true;
-    _errorMessage = "";
+    _errorMessage = '';
     notifyListeners();
 
     try {
-      var fullUrl = '$baseUrl/designation/edit_designation_data.php';
+      final fullUrl = '$baseUrl/designation/edit_designation_data.php';
       final Map<String, dynamic> data = {
-        "id": id,
-        "name": name,
-        "dept_id": deptID,
-        "message": "edit",
-        "status": status
+        'id': id,
+        'name': name,
+        'dept_id': deptID,
+        'message': 'edit',
+        'status': status
       };
       final encodeBody = json.encode(data);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
-      Logger.success("request body $encodeBody");
-      Logger.success("API response: ${response.body}");
-      Logger.success("API status code : ${response.statusCode}");
+      Logger.success('request body $encodeBody');
+      Logger.success('API response: ${response.body}');
+      Logger.success('API status code : ${response.statusCode}');
       Logger.success(fullUrl);
       if (response.statusCode == 200) {
-        Logger.success("Update Successfull");
+        Logger.success('Update Successfull');
         await fetchDesignations();
         notifyListeners();
       } else {
         _errorMessage = 'Failed to update designation';
-        Logger.error("Error updating designation: ${response.body}");
+        Logger.error('Error updating designation: ${response.body}');
         notifyListeners();
       }
     } catch (e) {
@@ -192,25 +192,25 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
     _errorMessage = '';
     notifyListeners();
     try {
-      final fullUrl = "$baseUrl/designation/add_designation_data.php";
-      final Map<String, dynamic> data = {"desig_name": desgname, "dept_id": id};
+      final fullUrl = '$baseUrl/designation/add_designation_data.php';
+      final Map<String, dynamic> data = {'desig_name': desgname, 'dept_id': id};
       final response =
           await http.post(Uri.parse(fullUrl), body: json.encode(data));
-      Logger.success("Add designation Request body: $data");
-      Logger.success("API response: ${response.body}");
-      Logger.warning("Status Code ${response.statusCode}");
+      Logger.success('Add designation Request body: $data');
+      Logger.success('API response: ${response.body}');
+      Logger.warning('Status Code ${response.statusCode}');
       Logger.success(fullUrl);
       if (response.statusCode == 200) {
-        Logger.success("Designation added successfully");
+        Logger.success('Designation added successfully');
         await fetchDesignations();
         notifyListeners();
       } else {
         _errorMessage = 'Failed to add designation';
-        Logger.error("Error adding designation: ${response.body}");
+        Logger.error('Error adding designation: ${response.body}');
         notifyListeners();
       }
     } catch (e) {
-      Logger.error("Error uploading designation : $e");
+      Logger.error('Error uploading designation : $e');
     }
   }
 
@@ -221,26 +221,26 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
     try {
       final fullUrl = '$baseUrl/department/delete_department_data.php';
       final Map<String, dynamic> data = {
-        "id": department.id,
-        "message": "edit",
-        "name": department.deptName,
-        "status": 2
+        'id': department.id,
+        'message': 'edit',
+        'name': department.deptName,
+        'status': 2
       };
       final encodeBody = json.encode(data);
       final response = await http.post(
         Uri.parse(fullUrl),
         body: encodeBody,
       );
-      Logger.success("API response: ${response.body}");
-      Logger.warning("Status Code ${response.statusCode}");
+      Logger.success('API response: ${response.body}');
+      Logger.warning('Status Code ${response.statusCode}');
       Logger.success(fullUrl);
       if (response.statusCode == 200) {
-        Logger.success("Department deleted successfully");
+        Logger.success('Department deleted successfully');
         await fetchDepartments();
         notifyListeners();
       } else {
         _errorMessage = 'Failed to delete department';
-        Logger.error("Error deleting department: ${response.body}");
+        Logger.error('Error deleting department: ${response.body}');
         notifyListeners();
       }
     } catch (e) {
@@ -255,26 +255,26 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
     try {
       final fullUrl = '$baseUrl/department/delete_department_data.php';
       final Map<String, dynamic> data = {
-        "id": department.id,
-        "message": "edit",
-        "name": department.deptName,
-        "status": 1
+        'id': department.id,
+        'message': 'edit',
+        'name': department.deptName,
+        'status': 1
       };
       final encodeBody = json.encode(data);
       final response = await http.post(
         Uri.parse(fullUrl),
         body: encodeBody,
       );
-      Logger.success("API response: ${response.body}");
-      Logger.warning("Status Code ${response.statusCode}");
+      Logger.success('API response: ${response.body}');
+      Logger.warning('Status Code ${response.statusCode}');
       Logger.success(fullUrl);
       if (response.statusCode == 200) {
-        Logger.success("Department restored successfully");
+        Logger.success('Department restored successfully');
         await fetchDepartments();
         notifyListeners();
       } else {
         _errorMessage = 'Failed to restore department';
-        Logger.error("Error restoring department: ${response.body}");
+        Logger.error('Error restoring department: ${response.body}');
         notifyListeners();
       }
     } catch (e) {
@@ -284,28 +284,28 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
 
   Future<void> apiDeleteDesignation(Designation designation) async {
     _isLoading = true;
-    _errorMessage = "";
+    _errorMessage = '';
     notifyListeners();
     try {
       final fullUrl = '$baseUrl/designation/delete_designation_data.php';
       final data = {
-        "id": designation.id,
-        "message": "edit",
-        "name": designation.desgName,
-        "status": 2
+        'id': designation.id,
+        'message': 'edit',
+        'name': designation.desgName,
+        'status': 2
       };
       final encodeBody = json.encode(data);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
-      Logger.success("API response: ${response.body}");
-      Logger.warning("Status Code: ${response.statusCode}");
+      Logger.success('API response: ${response.body}');
+      Logger.warning('Status Code: ${response.statusCode}');
       Logger.success(fullUrl);
       if (response.statusCode == 200) {
-        Logger.success("Designation deleted ");
+        Logger.success('Designation deleted ');
         await fetchDesignations();
         notifyListeners();
       } else {
         _errorMessage = 'Failed to delete department';
-        Logger.error("Error deleting designation: ${response.body}");
+        Logger.error('Error deleting designation: ${response.body}');
         notifyListeners();
       }
     } catch (e) {
@@ -315,28 +315,28 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
 
   Future<void> apiRestoreDesignation(Designation designation) async {
     _isLoading = true;
-    _errorMessage = "";
+    _errorMessage = '';
     notifyListeners();
     try {
       final fullUrl = '$baseUrl/designation/delete_designation_data.php';
       final data = {
-        "id": designation.id,
-        "message": "edit",
-        "name": designation.desgName,
-        "status": 1
+        'id': designation.id,
+        'message': 'edit',
+        'name': designation.desgName,
+        'status': 1
       };
       final encodeBody = json.encode(data);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
-      Logger.success("API response: ${response.body}");
-      Logger.warning("Status Code: ${response.statusCode}");
+      Logger.success('API response: ${response.body}');
+      Logger.warning('Status Code: ${response.statusCode}');
       Logger.success(fullUrl);
       if (response.statusCode == 200) {
-        Logger.success("Designation deleted ");
+        Logger.success('Designation deleted ');
         await fetchDesignations();
         notifyListeners();
       } else {
         _errorMessage = 'Failed to delete department';
-        Logger.error("Error deleting designation: ${response.body}");
+        Logger.error('Error deleting designation: ${response.body}');
         notifyListeners();
       }
     } catch (e) {

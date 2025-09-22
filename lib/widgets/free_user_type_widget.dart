@@ -60,7 +60,6 @@ class FreeUserCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Lock animation
                       Transform.scale(
@@ -80,7 +79,7 @@ class FreeUserCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "No Active Membership",
+                              'No Active Membership',
                               style: GoogleFonts.poppins(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -89,7 +88,7 @@ class FreeUserCard extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              "You currently don’t have an active membership.\nUnlock premium benefits by becoming a member today.",
+                              'You currently don’t have an active membership.\nUnlock premium benefits by becoming a member today.',
                               style: GoogleFonts.poppins(
                                 fontSize: 15,
                                 color: Colors.grey[700],
@@ -102,13 +101,13 @@ class FreeUserCard extends StatelessWidget {
                                 ScaffoldMessenger.of(contex).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                        "Kindly contact the company to avail membership benefits."),
+                                        'Kindly contact the company to avail membership benefits.'),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
                               },
                               icon: const Icon(Icons.lock_open, size: 18),
-                              label: const Text("Contact for Membership"),
+                              label: const Text('Contact for Membership'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.grey.shade600,
                                 foregroundColor: Colors.white,
@@ -168,7 +167,6 @@ class FreeUserCard extends StatelessWidget {
                       horizontal: isSmallPhone ? 12 : 16,
                       vertical: isSmallPhone ? 16 : 20),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Lock animation
                       Lottie.asset(
@@ -181,7 +179,7 @@ class FreeUserCard extends StatelessWidget {
 
                       // Title
                       Text(
-                        "No Active Membership",
+                        'No Active Membership',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: isSmallPhone ? 25 : 35,
@@ -193,7 +191,7 @@ class FreeUserCard extends StatelessWidget {
 
                       // Description
                       Text(
-                        "You currently don’t have an active membership.\nUnlock premium benefits by becoming a member today.",
+                        'You currently don’t have an active membership.\nUnlock premium benefits by becoming a member today.',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: isSmallPhone ? 13 : 14,
@@ -212,13 +210,13 @@ class FreeUserCard extends StatelessWidget {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                    "Kindly contact the company to avail membership benefits."),
+                                    'Kindly contact the company to avail membership benefits.'),
                                 duration: Duration(seconds: 2),
                               ),
                             );
                           },
                           icon: const Icon(Icons.lock_open, size: 18),
-                          label: const Text("Contact for Membership"),
+                          label: const Text('Contact for Membership'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey.shade600,
                             foregroundColor: Colors.white,

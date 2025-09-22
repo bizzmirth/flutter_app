@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 class ProfileController extends ChangeNotifier {
   // Loading and error state
-  static const String _baseUrl = "https://testca.uniqbizz.com/";
+  static const String _baseUrl = 'https://testca.uniqbizz.com/';
   bool _isLoading = false;
   String? _errorMessage;
   bool get isLoading => _isLoading;
@@ -71,9 +71,9 @@ class ProfileController extends ChangeNotifier {
 
   String? _formatUrl(String? path) {
     if (path == null || path.isEmpty) return null;
-    return path.startsWith("http")
+    return path.startsWith('http')
         ? path
-        : _baseUrl + path.replaceFirst("../", "");
+        : _baseUrl + path.replaceFirst('../', '');
   }
 
   // Add this method to count eligible coupons
@@ -82,17 +82,17 @@ class ProfileController extends ChangeNotifier {
 
     for (var coupon in _couponsData) {
       // Check if usage_status is "1" (utilized)
-      if (coupon.usageStatus == "1") {
+      if (coupon.usageStatus == '1') {
         try {
           // Parse the created date
-          DateTime createdDate = DateTime.parse(coupon.createdDate);
+          final DateTime createdDate = DateTime.parse(coupon.createdDate);
 
           // Check if used_date exists and parse it
           if (coupon.usedDate != null && coupon.usedDate!.isNotEmpty) {
-            DateTime usedDate = DateTime.parse(coupon.usedDate!);
+            final DateTime usedDate = DateTime.parse(coupon.usedDate!);
 
             // Calculate the difference in years
-            int yearsDifference =
+            final int yearsDifference =
                 usedDate.difference(createdDate).inDays ~/ 365;
 
             // Check if used within 3 years from creation
@@ -101,13 +101,13 @@ class ProfileController extends ChangeNotifier {
             }
           }
         } catch (e) {
-          Logger.error("Error parsing coupon dates: $e");
+          Logger.error('Error parsing coupon dates: $e');
           continue; // Skip this coupon if date parsing fails
         }
       }
     }
 
-    Logger.success("Eligible coupon count: $_eligibleCouponCount");
+    Logger.success('Eligible coupon count: $_eligibleCouponCount');
   }
 
   Future<void> apiGetPersonalDetails() async {
@@ -119,16 +119,16 @@ class ProfileController extends ChangeNotifier {
       final String fullUrl = AppUrls.getPersonalDetails;
 
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final Map<String, dynamic> body = {"userId": userId, "userType": "10"};
+      final Map<String, dynamic> body = {'userId': userId, 'userType': '10'};
 
       final response = await http.post(
         Uri.parse(fullUrl),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(body),
       );
-      Logger.success("Request Body: ${jsonEncode(body)}");
-      Logger.success("Request URL: $fullUrl");
-      Logger.success("Response from Profile API: ${response.body}");
+      Logger.success('Request Body: ${jsonEncode(body)}');
+      Logger.success('Request URL: $fullUrl');
+      Logger.success('Response from Profile API: ${response.body}');
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -141,8 +141,8 @@ class ProfileController extends ChangeNotifier {
           final compCheck = decoded['data']['comp_chek'];
           _compCheck = compCheck;
 
-          Logger.success("Customer Type from API: $_customerType");
-          Logger.success("documents $documents and comp check is $_compCheck");
+          Logger.success('Customer Type from API: $_customerType');
+          Logger.success('documents $documents and comp check is $_compCheck');
 
           // Personal Info
           _firstName = basicInfo['first_name'];
@@ -169,18 +169,18 @@ class ProfileController extends ChangeNotifier {
           _idProof = _formatUrl(documents['id_proof']);
 
           Logger.success(
-              "Profile Picture $_profilePic, $_bankPassbook, $_panCard");
+              'Profile Picture $_profilePic, $_bankPassbook, $_panCard');
 
-          Logger.success("Personal Details loaded successfully");
+          Logger.success('Personal Details loaded successfully');
         } else {
-          _errorMessage = decoded['message'] ?? "Unknown error occurred.";
+          _errorMessage = decoded['message'] ?? 'Unknown error occurred.';
         }
       } else {
-        _errorMessage = "Failed to fetch data. Status: ${response.statusCode}";
+        _errorMessage = 'Failed to fetch data. Status: ${response.statusCode}';
       }
     } catch (e, s) {
-      _errorMessage = "Failed to fetch personal details. ${e.toString()}";
-      Logger.error("Error in apiGetPersonalDetails: $e, Stack trace: $s");
+      _errorMessage = 'Failed to fetch personal details. ${e.toString()}';
+      Logger.error('Error in apiGetPersonalDetails: $e, Stack trace: $s');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -194,10 +194,10 @@ class ProfileController extends ChangeNotifier {
 
     try {
       const String fullUrl =
-          "https://testca.uniqbizz.com/api/customers/profile_page.php";
+          'https://testca.uniqbizz.com/api/customers/profile_page.php';
 
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final Map<String, dynamic> body = {"userId": userId, "userType": "10"};
+      final Map<String, dynamic> body = {'userId': userId, 'userType': '10'};
 
       final response = await http.post(
         Uri.parse(fullUrl),
@@ -205,7 +205,7 @@ class ProfileController extends ChangeNotifier {
         body: jsonEncode(body),
       );
 
-      Logger.success("Response from User Details API: ${response.body}");
+      Logger.success('Response from User Details API: ${response.body}');
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -219,17 +219,17 @@ class ProfileController extends ChangeNotifier {
           _profilePic = _formatUrl(basicInfo['profile_pic']);
 
           Logger.success(
-              "User Details loaded successfully - Name: $_firstName $_lastName, Profile Pic: $_profilePic");
+              'User Details loaded successfully - Name: $_firstName $_lastName, Profile Pic: $_profilePic');
         } else {
-          _errorMessage = decoded['message'] ?? "Unknown error occurred.";
+          _errorMessage = decoded['message'] ?? 'Unknown error occurred.';
         }
       } else {
         _errorMessage =
-            "Failed to fetch user details. Status: ${response.statusCode}";
+            'Failed to fetch user details. Status: ${response.statusCode}';
       }
     } catch (e, s) {
-      _errorMessage = "Failed to fetch user details. ${e.toString()}";
-      Logger.error("Error in apiGetUserDetails: $e, Stack trace: $s");
+      _errorMessage = 'Failed to fetch user details. ${e.toString()}';
+      Logger.error('Error in apiGetUserDetails: $e, Stack trace: $s');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -242,13 +242,13 @@ class ProfileController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fullUrl = "https://testca.uniqbizz.com/api/customers/coupons.php";
+      final fullUrl = 'https://testca.uniqbizz.com/api/customers/coupons.php';
       final String? userId = await SharedPrefHelper().getCurrentUserCustId();
-      final body = {"userId": userId};
+      final body = {'userId': userId};
       final encodeBody = jsonEncode(body);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
 
-      Logger.success("Response from coupons Api ${response.body}");
+      Logger.success('Response from coupons Api ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
@@ -275,19 +275,19 @@ class ProfileController extends ChangeNotifier {
           // Count eligible coupons after parsing
           _countEligibleCoupons();
 
-          Logger.success("Successfully parsed ${_couponsData.length} coupons");
-          Logger.success("Eligible coupons count: $_eligibleCouponCount");
+          Logger.success('Successfully parsed ${_couponsData.length} coupons');
+          Logger.success('Eligible coupons count: $_eligibleCouponCount');
         } else {
-          _errorMessage = jsonResponse['message'] ?? "Failed to fetch coupons";
+          _errorMessage = jsonResponse['message'] ?? 'Failed to fetch coupons';
           Logger.error("API returned error status: ${jsonResponse['message']}");
         }
       } else {
-        _errorMessage = "HTTP Error: ${response.statusCode}";
-        Logger.error("HTTP Error: ${response.statusCode} - ${response.body}");
+        _errorMessage = 'HTTP Error: ${response.statusCode}';
+        Logger.error('HTTP Error: ${response.statusCode} - ${response.body}');
       }
     } catch (e, s) {
-      _errorMessage = "Error Fetching Coupons. Error: $e";
-      Logger.error("Error Fetching coupons, Error: $e, Stacktrace: $s");
+      _errorMessage = 'Error Fetching Coupons. Error: $e';
+      Logger.error('Error Fetching coupons, Error: $e, Stacktrace: $s');
     } finally {
       _isLoading = false;
       notifyListeners();

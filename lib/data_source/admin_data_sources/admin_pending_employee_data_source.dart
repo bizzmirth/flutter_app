@@ -19,7 +19,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
   final IsarService isarService = IsarService();
   final AdminEmployeeController employeeController = AdminEmployeeController();
   var isLoading = false;
-  String name = "";
+  String name = '';
   final Map<String, String?> _departmentNameCache = {};
 
   void getRefNameByID(String refId) {}
@@ -28,29 +28,29 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
     try {
       // await isarService.delete<PendingEmployeeModel>(idToDelete);
       await isarService.updateStatus<PendingEmployeeModel>(idToDelete, 0);
-      employeeController.deletePendingEmployee(idToDelete);
+      await employeeController.deletePendingEmployee(idToDelete);
       if (context.mounted) {
         Navigator.pop(context);
       }
       if (showToast) {
-        ToastHelper.showSuccessToast(title: "Pending Employee Deleted.");
+        ToastHelper.showSuccessToast(title: 'Pending Employee Deleted.');
       }
     } catch (e) {
-      Logger.error("Failed to delete employee: $e");
+      Logger.error('Failed to delete employee: $e');
     }
   }
 
   void showLoadingDialog(BuildContext context,
-      {String message = "Processing..."}) {
+      {String message = 'Processing...'}) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           content: Row(
             children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 20),
+              const CircularProgressIndicator(),
+              const SizedBox(width: 20),
               Text(message),
             ],
           ),
@@ -64,7 +64,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
     // showLoadingDialog(context, message: "Registering employee...");
     try {
       isLoading = true;
-      Logger.warning("Registering the employee ${empRegister.name}");
+      Logger.warning('Registering the employee ${empRegister.name}');
       final registerEmployee = RegisteredEmployeeModel()
         ..id = empRegister.id
         ..regId = empRegister.regId
@@ -92,12 +92,12 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
       await employeeController.apiUpdateEmployeeStatus(
           context, empRegister.id, empRegister.email);
 
-      ToastHelper.showSuccessToast(title: "Employee Registered.");
+      ToastHelper.showSuccessToast(title: 'Employee Registered.');
       isLoading = false;
       // Navigator.of(context, rootNavigator: true).pop();
-      Logger.success("----------- Employee Regisered ${empRegister.name}");
+      Logger.success('----------- Employee Regisered ${empRegister.name}');
     } catch (e) {
-      Logger.error("Failed to register the employee:: $e");
+      Logger.error('Failed to register the employee:: $e');
       isLoading = false;
     }
   }
@@ -105,18 +105,18 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
   Future<void> removeEmployeeFromTable(idToRemove,
       {bool showToast = true}) async {
     try {
-      Logger.warning("Delete process started $idToRemove ------");
+      Logger.warning('Delete process started $idToRemove ------');
       await isarService.delete<PendingEmployeeModel>(idToRemove);
       // await isarService.updateStatus<PendingEmployeeModel>(idToDelete, 0);
       if (context.mounted) {
         Navigator.pop(context);
       }
       if (showToast) {
-        ToastHelper.showSuccessToast(title: "Employee Deleted.");
+        ToastHelper.showSuccessToast(title: 'Employee Deleted.');
       }
-      Logger.warning("Delete process completed");
+      Logger.warning('Delete process completed');
     } catch (e) {
-      Logger.error("Failed to delete employee: $e");
+      Logger.error('Failed to delete employee: $e');
     }
   }
 
@@ -128,9 +128,9 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
       if (context.mounted) {
         Navigator.pop(context);
       }
-      Logger.success("-------- $context -------- ");
+      Logger.success('-------- $context -------- ');
     } catch (e) {
-      Logger.error("Failed to restore employee: $e");
+      Logger.error('Failed to restore employee: $e');
     }
   }
 
@@ -139,16 +139,17 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
       onSelected: (value) {
         // Handle menu actions
       },
-      itemBuilder: (BuildContext context) {
+      itemBuilder: (context) {
         List<PopupMenuEntry<String>> menuItems = [];
 
         if (employee.status == 2) {
           menuItems = [
             PopupMenuItem(
-              value: "view",
+              value: 'view',
               child: ListTile(
-                  leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-                  title: Text("View"),
+                  leading: const Icon(Icons.remove_red_eye_sharp,
+                      color: Colors.blue),
+                  title: const Text('View'),
                   onTap: () {
                     Logger.error('${employee.profilePicture}');
                     Navigator.pop(context);
@@ -163,11 +164,11 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
                   }),
             ),
             PopupMenuItem(
-              value: "edit",
+              value: 'edit',
               child: ListTile(
-                leading: Icon(Icons.edit,
-                    color: const Color.fromARGB(255, 0, 105, 190)),
-                title: Text("Edit"),
+                leading: const Icon(Icons.edit,
+                    color: Color.fromARGB(255, 0, 105, 190)),
+                title: const Text('Edit'),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -183,28 +184,28 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
               ),
             ),
             PopupMenuItem(
-              value: "delete",
+              value: 'delete',
               child: ListTile(
-                leading: Icon(Icons.delete, color: Colors.red),
-                title: Text("Delete"),
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete'),
                 onTap: () {
                   Logger.warning(
-                      "------------ Delete ${employee.name}------------");
+                      '------------ Delete ${employee.name}------------');
 
-                  deleteEmployee(employee.id, showToast: true);
+                  deleteEmployee(employee.id);
                   // Navigator.pop(context);
                 },
               ),
             ),
             PopupMenuItem(
-              value: "complete",
+              value: 'complete',
               child: ListTile(
-                leading: Icon(Icons.app_registration,
-                    color: const Color.fromARGB(255, 0, 238, 127)),
-                title: Text("Complete"),
+                leading: const Icon(Icons.app_registration,
+                    color: Color.fromARGB(255, 0, 238, 127)),
+                title: const Text('Complete'),
                 onTap: () {
                   Logger.warning(
-                      "------------ Register ${employee.name}------------");
+                      '------------ Register ${employee.name}------------');
                   registerEmployee(context, employee);
                   // Navigator.pop(context);
                 },
@@ -216,13 +217,13 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
         else if (employee.status == 0) {
           menuItems = [
             PopupMenuItem(
-              value: "restore",
+              value: 'restore',
               child: ListTile(
-                leading: Icon(Icons.restore, color: Colors.green),
-                title: Text("Restore"),
+                leading: const Icon(Icons.restore, color: Colors.green),
+                title: const Text('Restore'),
                 onTap: () {
                   Logger.warning(
-                      "------------ Restore ${employee.name}------------");
+                      '------------ Restore ${employee.name}------------');
                   restoreEmployee(employee.id);
                   // Implement your restore logic here
                   // You can change the employee's status back to 1 or another status value
@@ -235,14 +236,14 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
 
         return menuItems;
       },
-      icon: Icon(Icons.more_vert, color: Colors.black54),
+      icon: const Icon(Icons.more_vert, color: Colors.black54),
     );
   }
 
   void getStatus() {}
 
   String extractPathSegment(String fullPath, String folderPrefix) {
-    int index = fullPath.lastIndexOf(folderPrefix);
+    final int index = fullPath.lastIndexOf(folderPrefix);
     if (index != -1) {
       return fullPath.substring(index);
     }
@@ -255,12 +256,12 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
         child: Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
           clipBehavior: Clip.antiAlias,
           child: Image.asset(
-            "assets/default_profile.png",
+            'assets/default_profile.png',
             fit: BoxFit.cover,
           ),
         ),
@@ -272,16 +273,16 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
       imageUrl = profilePicture;
     } else {
       final newpath = extractPathSegment(profilePicture, 'profile_pic/');
-      imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+      imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
     }
 
-    Logger.success("Final image URL: $imageUrl");
+    Logger.success('Final image URL: $imageUrl');
 
     return Center(
       child: Container(
         width: 40,
         height: 40,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
         ),
         clipBehavior: Clip.antiAlias,
@@ -291,7 +292,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
           errorBuilder: (context, error, stackTrace) {
             // Logger.error("Failed to load image: $error");S
             return Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             );
           },
@@ -302,12 +303,12 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
 
   Future<String> getReportingManagerName(String? managerId) async {
     if (managerId == null || managerId.isEmpty) {
-      return "N/A";
+      return 'N/A';
     }
 
     // Check if we already have this department name cached
     if (_departmentNameCache.containsKey(managerId)) {
-      return _departmentNameCache[managerId] ?? "N/A";
+      return _departmentNameCache[managerId] ?? 'N/A';
     }
 
     // If not cached, fetch it
@@ -319,23 +320,23 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
   }
 
   String _getStatusText(dynamic status) {
-    if (status == null) return "Unknown";
+    if (status == null) return 'Unknown';
 
     if (status is String) {
-      if (status.isEmpty) return "Unknown";
+      if (status.isEmpty) return 'Unknown';
       return status;
     }
 
     if (status is int || status is double) {
       switch (status) {
         case 1:
-          return "Completed";
+          return 'Completed';
         case 2:
-          return "Pending";
+          return 'Pending';
         case 0:
-          return "Cancelled";
+          return 'Cancelled';
         default:
-          return "Unknown";
+          return 'Unknown';
       }
     }
 
@@ -343,17 +344,17 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
   }
 
   Color _getStatusColor(String status) {
-    String statusText = _getStatusText(status).toLowerCase();
+    final String statusText = _getStatusText(status).toLowerCase();
     switch (statusText) {
-      case "1":
+      case '1':
         return Colors.green;
-      case "2":
+      case '2':
         return Colors.grey;
-      case "pending":
+      case 'pending':
         return Colors.orange;
-      case "0":
+      case '0':
         return Colors.red;
-      case "cancelled":
+      case 'cancelled':
         return Colors.red;
       default:
         return Colors.yellowAccent;
@@ -372,12 +373,12 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
           orElse: () => {'id': departmentId, 'dept_name': null},
         );
 
-        return departmentInfo['dept_name']?.toString() ?? "N/A";
+        return departmentInfo['dept_name']?.toString() ?? 'N/A';
       }
     } catch (e) {
       Logger.error('Error looking up department name: $e');
     }
-    return "N/A";
+    return 'N/A';
   }
 
   @override
@@ -385,12 +386,12 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
     if (index >= pendingEmployees.length) return null;
 
     final pendingEmployee = pendingEmployees[index];
-    var newStatus = "";
+    var newStatus = '';
     final status = pendingEmployee.status.toString();
     if (status == '2') {
-      newStatus = "Pending";
+      newStatus = 'Pending';
     } else if (status == '0') {
-      newStatus = "Deleted";
+      newStatus = 'Deleted';
     }
 
     return DataRow(cells: [
@@ -403,32 +404,32 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
         ),
       ),
       DataCell(Text(pendingEmployee.id.toString())),
-      DataCell(Text(pendingEmployee.name ?? "N/A")),
-      DataCell(Text(pendingEmployee.reportingManager ?? "N/A")),
+      DataCell(Text(pendingEmployee.name ?? 'N/A')),
+      DataCell(Text(pendingEmployee.reportingManager ?? 'N/A')),
       DataCell(FutureBuilder<String?>(
         future: getReportingManagerNameById(pendingEmployee.reportingManager!),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading...");
+            return const Text('Loading...');
           } else if (snapshot.hasError) {
-            return Text("Error");
+            return const Text('Error');
           } else {
-            return Text(snapshot.data ?? "N/A");
+            return Text(snapshot.data ?? 'N/A');
           }
         },
       )),
-      DataCell(Text(pendingEmployee.designation ?? "N/A")),
-      DataCell(Text(pendingEmployee.dateOfJoining ?? "N/A")),
+      DataCell(Text(pendingEmployee.designation ?? 'N/A')),
+      DataCell(Text(pendingEmployee.dateOfJoining ?? 'N/A')),
       DataCell(
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: _getStatusColor(pendingEmployee.status.toString()),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
             newStatus,
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
         ),
       ),

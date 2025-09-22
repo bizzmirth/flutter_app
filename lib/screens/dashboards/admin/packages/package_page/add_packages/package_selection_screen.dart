@@ -13,21 +13,21 @@ class PackageSelectionScreen extends StatefulWidget {
 class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _dateController = TextEditingController();
-  String _selectedPackage = "Stag"; // Default selection
+  String _selectedPackage = 'Stag'; // Default selection
   String? selectedRoomType; // Store the selected room type
   String? selectedRoomType1; // Store the selected room type
   List<String> selectedHotelStars1 = [];
 
   Map<String, String?> selectedFiles = {
-    "Profile Picture": null,
-    "ID Proof": null,
-    "Bank Details": null,
+    'Profile Picture': null,
+    'ID Proof': null,
+    'Bank Details': null,
   };
 
   Widget _buildTextField(String label, {int maxLines = 1}) {
     return TextField(
       maxLines: maxLines,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         // ignore: deprecated_member_use
@@ -44,7 +44,8 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
   }
 
   Widget _buildDropdown(String label, List<String> items) {
-    String defaultOption = "---- Select $label ----"; // Default placeholder
+    final String defaultOption =
+        '---- Select $label ----'; // Default placeholder
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -53,7 +54,8 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
         items: [
           DropdownMenuItem(
             value: defaultOption, // Placeholder value
-            child: Text(defaultOption, style: TextStyle(color: Colors.white)),
+            child: Text(defaultOption,
+                style: const TextStyle(color: Colors.white)),
           ),
           ...items.map((e) => DropdownMenuItem(
               value: e,
@@ -103,28 +105,28 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("General Details:",
+                  const Text('General Details:',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white)),
                   _buildDropdown('Category *', ['International', 'Domestic']),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                       'Sub - Category *', ['Club', 'Individual', 'Group']),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown('Club *', ['Premium', 'Silver', 'Membership']),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       RichText(
-                        text: TextSpan(
-                          text: "Package applicable for ",
+                        text: const TextSpan(
+                          text: 'Package applicable for ',
                           style: TextStyle(fontSize: 16, color: Colors.white),
                           children: [
                             TextSpan(
-                              text: "*",
+                              text: '*',
                               style: TextStyle(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold),
@@ -132,9 +134,9 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Row(
-                        children: ["Stag", "Couple", "Family"].map((package) {
+                        children: ['Stag', 'Couple', 'Family'].map((package) {
                           return GestureDetector(
                             onTap: () {
                               setState(() {
@@ -161,7 +163,7 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                                     setState(() {
                                       _selectedPackage = value!;
                                       Logger.success(
-                                          "Selected Package $_selectedPackage");
+                                          'Selected Package $_selectedPackage');
                                     });
                                   },
                                   child: Radio<String>(
@@ -171,12 +173,12 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                                 ),
                                 Text(
                                   package,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
                                       color: Colors.white),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                     width: 10), // Spacing between radio buttons
                               ],
                             ),
@@ -185,19 +187,19 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildTextField('Package Name*'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Unique Code *'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Tour Days *'),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextFormField(
                       controller: _dateController,
                       readOnly: true, // Makes the TextFormField non-editable
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Validity Upto *',
                         labelStyle: TextStyle(
@@ -210,18 +212,16 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                         fillColor: Colors.white.withValues(alpha: 0.2),
                         suffixIcon: _dateController.text.isNotEmpty
                             ? IconButton(
-                                icon: Icon(Icons.close, color: Colors.white),
+                                icon: const Icon(Icons.close,
+                                    color: Colors.white),
                                 onPressed: () {
-                                  setState(() {
-                                    _dateController
-                                        .clear(); // Clears the date when cancel button is pressed
-                                  });
+                                  setState(_dateController.clear);
                                 },
                               )
                             : null, // Only show cancel button if date is selected
                       ),
                       onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
+                        final DateTime? pickedDate = await showDatePicker(
                           context: context,
                           initialDate: _dateController.text.isNotEmpty
                               ? DateFormat('dd-MM-yyyy')
@@ -239,19 +239,19 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                       },
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildTextField('Description *'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Destination *'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Location *'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Transfer From *'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Transfer To *'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Sightseeing Type *'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildDropdown('Hotel Category *', [
                     '1 Star',
                     '2 Star',
@@ -261,7 +261,7 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                     'Vila',
                     'Apartment'
                   ]),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Text(
                     'Occupancy Category',
                     style: GoogleFonts.poppins(
@@ -285,7 +285,7 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                             setState(() {
                               selectedRoomType = value; // Update selection
                               Logger.success(
-                                  "Selected room type: $selectedRoomType");
+                                  'Selected room type: $selectedRoomType');
                             });
                           },
                           child: RadioListTile<String>(
@@ -304,7 +304,7 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                         ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown('Meal Type *', [
                     'Breakfast',
                     'Lunch',
@@ -314,7 +314,7 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                     'Lunch + Dinner',
                     'No Meals'
                   ]),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     'Vehicle Category',
                     style: GoogleFonts.poppins(
@@ -358,9 +358,9 @@ class _PackageSelectionScreenState extends State<PackageSelectionScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildTextField('Package Keywords *'),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

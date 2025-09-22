@@ -26,7 +26,7 @@ class AdminEmployeeController extends ChangeNotifier {
   List<RegisteredEmployeeModel> get registerEmployees => _registerEmployee;
 
   Future<bool> _hasNetwork() async {
-    var connectivityResult = await Connectivity().checkConnectivity();
+    final connectivityResult = await Connectivity().checkConnectivity();
     return !connectivityResult.contains(ConnectivityResult.none);
   }
 
@@ -60,7 +60,7 @@ class AdminEmployeeController extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      Logger.error("Error in fetchAndSavePendingEmployees: $e");
+      Logger.error('Error in fetchAndSavePendingEmployees: $e');
       throw Exception('Failed to fetch and save employees');
     }
   }
@@ -80,7 +80,7 @@ class AdminEmployeeController extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        Logger.warning("API response $jsonResponse");
+        Logger.warning('API response $jsonResponse');
         Logger.success('Full URL: $fullUrl');
 
         if (jsonResponse.containsKey('status') &&
@@ -90,8 +90,9 @@ class AdminEmployeeController extends ChangeNotifier {
             // Extract the data array
             final List<dynamic> dataList = jsonResponse['data'];
             return dataList
-                .map((json) => _pendingEmployeeFromJson(json))
-                .toList();
+                .map((e) => _pendingEmployeeFromJson(e as Map<String, dynamic>))
+                .toList()
+                .cast<PendingEmployeeModel>();
           }
         }
 
@@ -102,7 +103,7 @@ class AdminEmployeeController extends ChangeNotifier {
         throw Exception('Failed to load employees: ${response.statusCode}');
       }
     } catch (e) {
-      Logger.error("Error fetching employee: $e");
+      Logger.error('Error fetching employee: $e');
       throw Exception('Error fetching employee: $e');
     }
   }
@@ -133,7 +134,7 @@ class AdminEmployeeController extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      Logger.error("Error in fetchAndSaveRegisterEmployees: $e");
+      Logger.error('Error in fetchAndSaveRegisterEmployees: $e');
       throw Exception('Failed to fetch and save register employees');
     }
   }
@@ -151,7 +152,7 @@ class AdminEmployeeController extends ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        Logger.success("API response from register $jsonResponse");
+        Logger.success('API response from register $jsonResponse');
         Logger.success('Full URL: $fullUrl');
 
         if (jsonResponse.containsKey('status') &&
@@ -160,8 +161,10 @@ class AdminEmployeeController extends ChangeNotifier {
               jsonResponse['data'] is List) {
             final List<dynamic> dataList = jsonResponse['data'];
             return dataList
-                .map((json) => _registeredEmployeeFromJson(json))
-                .toList();
+                .map((e) =>
+                    _registeredEmployeeFromJson(e as Map<String, dynamic>))
+                .toList()
+                .cast<RegisteredEmployeeModel>();
           }
         }
         Logger.error('Unexpected API response format');
@@ -171,7 +174,7 @@ class AdminEmployeeController extends ChangeNotifier {
         throw Exception('Failed to load employees: ${response.statusCode}');
       }
     } catch (e) {
-      Logger.error("Error fetching register employee: $e");
+      Logger.error('Error fetching register employee: $e');
       throw Exception('Error fetching register employee: $e');
       // return []; // Return empty list on error
     }
@@ -186,28 +189,29 @@ class AdminEmployeeController extends ChangeNotifier {
       // Convert the image bytes to a Base64 string
       return base64Encode(bytes);
     } catch (e) {
-      Logger.error("Error converting image to Base64: $e");
-      return "";
+      Logger.error('Error converting image to Base64: $e');
+      return '';
     }
   }
 
   String formatDateForApi(String inputDate) {
     try {
       // Parse the input date in dd-mm-yyyy format
-      List<String> dateParts = inputDate.split('-');
+      final List<String> dateParts = inputDate.split('-');
       if (dateParts.length != 3) {
-        Logger.error("Invalid date format: $inputDate");
+        Logger.error('Invalid date format: $inputDate');
         return inputDate; // Return original if format is invalid
       }
 
-      String day = dateParts[0].padLeft(2, '0'); // Ensure day is 2 digits
-      String month = dateParts[1].padLeft(2, '0'); // Ensure month is 2 digits
-      String year = dateParts[2];
+      final String day = dateParts[0].padLeft(2, '0'); // Ensure day is 2 digits
+      final String month =
+          dateParts[1].padLeft(2, '0'); // Ensure month is 2 digits
+      final String year = dateParts[2];
 
       // Construct date in YYYY-MM-DD format
-      return "$year-$month-$day";
+      return '$year-$month-$day';
     } catch (e) {
-      Logger.error("Error formatting date: $e");
+      Logger.error('Error formatting date: $e');
       return inputDate; // Return original in case of error
     }
   }
@@ -228,27 +232,27 @@ class AdminEmployeeController extends ChangeNotifier {
           ? extractPathSegment(employee.bankDetails!, 'passbook/')
           : '';
 
-      Logger.success("Trimmed profile path : $profilePicPath");
-      Logger.success("Trimmed ID Proof : $idProofPath");
-      Logger.success("Trimmed bank details : $bankDetailsPath");
+      Logger.success('Trimmed profile path : $profilePicPath');
+      Logger.success('Trimmed ID Proof : $idProofPath');
+      Logger.success('Trimmed bank details : $bankDetailsPath');
 
       final Map<String, dynamic> requestBody = {
-        "name": employee.name,
-        "birth_date": employee.dateOfBirth,
-        "country_cd": "91", // Hard-coded as per your example
-        "contact": employee.mobileNumber,
-        "email": employee.email,
-        "address": employee.address,
-        "gender": employee.gender,
-        "joining_date": employee.dateOfJoining,
-        "department": employee.department,
-        "designation": employee.designation,
-        "zone": employee.zone,
-        "branch": employee.branch,
-        "reporting_manager": employee.reportingManager,
-        "profile_pic": profilePicPath,
-        "id_proof": idProofPath,
-        "bank_details": bankDetailsPath,
+        'name': employee.name,
+        'birth_date': employee.dateOfBirth,
+        'country_cd': '91', // Hard-coded as per your example
+        'contact': employee.mobileNumber,
+        'email': employee.email,
+        'address': employee.address,
+        'gender': employee.gender,
+        'joining_date': employee.dateOfJoining,
+        'department': employee.department,
+        'designation': employee.designation,
+        'zone': employee.zone,
+        'branch': employee.branch,
+        'reporting_manager': employee.reportingManager,
+        'profile_pic': profilePicPath,
+        'id_proof': idProofPath,
+        'bank_details': bankDetailsPath,
       };
 
       final response = await http.post(
@@ -280,7 +284,7 @@ class AdminEmployeeController extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      Logger.error("Error adding employee: $e");
+      Logger.error('Error adding employee: $e');
       return false;
     }
   }
@@ -288,18 +292,18 @@ class AdminEmployeeController extends ChangeNotifier {
   Future<void> uploadImage(String folder, String savedImagePath) async {
     try {
       final fullUrl = 'http://testca.uniqbizz.com/api/upload_mobile.php';
-      var request = http.MultipartRequest('POST', Uri.parse(fullUrl));
+      final request = http.MultipartRequest('POST', Uri.parse(fullUrl));
       request.files
           .add(await http.MultipartFile.fromPath('file', savedImagePath));
       request.fields['folder'] = folder;
 
-      var response = await request.send();
-      var responseBody = await response.stream.bytesToString();
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
       Logger.warning('Raw API response body: $responseBody');
-      Logger.success("Upload Api FULL URL: $fullUrl");
+      Logger.success('Upload Api FULL URL: $fullUrl');
       Logger.info('this is reuest $request');
     } catch (e) {
-      Logger.error("Error uploading image: $e");
+      Logger.error('Error uploading image: $e');
     }
   }
 
@@ -307,7 +311,7 @@ class AdminEmployeeController extends ChangeNotifier {
   Future<void> deletePendingEmployee(int employeeId) async {
     try {
       final fullUrl = '$baseUrl/delete_employee.php';
-      var formData = {
+      final formData = {
         'id': employeeId.toString(),
         'action': 'deactivate',
         'reid': '',
@@ -317,7 +321,7 @@ class AdminEmployeeController extends ChangeNotifier {
       final response = await http.post(Uri.parse(fullUrl),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: formData,
-          encoding: Encoding.getByName("utf-8"));
+          encoding: Encoding.getByName('utf-8'));
       Logger.info('Raw API response body: ${response.statusCode}');
 
       if (response.statusCode == 200) {
@@ -328,14 +332,14 @@ class AdminEmployeeController extends ChangeNotifier {
         Logger.error('Failed to delete employee: ${response.body.trim()}');
       }
     } catch (e) {
-      Logger.error("Error deleting employee: $e");
+      Logger.error('Error deleting employee: $e');
     }
   }
 
   Future<void> deleteRegisteredEmployee(int employeeID) async {
     try {
       final fullUrl = '$baseUrl/delete_employee.php';
-      var formData = {
+      final formData = {
         'id': employeeID.toString(),
         'action': 'deactivate',
         'reid': '',
@@ -345,7 +349,7 @@ class AdminEmployeeController extends ChangeNotifier {
       final response = await http.post(Uri.parse(fullUrl),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: formData,
-          encoding: Encoding.getByName("utf-8"));
+          encoding: Encoding.getByName('utf-8'));
       Logger.info('Raw API response body: ${response.statusCode}');
 
       if (response.statusCode == 200) {
@@ -355,7 +359,7 @@ class AdminEmployeeController extends ChangeNotifier {
         Logger.error('Failed to delete employee: ${response.body.trim()}');
       }
     } catch (e) {
-      Logger.error("Error deleting employee: $e");
+      Logger.error('Error deleting employee: $e');
     }
   }
 
@@ -367,27 +371,27 @@ class AdminEmployeeController extends ChangeNotifier {
       final idProofPath = extractPathSegment(employee.idProof!, 'id_proof/');
       final bankDetailsPath =
           extractPathSegment(employee.bankDetails!, 'passbook/');
-      Logger.success("Trimmed profile path : ${employee.profilePicture!}");
+      Logger.success('Trimmed profile path : ${employee.profilePicture!}');
 
       final Map<String, dynamic> requestBody = {
-        "editfor": "pending",
-        "id": employee.id.toString(),
-        "name": employee.name,
-        "birth_date": employee.dateOfBirth,
-        "country_cd": "91", // Hard-coded as per your example
-        "contact": employee.mobileNumber,
-        "email": employee.email,
-        "address": employee.address,
-        "gender": employee.gender,
-        "joining_date": employee.dateOfJoining,
-        "department": employee.department,
-        "designation": employee.designation,
-        "zone": employee.zone,
-        "branch": employee.branch,
-        "reporting_manager": employee.reportingManager,
-        "profile_pic": profilePicPath,
-        "id_proof": idProofPath,
-        "bank_details": bankDetailsPath,
+        'editfor': 'pending',
+        'id': employee.id.toString(),
+        'name': employee.name,
+        'birth_date': employee.dateOfBirth,
+        'country_cd': '91', // Hard-coded as per your example
+        'contact': employee.mobileNumber,
+        'email': employee.email,
+        'address': employee.address,
+        'gender': employee.gender,
+        'joining_date': employee.dateOfJoining,
+        'department': employee.department,
+        'designation': employee.designation,
+        'zone': employee.zone,
+        'branch': employee.branch,
+        'reporting_manager': employee.reportingManager,
+        'profile_pic': profilePicPath,
+        'id_proof': idProofPath,
+        'bank_details': bankDetailsPath,
       };
 
       final response = await http.post(Uri.parse(fullUrl),
@@ -403,7 +407,7 @@ class AdminEmployeeController extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final responseData = response.body;
-        Logger.success("response of update api:  $responseData");
+        Logger.success('response of update api:  $responseData');
         return true;
       } else {
         Logger.error('Failed to update employee: ${response.statusCode}');
@@ -411,7 +415,7 @@ class AdminEmployeeController extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      Logger.error("Error updating pending employee: $e");
+      Logger.error('Error updating pending employee: $e');
       return false;
     }
   }
@@ -426,24 +430,24 @@ class AdminEmployeeController extends ChangeNotifier {
           extractPathSegment(employee.bankDetails!, 'passbook/');
 
       final Map<String, dynamic> requestBody = {
-        "editfor": "registered",
-        "id": employee.regId,
-        "name": employee.name,
-        "birth_date": employee.dateOfBirth,
-        "country_cd": "91", // Hard-coded as per your example
-        "contact": employee.mobileNumber,
-        "email": employee.email,
-        "address": employee.address,
-        "gender": employee.gender,
-        "joining_date": employee.dateOfJoining,
-        "department": employee.department,
-        "designation": employee.designation,
-        "zone": employee.zone,
-        "branch": employee.branch,
-        "reporting_manager": employee.reportingManager,
-        "profile_pic": profilePicPath,
-        "id_proof": idProofPath,
-        "bank_details": bankDetailsPath,
+        'editfor': 'registered',
+        'id': employee.regId,
+        'name': employee.name,
+        'birth_date': employee.dateOfBirth,
+        'country_cd': '91', // Hard-coded as per your example
+        'contact': employee.mobileNumber,
+        'email': employee.email,
+        'address': employee.address,
+        'gender': employee.gender,
+        'joining_date': employee.dateOfJoining,
+        'department': employee.department,
+        'designation': employee.designation,
+        'zone': employee.zone,
+        'branch': employee.branch,
+        'reporting_manager': employee.reportingManager,
+        'profile_pic': profilePicPath,
+        'id_proof': idProofPath,
+        'bank_details': bankDetailsPath,
       };
 
       final response = await http.post(Uri.parse(fullUrl),
@@ -459,7 +463,7 @@ class AdminEmployeeController extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final responseData = response.body;
-        Logger.success("response of update api:  $responseData");
+        Logger.success('response of update api:  $responseData');
         return true;
       } else {
         Logger.error('Failed to update employee: ${response.statusCode}');
@@ -467,7 +471,7 @@ class AdminEmployeeController extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      Logger.error("Error updating pending employee: $e");
+      Logger.error('Error updating pending employee: $e');
       return false;
     }
   }
@@ -488,8 +492,8 @@ class AdminEmployeeController extends ChangeNotifier {
           },
           body: encodeBody);
 
-      Logger.success("Api Request body : $requestBody");
-      Logger.success("Api Response body : ${response.body}");
+      Logger.success('Api Request body : $requestBody');
+      Logger.success('Api Response body : ${response.body}');
       Logger.info('Api response status code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
@@ -500,11 +504,11 @@ class AdminEmployeeController extends ChangeNotifier {
       } else {
         Logger.error(
             'Failed to update employee status: ${response.statusCode}');
-        Logger.error("Failed to update employee status: ${response.body}");
+        Logger.error('Failed to update employee status: ${response.body}');
         return false;
       }
     } catch (e) {
-      Logger.error("Error updating employee status: $e");
+      Logger.error('Error updating employee status: $e');
       return false;
     }
   }
@@ -515,7 +519,7 @@ class AdminEmployeeController extends ChangeNotifier {
       final fullUrl = '$baseUrl/add_employees_zone.php';
       final response = await http.get(Uri.parse(fullUrl));
       Logger.success(
-          "Response Code: ${response.statusCode} Api Response: ${response.body}");
+          'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
         // Parse the JSON response
@@ -527,26 +531,26 @@ class AdminEmployeeController extends ChangeNotifier {
 
           // Save zones data to SharedPreferences
           await prefs.setString('zones', zonesData);
-          Logger.success("Zones data saved to SharedPreferences");
+          Logger.success('Zones data saved to SharedPreferences');
         } else {
           Logger.error(
               "API returned success code but status was not 'success'");
         }
       }
     } catch (e) {
-      Logger.error("Error getting zones: $e");
+      Logger.error('Error getting zones: $e');
     }
   }
 
   Future<void> apiGetBranchs(String zoneId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final fullUrl = "$baseUrl/add_employees_branch.php";
+      final fullUrl = '$baseUrl/add_employees_branch.php';
       final requestBody = {'zone_id': zoneId};
       final encodeBody = json.encode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success(
-          "Response Code: ${response.statusCode} Api Response: ${response.body}");
+          'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -555,14 +559,14 @@ class AdminEmployeeController extends ChangeNotifier {
           final branchesData = json.encode(jsonData['branches']);
           await prefs.setString('branches_$zoneId', branchesData);
           Logger.success(
-              "Branches data saved to SharedPreferences for zone $zoneId");
+              'Branches data saved to SharedPreferences for zone $zoneId');
         } else {
           Logger.error(
               "API returned success code but status was not 'success'");
         }
       }
     } catch (e) {
-      Logger.error("Error getting branches: $e");
+      Logger.error('Error getting branches: $e');
     }
   }
 
@@ -591,8 +595,8 @@ class AdminEmployeeController extends ChangeNotifier {
 
       return employee;
     } catch (e) {
-      Logger.error("Error parsing employee: $e for data: $json");
-      throw Exception("Error parsing employee: $e");
+      Logger.error('Error parsing employee: $e for data: $json');
+      throw Exception('Error parsing employee: $e');
     }
   }
 
@@ -623,8 +627,8 @@ class AdminEmployeeController extends ChangeNotifier {
 
       return employee;
     } catch (e) {
-      Logger.error("Error parsing registered employee: $e for data: $json");
-      throw Exception("Error parsing registered employee: $e");
+      Logger.error('Error parsing registered employee: $e for data: $json');
+      throw Exception('Error parsing registered employee: $e');
     }
   }
 }

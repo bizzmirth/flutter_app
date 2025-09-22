@@ -16,11 +16,11 @@ class TopPackagesPage extends StatefulWidget {
 
 class _TopPackagesPageState extends State<TopPackagesPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String? selectedTripDuration = "Upto 3N";
+  String? selectedTripDuration = 'Upto 3N';
   final double _minPrice = 1000;
   final double _maxPrice = 150000;
   RangeValues _currentRange = const RangeValues(1000, 150000);
-  List<String> availableHotelStars = ['3 Star', '4 Star', "5 Star"];
+  List<String> availableHotelStars = ['3 Star', '4 Star', '5 Star'];
   List<String> selectedHotelStars = [];
   final TextEditingController _searchController = TextEditingController();
   // For mobile filter drawer
@@ -40,14 +40,14 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
     super.dispose();
   }
 
-  void getTourPackageData() async {
+  Future<void> getTourPackageData() async {
     final controller =
         Provider.of<TourPackagesController>(context, listen: false);
     // controller.apiGetTourPackages();
-    controller.apiGetFilteredPackages([], "1000", "150000", "0", "3", "");
+    await controller.apiGetFilteredPackages([], '1000', '150000', '0', '3', '');
   }
 
-  void getFilteredPackages() async {
+  Future<void> getFilteredPackages() async {
     final controller =
         Provider.of<TourPackagesController>(context, listen: false);
 
@@ -64,10 +64,10 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
     final tripDuration = durationValues['tripDuration']!;
 
     Logger.warning(
-        "filters selected $numericStars, $minBudget, $maxBudget, $minDuration, $maxDuration, $tripDuration ");
+        'filters selected $numericStars, $minBudget, $maxBudget, $minDuration, $maxDuration, $tripDuration ');
 
     // Make API call
-    controller.apiGetFilteredPackages(numericStars, minBudget, maxBudget,
+    await controller.apiGetFilteredPackages(numericStars, minBudget, maxBudget,
         minDuration, maxDuration, tripDuration);
   }
 
@@ -98,9 +98,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                 borderRadius: BorderRadius.circular(15),
               ),
             ),
-            onChanged: (value) {
-              controller.setSearchQuery(value);
-            },
+            onChanged: controller.setSearchQuery,
           ),
           const SizedBox(height: 10),
           const Divider(),
@@ -202,7 +200,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                           ),
                           activeColor: Colors.teal,
                           inactiveColor: Colors.teal.withValues(alpha: 0.3),
-                          onChanged: (RangeValues values) {
+                          onChanged: (values) {
                             setState(() {
                               _currentRange = values;
                             });
@@ -234,7 +232,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                       ])
                         RadioGroup<String>(
                           groupValue: selectedTripDuration,
-                          onChanged: (String? value) {
+                          onChanged: (value) {
                             setState(() {
                               selectedTripDuration = value;
                             });
@@ -274,7 +272,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                 }
               },
               child: Text(
-                "Apply Filters",
+                'Apply Filters',
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -307,7 +305,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
 
     if (controller.filteredPackages.isEmpty) {
       return const Center(
-        child: Text("No packages available"),
+        child: Text('No packages available'),
       );
     }
 
@@ -315,12 +313,12 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
       itemCount: controller.filteredPackages.length,
       itemBuilder: (context, index) {
         final pkg = controller.filteredPackages[index];
-        final imageUrl = "https://testca.uniqbizz.com/${pkg.image}";
+        final imageUrl = 'https://testca.uniqbizz.com/${pkg.image}';
 
         // Precache next few images for smoother scrolling
         if (index < controller.filteredPackages.length - 3) {
           final nextPkg = controller.filteredPackages[index + 3];
-          final nextImageUrl = "https://testca.uniqbizz.com/${nextPkg.image}";
+          final nextImageUrl = 'https://testca.uniqbizz.com/${nextPkg.image}';
           precacheImage(NetworkImage(nextImageUrl), context);
         }
 
@@ -363,7 +361,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CircularProgressIndicator(
+                            const CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor:
                                   AlwaysStoppedAnimation<Color>(Colors.blue),
@@ -408,7 +406,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    pkg.destination ?? "",
+                    pkg.destination ?? '',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -418,7 +416,7 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                    pkg.name ?? "",
+                    pkg.name ?? '',
                     style: const TextStyle(color: Colors.black54),
                   ),
                 ),
@@ -435,13 +433,13 @@ class _TopPackagesPageState extends State<TopPackagesPage> {
                           ),
                           children: [
                             const TextSpan(
-                              text: "Starts From ",
+                              text: 'Starts From ',
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
                               ),
                             ),
                             TextSpan(
-                              text: "₹${pkg.price}",
+                              text: '₹${pkg.price}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green,

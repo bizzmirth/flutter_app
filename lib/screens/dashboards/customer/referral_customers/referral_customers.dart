@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../widgets/filter_bar.dart';
+import 'package:bizzmirth_app/widgets/filter_bar.dart';
 
 class ViewCustomersPage extends StatefulWidget {
   const ViewCustomersPage({super.key});
@@ -88,7 +88,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
       // Handle any errors during refresh
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Failed to refresh data'),
             backgroundColor: Colors.red,
           ),
@@ -104,12 +104,12 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
       return Container(
         width: imageSize,
         height: imageSize,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
         ),
         clipBehavior: Clip.antiAlias,
         child: Image.asset(
-          "assets/default_profile.png",
+          'assets/default_profile.png',
           fit: BoxFit.cover,
         ),
       );
@@ -120,15 +120,15 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
       imageUrl = profilePicture;
     } else {
       final newpath = extractPathSegment(profilePicture, 'profile_pic/');
-      imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+      imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
     }
 
-    Logger.success("Final image URL: $imageUrl");
+    Logger.success('Final image URL: $imageUrl');
 
     return Container(
       width: imageSize,
       height: imageSize,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
       ),
       clipBehavior: Clip.antiAlias,
@@ -139,7 +139,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           child: CircularProgressIndicator(strokeWidth: 1.5),
         ),
         errorWidget: (context, url, error) => Image.asset(
-          "assets/default_profile.png",
+          'assets/default_profile.png',
           fit: BoxFit.cover,
         ),
       ),
@@ -155,7 +155,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
     });
   }
 
-  void _initializePendingFilteredCustomers() async {
+  Future<void> _initializePendingFilteredCustomers() async {
     final customerController =
         Provider.of<CustomerController>(context, listen: false);
     setState(() {
@@ -212,7 +212,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
         // Search filter
         if (searchTerm != null && searchTerm.isNotEmpty) {
-          String searchTermLower = searchTerm.toLowerCase();
+          final String searchTermLower = searchTerm.toLowerCase();
           matchesSearch = customer.firstname
                       ?.toLowerCase()
                       .contains(searchTermLower) ==
@@ -232,20 +232,20 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           if (customer.registerDate != null &&
               customer.registerDate!.isNotEmpty) {
             try {
-              DateFormat inputFormat = DateFormat("dd-MM-yyyy");
-              DateTime? customerDate =
+              final DateFormat inputFormat = DateFormat('dd-MM-yyyy');
+              final DateTime customerDate =
                   inputFormat.parse(customer.registerDate!);
 
               if (fromDate != null && customerDate.isBefore(fromDate)) {
                 matchesDateRange = false;
               }
               if (toDate != null &&
-                  customerDate.isAfter(toDate.add(Duration(days: 1)))) {
+                  customerDate.isAfter(toDate.add(const Duration(days: 1)))) {
                 matchesDateRange = false;
               }
             } catch (e) {
               Logger.error(
-                  "Error parsing pending customer date: ${customer.registerDate} - $e");
+                  'Error parsing pending customer date: ${customer.registerDate} - $e');
               if (fromDate != null || toDate != null) {
                 matchesDateRange = false;
               }
@@ -280,7 +280,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
         // Search filter
         if (searchTerm != null && searchTerm.isNotEmpty) {
-          String searchTermLower = searchTerm.toLowerCase();
+          final String searchTermLower = searchTerm.toLowerCase();
           matchesSearch = customer.firstName
                       ?.toLowerCase()
                       .contains(searchTermLower) ==
@@ -300,19 +300,19 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           if (customer.registerDate != null &&
               customer.registerDate!.isNotEmpty) {
             try {
-              DateFormat inputFormat = DateFormat("dd-MM-yyyy");
-              DateTime? customerDate =
+              final DateFormat inputFormat = DateFormat('dd-MM-yyyy');
+              final DateTime customerDate =
                   inputFormat.parse(customer.registerDate!);
 
               if (fromDate != null && customerDate.isBefore(fromDate)) {
                 matchesDateRange = false;
               }
               if (toDate != null &&
-                  customerDate.isAfter(toDate.add(Duration(days: 1)))) {
+                  customerDate.isAfter(toDate.add(const Duration(days: 1)))) {
                 matchesDateRange = false;
               }
             } catch (e) {
-              Logger.error("Error parsing date: ${customer.registerDate} - $e");
+              Logger.error('Error parsing date: ${customer.registerDate} - $e');
               if (fromDate != null || toDate != null) {
                 matchesDateRange = false;
               }
@@ -381,11 +381,11 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
         : filteredPendingCustomers;
 
     if (customers.isEmpty) {
-      return SizedBox(
+      return const SizedBox(
         height: 100,
         child: Center(
           child: Text(
-            "No pending customers found",
+            'No pending customers found',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
@@ -394,7 +394,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: customers.length,
       itemBuilder: (context, index) {
         final customer = customers[index];
@@ -428,35 +428,35 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
     }
 
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 getProfileImage(customer.profilePicture),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        customer.name ?? "N/A",
-                        style: TextStyle(
+                        customer.name ?? 'N/A',
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Text("ID: ${customer.id}"),
+                      const SizedBox(height: 4),
+                      Text('ID: ${customer.id}'),
                     ],
                   ),
                 ),
               ],
             ),
-            Divider(),
+            const Divider(),
             Row(
               children: [
                 Expanded(
@@ -465,18 +465,19 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                     children: [
                       Text(
                         "Ref. ID: ${customer.taReferenceNo ?? "N/A"}",
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         "Ref. Name: ${customer.taReferenceName ?? "N/A"}",
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color:
                         getStatusColor(customer.status!).withValues(alpha: 0.1),
@@ -484,7 +485,6 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                     border: Border.all(
                       color: getStatusColor(customer.status!)
                           .withValues(alpha: 0.3),
-                      width: 1,
                     ),
                   ),
                   child: Text(
@@ -498,10 +498,10 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              "Joining Date: ${formatDate(customer.addedOn)}",
-              style: TextStyle(fontSize: 14),
+              'Joining Date: ${formatDate(customer.addedOn)}',
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
@@ -519,11 +519,11 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
         : filteredCustomers;
 
     if (customers.isEmpty) {
-      return SizedBox(
+      return const SizedBox(
         height: 100,
         child: Center(
           child: Text(
-            "No registered customers found",
+            'No registered customers found',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
@@ -532,7 +532,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: customers.length,
       itemBuilder: (context, index) {
         final customer = customers[index];
@@ -567,53 +567,54 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
     }
 
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 getProfileImage(customer.profilePicture),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        customer.name ?? "N/A",
-                        style: TextStyle(
+                        customer.name ?? 'N/A',
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Text("Customer ID: ${customer.caCustomerId}"),
+                      const SizedBox(height: 4),
+                      Text('Customer ID: ${customer.caCustomerId}'),
                     ],
                   ),
                 ),
                 PopupMenuButton<String>(
                   onSelected: (value) async {
                     switch (value) {
-                      case "edit":
+                      case 'edit':
                         break;
-                      case "delete":
+                      case 'delete':
                         break;
-                      case "restore":
+                      case 'restore':
                         break;
                     }
                   },
-                  itemBuilder: (BuildContext context) {
-                    List<PopupMenuEntry<String>> menuItems = [];
+                  itemBuilder: (context) {
+                    final List<PopupMenuEntry<String>> menuItems = [];
 
-                    if (customer.status == "1") {
+                    if (customer.status == '1') {
                       menuItems.addAll([
                         PopupMenuItem(
-                          value: "edit",
+                          value: 'edit',
                           child: ListTile(
-                            leading: Icon(Icons.edit, color: Colors.blueAccent),
-                            title: Text("Edit"),
+                            leading: const Icon(Icons.edit,
+                                color: Colors.blueAccent),
+                            title: const Text('Edit'),
                             onTap: () async {
                               final customerCustomerr =
                                   context.read<CustomerController>();
@@ -632,7 +633,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                               await customerCustomerr
                                   .apiGetRegisteredCustomers();
                               await customerCustomerr.apiGetPendingCustomers();
-                              Logger.warning("result after edit: $result");
+                              Logger.warning('result after edit: $result');
                               if (result == true) {
                                 await _onRefresh();
                               }
@@ -640,10 +641,11 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                           ),
                         ),
                         PopupMenuItem(
-                          value: "delete",
+                          value: 'delete',
                           child: ListTile(
-                            leading: Icon(Icons.delete, color: Colors.red),
-                            title: Text("Delete"),
+                            leading:
+                                const Icon(Icons.delete, color: Colors.red),
+                            title: const Text('Delete'),
                             onTap: () async {
                               Navigator.pop(context);
                               await customerController.apiDeleteCustomer(
@@ -653,13 +655,14 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                           ),
                         ),
                       ]);
-                    } else if (customer.status == "3") {
+                    } else if (customer.status == '3') {
                       menuItems.add(
                         PopupMenuItem(
-                          value: "restore",
+                          value: 'restore',
                           child: ListTile(
-                            leading: Icon(Icons.restore, color: Colors.green),
-                            title: Text("Restore"),
+                            leading:
+                                const Icon(Icons.restore, color: Colors.green),
+                            title: const Text('Restore'),
                             onTap: () async {
                               Navigator.pop(context);
                               await customerController.apiRestoreCustomer(
@@ -673,11 +676,11 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
                     return menuItems;
                   },
-                  icon: Icon(Icons.more_vert, color: Colors.black54),
+                  icon: const Icon(Icons.more_vert, color: Colors.black54),
                 ),
               ],
             ),
-            Divider(),
+            const Divider(),
             Row(
               children: [
                 Expanded(
@@ -686,18 +689,19 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                     children: [
                       Text(
                         "Reg. ID: ${customer.taReferenceNo ?? "N/A"}",
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         "Reg. Name: ${customer.taReferenceName ?? "N/A"}",
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color:
                         getStatusColor(customer.status!).withValues(alpha: 0.1),
@@ -705,7 +709,6 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                     border: Border.all(
                       color: getStatusColor(customer.status!)
                           .withValues(alpha: 0.3),
-                      width: 1,
                     ),
                   ),
                   child: Text(
@@ -719,10 +722,10 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               "Joining Date: ${customer.registerDate ?? "N/A"}",
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
@@ -737,13 +740,13 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
       // String pendingUserCount = filteredPendingCustomers.isEmpty
       //     ? customerController.pendingCustomers.length.toString()
       //     : filteredPendingCustomers.length.toString();
-      String userCount = filteredCustomers.isEmpty &&
+      final String userCount = filteredCustomers.isEmpty &&
               (searchController.text.isEmpty &&
                   fromDate == null &&
                   toDate == null)
           ? customerController.registeredCustomers.length.toString()
           : filteredCustomers.length.toString();
-      String pendingUserCount = filteredPendingCustomers.isEmpty &&
+      final String pendingUserCount = filteredPendingCustomers.isEmpty &&
               (searchController.text.isEmpty &&
                   fromDate == null &&
                   toDate == null)
@@ -757,7 +760,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => CDashboardPage(),
+              builder: (context) => const CDashboardPage(),
             ),
           );
         },
@@ -776,13 +779,13 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
               : RefreshIndicator(
                   onRefresh: _onRefresh,
                   child: SingleChildScrollView(
-                    physics: AlwaysScrollableScrollPhysics(),
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          Divider(thickness: 1, color: Colors.black26),
-                          Center(
+                          const Divider(thickness: 1, color: Colors.black26),
+                          const Center(
                             child: Padding(
                               padding: EdgeInsets.symmetric(vertical: 10),
                               child: Text(
@@ -792,7 +795,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                               ),
                             ),
                           ),
-                          Divider(thickness: 1, color: Colors.black26),
+                          const Divider(thickness: 1, color: Colors.black26),
                           FilterBar(
                             userCount: pendingUserCount,
                             onSearchChanged: _onPendingSearchChanged,
@@ -814,14 +817,14 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                                     child: PaginatedDataTable(
                                       columnSpacing: 36,
                                       dataRowMinHeight: 40,
-                                      columns: [
-                                        DataColumn(label: Text("Image")),
-                                        DataColumn(label: Text("ID")),
-                                        DataColumn(label: Text("Full Name")),
-                                        DataColumn(label: Text("Ref. ID")),
-                                        DataColumn(label: Text("Ref. Name")),
-                                        DataColumn(label: Text("Joining Date")),
-                                        DataColumn(label: Text("Status")),
+                                      columns: const [
+                                        DataColumn(label: Text('Image')),
+                                        DataColumn(label: Text('ID')),
+                                        DataColumn(label: Text('Full Name')),
+                                        DataColumn(label: Text('Ref. ID')),
+                                        DataColumn(label: Text('Ref. Name')),
+                                        DataColumn(label: Text('Joining Date')),
+                                        DataColumn(label: Text('Status')),
                                       ],
                                       source: MyrefCustPendingDataSource(
                                           filteredPendingCustomers.isEmpty
@@ -830,7 +833,13 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                                               : filteredPendingCustomers,
                                           this.context),
                                       rowsPerPage: _rowsPerPage,
-                                      availableRowsPerPage: [5, 10, 15, 20, 25],
+                                      availableRowsPerPage: const [
+                                        5,
+                                        10,
+                                        15,
+                                        20,
+                                        25
+                                      ],
                                       onRowsPerPageChanged: (value) {
                                         if (value != null) {
                                           setState(() {
@@ -844,9 +853,9 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                                 )
                               : _buildPendingCustomersList(customerController),
 
-                          SizedBox(height: 35),
-                          Divider(thickness: 1, color: Colors.black26),
-                          Padding(
+                          const SizedBox(height: 35),
+                          const Divider(thickness: 1, color: Colors.black26),
+                          const Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
                               "All Registered Referral Customer's List:",
@@ -854,7 +863,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
-                          Divider(thickness: 1, color: Colors.black26),
+                          const Divider(thickness: 1, color: Colors.black26),
 
                           // Filter Bar
                           FilterBar(
@@ -874,17 +883,17 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                                   if (fromDateError != null)
                                     Text(
                                       fromDateError!,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.red, fontSize: 12),
                                     ),
                                   if (fromDateError != null &&
                                       toDateError != null)
-                                    Text(" | ",
+                                    const Text(' | ',
                                         style: TextStyle(color: Colors.red)),
                                   if (toDateError != null)
                                     Text(
                                       toDateError!,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.red, fontSize: 12),
                                     ),
                                 ],
@@ -905,15 +914,15 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                                     child: PaginatedDataTable(
                                       columnSpacing: 36,
                                       dataRowMinHeight: 40,
-                                      columns: [
-                                        DataColumn(label: Text("Image")),
-                                        DataColumn(label: Text("Customer ID")),
-                                        DataColumn(label: Text("Full Name")),
-                                        DataColumn(label: Text("Reg. ID")),
-                                        DataColumn(label: Text("Reg. Name")),
-                                        DataColumn(label: Text("Joining Date")),
-                                        DataColumn(label: Text("Status")),
-                                        DataColumn(label: Text("Action"))
+                                      columns: const [
+                                        DataColumn(label: Text('Image')),
+                                        DataColumn(label: Text('Customer ID')),
+                                        DataColumn(label: Text('Full Name')),
+                                        DataColumn(label: Text('Reg. ID')),
+                                        DataColumn(label: Text('Reg. Name')),
+                                        DataColumn(label: Text('Joining Date')),
+                                        DataColumn(label: Text('Status')),
+                                        DataColumn(label: Text('Action'))
                                       ],
                                       source: MyrefCustRegDataSource(
                                           filteredCustomers.isEmpty &&
@@ -937,7 +946,13 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                                         });
                                       }),
                                       rowsPerPage: _rowsPerPage1,
-                                      availableRowsPerPage: [5, 10, 15, 20, 25],
+                                      availableRowsPerPage: const [
+                                        5,
+                                        10,
+                                        15,
+                                        20,
+                                        25
+                                      ],
                                       onRowsPerPageChanged: (value) {
                                         if (value != null) {
                                           setState(() {
@@ -977,8 +992,8 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),
-                  tooltip: "Add New Referral Customer",
-                  child: Icon(Icons.add, size: 30),
+                  tooltip: 'Add New Referral Customer',
+                  child: const Icon(Icons.add, size: 30),
                 ),
         ),
       );

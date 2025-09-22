@@ -21,7 +21,7 @@ class CustProductPayoutsPage extends StatefulWidget {
 }
 
 class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
-  String selectedDate = "Select month, year";
+  String selectedDate = 'Select month, year';
   int _rowsPerPage = 5;
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
@@ -32,37 +32,37 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   @override
   void initState() {
     super.initState();
-    selectedDate = DateFormat("MMMM, yyyy").format(DateTime.now());
+    selectedDate = DateFormat('MMMM, yyyy').format(DateTime.now());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getAllData();
     });
   }
 
   Future<void> onRefresh() async {
-    getAllData();
+    await getAllData();
   }
 
-  void getAllData() async {
+  Future<void> getAllData() async {
     final controller =
         Provider.of<CustProductPayoutController>(context, listen: false);
     userId = await SharedPrefHelper().getCurrentUserCustId();
-    controller.getAllPayouts(userId);
-    controller.apiGetPreviousPayouts();
-    controller.apiGetNextMonthPayouts();
-    controller.apiGetTotalPayouts();
+    await controller.getAllPayouts(userId);
+    await controller.apiGetPreviousPayouts();
+    await controller.apiGetNextMonthPayouts();
+    await controller.apiGetTotalPayouts();
   }
 
   Widget _buildLoadingState() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(50.0),
+        padding: const EdgeInsets.all(50.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
+            const CircularProgressIndicator(
               color: Colors.blueAccent,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Loading Product Payouts...',
               style: TextStyle(
@@ -70,7 +70,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                 color: Colors.grey[600],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Please wait while we fetch your data',
               style: TextStyle(
@@ -87,11 +87,11 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   Future<void> _selectDate(BuildContext context) async {
     final controller =
         Provider.of<CustProductPayoutController>(context, listen: false);
-    DateTime now = DateTime.now();
+    final DateTime now = DateTime.now();
 
-    DateTime? pickedDate = await showMonthPicker(
+    final DateTime? pickedDate = await showMonthPicker(
       context: context,
-      firstDate: DateTime(2020, 1),
+      firstDate: DateTime(2020),
       lastDate: now,
       initialDate: _selectedDateTime ?? now,
     );
@@ -99,14 +99,14 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
     if (pickedDate != null) {
       setState(() {
         _selectedDateTime = pickedDate;
-        selectedDate = DateFormat("MMMM, yyyy").format(pickedDate);
+        selectedDate = DateFormat('MMMM, yyyy').format(pickedDate);
       });
 
-      controller.apiGetTotalPayouts(
+      await controller.apiGetTotalPayouts(
           month: pickedDate.month, year: pickedDate.year);
 
       Logger.success(
-          "Api called with month: ${pickedDate.month}, year: ${pickedDate.year}");
+          'Api called with month: ${pickedDate.month}, year: ${pickedDate.year}');
     }
   }
 
@@ -161,8 +161,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
 
     showDialog(
       context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
+      builder: (context) {
         final payoutList = getPayoutList();
         final isMobile = MediaQuery.of(context).size.width < 600;
 
@@ -227,7 +226,6 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                             child: _buildPayoutCard(payoutType, amount, date)),
                         const SizedBox(width: 12),
                         Expanded(
-                          flex: 1,
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -242,8 +240,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                       child: Container(
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.black),
+                                          border: Border.all(),
                                           borderRadius:
                                               BorderRadius.circular(4),
                                         ),
@@ -256,15 +253,14 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                     const SizedBox(width: 8),
                                   ],
                                 ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 Row(
                                   children: [
                                     Expanded(
                                       child: Container(
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.black),
+                                          border: Border.all(),
                                           borderRadius:
                                               BorderRadius.circular(4),
                                         ),
@@ -281,7 +277,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                   width: double.infinity,
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
+                                      border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
                                   child: Column(
                                     crossAxisAlignment:
@@ -300,9 +296,9 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                                 fontSize: 14,
                                                 color: Colors.grey.shade600),
                                           ),
-                                          SizedBox(width: 5),
+                                          const SizedBox(width: 5),
                                           Text(
-                                            amount.replaceAll('Rs', ""),
+                                            amount.replaceAll('Rs', ''),
                                             style: const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold),
@@ -328,7 +324,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Center(
                         child: Text(
-                          "$payoutType Details",
+                          '$payoutType Details',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -368,7 +364,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Text(
-                                "$payoutType Details",
+                                '$payoutType Details',
                                 style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
@@ -402,14 +398,14 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                       columnSpacing: 50,
                                       dataRowMinHeight: 40,
                                       columns: const [
-                                        DataColumn(label: Text("Date")),
+                                        DataColumn(label: Text('Date')),
                                         DataColumn(
-                                            label: Text("Payout Details")),
-                                        DataColumn(label: Text("Amount")),
-                                        DataColumn(label: Text("TDS")),
+                                            label: Text('Payout Details')),
+                                        DataColumn(label: Text('Amount')),
+                                        DataColumn(label: Text('TDS')),
                                         DataColumn(
-                                            label: Text("Total Payable")),
-                                        DataColumn(label: Text("Remarks")),
+                                            label: Text('Total Payable')),
+                                        DataColumn(label: Text('Remarks')),
                                       ],
                                       source: PayoutDataSource(payoutList),
                                       rowsPerPage: _rowsPerPage,
@@ -467,7 +463,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
+        border: Border.all(),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -538,7 +534,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
+              border: Border.all(),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -552,7 +548,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
             width: 180,
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
+              border: Border.all(),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -565,7 +561,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
+              border: Border.all(),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Column(
@@ -619,22 +615,21 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Date: ${payout.date}",
+          Text('Date: ${payout.date}',
               style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text("Details: ${payout.message}"),
+          Text('Details: ${payout.message}'),
           const SizedBox(height: 4),
-          Text("Amount: Rs. ${payout.amount}"),
+          Text('Amount: Rs. ${payout.amount}'),
           const SizedBox(height: 4),
-          Text("TDS: Rs. ${payout.tds}"),
+          Text('TDS: Rs. ${payout.tds}'),
           const SizedBox(height: 4),
-          Text("Total Payable: Rs. ${payout.totalPayable}"),
+          Text('Total Payable: Rs. ${payout.totalPayable}'),
           const SizedBox(height: 4),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
-                "Remarks: ",
+                'Remarks: ',
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -679,24 +674,24 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
               : RefreshIndicator(
                   onRefresh: onRefresh,
                   child: SingleChildScrollView(
-                    physics: AlwaysScrollableScrollPhysics(),
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Divider(thickness: 1, color: Colors.black26),
-                          Center(
+                          const Divider(thickness: 1, color: Colors.black26),
+                          const Center(
                             child: Padding(
                               padding: EdgeInsets.symmetric(vertical: 10),
                               child: Text(
-                                "Payouts:",
+                                'Payouts:',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
-                          Divider(thickness: 1, color: Colors.black26),
+                          const Divider(thickness: 1, color: Colors.black26),
                           const SizedBox(height: 16),
                           LayoutBuilder(
                             builder: (context, constraints) {
@@ -705,18 +700,18 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                 return Column(
                                   children: [
                                     payoutCard(
-                                        "Previous Payout",
-                                        controller.prevMonth ?? "",
-                                        "Rs. ${controller.previousMonthPayout}/-",
-                                        "Paid",
+                                        'Previous Payout',
+                                        controller.prevMonth ?? '',
+                                        'Rs. ${controller.previousMonthPayout}/-',
+                                        'Paid',
                                         Colors.green.shade100,
                                         controller),
                                     const SizedBox(height: 16),
                                     payoutCard(
-                                        "Next Payout",
-                                        controller.nextMonth ?? "",
-                                        "Rs. ${controller.nextMonthPayout}/-",
-                                        "Pending",
+                                        'Next Payout',
+                                        controller.nextMonth ?? '',
+                                        'Rs. ${controller.nextMonthPayout}/-',
+                                        'Pending',
                                         Colors.orange.shade100,
                                         controller),
                                   ],
@@ -729,20 +724,20 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                                   children: [
                                     Expanded(
                                       child: payoutCard(
-                                          "Previous Payout",
-                                          controller.prevMonth ?? "",
-                                          "Rs. ${controller.previousMonthPayout}/-",
-                                          "Paid",
+                                          'Previous Payout',
+                                          controller.prevMonth ?? '',
+                                          'Rs. ${controller.previousMonthPayout}/-',
+                                          'Paid',
                                           Colors.green.shade100,
                                           controller),
                                     ),
                                     const SizedBox(width: 16),
                                     Expanded(
                                       child: payoutCard(
-                                          "Next Payout",
-                                          controller.nextMonth ?? "",
-                                          "Rs. ${controller.nextMonthPayout}/-",
-                                          "Pending",
+                                          'Next Payout',
+                                          controller.nextMonth ?? '',
+                                          'Rs. ${controller.nextMonthPayout}/-',
+                                          'Pending',
                                           Colors.orange.shade100,
                                           controller),
                                     ),
@@ -753,21 +748,21 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                           ),
                           const SizedBox(height: 16),
                           totalPayoutCard(
-                              controller.totalPayout ?? "0.00", controller),
+                              controller.totalPayout ?? '0.00', controller),
                           const SizedBox(height: 50),
-                          Divider(thickness: 1, color: Colors.black26),
-                          Center(
+                          const Divider(thickness: 1, color: Colors.black26),
+                          const Center(
                             child: Padding(
                               padding: EdgeInsets.symmetric(vertical: 10),
                               child: Text(
-                                "All Payouts:",
+                                'All Payouts:',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
-                          Divider(thickness: 1, color: Colors.black26),
-                          FilterBar(),
+                          const Divider(thickness: 1, color: Colors.black26),
+                          const FilterBar(),
                           isTablet
                               ? _buildDesktopListView(controller)
                               : _buildMobileListView(controller),
@@ -798,22 +793,22 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                 headingRowHeight: 60,
                 columns: const [
                   DataColumn(
-                      label: Text("Date",
+                      label: Text('Date',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   DataColumn(
-                      label: Text("Payout Details",
+                      label: Text('Payout Details',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   DataColumn(
-                      label: Text("Total",
+                      label: Text('Total',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   DataColumn(
-                      label: Text("TDS",
+                      label: Text('TDS',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   DataColumn(
-                      label: Text("Total Payable",
+                      label: Text('Total Payable',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                   DataColumn(
-                      label: Text("Remarks",
+                      label: Text('Remarks',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                 ],
                 source: CustProductAllPayoutDataSource(controller.allPayouts),
@@ -844,7 +839,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
 
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         // Optimized ListView with builder and separators
@@ -915,11 +910,11 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
               children: [
-                _buildDetailItem("Details", payout.message),
-                _buildDetailItem("Amount", "₹${payout.amount}"),
+                _buildDetailItem('Details', payout.message),
+                _buildDetailItem('Amount', '₹${payout.amount}'),
                 _buildDetailItem(
-                    "TDS", payout.tds == "NA" ? "N/A" : "₹${payout.tds}"),
-                _buildDetailItem("Payable", "₹${payout.totalPayable}"),
+                    'TDS', payout.tds == 'NA' ? 'N/A' : '₹${payout.tds}'),
+                _buildDetailItem('Payable', '₹${payout.totalPayable}'),
               ],
             ),
           ],
@@ -990,17 +985,17 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case "credited":
+      case 'credited':
         return Colors.green;
-      case "pending":
+      case 'pending':
         return Colors.orange;
-      case "approved":
+      case 'approved':
         return Colors.blue;
-      case "processing":
+      case 'processing':
         return Colors.purple;
-      case "completed":
+      case 'completed':
         return Colors.green;
-      case "cancelled":
+      case 'cancelled':
         return Colors.red;
       default:
         return Colors.grey;
@@ -1047,9 +1042,9 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
             children: [
               GestureDetector(
                 onTap: () => showPayoutDialog(context, title, date, amount,
-                    userId!, widget.userName ?? "", controller),
+                    userId!, widget.userName ?? '', controller),
                 child: const Text(
-                  "View Payout",
+                  'View Payout',
                   style: TextStyle(
                       color: Colors.blue,
                       fontWeight: FontWeight.bold,
@@ -1058,7 +1053,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
               ),
               GestureDetector(
                 onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Downloading Payout..."))),
+                    const SnackBar(content: Text('Downloading Payout...'))),
                 child: const Icon(Icons.download, color: Colors.black54),
               ),
             ],
@@ -1078,10 +1073,10 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Total Payout",
+              const Text('Total Payout',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
-              Text("Rs. $totalPayout/-",
+              Text('Rs. $totalPayout/-',
                   style: const TextStyle(
                       fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
@@ -1095,10 +1090,10 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                         selectedDate,
                         totalPayout!,
                         userId!,
-                        widget.userName ?? "",
+                        widget.userName ?? '',
                         controller),
                     child: const Text(
-                      "View Payout",
+                      'View Payout',
                       style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
@@ -1107,7 +1102,7 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
                   ),
                   GestureDetector(
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Downloading Payout..."))),
+                        const SnackBar(content: Text('Downloading Payout...'))),
                     child: const Icon(Icons.download, color: Colors.black54),
                   ),
                 ],

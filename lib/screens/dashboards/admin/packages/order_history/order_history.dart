@@ -32,26 +32,25 @@ class _OrderHistPageState extends State<OrderHistPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Divider(thickness: 1, color: Colors.black26),
-              Center(
+              const Divider(thickness: 1, color: Colors.black26),
+              const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Order History:",
+                    'Order History:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
+              const Divider(thickness: 1, color: Colors.black26),
               Row(
                 children: [
-                  SizedBox(width: 530),
+                  const SizedBox(width: 530),
                   Expanded(
                     flex: 2,
                     child: TextField(
-                      controller: null,
                       decoration: InputDecoration(
-                        hintText: "Search...",
+                        hintText: 'Search...',
                         border: OutlineInputBorder(
                           borderRadius:
                               BorderRadius.circular(10), // Rounded corners
@@ -59,12 +58,12 @@ class _OrderHistPageState extends State<OrderHistPage> {
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                 ],
               ),
               Card(
@@ -79,17 +78,17 @@ class _OrderHistPageState extends State<OrderHistPage> {
                   child: PaginatedDataTable(
                     columnSpacing: 32,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Order Date")),
-                      DataColumn(label: Text("Cust. Id & Name")),
-                      DataColumn(label: Text("Package")),
-                      DataColumn(label: Text("Amount")),
-                      DataColumn(label: Text("Status")),
+                    columns: const [
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Order Date')),
+                      DataColumn(label: Text('Cust. Id & Name')),
+                      DataColumn(label: Text('Package')),
+                      DataColumn(label: Text('Amount')),
+                      DataColumn(label: Text('Status')),
                     ],
                     source: MyPackageOrderHistDataSource(packagehist),
                     rowsPerPage: _rowsPerPage,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {
@@ -101,7 +100,7 @@ class _OrderHistPageState extends State<OrderHistPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
             ],
           ),
         ),

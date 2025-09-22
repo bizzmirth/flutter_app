@@ -13,7 +13,7 @@ class FancyVideoSlider extends StatefulWidget {
     this.phoneHeight = 250,
     this.videoUrls = const [
       // "https://testca.uniqbizz.com/api/assets/video/slider/info.mp4",
-      "https://testca.uniqbizz.com/api/assets/video/slider/travel.mp4",
+      'https://testca.uniqbizz.com/api/assets/video/slider/travel.mp4',
     ],
   });
 
@@ -41,7 +41,7 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 1);
+    _pageController = PageController();
 
     // Initialize with null controllers
     _controllers =
@@ -64,8 +64,8 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
-      controller.setVolume(0.0);
-      controller.setLooping(true);
+      await controller.setVolume(0.0);
+      await controller.setLooping(true);
 
       await controller.initialize();
 
@@ -76,7 +76,7 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
 
         // Auto-play if it's the current page
         if (index == _currentPage) {
-          controller.play();
+          await controller.play();
         }
       }
     } catch (e) {
@@ -157,7 +157,7 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
               if (controller == null || !controller.value.isInitialized) {
                 return Container(
                   color: Colors.black,
-                  child: Center(
+                  child: const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
@@ -187,7 +187,7 @@ class _FancyVideoSliderState extends State<FancyVideoSlider> {
                 (index) => Container(
                   width: 8,
                   height: 8,
-                  margin: EdgeInsets.symmetric(horizontal: 4),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentPage == index

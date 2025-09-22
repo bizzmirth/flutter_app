@@ -69,8 +69,8 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
       await getEmployee();
       await getPendingEmployees();
     } catch (e) {
-      Logger.error("Error loading data: $e");
-      ToastHelper.showErrorToast(title: "Error loading data $e");
+      Logger.error('Error loading data: $e');
+      ToastHelper.showErrorToast(title: 'Error loading data $e');
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
@@ -109,25 +109,25 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
         elevation: 0,
       ),
       body: isLoading || controller.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Divider(thickness: 1, color: Colors.black26),
-                    Center(
+                    const Divider(thickness: 1, color: Colors.black26),
+                    const Center(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Text(
-                          "All Pending Employees List:",
+                          'All Pending Employees List:',
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
-                    Divider(thickness: 1, color: Colors.black26),
-                    FilterBar(),
+                    const Divider(thickness: 1, color: Colors.black26),
+                    const FilterBar(),
 
                     // Paginated Table for Pending List
                     Card(
@@ -142,21 +142,21 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
                         child: PaginatedDataTable(
                           columnSpacing: 36,
                           dataRowMinHeight: 40,
-                          columns: [
-                            DataColumn(label: Text("Image")),
-                            DataColumn(label: Text("ID")),
-                            DataColumn(label: Text("Full Name")),
-                            DataColumn(label: Text("Ref. ID")),
-                            DataColumn(label: Text("Ref. Name")),
-                            DataColumn(label: Text("Designation")),
-                            DataColumn(label: Text("Joining Date")),
-                            DataColumn(label: Text("Status")),
-                            DataColumn(label: Text("Action"))
+                          columns: const [
+                            DataColumn(label: Text('Image')),
+                            DataColumn(label: Text('ID')),
+                            DataColumn(label: Text('Full Name')),
+                            DataColumn(label: Text('Ref. ID')),
+                            DataColumn(label: Text('Ref. Name')),
+                            DataColumn(label: Text('Designation')),
+                            DataColumn(label: Text('Joining Date')),
+                            DataColumn(label: Text('Status')),
+                            DataColumn(label: Text('Action'))
                           ],
                           source:
                               AdminPendingEmployeeDataSource(context, employee),
                           rowsPerPage: _rowsPerPage,
-                          availableRowsPerPage: [5, 10, 15, 20, 25],
+                          availableRowsPerPage: const [5, 10, 15, 20, 25],
                           onRowsPerPageChanged: (value) {
                             if (value != null) {
                               setState(() {
@@ -169,32 +169,32 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
                       ),
                     ),
 
-                    SizedBox(height: 35),
-                    Divider(thickness: 1, color: Colors.black26),
+                    const SizedBox(height: 35),
+                    const Divider(thickness: 1, color: Colors.black26),
                     // Upcoming Events Section
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Text(
-                        "All Registered Employees List:",
+                        'All Registered Employees List:',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Divider(thickness: 1, color: Colors.black26),
+                    const Divider(thickness: 1, color: Colors.black26),
 
                     // MyEmployeeRegDataSource
 
-                    FilterBar(),
+                    const FilterBar(),
 
                     // Paginated Table for Pending List
                     Card(
-                      margin: EdgeInsets.only(bottom: 80.0),
+                      margin: const EdgeInsets.only(bottom: 80.0),
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: controller.isLoading
-                          ? Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator())
                           : SizedBox(
                               height: (_rowsPerPage1 * dataRowHeight) +
                                   headerHeight +
@@ -202,21 +202,21 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
                               child: PaginatedDataTable(
                                 columnSpacing: 36,
                                 dataRowMinHeight: 40,
-                                columns: [
-                                  DataColumn(label: Text("Image")),
-                                  DataColumn(label: Text("ID")),
-                                  DataColumn(label: Text("Full Name")),
-                                  DataColumn(label: Text("Ref. ID")),
-                                  DataColumn(label: Text("Ref. Name")),
-                                  DataColumn(label: Text("Designation")),
-                                  DataColumn(label: Text("Joining Date")),
-                                  DataColumn(label: Text("Status")),
-                                  DataColumn(label: Text("Action"))
+                                columns: const [
+                                  DataColumn(label: Text('Image')),
+                                  DataColumn(label: Text('ID')),
+                                  DataColumn(label: Text('Full Name')),
+                                  DataColumn(label: Text('Ref. ID')),
+                                  DataColumn(label: Text('Ref. Name')),
+                                  DataColumn(label: Text('Designation')),
+                                  DataColumn(label: Text('Joining Date')),
+                                  DataColumn(label: Text('Status')),
+                                  DataColumn(label: Text('Action'))
                                 ],
                                 source: AdminRegisteredEmployeeDataSource(
                                     context, registeredEmployee),
                                 rowsPerPage: _rowsPerPage1,
-                                availableRowsPerPage: [5, 10, 15, 20, 25],
+                                availableRowsPerPage: const [5, 10, 15, 20, 25],
                                 onRowsPerPageChanged: (value) {
                                   if (value != null) {
                                     setState(() {
@@ -236,15 +236,15 @@ class _AllEmployeesPageState extends State<AllEmployeesPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddEmployeePage()),
+            MaterialPageRoute(builder: (context) => const AddEmployeePage()),
           );
         },
         backgroundColor: const Color.fromARGB(255, 153, 198, 250),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
-        tooltip: "Add New Mentor",
-        child: Icon(Icons.add, size: 30),
+        tooltip: 'Add New Mentor',
+        child: const Icon(Icons.add, size: 30),
       ),
     );
   }

@@ -32,24 +32,24 @@ class _OrderDetailsState extends State<OrderDetails> {
           backgroundColor: Colors.blueAccent,
           elevation: 0,
         ),
-        body: SingleChildScrollView(
+        body: const SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: EdgeInsets.all(10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 InvoiceWidget(
-                    invoiceNumber: "BH20250407145238",
-                    bookingNumber: "2025400001",
-                    paymentStatus: "Successful",
-                    transactionId: "Peid_17440175822015aq2Feipc101Tq3R HYNBPH",
-                    customerId: "C12B0013",
-                    customerName: "Somon M. G.",
-                    customerEmail: "Somon@gmail.com",
-                    customerPhone: "+98937584554",
-                    package: "260 ANSD",
-                    departureDate: "TS-Apr-2025",
-                    memberCount: "Audit:1",
+                    invoiceNumber: 'BH20250407145238',
+                    bookingNumber: '2025400001',
+                    paymentStatus: 'Successful',
+                    transactionId: 'Peid_17440175822015aq2Feipc101Tq3R HYNBPH',
+                    customerId: 'C12B0013',
+                    customerName: 'Somon M. G.',
+                    customerEmail: 'Somon@gmail.com',
+                    customerPhone: '+98937584554',
+                    package: '260 ANSD',
+                    departureDate: 'TS-Apr-2025',
+                    memberCount: 'Audit:1',
                     tourMembers: [
                       {'name': 'Charulata Shat', 'gender': 'Male', 'age': '60'},
                       {

@@ -18,7 +18,7 @@ class HomePageController extends ChangeNotifier {
 
   HomePageController() {
     loadUserTypes();
-    Logger.warning("home page controller constructor called");
+    Logger.warning('home page controller constructor called');
   }
 
   Future<void> loadUserTypes() async {
@@ -27,7 +27,7 @@ class HomePageController extends ChangeNotifier {
           await _sharedPrefHelper.getUserDataType('user_data_type');
 
       if (storedData != null && storedData.isNotEmpty) {
-        Logger.info("Loading user types from SharedPreferences");
+        Logger.info('Loading user types from SharedPreferences');
         final jsonData = json.decode(storedData);
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
@@ -36,13 +36,13 @@ class HomePageController extends ChangeNotifier {
         notifyListeners();
 
         Logger.success(
-            "User types loaded from cache: ${_userTypes.length} items");
+            'User types loaded from cache: ${_userTypes.length} items');
       } else {
-        Logger.info("No cached data found, fetching from API");
+        Logger.info('No cached data found, fetching from API');
         await fetchEmployeeTypeFromAPI();
       }
     } catch (e) {
-      Logger.error("Error loading user types: $e");
+      Logger.error('Error loading user types: $e');
       await fetchEmployeeTypeFromAPI();
     }
   }
@@ -57,13 +57,13 @@ class HomePageController extends ChangeNotifier {
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
-        Logger.info("Response from user type API: ${response.body}");
+        Logger.info('Response from user type API: ${response.body}');
         final jsonData = json.decode(response.body);
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
         await _sharedPrefHelper.saveUserDataType(response.body);
-        Logger.success("Get all usertype URL: $url ");
-        Logger.success("User types saved to SharedPreferences");
+        Logger.success('Get all usertype URL: $url ');
+        Logger.success('User types saved to SharedPreferences');
 
         _userTypes = userTypeResponse.data;
         _isLoading = false;
@@ -73,10 +73,10 @@ class HomePageController extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
 
-        Logger.error("API Error: Status ${response.statusCode}");
+        Logger.error('API Error: Status ${response.statusCode}');
       }
     } catch (e) {
-      Logger.error("Error fetching user types from API: $e");
+      Logger.error('Error fetching user types from API: $e');
       _error = 'Error fetching user types: $e';
       _isLoading = false;
       notifyListeners();
@@ -84,7 +84,7 @@ class HomePageController extends ChangeNotifier {
   }
 
   Future<void> refreshUserTypes() async {
-    Logger.info("Force refreshing user types from API");
+    Logger.info('Force refreshing user types from API');
     await fetchEmployeeTypeFromAPI();
   }
 
@@ -94,9 +94,9 @@ class HomePageController extends ChangeNotifier {
       _userTypes = [];
       _isLoading = true;
       notifyListeners();
-      Logger.info("Cached user types cleared");
+      Logger.info('Cached user types cleared');
     } catch (e) {
-      Logger.error("Error clearing cached user types: $e");
+      Logger.error('Error clearing cached user types: $e');
     }
   }
 

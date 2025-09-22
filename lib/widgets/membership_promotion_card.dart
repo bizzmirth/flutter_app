@@ -34,7 +34,6 @@ class MembershipPromotionCard extends StatelessWidget {
           ),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Header
             Container(
@@ -532,17 +531,17 @@ class _PlanCard extends StatelessWidget {
     _launchUrl('tel:+918010892265');
   }
 
-  void _handleEmail(BuildContext context, String planName) async {
+  Future<void> _handleEmail(BuildContext context, String planName) async {
     Navigator.pop(context);
 
     final String subject =
-        Uri.encodeComponent("Inquiry about $planName Membership");
+        Uri.encodeComponent('Inquiry about $planName Membership');
     final String body = Uri.encodeComponent(
-        "Hello,\n\nI would like to know more about the $planName Membership.\n\nThanks,");
+        'Hello,\n\nI would like to know more about the $planName Membership.\n\nThanks,');
 
     // ✅ First try native mailto
     final Uri emailUri =
-        Uri.parse("mailto:support@uniqbizz.com?subject=$subject&body=$body");
+        Uri.parse('mailto:support@uniqbizz.com?subject=$subject&body=$body');
 
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri, mode: LaunchMode.externalApplication);
@@ -550,7 +549,7 @@ class _PlanCard extends StatelessWidget {
     }
 
     final Uri gmailUri = Uri.parse(
-        "googlegmail://co?to=support@uniqbizz.com&subject=$subject&body=$body");
+        'googlegmail://co?to=support@uniqbizz.com&subject=$subject&body=$body');
 
     if (await canLaunchUrl(gmailUri)) {
       await launchUrl(gmailUri, mode: LaunchMode.externalApplication);
@@ -559,7 +558,7 @@ class _PlanCard extends StatelessWidget {
 
     // ✅ Fallback Gmail web
     final Uri webGmailUri = Uri.parse(
-        "https://mail.google.com/mail/?view=cm&fs=1&to=support@uniqbizz.com&su=$subject&body=$body");
+        'https://mail.google.com/mail/?view=cm&fs=1&to=support@uniqbizz.com&su=$subject&body=$body');
 
     if (await canLaunchUrl(webGmailUri)) {
       await launchUrl(webGmailUri, mode: LaunchMode.externalApplication);
@@ -571,10 +570,10 @@ class _PlanCard extends StatelessWidget {
     //       content: Text("No email app or Gmail available on this device")),
     // );
     ToastHelper.showErrorToast(
-        title: "No email app or Gmail available on this device");
+        title: 'No email app or Gmail available on this device');
   }
 
-  void _launchUrl(String url) async {
+  Future<void> _launchUrl(String url) async {
     try {
       if (await canLaunchUrlString(url)) {
         await launchUrlString(url);

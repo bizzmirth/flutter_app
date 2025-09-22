@@ -45,10 +45,10 @@ class LoginController extends ChangeNotifier {
           selectedUserTypeId = savedUserTypeId;
           // Find and set the user type name
           final selectedUserType = userTypeNames.firstWhere(
-            (userType) => userType["id"] == savedUserTypeId,
-            orElse: () => {"id": "", "name": ""},
+            (userType) => userType['id'] == savedUserTypeId,
+            orElse: () => {'id': '', 'name': ''},
           );
-          selectedUserTypeName = selectedUserType["name"];
+          selectedUserTypeName = selectedUserType['name'];
         }
 
         rememberMe = true;
@@ -94,14 +94,14 @@ class LoginController extends ChangeNotifier {
     } else {
       selectedUserTypeId = id;
       final selectedUserType = userTypeNames.firstWhere(
-        (userType) => userType["id"] == id,
-        orElse: () => {"id": "", "name": "Not found"},
+        (userType) => userType['id'] == id,
+        orElse: () => {'id': '', 'name': 'Not found'},
       );
-      selectedUserTypeName = selectedUserType["name"];
+      selectedUserTypeName = selectedUserType['name'];
     }
 
-    Logger.info("Selected User Type ID: $selectedUserTypeId");
-    Logger.info("Selected User Type Name: $selectedUserTypeName");
+    Logger.info('Selected User Type ID: $selectedUserTypeId');
+    Logger.info('Selected User Type Name: $selectedUserTypeName');
 
     notifyListeners();
   }
@@ -123,24 +123,24 @@ class LoginController extends ChangeNotifier {
 
         userTypeNames = userTypeResponse.data
             .where((userType) => allowedIds.contains(userType.id))
-            .map((userType) => {"id": userType.id, "name": userType.name})
+            .map((userType) => {'id': userType.id, 'name': userType.name})
             .toList();
 
-        Logger.info("Filtered User Type Names: $userTypeNames");
+        Logger.info('Filtered User Type Names: $userTypeNames');
 
         // After loading user types, try to set the user type name if we have a saved ID
         if (selectedUserTypeId != null && selectedUserTypeName == null) {
           final selectedUserType = userTypeNames.firstWhere(
-            (userType) => userType["id"] == selectedUserTypeId,
-            orElse: () => {"id": "", "name": ""},
+            (userType) => userType['id'] == selectedUserTypeId,
+            orElse: () => {'id': '', 'name': ''},
           );
-          selectedUserTypeName = selectedUserType["name"];
+          selectedUserTypeName = selectedUserType['name'];
           notifyListeners();
         }
       } else {
         // Fallback data with only allowed IDs
         userTypeNames = [
-          {"id": "1", "name": "admin"},
+          {'id': '1', 'name': 'admin'},
           // Include other defaults only if they match allowed IDs
         ];
       }
@@ -148,7 +148,7 @@ class LoginController extends ChangeNotifier {
       Logger.error('Error loading user types: $e');
       // Fallback data with only allowed IDs
       userTypeNames = [
-        {"id": "1", "name": "admin"},
+        {'id': '1', 'name': 'admin'},
         // Include other defaults only if they match allowed IDs
       ];
       errorMessage = 'Failed to load user types: ${e.toString()}';
@@ -177,36 +177,36 @@ class LoginController extends ChangeNotifier {
       notifyListeners();
 
       if (selectedUserTypeId == null || selectedUserTypeId!.isEmpty) {
-        errorMessage = "Please select a user type";
+        errorMessage = 'Please select a user type';
         isLoading = false;
         notifyListeners();
         ToastHelper.showInfoToast(
-          title: "Login Failed",
+          title: 'Login Failed',
           description: errorMessage,
         );
-        return {"success": false, "message": errorMessage};
+        return {'success': false, 'message': errorMessage};
       }
 
       if (emailController.text.isEmpty) {
-        errorMessage = "Please enter your email";
+        errorMessage = 'Please enter your email';
         isLoading = false;
         notifyListeners();
         ToastHelper.showInfoToast(
-          title: "Login Failed",
-          description: "Please enter all the fields.",
+          title: 'Login Failed',
+          description: 'Please enter all the fields.',
         );
-        return {"success": false, "message": errorMessage};
+        return {'success': false, 'message': errorMessage};
       }
 
       if (passwordController.text.isEmpty) {
-        errorMessage = "Please enter your password";
+        errorMessage = 'Please enter your password';
         isLoading = false;
         notifyListeners();
         ToastHelper.showInfoToast(
-          title: "Login Failed",
-          description: "Please enter all the fields.",
+          title: 'Login Failed',
+          description: 'Please enter all the fields.',
         );
-        return {"success": false, "message": errorMessage};
+        return {'success': false, 'message': errorMessage};
       }
 
       // API call
@@ -222,18 +222,18 @@ class LoginController extends ChangeNotifier {
         'password': password,
       });
       final response = await http.post(url, headers: headers, body: body);
-      Logger.success("Login URL: $url");
-      Logger.success("Login response: ${response.body}");
-      Logger.warning("Login Request Body: $body");
+      Logger.success('Login URL: $url');
+      Logger.success('Login response: ${response.body}');
+      Logger.warning('Login Request Body: $body');
 
       if (response.statusCode == 200) {
         final Map responseData = json.decode(response.body);
-        Logger.success("Response Data: $responseData");
+        Logger.success('Response Data: $responseData');
 
-        if (responseData["status"] == 1) {
+        if (responseData['status'] == 1) {
           // success
-          String userType = responseData["user_type"];
-          String userId = responseData["user_id"];
+          final String userType = responseData['user_type'];
+          final String userId = responseData['user_id'];
 
           await _sharedPrefHelper.saveUserType(userType);
           await _sharedPrefHelper.saveUserEmail(email);
@@ -250,37 +250,37 @@ class LoginController extends ChangeNotifier {
             notifyListeners();
           }
 
-          return {"status": true, "user_type": userType, "data": responseData};
+          return {'status': true, 'user_type': userType, 'data': responseData};
         } else {
           // failure from API
-          errorMessage = responseData["message"] ?? "Login failed";
+          errorMessage = responseData['message'] ?? 'Login failed';
           isLoading = false;
           notifyListeners();
-          return {"success": false, "message": errorMessage};
+          return {'success': false, 'message': errorMessage};
         }
       } else {
-        errorMessage = "Server error: ${response.statusCode}";
+        errorMessage = 'Server error: ${response.statusCode}';
         isLoading = false;
         notifyListeners();
         ToastHelper.showErrorToast(
-          title: "Login Failed",
+          title: 'Login Failed',
           description: errorMessage,
         );
         return {
-          "success": false,
-          "message": errorMessage
+          'success': false,
+          'message': errorMessage
         }; // 👈 now always returns
       }
     } catch (e) {
-      Logger.error("Error: ${e.toString()}");
-      errorMessage = "An error occurred: ${e.toString()}";
+      Logger.error('Error: ${e.toString()}');
+      errorMessage = 'An error occurred: ${e.toString()}';
       isLoading = false;
       notifyListeners();
       ToastHelper.showErrorToast(
-        title: "Login Failed",
+        title: 'Login Failed',
         description: errorMessage,
       );
-      return {"success": false, "message": errorMessage};
+      return {'success': false, 'message': errorMessage};
     }
   }
 

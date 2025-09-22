@@ -22,18 +22,18 @@ class ReferralTrackerCard extends StatelessWidget {
     } else if (currentStep >= 4 && currentStep <= 6) {
       return "Awesome! You're halfway there, keep going!";
     } else if (currentStep >= 7 && currentStep <= 9) {
-      return "Almost there! Just a few more to go.";
+      return 'Almost there! Just a few more to go.';
     } else if (currentStep == 10) {
       return "Congratulations! You've completed your referral journey and unlocked the Europe Trip!";
     }
-    return "";
+    return '';
   }
 
   String getGoals() {
     if (currentStep == 10) {
-      return "Europe Trip Unlocked 🎉";
+      return 'Europe Trip Unlocked 🎉';
     } else {
-      return "Refer and Earn";
+      return 'Refer and Earn';
     }
   }
 
@@ -198,7 +198,6 @@ class ReferralTrackerCard extends StatelessWidget {
           color: currentStep >= totalSteps
               ? Colors.green.withValues(alpha: 0.3)
               : progressColor.withValues(alpha: 0.2),
-          width: 1,
         ),
       ),
       child: Row(

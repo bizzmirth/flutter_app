@@ -40,7 +40,7 @@ class CustReferralPayoutController extends ChangeNotifier {
   final List<CustReferralPayoutModel> _totalAllPayouts = [];
   List<CustReferralPayoutModel> get totalAllPayouts => _totalAllPayouts;
 
-  void getAllPayouts(userId) async {
+  Future<void> getAllPayouts(userId) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -49,20 +49,20 @@ class CustReferralPayoutController extends ChangeNotifier {
       final fullUrl = AppUrls.getAllPayoutsReference;
 
       final Map<String, dynamic> body = {
-        "userId": userId,
+        'userId': userId,
       };
-      Logger.warning("Fetching all payouts for userId: $userId");
+      Logger.warning('Fetching all payouts for userId: $userId');
       final response = await http.post(Uri.parse(fullUrl),
           headers: {
             'Content-Type': 'application/json',
           },
           body: jsonEncode(body));
-      Logger.success("Response from all payout: ${response.body}");
+      Logger.success('Response from all payout: ${response.body}');
 
       if (response.statusCode == 200) {
         _allPayouts.clear();
         final data = jsonDecode(response.body);
-        Logger.success("Data fetched successfully: $data");
+        Logger.success('Data fetched successfully: $data');
 
         if (data['status'] == true && data['data'] is List) {
           final List<dynamic> payoutList = data['data'];
@@ -72,30 +72,30 @@ class CustReferralPayoutController extends ChangeNotifier {
               final payout = CustReferralPayoutModel.fromJson(payoutJson);
               _allPayouts.add(payout);
             } catch (e) {
-              Logger.error("Error parsing payout item: $e");
+              Logger.error('Error parsing payout item: $e');
             }
           }
 
-          Logger.success("Successfully loaded ${_allPayouts.length} payouts");
+          Logger.success('Successfully loaded ${_allPayouts.length} payouts');
         } else {
           Logger.error(
               "Invalid response structure: ${data['message'] ?? 'Unknown error'}");
-          _error = data['message'] ?? "Invalid response format";
+          _error = data['message'] ?? 'Invalid response format';
         }
       } else {
-        Logger.error("Failed to fetch payouts: ${response.statusCode}");
-        _error = "Failed to fetch payouts. Please try again later.";
+        Logger.error('Failed to fetch payouts: ${response.statusCode}');
+        _error = 'Failed to fetch payouts. Please try again later.';
       }
     } catch (e, s) {
-      Logger.error("Error fetching payouts: Error: $e, StackTrace: $s");
-      _error = "Failed to fetch payouts. Please try again later.";
+      Logger.error('Error fetching payouts: Error: $e, StackTrace: $s');
+      _error = 'Failed to fetch payouts. Please try again later.';
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  void apiGetPreviousMonthPayouts() async {
+  Future<void> apiGetPreviousMonthPayouts() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -108,15 +108,15 @@ class CustReferralPayoutController extends ChangeNotifier {
           (now.month == 1 ? 12 : now.month - 1).toString().padLeft(2, '0');
       final currentYear = now.year.toString();
       final Map<String, dynamic> body = {
-        "userId": userId,
-        "month": prevMonth,
-        "year": currentYear
+        'userId': userId,
+        'month': prevMonth,
+        'year': currentYear
       };
       final encodeBody = jsonEncode(body);
-      Logger.warning("Fetching previous month payouts for userId: $encodeBody");
+      Logger.warning('Fetching previous month payouts for userId: $encodeBody');
       final response = await http.post(Uri.parse(fullUrl),
-          headers: {"Content-Type": "application/json"}, body: encodeBody);
-      Logger.success("Response from previous month payouts: ${response.body}");
+          headers: {'Content-Type': 'application/json'}, body: encodeBody);
+      Logger.success('Response from previous month payouts: ${response.body}');
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final summary = data['summary'];
@@ -133,26 +133,26 @@ class CustReferralPayoutController extends ChangeNotifier {
               final payoutModel = CustReferralPayoutModel.fromJson(payoutJson);
               __previousMonthAllPayouts.add(payoutModel);
             } catch (e) {
-              Logger.error("Error parsing payout model: $e");
+              Logger.error('Error parsing payout model: $e');
             }
           }
           Logger.success(
-              "Successfully populated previous all payouts ${__previousMonthAllPayouts.length} payout records");
+              'Successfully populated previous all payouts ${__previousMonthAllPayouts.length} payout records');
         } else {
-          Logger.warning("No payout data found in response");
+          Logger.warning('No payout data found in response');
         }
       }
     } catch (e, s) {
       Logger.error(
-          "Error fetching previous payouts: Error: $e, StackTrace: $s");
-      _error = "Failed to fetch previous payouts. Error: $e, Stacktree: $s.";
+          'Error fetching previous payouts: Error: $e, StackTrace: $s');
+      _error = 'Failed to fetch previous payouts. Error: $e, Stacktree: $s.';
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  void apiGetNextMonthPayouts() async {
+  Future<void> apiGetNextMonthPayouts() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -164,15 +164,15 @@ class CustReferralPayoutController extends ChangeNotifier {
       final nextMonth = (now.month % 12).toString().padLeft(2, '0');
       final currentYear = now.year.toString();
       final Map<String, dynamic> body = {
-        "userId": userId,
-        "month": nextMonth,
-        "year": currentYear
+        'userId': userId,
+        'month': nextMonth,
+        'year': currentYear
       };
       final encodeBody = jsonEncode(body);
-      Logger.warning("Fetching next month payouts for userId: $encodeBody");
+      Logger.warning('Fetching next month payouts for userId: $encodeBody');
       final response = await http.post(Uri.parse(fullUrl),
-          headers: {"Content-Type": "application/json"}, body: encodeBody);
-      Logger.success("Response from next month payouts: ${response.body}");
+          headers: {'Content-Type': 'application/json'}, body: encodeBody);
+      Logger.success('Response from next month payouts: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -189,26 +189,26 @@ class CustReferralPayoutController extends ChangeNotifier {
               final payoutModel = CustReferralPayoutModel.fromJson(payoutJson);
               _nextMonthAllPayouts.add(payoutModel);
             } catch (e) {
-              Logger.error("Error parsing next month payout model: $e");
+              Logger.error('Error parsing next month payout model: $e');
             }
           }
           Logger.success(
-              "Successfully populated next moth payouts ${_nextMonthAllPayouts.length} next month payout records");
+              'Successfully populated next moth payouts ${_nextMonthAllPayouts.length} next month payout records');
         } else {
-          Logger.info("No next month payout records found in response");
+          Logger.info('No next month payout records found in response');
         }
       }
     } catch (e, s) {
       Logger.error(
-          "Error fetching next month payouts: Error: $e, StackTrace: $s");
-      _error = "Failed to fetch next month payouts. Error: $e, Stacktree: $s.";
+          'Error fetching next month payouts: Error: $e, StackTrace: $s');
+      _error = 'Failed to fetch next month payouts. Error: $e, Stacktree: $s.';
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  void apiGetTotalPayouts({int? month, int? year}) async {
+  Future<void> apiGetTotalPayouts({int? month, int? year}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -219,22 +219,22 @@ class CustReferralPayoutController extends ChangeNotifier {
 
       // Create base body with userId
       final Map<String, dynamic> body = {
-        "userId": userId,
+        'userId': userId,
       };
 
       if (month != null && year != null) {
-        body["month"] = month.toString().padLeft(2, '0');
-        body["year"] = year.toString();
+        body['month'] = month.toString().padLeft(2, '0');
+        body['year'] = year.toString();
       }
 
       final encodeBody = jsonEncode(body);
-      Logger.warning("Fetching total payouts for userId: $encodeBody");
+      Logger.warning('Fetching total payouts for userId: $encodeBody');
 
       final response = await http.post(Uri.parse(fullUrl),
-          headers: {"Content-Type": "application/json"}, body: encodeBody);
+          headers: {'Content-Type': 'application/json'}, body: encodeBody);
 
-      Logger.success("Response from total payouts: ${response.body}");
-      Logger.success("get total payouts URL: $fullUrl");
+      Logger.success('Response from total payouts: ${response.body}');
+      Logger.success('get total payouts URL: $fullUrl');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -249,19 +249,19 @@ class CustReferralPayoutController extends ChangeNotifier {
               final payoutModel = CustReferralPayoutModel.fromJson(payoutJson);
               _totalAllPayouts.add(payoutModel);
             } catch (e) {
-              Logger.error("Error parsing total payout model: $e");
+              Logger.error('Error parsing total payout model: $e');
             }
           }
         }
         Logger.success(
-            "Successfully populated total payout ${_totalAllPayouts.length} total payout records");
+            'Successfully populated total payout ${_totalAllPayouts.length} total payout records');
       } else {
-        Logger.error("Failed to fetch total payouts: ${response.statusCode}");
-        _error = "Failed to fetch total payouts. Please try again later.";
+        Logger.error('Failed to fetch total payouts: ${response.statusCode}');
+        _error = 'Failed to fetch total payouts. Please try again later.';
       }
     } catch (e, s) {
-      Logger.error("Error fetching total payouts: Error: $e, StackTrace: $s");
-      _error = "Failed to fetch total payouts. Please try again later.";
+      Logger.error('Error fetching total payouts: Error: $e, StackTrace: $s');
+      _error = 'Failed to fetch total payouts. Please try again later.';
     } finally {
       _isLoading = false;
       notifyListeners();

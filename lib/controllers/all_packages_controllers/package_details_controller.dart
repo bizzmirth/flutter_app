@@ -34,7 +34,7 @@ class PackageDetailsController extends ChangeNotifier {
   // Check if data is available
   bool get hasData => _packageResponse != null && _packageResponse!.isSuccess;
 
-  void getPackageDetails({String? packageId}) async {
+  Future<void> getPackageDetails({String? packageId}) async {
     _isLoading = true;
     _error = null;
     _packageResponse = null;
@@ -43,10 +43,10 @@ class PackageDetailsController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getTourPackageDetails; // Use the URL from AppUrls
 
-      final Map<String, dynamic> body = {"id": packageId};
+      final Map<String, dynamic> body = {'id': packageId};
       final encodeBody = jsonEncode(body);
 
-      Logger.warning("Fetching package details for ID: $encodeBody");
+      Logger.warning('Fetching package details for ID: $encodeBody');
 
       final response = await http.post(
         Uri.parse(fullUrl),
@@ -57,9 +57,9 @@ class PackageDetailsController extends ChangeNotifier {
         },
       );
 
-      Logger.info("full package details URL: $fullUrl");
-      Logger.info("Response status code: ${response.statusCode}");
-      Logger.info("Response body: ${response.body}");
+      Logger.info('full package details URL: $fullUrl');
+      Logger.info('Response status code: ${response.statusCode}');
+      Logger.info('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
@@ -69,20 +69,20 @@ class PackageDetailsController extends ChangeNotifier {
 
         // Check if the API response indicates success
         if (_packageResponse!.isSuccess) {
-          Logger.info("Successfully fetched package details");
+          Logger.info('Successfully fetched package details');
         } else {
           _error =
-              "API returned unsuccessful status: ${_packageResponse!.status}";
+              'API returned unsuccessful status: ${_packageResponse!.status}';
           Logger.error(_error!);
         }
       } else {
         _error =
-            "Failed to fetch package details. Status code: ${response.statusCode}";
+            'Failed to fetch package details. Status code: ${response.statusCode}';
         Logger.error(_error!);
       }
     } catch (e, s) {
-      _error = "Error fetching package details: $e";
-      Logger.error("Error fetching package details. Error: $e, Stacktrace: $s");
+      _error = 'Error fetching package details: $e';
+      Logger.error('Error fetching package details. Error: $e, Stacktrace: $s');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -93,7 +93,7 @@ class PackageDetailsController extends ChangeNotifier {
 
   // Get formatted package summary for display
   String getPackageSummary() {
-    if (!hasData) return "No package data available";
+    if (!hasData) return 'No package data available';
     return _packageResponse!.packageSummary;
   }
 
@@ -105,14 +105,14 @@ class PackageDetailsController extends ChangeNotifier {
 
   // Get formatted total price
   String getFormattedTotalPrice(int adults, int children) {
-    if (packagePrice == null) return "₹0.00";
+    if (packagePrice == null) return '₹0.00';
     return packagePrice!.getFormattedTotalPrice(adults, children);
   }
 
   // Get tour duration
   String getTourDuration() {
-    if (packageDetails == null) return "Not specified";
-    return "${packageDetails!.tourDays} days";
+    if (packageDetails == null) return 'Not specified';
+    return '${packageDetails!.tourDays} days';
   }
 
   // Check if package is valid (not expired)
@@ -142,7 +142,7 @@ class PackageDetailsController extends ChangeNotifier {
 
   // Refresh data
   void refreshPackageDetails({String? packageId}) {
-    final id = packageId ?? "160";
+    final id = packageId ?? '160';
     getPackageDetails(packageId: id);
   }
 

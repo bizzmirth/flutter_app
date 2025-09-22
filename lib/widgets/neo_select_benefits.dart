@@ -54,12 +54,12 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
 
   Future<void> _playSequence() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    _titleController.forward();
-    _backgroundController.forward();
+    await _titleController.forward();
+    await _backgroundController.forward();
 
     // Step 1: Animate Fee
     await Future.delayed(const Duration(milliseconds: 500));
-    _feeController.forward();
+    await _feeController.forward();
     for (int i = 0; i <= widget.amount; i += (widget.amount / 20).ceil()) {
       await Future.delayed(const Duration(milliseconds: 20));
       setState(() => _fee = i);
@@ -67,7 +67,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
 
     // Step 2: Animate Coupons
     await Future.delayed(const Duration(milliseconds: 300));
-    _couponController.forward();
+    await _couponController.forward();
     for (int i = 0;
         i <= widget.valueCoupons;
         i += (widget.valueCoupons / 20).ceil()) {
@@ -77,7 +77,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
 
     // Step 3: Animate Savings
     await Future.delayed(const Duration(milliseconds: 400));
-    _savingsController.forward();
+    await _savingsController.forward();
     for (int i = 0; i <= widget.saveAmt; i += (widget.saveAmt / 20).ceil()) {
       await Future.delayed(const Duration(milliseconds: 20));
       setState(() => _savings = i);
@@ -174,7 +174,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20), // Smaller radius
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       gradient: RadialGradient(
                         center: Alignment.topCenter,
                         radius: 1.5,
@@ -198,7 +198,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                       curve: Curves.elasticOut,
                     ),
                     child: Text(
-                        "🎉 Congratulations on becoming a ${widget.type} Customer 🎉",
+                        '🎉 Congratulations on becoming a ${widget.type} Customer 🎉',
                         textAlign: TextAlign.center,
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -249,7 +249,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                             const Icon(Icons.payment,
                                 color: Colors.white, size: 20), // Smaller icon
                             const SizedBox(width: 8), // Reduced spacing
-                            Text("Paid ₹${_fee.toStringAsFixed(0)}",
+                            Text('Paid ₹${_fee.toStringAsFixed(0)}',
                                 style: const TextStyle(
                                     fontSize: 18, // Smaller font
                                     fontWeight: FontWeight.w600,
@@ -266,7 +266,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                     opacity: _couponController,
                     child: Column(
                       children: [
-                        const Text("Now Get Rewarded With:",
+                        const Text('Now Get Rewarded With:',
                             style: TextStyle(
                                 fontSize: 16, // Smaller font
                                 fontWeight: FontWeight.w500,
@@ -274,12 +274,12 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                         const SizedBox(height: 10), // Reduced spacing
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(widget.numberOfCoupons,
-                              (index) => _buildCouponCard(index)),
+                          children: List.generate(
+                              widget.numberOfCoupons, _buildCouponCard),
                         ),
                         const SizedBox(height: 12), // Reduced spacing
                         Text(
-                            "Total Coupons Value: ₹${_coupons.toStringAsFixed(0)}",
+                            'Total Coupons Value: ₹${_coupons.toStringAsFixed(0)}',
                             style: const TextStyle(
                                 fontSize: 18, // Smaller font
                                 fontWeight: FontWeight.w600,
@@ -321,7 +321,7 @@ class _NeoSelectBenefitsState extends State<NeoSelectBenefits>
                                 BorderRadius.circular(16)), // Smaller radius
                         child: Column(
                           children: [
-                            Text("You Save ₹${_savings.toStringAsFixed(0)}",
+                            Text('You Save ₹${_savings.toStringAsFixed(0)}',
                                 style: const TextStyle(
                                     fontSize: 22, // Smaller font
                                     fontWeight: FontWeight.bold,

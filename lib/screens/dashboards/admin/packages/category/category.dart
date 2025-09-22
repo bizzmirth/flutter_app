@@ -35,7 +35,7 @@ class _CategoryPageState extends State<CategoryPage> {
             children: [
               Row(
                 children: [
-                  SizedBox(width: 590),
+                  const SizedBox(width: 590),
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
@@ -43,22 +43,22 @@ class _CategoryPageState extends State<CategoryPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AddCategoryPage()),
+                              builder: (context) => const AddCategoryPage()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 1),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 1),
                         backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text("Add New Category",
+                      child: const Text('Add New Category',
                           style: TextStyle(color: Colors.white)),
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                 ],
               ),
               Card(
@@ -73,13 +73,13 @@ class _CategoryPageState extends State<CategoryPage> {
                   child: PaginatedDataTable(
                     columnSpacing: 550,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("Name")),
-                      DataColumn(label: Text("Action")),
+                    columns: const [
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Action')),
                     ],
                     source: MyCategoryDataSource(category),
                     rowsPerPage: _rowsPerPage,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {
@@ -91,7 +91,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
             ],
           ),
         ),

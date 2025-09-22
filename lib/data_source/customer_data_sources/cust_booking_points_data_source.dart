@@ -7,15 +7,15 @@ class CustBookingPointsDataSource extends DataTableSource {
   CustBookingPointsDataSource(this.data);
 
   Color _getStatusColor(String status) {
-    String statusText = status.toLowerCase();
+    final String statusText = status.toLowerCase();
     switch (statusText) {
-      case "credited":
+      case 'credited':
         return Colors.green;
-      case "not approved":
+      case 'not approved':
         return Colors.grey;
-      case "pending":
+      case 'pending':
         return Colors.orange;
-      case "cancelled":
+      case 'cancelled':
         return Colors.red;
       default:
         return Colors.yellowAccent;
@@ -34,14 +34,14 @@ class CustBookingPointsDataSource extends DataTableSource {
       DataCell(Text(item.amount ?? '')),
       DataCell(Text(item.date ?? '')),
       DataCell(Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: _getStatusColor(item.status!),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
             item.status ?? '',
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ))),
     ]);
   }

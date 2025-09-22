@@ -32,24 +32,24 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
   TextEditingController bCMinsController = TextEditingController();
 
   void _calculateTotal() {
-    double adultPrice = double.tryParse(adultPriceController.text) ?? 0;
-    double childPrice = double.tryParse(childPriceController.text) ?? 0;
-    double gstPercentage = double.tryParse(gstController.text) ?? 0;
+    final double adultPrice = double.tryParse(adultPriceController.text) ?? 0;
+    final double childPrice = double.tryParse(childPriceController.text) ?? 0;
+    final double gstPercentage = double.tryParse(gstController.text) ?? 0;
 
-    double adultTotal = adultPrice + (adultPrice * gstPercentage / 100);
-    double childTotal = childPrice + (childPrice * gstPercentage / 100);
+    final double adultTotal = adultPrice + (adultPrice * gstPercentage / 100);
+    final double childTotal = childPrice + (childPrice * gstPercentage / 100);
 
     totalAdultController.text = adultTotal.toStringAsFixed(2);
     totalChildController.text = childTotal.toStringAsFixed(2);
   }
 
   void _calculateTotal1() {
-    double companyPrice = double.tryParse(companyController.text) ?? 0;
-    double taPrice = double.tryParse(taController.text) ?? 0;
-    double customerPrice = double.tryParse(customerController.text) ?? 0;
+    final double companyPrice = double.tryParse(companyController.text) ?? 0;
+    final double taPrice = double.tryParse(taController.text) ?? 0;
+    final double customerPrice = double.tryParse(customerController.text) ?? 0;
 
-    double adultPrice = double.tryParse(adultPriceController.text) ?? 0;
-    double childPrice = double.tryParse(childPriceController.text) ?? 0;
+    final double adultPrice = double.tryParse(adultPriceController.text) ?? 0;
+    final double childPrice = double.tryParse(childPriceController.text) ?? 0;
 
     double truncateToTwoDecimals(double num) {
       return (num * 100).truncateToDouble() / 100;
@@ -64,21 +64,21 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
       }
     }
 
-    double teMarkup = truncateToTwoDecimals((taPrice * 50) / 100);
-    double teMarkupComm = truncateToTwoDecimals((teMarkup * 60) / 100);
-    double teMarkupIns = truncateToTwoDecimals((teMarkup * 40) / 100);
+    final double teMarkup = truncateToTwoDecimals((taPrice * 50) / 100);
+    final double teMarkupComm = truncateToTwoDecimals((teMarkup * 60) / 100);
+    final double teMarkupIns = truncateToTwoDecimals((teMarkup * 40) / 100);
 
-    double bmMarkUp = truncateToTwoDecimals((teMarkupComm * 30) / 100);
-    double bmMarkUpComm = truncateToTwoDecimals((bmMarkUp * 80) / 100);
-    double bmMarkUpIns = truncateToTwoDecimals((bmMarkUp * 20) / 100);
+    final double bmMarkUp = truncateToTwoDecimals((teMarkupComm * 30) / 100);
+    final double bmMarkUpComm = truncateToTwoDecimals((bmMarkUp * 80) / 100);
+    final double bmMarkUpIns = truncateToTwoDecimals((bmMarkUp * 20) / 100);
 
-    double bdmMarkUp = truncateToTwoDecimals((bmMarkUpComm * 30) / 100);
-    double bdmMarkUpComm = truncateToTwoDecimals((bdmMarkUp * 80) / 100);
-    double bdmMarkUpIns = truncateToTwoDecimals((bdmMarkUp * 20) / 100);
+    final double bdmMarkUp = truncateToTwoDecimals((bmMarkUpComm * 30) / 100);
+    final double bdmMarkUpComm = truncateToTwoDecimals((bdmMarkUp * 80) / 100);
+    final double bdmMarkUpIns = truncateToTwoDecimals((bdmMarkUp * 20) / 100);
 
-    double bcmMarkUp = truncateToTwoDecimals((bdmMarkUpComm * 30) / 100);
-    double bcmMarkUpComm = truncateToTwoDecimals((bcmMarkUp * 80) / 100);
-    double bcmMarkUpIns = truncateToTwoDecimals((bcmMarkUp * 20) / 100);
+    final double bcmMarkUp = truncateToTwoDecimals((bdmMarkUpComm * 30) / 100);
+    final double bcmMarkUpComm = truncateToTwoDecimals((bcmMarkUp * 80) / 100);
+    final double bcmMarkUpIns = truncateToTwoDecimals((bcmMarkUp * 20) / 100);
 
     technocomController.text = formatNumber(teMarkupComm);
     technoinsController.text = formatNumber(teMarkupIns);
@@ -94,7 +94,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
       if (companyController.text.isNotEmpty &&
           taController.text.isNotEmpty &&
           customerController.text.isNotEmpty) {
-        double markupCalc = companyPrice +
+        final double markupCalc = companyPrice +
             taPrice +
             customerPrice +
             teMarkupComm +
@@ -106,8 +106,8 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
             bcmMarkUpComm +
             bcmMarkUpIns;
 
-        double totalPriceAdult = markupCalc + adultPrice;
-        double totalPriceChild = markupCalc + childPrice;
+        final double totalPriceAdult = markupCalc + adultPrice;
+        final double totalPriceChild = markupCalc + childPrice;
 
         totalpriceAdultController.text = formatNumber(totalPriceAdult);
         totalpriceChildController.text = formatNumber(totalPriceChild);
@@ -120,15 +120,15 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
   List<String> selectedHotelStars1 = [];
 
   Map<String, String?> selectedFiles = {
-    "Profile Picture": null,
-    "ID Proof": null,
-    "Bank Details": null,
+    'Profile Picture': null,
+    'ID Proof': null,
+    'Bank Details': null,
   };
 
   Widget _buildTextField(String label, {int maxLines = 1}) {
     return TextField(
       maxLines: maxLines,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         // ignore: deprecated_member_use
@@ -165,7 +165,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Pricing Details:",
+                  const Text('Pricing Details:',
                       style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -178,7 +178,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           TextInputType.number, // ✅ Opens numeric keyboard
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (_) => _calculateTotal(),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Price for 1 Adult *',
                         labelStyle: TextStyle(
@@ -200,7 +200,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           TextInputType.number, // ✅ Opens numeric keyboard
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (_) => _calculateTotal(),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Price for 1 Child *',
                         labelStyle: TextStyle(
@@ -222,7 +222,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           TextInputType.number, // ✅ Opens numeric keyboard
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (_) => _calculateTotal(),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET GST for Adult & Child : ',
                         labelStyle: TextStyle(
@@ -241,7 +241,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                     child: TextFormField(
                       controller: totalAdultController,
                       readOnly: true,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Total for Adult : ',
                         labelStyle: TextStyle(
@@ -260,7 +260,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                     child: TextFormField(
                       controller: totalChildController,
                       readOnly: true,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'NET Total for Child : ',
                         labelStyle: TextStyle(
@@ -274,13 +274,13 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextFormField(
                       controller: totalpriceAdultController,
                       readOnly: true,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Total Price for Adult : ',
                         labelStyle: TextStyle(
@@ -299,7 +299,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                     child: TextFormField(
                       controller: totalpriceChildController,
                       readOnly: true,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Total Price for Child : ',
                         labelStyle: TextStyle(
@@ -313,8 +313,8 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 40),
-                  Text("Mark-up Price Distribution",
+                  const SizedBox(height: 40),
+                  const Text('Mark-up Price Distribution',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -333,7 +333,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                               FilteringTextInputFormatter.digitsOnly
                             ],
                             onChanged: (_) => _calculateTotal1(),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Company *',
                               labelStyle: TextStyle(
@@ -348,7 +348,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -360,7 +360,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                               FilteringTextInputFormatter.digitsOnly
                             ],
                             onChanged: (_) => _calculateTotal1(),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Travel Agent *',
                               labelStyle: TextStyle(
@@ -375,7 +375,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -387,7 +387,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                               FilteringTextInputFormatter.digitsOnly
                             ],
                             onChanged: (_) => _calculateTotal1(),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Customer *',
                               labelStyle: TextStyle(
@@ -404,13 +404,13 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
-                  Row(
+                  const SizedBox(height: 10),
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
                         child: Center(
-                          child: Text("Techno Enterprise",
+                          child: Text('Techno Enterprise',
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -420,7 +420,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       SizedBox(width: 20),
                       Expanded(
                         child: Center(
-                          child: Text("Business Consultant",
+                          child: Text('Business Consultant',
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -438,7 +438,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           child: TextFormField(
                             controller: technocomController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Commission',
                               labelStyle: TextStyle(
@@ -453,14 +453,14 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
                             controller: bCcomController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Commission',
                               labelStyle: TextStyle(
@@ -486,7 +486,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           child: TextFormField(
                             controller: technoinsController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Incentive',
                               labelStyle: TextStyle(
@@ -501,14 +501,14 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
                             controller: bCinsController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Incentive',
                               labelStyle: TextStyle(
@@ -525,13 +525,13 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
-                  Row(
+                  const SizedBox(height: 10),
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
                         child: Center(
-                          child: Text("Business Development Manager",
+                          child: Text('Business Development Manager',
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -541,7 +541,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       SizedBox(width: 20),
                       Expanded(
                         child: Center(
-                          child: Text("Business Channel Manager",
+                          child: Text('Business Channel Manager',
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -559,7 +559,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           child: TextFormField(
                             controller: bDMcomController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Commission',
                               labelStyle: TextStyle(
@@ -574,14 +574,14 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
                             controller: bCMcomController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Commission',
                               labelStyle: TextStyle(
@@ -607,7 +607,7 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           child: TextFormField(
                             controller: bDMinsController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Incentive',
                               labelStyle: TextStyle(
@@ -622,14 +622,14 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextFormField(
                             controller: bCMinsController,
                             readOnly: true,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Incentive',
                               labelStyle: TextStyle(
@@ -646,13 +646,13 @@ class _PackagePricingScreenScreenState extends State<PackagePricingScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   _buildTextField('30+ Days Before Travel (%)'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('15-30 Days Before Travel (%)'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Less Than 15 Days Before Travel (%)'),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

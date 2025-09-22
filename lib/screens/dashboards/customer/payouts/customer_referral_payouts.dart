@@ -21,7 +21,7 @@ class CustomerReferralPayouts extends StatefulWidget {
 }
 
 class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
-  String selectedDate = "Select month, year";
+  String selectedDate = 'Select month, year';
   int _rowsPerPage = 5;
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
@@ -32,10 +32,10 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
   Future<void> _selectDate(BuildContext context) async {
     final controller =
         Provider.of<CustReferralPayoutController>(context, listen: false);
-    DateTime now = DateTime.now();
-    DateTime? picked = await showMonthPicker(
+    final DateTime now = DateTime.now();
+    final DateTime? picked = await showMonthPicker(
       context: context,
-      firstDate: DateTime(2020, 1),
+      firstDate: DateTime(2020),
       lastDate: now,
       initialDate: _selectedDateTime ?? now,
     );
@@ -43,35 +43,36 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
     if (picked != null) {
       setState(() {
         _selectedDateTime = picked;
-        selectedDate = DateFormat("MMMM, yyyy").format(picked);
+        selectedDate = DateFormat('MMMM, yyyy').format(picked);
       });
 
-      controller.apiGetTotalPayouts(month: picked.month, year: picked.year);
-      Logger.success("selected Date : ${picked.month}, year: ${picked.year}");
+      await controller.apiGetTotalPayouts(
+          month: picked.month, year: picked.year);
+      Logger.success('selected Date : ${picked.month}, year: ${picked.year}');
     }
   }
 
   @override
   void initState() {
     super.initState();
-    selectedDate = DateFormat("MMMM, yyyy").format(DateTime.now());
+    selectedDate = DateFormat('MMMM, yyyy').format(DateTime.now());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getAllStatData();
     });
   }
 
-  void getAllStatData() async {
+  Future<void> getAllStatData() async {
     final controller =
         Provider.of<CustReferralPayoutController>(context, listen: false);
     userId = await SharedPrefHelper().getCurrentUserCustId();
-    controller.getAllPayouts(userId);
-    controller.apiGetPreviousMonthPayouts();
-    controller.apiGetNextMonthPayouts();
-    controller.apiGetTotalPayouts();
+    await controller.getAllPayouts(userId);
+    await controller.apiGetPreviousMonthPayouts();
+    await controller.apiGetNextMonthPayouts();
+    await controller.apiGetTotalPayouts();
   }
 
   Future<void> onRefresh() async {
-    getAllStatData();
+    await getAllStatData();
   }
 
   String getMonthName(String? monthNumber) {
@@ -124,8 +125,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
 
     showDialog(
       context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
+      builder: (context) {
         final payoutList = getPayoutList();
         final isMobile = MediaQuery.of(context).size.width < 600;
 
@@ -190,7 +190,6 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                             child: _buildPayoutCard(payoutType, amount, date)),
                         const SizedBox(width: 12),
                         Expanded(
-                          flex: 1,
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -205,8 +204,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                       child: Container(
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.black),
+                                          border: Border.all(),
                                           borderRadius:
                                               BorderRadius.circular(4),
                                         ),
@@ -219,15 +217,14 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                     const SizedBox(width: 8),
                                   ],
                                 ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 Row(
                                   children: [
                                     Expanded(
                                       child: Container(
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.black),
+                                          border: Border.all(),
                                           borderRadius:
                                               BorderRadius.circular(4),
                                         ),
@@ -244,7 +241,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                   width: double.infinity,
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
+                                      border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
                                   child: Column(
                                     crossAxisAlignment:
@@ -263,9 +260,9 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                                 fontSize: 14,
                                                 color: Colors.grey.shade600),
                                           ),
-                                          SizedBox(width: 5),
+                                          const SizedBox(width: 5),
                                           Text(
-                                            amount.replaceAll('Rs', ""),
+                                            amount.replaceAll('Rs', ''),
                                             style: const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold),
@@ -289,7 +286,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Center(
                       child: Text(
-                        "$payoutType Details",
+                        '$payoutType Details',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -352,14 +349,14 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                       columnSpacing: 50,
                                       dataRowMinHeight: 40,
                                       columns: const [
-                                        DataColumn(label: Text("Date")),
+                                        DataColumn(label: Text('Date')),
                                         DataColumn(
-                                            label: Text("Payout Details")),
-                                        DataColumn(label: Text("Amount")),
-                                        DataColumn(label: Text("TDS")),
+                                            label: Text('Payout Details')),
+                                        DataColumn(label: Text('Amount')),
+                                        DataColumn(label: Text('TDS')),
                                         DataColumn(
-                                            label: Text("Total Payable")),
-                                        DataColumn(label: Text("Remarks")),
+                                            label: Text('Total Payable')),
+                                        DataColumn(label: Text('Remarks')),
                                       ],
                                       source: CustReferenceAllPayoutDataSource(
                                           payoutList),
@@ -418,7 +415,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
+        border: Border.all(),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -489,7 +486,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
+                border: Border.all(),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -502,7 +499,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
+                border: Border.all(),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -515,7 +512,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
+                border: Border.all(),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Column(
@@ -568,18 +565,18 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Date: ${payout.date}",
+          Text('Date: ${payout.date}',
               style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text("Payout Details: ${payout.payoutDetails}"),
+          Text('Payout Details: ${payout.payoutDetails}'),
           const SizedBox(height: 4),
-          Text("Amount: Rs. ${payout.amount}"),
+          Text('Amount: Rs. ${payout.amount}'),
           const SizedBox(height: 4),
-          Text("TDS: Rs. ${payout.tds}"),
+          Text('TDS: Rs. ${payout.tds}'),
           const SizedBox(height: 4),
-          Text("Total Payable: Rs. ${payout.totalPayable}"),
+          Text('Total Payable: Rs. ${payout.totalPayable}'),
           const SizedBox(height: 4),
-          Text("Remarks: ${payout.status}"),
+          Text('Remarks: ${payout.status}'),
         ],
       ),
     );
@@ -588,14 +585,14 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
   Widget _buildLoadingState() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(50.0),
+        padding: const EdgeInsets.all(50.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
+            const CircularProgressIndicator(
               color: Colors.blueAccent,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Loading Referral Payouts...',
               style: TextStyle(
@@ -603,7 +600,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                 color: Colors.grey[600],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Please wait while we fetch your data',
               style: TextStyle(
@@ -626,7 +623,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
           final screenWidth = MediaQuery.of(context).size.width;
           final screenHeight = MediaQuery.of(context).size.height;
           Logger.info(
-              "Screen dimensions - Width: $screenWidth, Height: $screenHeight");
+              'Screen dimensions - Width: $screenWidth, Height: $screenHeight');
         });
         return Scaffold(
           appBar: AppBar(
@@ -643,24 +640,24 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
               : RefreshIndicator(
                   onRefresh: onRefresh,
                   child: SingleChildScrollView(
-                    physics: AlwaysScrollableScrollPhysics(),
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Divider(thickness: 1, color: Colors.black26),
-                          Center(
+                          const Divider(thickness: 1, color: Colors.black26),
+                          const Center(
                             child: Padding(
                               padding: EdgeInsets.symmetric(vertical: 10),
                               child: Text(
-                                "Payouts:",
+                                'Payouts:',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
-                          Divider(thickness: 1, color: Colors.black26),
+                          const Divider(thickness: 1, color: Colors.black26),
                           const SizedBox(height: 16),
                           LayoutBuilder(
                             builder: (context, constraints) {
@@ -668,18 +665,18 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                 return Column(
                                   children: [
                                     payoutCard(
-                                        "Previous Payout",
-                                        "${getMonthName(controller.prevMonth)}, ${controller.year}",
-                                        "Rs. ${controller.previousMonthPayout}/-",
-                                        "Paid",
+                                        'Previous Payout',
+                                        '${getMonthName(controller.prevMonth)}, ${controller.year}',
+                                        'Rs. ${controller.previousMonthPayout}/-',
+                                        'Paid',
                                         Colors.green.shade100,
                                         controller),
                                     const SizedBox(height: 16),
                                     payoutCard(
-                                        "Next Payout",
-                                        "${getMonthName(controller.nextMonth)}, ${controller.year}",
-                                        "Rs. ${controller.nextMonthPayout}/-",
-                                        "Pending",
+                                        'Next Payout',
+                                        '${getMonthName(controller.nextMonth)}, ${controller.year}',
+                                        'Rs. ${controller.nextMonthPayout}/-',
+                                        'Pending',
                                         Colors.orange.shade100,
                                         controller),
                                   ],
@@ -691,20 +688,20 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                   children: [
                                     Expanded(
                                       child: payoutCard(
-                                          "Previous Payout",
-                                          "${getMonthName(controller.prevMonth)}, ${controller.year}",
-                                          "Rs. ${controller.previousMonthPayout}/-",
-                                          "Paid",
+                                          'Previous Payout',
+                                          '${getMonthName(controller.prevMonth)}, ${controller.year}',
+                                          'Rs. ${controller.previousMonthPayout}/-',
+                                          'Paid',
                                           Colors.green.shade100,
                                           controller),
                                     ),
                                     const SizedBox(width: 16),
                                     Expanded(
                                       child: payoutCard(
-                                          "Next Payout",
-                                          "${getMonthName(controller.nextMonth)}, ${controller.year}",
-                                          "Rs. ${controller.nextMonthPayout}/-",
-                                          "Pending",
+                                          'Next Payout',
+                                          '${getMonthName(controller.nextMonth)}, ${controller.year}',
+                                          'Rs. ${controller.nextMonthPayout}/-',
+                                          'Pending',
                                           Colors.orange.shade100,
                                           controller),
                                     ),
@@ -716,18 +713,18 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                           const SizedBox(height: 16),
                           totalPayoutCard(controller.totalPayout, controller),
                           const SizedBox(height: 50),
-                          Divider(thickness: 1, color: Colors.black26),
-                          Center(
+                          const Divider(thickness: 1, color: Colors.black26),
+                          const Center(
                             child: Padding(
                               padding: EdgeInsets.symmetric(vertical: 10),
                               child: Text(
-                                "All Payouts:",
+                                'All Payouts:',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
-                          Divider(thickness: 1, color: Colors.black26),
+                          const Divider(thickness: 1, color: Colors.black26),
                           FilterBar(
                             userCount: controller.allPayouts.length.toString(),
                           ),
@@ -757,26 +754,26 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                 columnSpacing: 30,
                 dataRowMinHeight: 40,
                 columns: const [
-                  DataColumn(label: Text("Date")),
+                  DataColumn(label: Text('Date')),
                   DataColumn(
                       label: Text(
-                    "Payout Details",
+                    'Payout Details',
                   )),
                   DataColumn(
                       label: Text(
-                    "Product Payout",
+                    'Product Payout',
                   )),
                   DataColumn(
                       label: Text(
-                    "Total",
+                    'Total',
                   )),
                   DataColumn(
                       label: Text(
-                    "TDS",
+                    'TDS',
                   )),
                   DataColumn(
                       label: Text(
-                    "Remarks",
+                    'Remarks',
                   )),
                 ],
                 source: CustReferenceAllPayoutDataSource(controller.allPayouts),
@@ -801,7 +798,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
 
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         // Optimized ListView with builder and separators
@@ -872,11 +869,11 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
               children: [
-                _buildDetailItem("Details", payout.payoutDetails),
-                _buildDetailItem("Amount", "₹${payout.amount}"),
+                _buildDetailItem('Details', payout.payoutDetails),
+                _buildDetailItem('Amount', '₹${payout.amount}'),
                 _buildDetailItem(
-                    "TDS", payout.tds == "NA" ? "N/A" : "₹${payout.tds}"),
-                _buildDetailItem("Payable", "₹${payout.totalPayable}"),
+                    'TDS', payout.tds == 'NA' ? 'N/A' : '₹${payout.tds}'),
+                _buildDetailItem('Payable', '₹${payout.totalPayable}'),
               ],
             ),
           ],
@@ -947,17 +944,17 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case "credited":
+      case 'credited':
         return Colors.green;
-      case "pending":
+      case 'pending':
         return Colors.orange;
-      case "approved":
+      case 'approved':
         return Colors.blue;
-      case "processing":
+      case 'processing':
         return Colors.purple;
-      case "completed":
+      case 'completed':
         return Colors.green;
-      case "cancelled":
+      case 'cancelled':
         return Colors.red;
       default:
         return Colors.grey;
@@ -1002,9 +999,9 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
             children: [
               GestureDetector(
                 onTap: () => showPayoutDialog(context, title, date, amount,
-                    userId!, widget.username ?? "", controller),
+                    userId!, widget.username ?? '', controller),
                 child: const Text(
-                  "View Payout",
+                  'View Payout',
                   style: TextStyle(
                       color: Colors.blue,
                       fontWeight: FontWeight.bold,
@@ -1013,7 +1010,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
               ),
               GestureDetector(
                 onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Downloading Payout..."))),
+                    const SnackBar(content: Text('Downloading Payout...'))),
                 child: const Icon(Icons.download, color: Colors.black54),
               ),
             ],
@@ -1033,10 +1030,10 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Total Payout",
+              const Text('Total Payout',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
-              Text("Rs. $totalPayout/-",
+              Text('Rs. $totalPayout/-',
                   style: const TextStyle(
                       fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
@@ -1050,10 +1047,10 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                         selectedDate,
                         'Rs. $totalPayout/-',
                         userId!,
-                        widget.username ?? "",
+                        widget.username ?? '',
                         controller),
                     child: const Text(
-                      "View Payout",
+                      'View Payout',
                       style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
@@ -1062,7 +1059,7 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                   ),
                   GestureDetector(
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Downloading Payout..."))),
+                        const SnackBar(content: Text('Downloading Payout...'))),
                     child: const Icon(Icons.download, color: Colors.black54),
                   ),
                 ],

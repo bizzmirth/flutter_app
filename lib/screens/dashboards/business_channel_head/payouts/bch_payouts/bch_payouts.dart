@@ -12,14 +12,14 @@ class BCHPayoutsPage extends StatefulWidget {
 }
 
 class _BCHPayoutsPageState extends State<BCHPayoutsPage> {
-  String selectedDate = "Select month, year";
+  String selectedDate = 'Select month, year';
   int _rowsPerPage = 5; // Default rows per page
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
 
   Future<void> _selectDate(BuildContext context) async {
-    DateTime? picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
@@ -27,7 +27,7 @@ class _BCHPayoutsPageState extends State<BCHPayoutsPage> {
     );
     if (picked != null) {
       setState(() {
-        selectedDate = DateFormat("MMMM, yyyy").format(picked);
+        selectedDate = DateFormat('MMMM, yyyy').format(picked);
       });
     }
   }
@@ -50,47 +50,47 @@ class _BCHPayoutsPageState extends State<BCHPayoutsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Divider(thickness: 1, color: Colors.black26),
-                Center(
+                const Divider(thickness: 1, color: Colors.black26),
+                const Center(
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Text(
-                      "Payouts:",
+                      'Payouts:',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-                Divider(thickness: 1, color: Colors.black26),
+                const Divider(thickness: 1, color: Colors.black26),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                        child: payoutCard("Previous Payout", "January, 2025",
-                            "Rs. 0/-", "Paid", Colors.green.shade100)),
+                        child: payoutCard('Previous Payout', 'January, 2025',
+                            'Rs. 0/-', 'Paid', Colors.green.shade100)),
                     const SizedBox(width: 16),
                     Expanded(
-                        child: payoutCard("Next Payout", "February, 2025",
-                            "Rs. 0/-", "Pending", Colors.orange.shade100)),
+                        child: payoutCard('Next Payout', 'February, 2025',
+                            'Rs. 0/-', 'Pending', Colors.orange.shade100)),
                   ],
                 ),
                 const SizedBox(height: 16),
                 totalPayoutCard(),
                 const SizedBox(height: 50),
-                Divider(thickness: 1, color: Colors.black26),
-                Center(
+                const Divider(thickness: 1, color: Colors.black26),
+                const Center(
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Text(
-                      "All Payouts:",
+                      'All Payouts:',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-                Divider(thickness: 1, color: Colors.black26),
-                FilterBar2(),
+                const Divider(thickness: 1, color: Colors.black26),
+                const FilterBar2(),
                 Card(
                   elevation: 5,
                   shape: RoundedRectangleBorder(
@@ -103,18 +103,18 @@ class _BCHPayoutsPageState extends State<BCHPayoutsPage> {
                     child: PaginatedDataTable(
                       columnSpacing: 50,
                       dataRowMinHeight: 40,
-                      columns: [
-                        DataColumn(label: Text("Date")),
-                        DataColumn(label: Text("Payout Details")),
-                        DataColumn(label: Text("Amount")),
-                        DataColumn(label: Text("TDS")),
-                        DataColumn(label: Text("Total Payable")),
-                        DataColumn(label: Text("Remarks")),
+                      columns: const [
+                        DataColumn(label: Text('Date')),
+                        DataColumn(label: Text('Payout Details')),
+                        DataColumn(label: Text('Amount')),
+                        DataColumn(label: Text('TDS')),
+                        DataColumn(label: Text('Total Payable')),
+                        DataColumn(label: Text('Remarks')),
                       ],
                       source:
                           MyBMProductionPayoutDataSource(bMrecruitmentpayout),
                       rowsPerPage: _rowsPerPage,
-                      availableRowsPerPage: [5, 10, 15, 20, 25],
+                      availableRowsPerPage: const [5, 10, 15, 20, 25],
                       onRowsPerPageChanged: (value) {
                         if (value != null) {
                           setState(() {
@@ -168,10 +168,10 @@ class _BCHPayoutsPageState extends State<BCHPayoutsPage> {
             children: [
               GestureDetector(
                 onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("View Payout Clicked!")),
+                  const SnackBar(content: Text('View Payout Clicked!')),
                 ),
                 child: const Text(
-                  "View Payout",
+                  'View Payout',
                   style: TextStyle(
                       color: Colors.blue,
                       fontWeight: FontWeight.bold,
@@ -180,7 +180,7 @@ class _BCHPayoutsPageState extends State<BCHPayoutsPage> {
               ),
               GestureDetector(
                 onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Downloading Payout...")),
+                  const SnackBar(content: Text('Downloading Payout...')),
                 ),
                 child: const Icon(Icons.download, color: Colors.black54),
               ),
@@ -200,10 +200,10 @@ class _BCHPayoutsPageState extends State<BCHPayoutsPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Total Payout",
+              const Text('Total Payout',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
-              const Text("Rs. 0/-",
+              const Text('Rs. 0/-',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Row(
@@ -211,10 +211,10 @@ class _BCHPayoutsPageState extends State<BCHPayoutsPage> {
                 children: [
                   GestureDetector(
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("View Payout Clicked!")),
+                      const SnackBar(content: Text('View Payout Clicked!')),
                     ),
                     child: const Text(
-                      "View Payout",
+                      'View Payout',
                       style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
@@ -223,7 +223,7 @@ class _BCHPayoutsPageState extends State<BCHPayoutsPage> {
                   ),
                   GestureDetector(
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Downloading Payout...")),
+                      const SnackBar(content: Text('Downloading Payout...')),
                     ),
                     child: const Icon(Icons.download, color: Colors.black54),
                   ),

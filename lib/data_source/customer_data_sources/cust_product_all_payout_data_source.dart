@@ -27,20 +27,20 @@ class CustProductAllPayoutDataSource extends DataTableSource {
           ),
         ),
 
-        DataCell(Text("₹${payout.amount}")),
+        DataCell(Text('₹${payout.amount}')),
 
-        DataCell(Text(payout.tds == "NA" ? "N/A" : "₹${payout.tds}")),
-        DataCell(Text("₹${payout.totalPayable}")),
+        DataCell(Text(payout.tds == 'NA' ? 'N/A' : '₹${payout.tds}')),
+        DataCell(Text('₹${payout.totalPayable}')),
         DataCell(
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: _getStatusColor(payout.status),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               payout.status,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
@@ -54,17 +54,17 @@ class CustProductAllPayoutDataSource extends DataTableSource {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case "credited":
+      case 'credited':
         return Colors.green;
-      case "pending":
+      case 'pending':
         return Colors.orange;
-      case "approved":
+      case 'approved':
         return Colors.blue;
-      case "processing":
+      case 'processing':
         return Colors.purple;
-      case "completed":
+      case 'completed':
         return Colors.green;
-      case "cancelled":
+      case 'cancelled':
         return Colors.red;
       default:
         return Colors.grey;

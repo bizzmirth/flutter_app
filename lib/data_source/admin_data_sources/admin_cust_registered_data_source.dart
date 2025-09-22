@@ -14,19 +14,19 @@ class MyAdminCustRegDataSource extends DataTableSource {
     final customer = data[index];
 
     String getStatusText(dynamic status) {
-      if (status == null) return "Unknown";
+      if (status == null) return 'Unknown';
 
-      String statusStr = status.toString();
+      final String statusStr = status.toString();
 
       switch (statusStr) {
         case '1':
-          return "Completed";
+          return 'Completed';
         case '2':
-          return "Pending";
+          return 'Pending';
         case '0':
-          return "Cancelled";
+          return 'Cancelled';
         default:
-          return "Unknown";
+          return 'Unknown';
       }
     }
 
@@ -44,7 +44,7 @@ class MyAdminCustRegDataSource extends DataTableSource {
     }
 
     String extractPathSegment(String fullPath, String folderPrefix) {
-      int index = fullPath.lastIndexOf(folderPrefix);
+      final int index = fullPath.lastIndexOf(folderPrefix);
       if (index != -1) {
         return fullPath.substring(index);
       }
@@ -57,12 +57,12 @@ class MyAdminCustRegDataSource extends DataTableSource {
           child: Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
             ),
             clipBehavior: Clip.antiAlias,
             child: Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -74,16 +74,16 @@ class MyAdminCustRegDataSource extends DataTableSource {
         imageUrl = profilePicture;
       } else {
         final newpath = extractPathSegment(profilePicture, 'profile_pic/');
-        imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+        imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
       }
 
-      Logger.success("Final image URL: $imageUrl");
+      Logger.success('Final image URL: $imageUrl');
 
       return Center(
         child: Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
           clipBehavior: Clip.antiAlias,
@@ -93,7 +93,7 @@ class MyAdminCustRegDataSource extends DataTableSource {
             errorBuilder: (context, error, stackTrace) {
               // Logger.error("Failed to load image: $error");S
               return Image.asset(
-                "assets/default_profile.png",
+                'assets/default_profile.png',
                 fit: BoxFit.cover,
               );
             },
@@ -117,21 +117,21 @@ class MyAdminCustRegDataSource extends DataTableSource {
           ),
         ),
         DataCell(Text(customer.caCustomerId.toString())),
-        DataCell(Text(customer.name ?? "N/A")),
-        DataCell(Text(customer.taReferenceNo ?? "N/A")),
-        DataCell(Text(customer.taReferenceName ?? "N/A")),
-        DataCell(Text(customer.customerType ?? "N/A")),
-        DataCell(Text(customer.dob ?? "N/A")),
+        DataCell(Text(customer.name ?? 'N/A')),
+        DataCell(Text(customer.taReferenceNo ?? 'N/A')),
+        DataCell(Text(customer.taReferenceName ?? 'N/A')),
+        DataCell(Text(customer.customerType ?? 'N/A')),
+        DataCell(Text(customer.dob ?? 'N/A')),
         DataCell(
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: statusColor,
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               statusText,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -146,20 +146,20 @@ class MyAdminCustRegDataSource extends DataTableSource {
       onSelected: (value) {
         // Handle menu actions
       },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: "view",
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 'view',
           child: ListTile(
             leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text("View"),
+            title: Text('View'),
           ),
         ),
         PopupMenuItem(
-          value: "edit",
+          value: 'edit',
           child: ListTile(
             leading:
-                Icon(Icons.edit, color: const Color.fromARGB(255, 0, 105, 190)),
-            title: Text("Edit"),
+                const Icon(Icons.edit, color: Color.fromARGB(255, 0, 105, 190)),
+            title: const Text('Edit'),
             onTap: () {
               Logger.success(customer.name!);
               Navigator.pop(context);
@@ -173,23 +173,23 @@ class MyAdminCustRegDataSource extends DataTableSource {
             },
           ),
         ),
-        PopupMenuItem(
-          value: "delete",
+        const PopupMenuItem(
+          value: 'delete',
           child: ListTile(
             leading: Icon(Icons.delete, color: Colors.red),
-            title: Text("Delete"),
+            title: Text('Delete'),
           ),
         ),
-        PopupMenuItem(
-          value: "unregister",
+        const PopupMenuItem(
+          value: 'unregister',
           child: ListTile(
             leading: Icon(Icons.app_registration,
-                color: const Color.fromARGB(255, 0, 238, 127)),
-            title: Text("Un-Register"),
+                color: Color.fromARGB(255, 0, 238, 127)),
+            title: Text('Un-Register'),
           ),
         ),
       ],
-      icon: Icon(Icons.more_vert, color: Colors.black54),
+      icon: const Icon(Icons.more_vert, color: Colors.black54),
     );
   }
 

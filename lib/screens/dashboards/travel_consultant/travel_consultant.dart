@@ -90,20 +90,20 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
           children: [
             Container(
               width: double.infinity,
-              color: Color.fromARGB(255, 81, 131, 246),
+              color: const Color.fromARGB(255, 81, 131, 246),
               padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       backgroundImage: AssetImage('assets/user_image.jpg'),
                       radius: 30,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
-                      "Welcome, Travel Consultant!",
+                      'Welcome, Travel Consultant!',
                       style: GoogleFonts.roboto(
                         fontSize: 18,
                         color: Colors.white,
@@ -111,7 +111,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                       ),
                     ),
                     Text(
-                      "Manage everything efficiently",
+                      'Manage everything efficiently',
                       style: GoogleFonts.roboto(
                         fontSize: 14,
                         color: Colors.white70,
@@ -125,85 +125,87 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   ListTile(
-                    leading: Icon(Icons.dashboard),
-                    title: Text('Dashboard'),
+                    leading: const Icon(Icons.dashboard),
+                    title: const Text('Dashboard'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => TCDashboardPage()),
+                            builder: (context) => const TCDashboardPage()),
                       );
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.home),
-                    title: Text('Home Page'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.attach_money),
-                    title: Text('Markup'),
+                    leading: const Icon(Icons.home),
+                    title: const Text('Home Page'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ProductMarkupPage()),
+                            builder: (context) => const HomePage()),
                       );
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.people),
-                    title: Text('Customer'),
+                    leading: const Icon(Icons.attach_money),
+                    title: const Text('Markup'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ViewCustomersPage1()),
+                            builder: (context) => const ProductMarkupPage()),
                       );
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.wallet),
-                    title: Text('TopUp Wallet'),
+                    leading: const Icon(Icons.people),
+                    title: const Text('Customer'),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => TopUpWalletPage(
-                                  title: "Top Up Wallet",
+                            builder: (context) => const ViewCustomersPage1()),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.wallet),
+                    title: const Text('TopUp Wallet'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const TopUpWalletPage(
+                                  title: 'Top Up Wallet',
                                 )),
                       );
                     },
                   ),
                   //ProductPayoutsPage
                   ExpansionTile(
-                    title: const Text("Payouts"),
+                    title: const Text('Payouts'),
                     leading: const Icon(Icons.payment),
                     children: [
-                      _drawerItem(context, Icons.payment, "Product Payouts",
-                          TCProductPayoutsPage(),
+                      _drawerItem(context, Icons.payment, 'Product Payouts',
+                          const TCProductPayoutsPage(),
                           padding: true),
                       _drawerItem(context, Icons.inventory_2,
-                          "CU Membership Payout", TcCuMembershipPayouts(),
+                          'CU Membership Payout', const TcCuMembershipPayouts(),
                           padding: true),
                     ],
                   ),
                   ListTile(
-                    leading: Icon(
+                    leading: const Icon(
                       Icons.person,
                     ),
-                    title: Text("Profile Page"),
+                    title: const Text('Profile Page'),
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ProfilePage()),
+                        MaterialPageRoute(
+                            builder: (context) => const ProfilePage()),
                       );
                     },
                   ),
@@ -215,16 +217,17 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                         ? const EdgeInsets.only(left: 16.0)
                         : EdgeInsets.zero,
                     child: ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.power_settings_new_rounded,
                         color: Colors.red,
                       ),
-                      title: Text("Log Out"),
+                      title: const Text('Log Out'),
                       onTap: () {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
-                          (Route<dynamic> route) => false,
+                          MaterialPageRoute(
+                              builder: (context) => const HomePage()),
+                          (route) => false,
                         );
                       },
                     ),
@@ -236,23 +239,23 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // _buildHeader(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             CustomAnimatedSummaryCards(
               cardData: [
                 SummaryCardData(
                     title: 'CUSTOMER REGISTERED',
                     value: '3',
-                    thisMonthValue: "0",
+                    thisMonthValue: '0',
                     icon: Icons.people),
                 SummaryCardData(
                     title: 'TOTAL BOOKING',
                     value: '9',
-                    thisMonthValue: "0",
+                    thisMonthValue: '0',
                     icon: Icons.calendar_today),
                 SummaryCardData(
                     title: 'Topup Wallet',
@@ -268,8 +271,8 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
             //   message: "Keep going! You're doing great!",
             //   progressColor: Colors.orange,
             // ),
-            SizedBox(height: 20),
-            ReferralTrackerCard(
+            const SizedBox(height: 20),
+            const ReferralTrackerCard(
               totalSteps: 10,
               currentStep: 3,
               progressColor: Colors.green,
@@ -280,12 +283,12 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
             //   currentStep: 6,
             //   progressColor: Colors.purpleAccent,
             // ),
-            SizedBox(height: 20),
-            ImprovedLineChart(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            const ImprovedLineChart(),
+            const SizedBox(height: 20),
             // _buildTopPerformersSection(),
-            Divider(thickness: 1, color: Colors.black26),
-            Center(
+            const Divider(thickness: 1, color: Colors.black26),
+            const Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text(
@@ -294,8 +297,8 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                 ),
               ),
             ),
-            Divider(thickness: 1, color: Colors.black26),
-            FilterBar(),
+            const Divider(thickness: 1, color: Colors.black26),
+            const FilterBar(),
             isTablet
                 ? Card(
                     elevation: 5,
@@ -309,16 +312,16 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                       child: PaginatedDataTable(
                         columnSpacing: 60,
                         dataRowMinHeight: 40,
-                        columns: [
-                          DataColumn(label: Text("ID")),
-                          DataColumn(label: Text("Full Name")),
-                          DataColumn(label: Text("Date Reg.")),
-                          DataColumn(label: Text("Total CU Ref")),
-                          DataColumn(label: Text("Active/Inactive")),
+                        columns: const [
+                          DataColumn(label: Text('ID')),
+                          DataColumn(label: Text('Full Name')),
+                          DataColumn(label: Text('Date Reg.')),
+                          DataColumn(label: Text('Total CU Ref')),
+                          DataColumn(label: Text('Active/Inactive')),
                         ],
                         source: TcTopCustomersDataSource(data: customersTA),
                         rowsPerPage: _rowsPerPage,
-                        availableRowsPerPage: [5, 10, 15, 20, 25],
+                        availableRowsPerPage: const [5, 10, 15, 20, 25],
                         onRowsPerPageChanged: (value) {
                           if (value != null) {
                             setState(() {
@@ -332,10 +335,10 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                   )
                 : _buildTopCustomerList(),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // _buildTopPerformersSection1(),
-            Divider(thickness: 1, color: Colors.black26),
-            Center(
+            const Divider(thickness: 1, color: Colors.black26),
+            const Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text(
@@ -344,8 +347,8 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                 ),
               ),
             ),
-            Divider(thickness: 1, color: Colors.black26),
-            FilterBar(),
+            const Divider(thickness: 1, color: Colors.black26),
+            const FilterBar(),
             isTablet
                 ? Card(
                     elevation: 5,
@@ -359,19 +362,19 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                       child: PaginatedDataTable(
                         columnSpacing: 60,
                         dataRowMinHeight: 40,
-                        columns: [
-                          DataColumn(label: Text("Booking ID")),
-                          DataColumn(label: Text("Customer Name")),
-                          DataColumn(label: Text("Package Name")),
-                          DataColumn(label: Text("Amount")),
-                          DataColumn(label: Text("Booking Date")),
-                          DataColumn(label: Text("Travel Date")),
+                        columns: const [
+                          DataColumn(label: Text('Booking ID')),
+                          DataColumn(label: Text('Customer Name')),
+                          DataColumn(label: Text('Package Name')),
+                          DataColumn(label: Text('Amount')),
+                          DataColumn(label: Text('Booking Date')),
+                          DataColumn(label: Text('Travel Date')),
                         ],
                         source: TcCurrentBookingDataSource(
                           data: tcCurrentBookingDummyData,
                         ),
                         rowsPerPage: _rowsPerPage,
-                        availableRowsPerPage: [5, 10, 15, 20, 25],
+                        availableRowsPerPage: const [5, 10, 15, 20, 25],
                         onRowsPerPageChanged: (value) {
                           if (value != null) {
                             setState(() {
@@ -405,46 +408,46 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
     return ListView.builder(
         itemCount: customersTA.length,
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           final topCus = customersTA[index];
           return Card(
             elevation: 5,
-            margin: EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: 12),
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    topCus['name'] ?? "N/A",
-                    style: TextStyle(
+                    topCus['name'] ?? 'N/A',
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     "ID: ${topCus['id']}",
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     "Date Reg.: ${topCus['dateReg'] ?? "N/A"}",
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     "Total CU Ref: ${topCus['totalCURef'].toString()}",
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
-                      Text("Status: "),
+                      const Text('Status: '),
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: getStatusColor(topCus['status'])
                               .withValues(alpha: 0.1),
@@ -452,7 +455,6 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                           border: Border.all(
                             color: getStatusColor(topCus['status'])
                                 .withValues(alpha: 0.3),
-                            width: 1,
                           ),
                         ),
                         child: Text(
@@ -476,52 +478,52 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
   Widget _buildCurrentBookingList() {
     return ListView.builder(
       physics: tcCurrentBookingDummyData.length > 5
-          ? AlwaysScrollableScrollPhysics()
-          : NeverScrollableScrollPhysics(),
+          ? const AlwaysScrollableScrollPhysics()
+          : const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       itemCount: tcCurrentBookingDummyData.length,
       itemBuilder: (context, index) {
         final booking = tcCurrentBookingDummyData[index];
         return Card(
           elevation: 5,
-          margin: EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(bottom: 12),
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  booking['customerName'] ?? "N/A",
-                  style: TextStyle(
+                  booking['customerName'] ?? 'N/A',
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   "ID: ${booking['bookingId']}",
-                  style: TextStyle(fontSize: 14),
+                  style: const TextStyle(fontSize: 14),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   "Ref. ID: ${booking['packageName'] ?? "N/A"}",
-                  style: TextStyle(fontSize: 14),
+                  style: const TextStyle(fontSize: 14),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   "Ref. Name: ${booking['amount'].toString()}",
-                  style: TextStyle(fontSize: 14),
+                  style: const TextStyle(fontSize: 14),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   "Joining Date: ${booking['bookingDate'] ?? "N/A"}",
-                  style: TextStyle(fontSize: 14),
+                  style: const TextStyle(fontSize: 14),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   "Travel Date: ${booking['travelDate'] ?? "N/A"}",
-                  style: TextStyle(fontSize: 14),
+                  style: const TextStyle(fontSize: 14),
                 ),
               ],
             ),

@@ -118,15 +118,15 @@ class ToastHelper {
   }
 
   static void showContactToast({
-    String phoneNumber = "+91 9876543210",
+    String phoneNumber = '+91 9876543210',
     Alignment alignment = Alignment.bottomCenter,
     Duration autoCloseDuration = const Duration(seconds: 5),
     ToastificationStyle style = ToastificationStyle.flatColored,
   }) {
     showToast(
       type: ToastType.info,
-      title: "Kindly Contact The Company For More Details",
-      description: "Phone: $phoneNumber",
+      title: 'Kindly Contact The Company For More Details',
+      description: 'Phone: $phoneNumber',
       alignment: alignment,
       autoCloseDuration: autoCloseDuration,
       style: style,

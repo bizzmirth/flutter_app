@@ -13,8 +13,8 @@ class PremiumSelectCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.description,
-    this.firstButtonText = "Premium Select Deals",
-    this.secondButtonText = "View Your Packages",
+    this.firstButtonText = 'Premium Select Deals',
+    this.secondButtonText = 'View Your Packages',
   });
 
   @override
@@ -68,12 +68,11 @@ class PremiumSelectCard extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                margin: EdgeInsets.all(16),
+                margin: const EdgeInsets.all(16),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 20),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Lottie animation icon
                       Transform.scale(
@@ -226,7 +225,6 @@ class PremiumSelectCard extends StatelessWidget {
                       horizontal: isSmallPhone ? 12.0 : 16.0,
                       vertical: isSmallPhone ? 16 : 20),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Header row with Lottie and title
                       Row(
@@ -245,7 +243,7 @@ class PremiumSelectCard extends StatelessWidget {
                           Expanded(
                             child: Center(
                               child: Text(
-                                "$title            ",
+                                '$title            ',
                                 style: GoogleFonts.poppins(
                                   fontSize: isSmallPhone ? 16 : 18,
                                   fontWeight: FontWeight.bold,

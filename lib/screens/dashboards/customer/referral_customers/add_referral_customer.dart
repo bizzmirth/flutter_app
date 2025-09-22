@@ -35,17 +35,17 @@ class AddReferralCustomer extends StatefulWidget {
 
 class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
   Map<String, dynamic> selectedFiles = {
-    "Profile Picture": null,
-    "Aadhar Card": null,
-    "Pan Card": null,
-    "Bank Passbook": null,
-    "Voting Card": null,
-    "Payment Proof": null,
+    'Profile Picture': null,
+    'Aadhar Card': null,
+    'Pan Card': null,
+    'Bank Passbook': null,
+    'Voting Card': null,
+    'Payment Proof': null,
   };
-  String _selectedPayment = "Free";
+  String _selectedPayment = 'Free';
 
-  String _selectedPaymentMode = "Cash";
-  var savedImagePath = "";
+  String _selectedPaymentMode = 'Cash';
+  var savedImagePath = '';
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _customerRefNameController =
@@ -71,15 +71,15 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
   final TextEditingController _transactionIDController =
       TextEditingController();
 
-  String _selectedGender = "---- Select Gender ----";
-  String _selectedCountry = "---- Select Country ----";
-  String _selectedState = "---- Select State ----";
-  String _selectedCity = "---- Select City ----";
+  String _selectedGender = '---- Select Gender ----';
+  String _selectedCountry = '---- Select Country ----';
+  String _selectedState = '---- Select State ----';
+  String _selectedCity = '---- Select City ----';
 
-  String chequeNo = "";
-  String chequeDate = "";
-  String bankName = "";
-  String transactionId = "";
+  String chequeNo = '';
+  String chequeDate = '';
+  String bankName = '';
+  String transactionId = '';
   Timer? _debounce;
 
   final GlobalKey<FormFieldState> _customerRefrenceIdKey =
@@ -134,20 +134,20 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
-      List<dynamic> countries = await controller.apiGetCountry();
+      final List<dynamic> countries = await controller.apiGetCountry();
 
       _countries = countries;
 
-      List<String> countryNames = countries
+      final List<String> countryNames = countries
           .map<String>(
-              (country) => country['country_name'] ?? "No Country Available")
+              (country) => country['country_name'] ?? 'No Country Available')
           .toList();
       setState(() {
         _countryNames = countryNames;
-        Logger.success("Countries: $_countryNames");
+        Logger.success('Countries: $_countryNames');
       });
     } catch (e, s) {
-      Logger.error("Error fetching countries, Error: $e, Stacktrace: $s");
+      Logger.error('Error fetching countries, Error: $e, Stacktrace: $s');
     }
   }
 
@@ -156,19 +156,20 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
 
-      List<dynamic> states = await controller.apiGetStates(selectedCountryId);
+      final List<dynamic> states =
+          await controller.apiGetStates(selectedCountryId);
       _states = states;
 
-      List<String> stateNames = states
-          .map<String>((state) => state['state_name'] ?? "No State Available")
+      final List<String> stateNames = states
+          .map<String>((state) => state['state_name'] ?? 'No State Available')
           .toList();
 
       setState(() {
         _stateNames = stateNames;
       });
-      Logger.success("Fetched states from the api $states");
+      Logger.success('Fetched states from the api $states');
     } catch (e, s) {
-      Logger.success("Error fetching states, Error: $e, Stacktrace $s");
+      Logger.success('Error fetching states, Error: $e, Stacktrace $s');
     }
   }
 
@@ -176,19 +177,19 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
-      List<dynamic> cities = await controller.apiGetCity(selectedStateId);
+      final List<dynamic> cities = await controller.apiGetCity(selectedStateId);
       _cities = cities;
 
-      List<String> citiesNames = cities
-          .map<String>((city) => city['city_name'] ?? "No cities available")
+      final List<String> citiesNames = cities
+          .map<String>((city) => city['city_name'] ?? 'No cities available')
           .toList();
 
       setState(() {
         _cityNames = citiesNames;
       });
-      Logger.success("Fetched cities from the api $cities");
+      Logger.success('Fetched cities from the api $cities');
     } catch (e, s) {
-      Logger.error("Error fetching cities, Error: $e, StackTrace: $s");
+      Logger.error('Error fetching cities, Error: $e, StackTrace: $s');
     }
   }
 
@@ -200,9 +201,9 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       setState(() {
         _pincodeController.text = pincode;
       });
-      Logger.success("Pincode fetched from the $pincode");
+      Logger.success('Pincode fetched from the $pincode');
     } catch (e, s) {
-      Logger.error("Error fetching pincode, Error: $e, Stacktrace: $s");
+      Logger.error('Error fetching pincode, Error: $e, Stacktrace: $s');
     }
   }
 
@@ -221,14 +222,14 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       await customerController.getRegCustomerCount();
 
       if (!widget.isViewMode && !widget.isEditMode) {
-        _customerRefIdController.text = customerController.userCustomerId ?? "";
+        _customerRefIdController.text = customerController.userCustomerId ?? '';
         _customerRefNameController.text =
-            customerController.customerRefrenceName ?? "";
+            customerController.customerRefrenceName ?? '';
 
         _taRefrenceIdController.text =
-            customerController.userTaReferenceNo ?? "";
+            customerController.userTaReferenceNo ?? '';
         _taRefrenceNameController.text =
-            customerController.userTaRefrenceName ?? "";
+            customerController.userTaRefrenceName ?? '';
       }
     });
   }
@@ -241,14 +242,14 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
       final controller =
           Provider.of<CustomerController>(context, listen: false);
-      Map<String, String> documentPaths = {};
+      final Map<String, String> documentPaths = {};
       final String customerType;
       final String paidAmount;
 
       final formState = _formKey.currentState;
-      bool isFormValid = formState != null && formState.validate();
+      final bool isFormValid = formState != null && formState.validate();
 
-      bool areImagesValid = _validateImages();
+      final bool areImagesValid = _validateImages();
 
       if (!isFormValid || !areImagesValid) {
         if (!areImagesValid) {
@@ -260,81 +261,81 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         _scrollToFirstError();
         ToastHelper.showErrorToast(
             title:
-                "Please fill all the required fields and upload required documents");
+                'Please fill all the required fields and upload required documents');
         return;
       }
 
       selectedFiles.forEach((key, value) {
         if (value != null) {
-          String filePath = value.path;
+          final String filePath = value.path;
 
           switch (key) {
-            case "Profile Picture":
+            case 'Profile Picture':
               documentPaths['profilePicture'] = filePath;
               break;
-            case "Aadhar Card":
+            case 'Aadhar Card':
               documentPaths['adharCard'] = filePath;
               break;
-            case "Pan Card":
+            case 'Pan Card':
               documentPaths['panCard'] = filePath;
               break;
-            case "Bank Passbook":
+            case 'Bank Passbook':
               documentPaths['bankPassbook'] = filePath;
               break;
-            case "Voting Card":
+            case 'Voting Card':
               documentPaths['votingCard'] = filePath;
               break;
-            case "Payment Proof":
+            case 'Payment Proof':
               documentPaths['paymentProof'] = filePath;
           }
         }
       });
 
-      if (selectedFiles["Profile Picture"] != null) {
+      if (selectedFiles['Profile Picture'] != null) {
         await controller.uploadImage(
-            'profile_pic', selectedFiles["Profile Picture"]!.path);
+            'profile_pic', selectedFiles['Profile Picture']!.path);
       }
-      if (selectedFiles["Aadhar Card"] != null) {
+      if (selectedFiles['Aadhar Card'] != null) {
         await controller.uploadImage(
-            'aadhar_card', selectedFiles["Aadhar Card"]!.path);
+            'aadhar_card', selectedFiles['Aadhar Card']!.path);
       }
-      if (selectedFiles["Pan Card"] != null) {
+      if (selectedFiles['Pan Card'] != null) {
         await controller.uploadImage(
-            'pan_card', selectedFiles["Pan Card"]!.path);
+            'pan_card', selectedFiles['Pan Card']!.path);
       }
-      if (selectedFiles["Voting Card"] != null) {
+      if (selectedFiles['Voting Card'] != null) {
         await controller.uploadImage(
-            'voting_card', selectedFiles["Voting Card"]!.path);
+            'voting_card', selectedFiles['Voting Card']!.path);
       }
-      if (selectedFiles["Bank Passbook"] != null) {
+      if (selectedFiles['Bank Passbook'] != null) {
         await controller.uploadImage(
-            'passbook', selectedFiles["Bank Passbook"]!.path);
+            'passbook', selectedFiles['Bank Passbook']!.path);
       }
-      if (selectedFiles["Payment Proof"] != null) {
+      if (selectedFiles['Payment Proof'] != null) {
         await controller.uploadImage(
-            'payment_proof', selectedFiles["Payment Proof"]!.path);
+            'payment_proof', selectedFiles['Payment Proof']!.path);
       }
 
-      if (_selectedPaymentMode == "Cheque") {
+      if (_selectedPaymentMode == 'Cheque') {
         chequeNo = _chequeNoController.text;
         chequeDate = _chequeDateController.text;
         bankName = _bankNameController.text;
-      } else if (_selectedPaymentMode == "UPI/NEFT") {
+      } else if (_selectedPaymentMode == 'UPI/NEFT') {
         transactionId = _transactionIDController.text;
       }
 
-      if (_selectedPayment == "Free") {
-        customerType = "Free";
-        paidAmount = "Free";
-      } else if (_selectedPayment == "Prime: ₹ 10,000") {
-        customerType = "Prime";
-        paidAmount = "10,000";
-      } else if (_selectedPayment == "Premium: ₹ 30,000") {
-        customerType = "Premium";
-        paidAmount = "30,000";
+      if (_selectedPayment == 'Free') {
+        customerType = 'Free';
+        paidAmount = 'Free';
+      } else if (_selectedPayment == 'Prime: ₹ 10,000') {
+        customerType = 'Prime';
+        paidAmount = '10,000';
+      } else if (_selectedPayment == 'Premium: ₹ 30,000') {
+        customerType = 'Premium';
+        paidAmount = '30,000';
       } else {
-        customerType = "Premium Plus";
-        paidAmount = "35,000";
+        customerType = 'Premium Plus';
+        paidAmount = '35,000';
       }
       final newCustomer = PendingCustomer()
         ..taReferenceNo = _taRefrenceIdController.text
@@ -356,13 +357,13 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         ..pincode = _pincodeController.text
         ..address = _addressController.text
         ..profilePicture = documentPaths['profilePicture']
-        ..compChek = "2"
+        ..compChek = '2'
         ..adharCard = documentPaths['adharCard']
         ..panCard = documentPaths['panCard']
         ..bankPassbook = documentPaths['bankPassbook']
         ..votingCard = documentPaths['votingCard']
         ..paymentProof = documentPaths['paymentProof']
-        ..registerBy = "10"
+        ..registerBy = '10'
         ..registrant = _customerRefIdController.text
         ..paymentMode = _selectedPaymentMode
         ..chequeNo = chequeNo
@@ -376,28 +377,28 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       clearFormFields();
       MyNavigator.pop(true);
 
-      Logger.success("Adding customer: $newCustomer");
+      Logger.success('Adding customer: $newCustomer');
     } catch (e, s) {
-      Logger.error("Error submitting form: $e, Stacktrace: $s");
+      Logger.error('Error submitting form: $e, Stacktrace: $s');
     }
   }
 
   bool _validateImages() {
-    List<String> requiredImages = [
-      "Profile Picture",
-      "Aadhar Card",
-      "Pan Card",
-      "Bank Passbook",
-      "Voting Card"
+    final List<String> requiredImages = [
+      'Profile Picture',
+      'Aadhar Card',
+      'Pan Card',
+      'Bank Passbook',
+      'Voting Card'
     ];
 
-    if (_selectedPayment != "Free") {
-      requiredImages.add("Payment Proof");
+    if (_selectedPayment != 'Free') {
+      requiredImages.add('Payment Proof');
     }
 
     for (String imageType in requiredImages) {
       if (selectedFiles[imageType] == null) {
-        Logger.error("Missing required image: $imageType");
+        Logger.error('Missing required image: $imageType');
         return false;
       }
     }
@@ -409,7 +410,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     try {
       final controller =
           Provider.of<CustomerController>(context, listen: false);
-      Map<String, String> documentPaths = {};
+      final Map<String, String> documentPaths = {};
       final String customerType;
       final String paidAmount;
 
@@ -424,78 +425,78 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
           }
 
           switch (key) {
-            case "Profile Picture":
+            case 'Profile Picture':
               documentPaths['profilePicture'] = filePath;
               break;
-            case "Aadhar Card":
+            case 'Aadhar Card':
               documentPaths['adharCard'] = filePath;
               break;
-            case "Pan Card":
+            case 'Pan Card':
               documentPaths['panCard'] = filePath;
               break;
-            case "Bank Passbook":
+            case 'Bank Passbook':
               documentPaths['bankPassbook'] = filePath;
               break;
-            case "Voting Card":
+            case 'Voting Card':
               documentPaths['votingCard'] = filePath;
               break;
-            case "Payment Proof":
+            case 'Payment Proof':
               documentPaths['paymentProof'] = filePath;
           }
         }
       });
 
-      if (selectedFiles["Profile Picture"] != null &&
-          selectedFiles["Profile Picture"] is File) {
+      if (selectedFiles['Profile Picture'] != null &&
+          selectedFiles['Profile Picture'] is File) {
         await controller.uploadImage(
-            'profile_pic', selectedFiles["Profile Picture"]!.path);
+            'profile_pic', selectedFiles['Profile Picture']!.path);
       }
-      if (selectedFiles["Aadhar Card"] != null &&
-          selectedFiles["Aadhar Card"] is File) {
+      if (selectedFiles['Aadhar Card'] != null &&
+          selectedFiles['Aadhar Card'] is File) {
         await controller.uploadImage(
-            'aadhar_card', selectedFiles["Aadhar Card"]!.path);
+            'aadhar_card', selectedFiles['Aadhar Card']!.path);
       }
-      if (selectedFiles["Pan Card"] != null &&
-          selectedFiles["Pan Card"] is File) {
+      if (selectedFiles['Pan Card'] != null &&
+          selectedFiles['Pan Card'] is File) {
         await controller.uploadImage(
-            'pan_card', selectedFiles["Pan Card"]!.path);
+            'pan_card', selectedFiles['Pan Card']!.path);
       }
-      if (selectedFiles["Voting Card"] != null &&
-          selectedFiles["Voting Card"] is File) {
+      if (selectedFiles['Voting Card'] != null &&
+          selectedFiles['Voting Card'] is File) {
         await controller.uploadImage(
-            'voting_card', selectedFiles["Voting Card"]!.path);
+            'voting_card', selectedFiles['Voting Card']!.path);
       }
-      if (selectedFiles["Bank Passbook"] != null &&
-          selectedFiles["Bank Passbook"] is File) {
+      if (selectedFiles['Bank Passbook'] != null &&
+          selectedFiles['Bank Passbook'] is File) {
         await controller.uploadImage(
-            'passbook', selectedFiles["Bank Passbook"]!.path);
+            'passbook', selectedFiles['Bank Passbook']!.path);
       }
-      if (selectedFiles["Payment Proof"] != null &&
-          selectedFiles["Payment Proof"] is File) {
+      if (selectedFiles['Payment Proof'] != null &&
+          selectedFiles['Payment Proof'] is File) {
         await controller.uploadImage(
-            'payment_proof', selectedFiles["Payment Proof"]!.path);
+            'payment_proof', selectedFiles['Payment Proof']!.path);
       }
 
-      if (_selectedPaymentMode == "Cheque") {
+      if (_selectedPaymentMode == 'Cheque') {
         chequeNo = _chequeNoController.text;
         chequeDate = _chequeDateController.text;
         bankName = _bankNameController.text;
-      } else if (_selectedPaymentMode == "UPI/NEFT") {
+      } else if (_selectedPaymentMode == 'UPI/NEFT') {
         transactionId = _transactionIDController.text;
       }
 
-      if (_selectedPayment == "Free") {
-        customerType = "Free";
-        paidAmount = "Free";
-      } else if (_selectedPayment == "Prime: ₹ 10,000") {
-        customerType = "Prime";
-        paidAmount = "10,000";
-      } else if (_selectedPayment == "Premium: ₹ 30,000") {
-        customerType = "Premium";
-        paidAmount = "30,000";
+      if (_selectedPayment == 'Free') {
+        customerType = 'Free';
+        paidAmount = 'Free';
+      } else if (_selectedPayment == 'Prime: ₹ 10,000') {
+        customerType = 'Prime';
+        paidAmount = '10,000';
+      } else if (_selectedPayment == 'Premium: ₹ 30,000') {
+        customerType = 'Premium';
+        paidAmount = '30,000';
       } else {
-        customerType = "Premium Plus";
-        paidAmount = "35,000";
+        customerType = 'Premium Plus';
+        paidAmount = '35,000';
       }
 
       final int id = widget.pendingCustomer!.id!;
@@ -520,13 +521,13 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         ..pincode = _pincodeController.text
         ..address = _addressController.text
         ..profilePicture = documentPaths['profilePicture']
-        ..compChek = "2"
+        ..compChek = '2'
         ..adharCard = documentPaths['adharCard']
         ..panCard = documentPaths['panCard']
         ..bankPassbook = documentPaths['bankPassbook']
         ..votingCard = documentPaths['votingCard']
         ..paymentProof = documentPaths['paymentProof']
-        ..registerBy = "10"
+        ..registerBy = '10'
         ..registrant = _customerRefIdController.text
         ..paymentMode = _selectedPaymentMode
         ..chequeNo = chequeNo
@@ -539,7 +540,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       await controller.apiUpdateCustomer(updatedCustomer);
       // Navigator.pop(context);
     } catch (e, s) {
-      Logger.error("Error updating form: $e, Stacktrace: $s");
+      Logger.error('Error updating form: $e, Stacktrace: $s');
     }
   }
 
@@ -547,13 +548,13 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     try {
       final controller =
           Provider.of<CustomerController>(context, listen: false);
-      Map<String, String> documentPaths = {};
+      final Map<String, String> documentPaths = {};
       final String customerType;
       final String paidAmount;
 
       // Helper function to extract relative path from full URL or return as-is
       String getRelativePath(dynamic value) {
-        if (value == null) return "";
+        if (value == null) return '';
 
         String filePath;
         if (value is File) {
@@ -563,9 +564,9 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         }
 
         // If it's a full URL from existing data, extract just the filename part
-        if (filePath.startsWith("https://testca.uniqbizz.com/uploading/")) {
+        if (filePath.startsWith('https://testca.uniqbizz.com/uploading/')) {
           // Extract everything after "/uploading/"
-          return filePath.split("/uploading/").last;
+          return filePath.split('/uploading/').last;
         }
 
         return filePath;
@@ -573,82 +574,82 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
       selectedFiles.forEach((key, value) {
         if (value != null) {
-          String relativePath = getRelativePath(value);
+          final String relativePath = getRelativePath(value);
 
           switch (key) {
-            case "Profile Picture":
+            case 'Profile Picture':
               documentPaths['profilePicture'] = relativePath;
               break;
-            case "Aadhar Card":
+            case 'Aadhar Card':
               documentPaths['adharCard'] = relativePath;
               break;
-            case "Pan Card":
+            case 'Pan Card':
               documentPaths['panCard'] = relativePath;
               break;
-            case "Bank Passbook":
+            case 'Bank Passbook':
               documentPaths['bankPassbook'] = relativePath;
               break;
-            case "Voting Card":
+            case 'Voting Card':
               documentPaths['votingCard'] = relativePath;
               break;
-            case "Payment Proof":
+            case 'Payment Proof':
               documentPaths['paymentProof'] = relativePath;
           }
         }
       });
 
       // Only upload new files (File objects), not existing URLs
-      if (selectedFiles["Profile Picture"] != null &&
-          selectedFiles["Profile Picture"] is File) {
+      if (selectedFiles['Profile Picture'] != null &&
+          selectedFiles['Profile Picture'] is File) {
         await controller.uploadImage(
-            'profile_pic', selectedFiles["Profile Picture"]!.path);
+            'profile_pic', selectedFiles['Profile Picture']!.path);
       }
-      if (selectedFiles["Aadhar Card"] != null &&
-          selectedFiles["Aadhar Card"] is File) {
+      if (selectedFiles['Aadhar Card'] != null &&
+          selectedFiles['Aadhar Card'] is File) {
         await controller.uploadImage(
-            'aadhar_card', selectedFiles["Aadhar Card"]!.path);
+            'aadhar_card', selectedFiles['Aadhar Card']!.path);
       }
-      if (selectedFiles["Pan Card"] != null &&
-          selectedFiles["Pan Card"] is File) {
+      if (selectedFiles['Pan Card'] != null &&
+          selectedFiles['Pan Card'] is File) {
         await controller.uploadImage(
-            'pan_card', selectedFiles["Pan Card"]!.path);
+            'pan_card', selectedFiles['Pan Card']!.path);
       }
-      if (selectedFiles["Voting Card"] != null &&
-          selectedFiles["Voting Card"] is File) {
+      if (selectedFiles['Voting Card'] != null &&
+          selectedFiles['Voting Card'] is File) {
         await controller.uploadImage(
-            'voting_card', selectedFiles["Voting Card"]!.path);
+            'voting_card', selectedFiles['Voting Card']!.path);
       }
-      if (selectedFiles["Bank Passbook"] != null &&
-          selectedFiles["Bank Passbook"] is File) {
+      if (selectedFiles['Bank Passbook'] != null &&
+          selectedFiles['Bank Passbook'] is File) {
         await controller.uploadImage(
-            'passbook', selectedFiles["Bank Passbook"]!.path);
+            'passbook', selectedFiles['Bank Passbook']!.path);
       }
-      if (selectedFiles["Payment Proof"] != null &&
-          selectedFiles["Payment Proof"] is File) {
+      if (selectedFiles['Payment Proof'] != null &&
+          selectedFiles['Payment Proof'] is File) {
         await controller.uploadImage(
-            'payment_proof', selectedFiles["Payment Proof"]!.path);
+            'payment_proof', selectedFiles['Payment Proof']!.path);
       }
 
-      if (_selectedPaymentMode == "Cheque") {
+      if (_selectedPaymentMode == 'Cheque') {
         chequeNo = _chequeNoController.text;
         chequeDate = _chequeDateController.text;
         bankName = _bankNameController.text;
-      } else if (_selectedPaymentMode == "UPI/NEFT") {
+      } else if (_selectedPaymentMode == 'UPI/NEFT') {
         transactionId = _transactionIDController.text;
       }
 
-      if (_selectedPayment == "Free") {
-        customerType = "Free";
-        paidAmount = "Free";
-      } else if (_selectedPayment == "Prime: ₹ 10,000") {
-        customerType = "Prime";
-        paidAmount = "10,000";
-      } else if (_selectedPayment == "Premium: ₹ 30,000") {
-        customerType = "Premium";
-        paidAmount = "30,000";
+      if (_selectedPayment == 'Free') {
+        customerType = 'Free';
+        paidAmount = 'Free';
+      } else if (_selectedPayment == 'Prime: ₹ 10,000') {
+        customerType = 'Prime';
+        paidAmount = '10,000';
+      } else if (_selectedPayment == 'Premium: ₹ 30,000') {
+        customerType = 'Premium';
+        paidAmount = '30,000';
       } else {
-        customerType = "Premium Plus";
-        paidAmount = "35,000";
+        customerType = 'Premium Plus';
+        paidAmount = '35,000';
       }
 
       final int id = widget.registeredCustomer!.id;
@@ -678,7 +679,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         ..bankPassbook = documentPaths['bankPassbook']
         ..votingCard = documentPaths['votingCard']
         ..paymentProof = documentPaths['paymentProof']
-        ..registerBy = "10"
+        ..registerBy = '10'
         ..registrant = _customerRefIdController.text
         ..paymentMode = _selectedPaymentMode
         ..chequeNo = chequeNo
@@ -691,7 +692,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       await controller.apiUpdateRegisteredCustomer(updatedCustomer);
       MyNavigator.pop(true);
     } catch (e, s) {
-      Logger.error("Error updating form: $e, Stacktrace: $s");
+      Logger.error('Error updating form: $e, Stacktrace: $s');
     }
   }
 
@@ -705,13 +706,13 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       'address': _addressKey
     };
 
-    if (_selectedPaymentMode == "Cheque") {
+    if (_selectedPaymentMode == 'Cheque') {
       fieldKeys.addAll({
         'chequeNo': _chequeNoKey,
         'chequeDate': _chequeDateKey,
         'bankName': _bankNameKey,
       });
-    } else if (_selectedPaymentMode == "UPI/NEFT") {
+    } else if (_selectedPaymentMode == 'UPI/NEFT') {
       fieldKeys.addAll({
         'transactionNo': _transactionNoKey,
       });
@@ -720,85 +721,80 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     for (final entry in fieldKeys.entries) {
       final fieldState = entry.value.currentState;
       if (fieldState != null && fieldState.hasError) {
-        Logger.error("Found error in field: ${entry.key}");
+        Logger.error('Found error in field: ${entry.key}');
         Scrollable.ensureVisible(
           entry.value.currentContext!,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
-          alignment: 0.0,
         );
         return;
       }
     }
-    if (_selectedGender == "---- Select Gender ----") {
+    if (_selectedGender == '---- Select Gender ----') {
       final RenderObject? renderObject =
           _genderKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _genderKey.currentContext!,
-          duration: Duration(milliseconds: 500),
-          alignment: 0.0,
+          duration: const Duration(milliseconds: 500),
         );
         return;
       }
     }
 
-    if (_selectedCountry == "---- Select Country ----") {
+    if (_selectedCountry == '---- Select Country ----') {
       final RenderObject? renderObject =
           _countryKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _countryKey.currentContext!,
-          duration: Duration(milliseconds: 500),
-          alignment: 0.0,
+          duration: const Duration(milliseconds: 500),
         );
         return;
       }
     }
-    if (_selectedState == "---- Select State ----") {
+    if (_selectedState == '---- Select State ----') {
       final RenderObject? renderObject =
           _stateKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _stateKey.currentContext!,
-          duration: Duration(milliseconds: 500),
-          alignment: 0.0,
+          duration: const Duration(milliseconds: 500),
         );
         return;
       }
     }
 
-    if (_selectedCity == "---- Select City ----") {
+    if (_selectedCity == '---- Select City ----') {
       final RenderObject? renderObject =
           _cityKey.currentContext?.findRenderObject();
       if (renderObject != null) {
         Scrollable.ensureVisible(
           _cityKey.currentContext!,
-          duration: Duration(milliseconds: 500),
-          alignment: 0.0,
+          duration: const Duration(milliseconds: 500),
         );
         return;
       }
     }
 
     final Map<String, GlobalKey> imageKeys = {
-      "Profile Picture": _profilePictureKey,
-      "Aadhar Card": _aadharCardKey,
-      "Pan Card": _panCardKey,
-      "Bank Passbook": _bankPassbookKey,
-      "Voting Card": _votingCardKey,
+      'Profile Picture': _profilePictureKey,
+      'Aadhar Card': _aadharCardKey,
+      'Pan Card': _panCardKey,
+      'Bank Passbook': _bankPassbookKey,
+      'Voting Card': _votingCardKey,
     };
 
-    if (_selectedPayment != "Free") {
-      imageKeys["Payment Proof"] = _paymentProofKey;
+    if (_selectedPayment != 'Free') {
+      imageKeys['Payment Proof'] = _paymentProofKey;
     }
 
     for (final entry in imageKeys.entries) {
-      String imageType = entry.key;
-      GlobalKey imageKey = entry.value;
+      final String imageType = entry.key;
+      final GlobalKey imageKey = entry.value;
 
       if (selectedFiles[imageType] == null) {
-        Logger.error("Missing required image: $imageType");
+        Logger.error('Missing required image: $imageType');
 
         // Show validation errors
         setState(() {
@@ -811,9 +807,8 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         if (renderObject != null) {
           Scrollable.ensureVisible(
             imageKey.currentContext!,
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             curve: Curves.easeInOut,
-            alignment: 0.0,
           );
           return;
         }
@@ -842,13 +837,13 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     _transactionIDController.clear();
 
     setState(() {
-      _selectedGender = "---- Select Gender ----";
-      _selectedCountryCode = "+91";
-      _selectedCountry = "---- Select Country ----";
-      _selectedState = "---- Select State ----";
-      _selectedCity = "---- Select City ----";
-      _selectedPayment = "Free";
-      _selectedPaymentMode = "Cash";
+      _selectedGender = '---- Select Gender ----';
+      _selectedCountryCode = '+91';
+      _selectedCountry = '---- Select Country ----';
+      _selectedState = '---- Select State ----';
+      _selectedCity = '---- Select City ----';
+      _selectedPayment = 'Free';
+      _selectedPaymentMode = 'Cash';
 
       _selectedCountryId = null;
       _selectedStateId = null;
@@ -856,124 +851,124 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
       selectedFiles.clear();
 
-      chequeNo = "";
-      chequeDate = "";
-      bankName = "";
-      transactionId = "";
+      chequeNo = '';
+      chequeDate = '';
+      bankName = '';
+      transactionId = '';
 
       _showImageValidationErrors = false;
     });
 
     _formKey.currentState?.reset();
 
-    Logger.info("Form fields cleared successfully");
+    Logger.info('Form fields cleared successfully');
   }
 
-  void populatePendingReferralCustomer(PendingCustomer customer) async {
+  Future<void> populatePendingReferralCustomer(PendingCustomer customer) async {
     try {
-      _taRefrenceIdController.text = customer.taReferenceNo ?? "";
-      _taRefrenceNameController.text = customer.taReferenceName ?? "";
-      _customerRefIdController.text = customer.cuRefId ?? "";
-      _customerRefNameController.text = customer.cuRefName ?? "";
-      _firstNameController.text = customer.firstname ?? "";
-      _lastNameController.text = customer.lastname ?? "";
-      _nomineeNameController.text = customer.nomineeName ?? "";
-      _nomineeRelationController.text = customer.nomineeRelation ?? "";
-      _emailController.text = customer.email ?? "";
-      _dateController.text = customer.dob ?? "";
+      _taRefrenceIdController.text = customer.taReferenceNo ?? '';
+      _taRefrenceNameController.text = customer.taReferenceName ?? '';
+      _customerRefIdController.text = customer.cuRefId ?? '';
+      _customerRefNameController.text = customer.cuRefName ?? '';
+      _firstNameController.text = customer.firstname ?? '';
+      _lastNameController.text = customer.lastname ?? '';
+      _nomineeNameController.text = customer.nomineeName ?? '';
+      _nomineeRelationController.text = customer.nomineeRelation ?? '';
+      _emailController.text = customer.email ?? '';
+      _dateController.text = customer.dob ?? '';
       String countryCode = customer.countryCd!;
       if (!countryCode.startsWith('+')) {
         countryCode = '+$countryCode';
       }
-      final allowedCodes = ["+91", "+1", "+44", "+61", "+971"];
+      final allowedCodes = ['+91', '+1', '+44', '+61', '+971'];
       if (allowedCodes.contains(countryCode)) {
         _selectedCountryCode = countryCode;
       } else {
         _selectedCountryCode = '+91';
       }
       _selectedGender = normalizeGender(customer.gender!);
-      _phoneController.text = customer.phoneNumber ?? "";
-      _addressController.text = customer.address ?? "";
-      _pincodeController.text = customer.pincode ?? "";
-      _chequeNoController.text = customer.chequeNo ?? "";
-      _chequeDateController.text = customer.chequeDate ?? "";
-      _bankNameController.text = customer.bankName ?? "";
-      _transactionIDController.text = customer.transactionNo ?? "";
+      _phoneController.text = customer.phoneNumber ?? '';
+      _addressController.text = customer.address ?? '';
+      _pincodeController.text = customer.pincode ?? '';
+      _chequeNoController.text = customer.chequeNo ?? '';
+      _chequeDateController.text = customer.chequeDate ?? '';
+      _bankNameController.text = customer.bankName ?? '';
+      _transactionIDController.text = customer.transactionNo ?? '';
       _selectedPaymentMode = customer.paymentMode!;
-      if (customer.paidAmount == "Free") {
-        _selectedPayment = "Free";
-      } else if (customer.paidAmount == "10,000") {
-        _selectedPayment = "Prime: ₹ 10,000";
-      } else if (customer.paidAmount == "30,000") {
-        _selectedPayment = "Premium: ₹ 30,000";
+      if (customer.paidAmount == 'Free') {
+        _selectedPayment = 'Free';
+      } else if (customer.paidAmount == '10,000') {
+        _selectedPayment = 'Prime: ₹ 10,000';
+      } else if (customer.paidAmount == '30,000') {
+        _selectedPayment = 'Premium: ₹ 30,000';
       } else {
-        _selectedPayment = "Premium Plus: ₹ 35,000";
+        _selectedPayment = 'Premium Plus: ₹ 35,000';
       }
 
       if (customer.profilePicture != null) {
         if (customer.profilePicture!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Profile Picture"] = customer.profilePicture!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Profile Picture'] = customer.profilePicture!;
         } else {
-          selectedFiles["Profile Picture"] =
-              "https://testca.uniqbizz.com/uploading/${customer.profilePicture!}";
+          selectedFiles['Profile Picture'] =
+              'https://testca.uniqbizz.com/uploading/${customer.profilePicture!}';
         }
-        Logger.success(selectedFiles["Profile Picture"]);
+        Logger.success(selectedFiles['Profile Picture']);
       }
 
       if (customer.adharCard != null) {
         if (customer.adharCard!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Aadhar Card"] = customer.adharCard!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Aadhar Card'] = customer.adharCard!;
         } else {
-          selectedFiles["Aadhar Card"] =
-              "https://testca.uniqbizz.com/uploading/${customer.adharCard!}";
+          selectedFiles['Aadhar Card'] =
+              'https://testca.uniqbizz.com/uploading/${customer.adharCard!}';
         }
-        Logger.success(selectedFiles["Aadhar Card"]);
+        Logger.success(selectedFiles['Aadhar Card']);
       }
 
       if (customer.panCard != null) {
         if (customer.panCard!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Pan Card"] = customer.panCard!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Pan Card'] = customer.panCard!;
         } else {
-          selectedFiles["Pan Card"] =
-              "https://testca.uniqbizz.com/uploading/${customer.panCard!}";
+          selectedFiles['Pan Card'] =
+              'https://testca.uniqbizz.com/uploading/${customer.panCard!}';
         }
-        Logger.success(selectedFiles["Pan Card"]);
+        Logger.success(selectedFiles['Pan Card']);
       }
 
       if (customer.bankPassbook != null) {
         if (customer.bankPassbook!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Bank Passbook"] = customer.bankPassbook!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Bank Passbook'] = customer.bankPassbook!;
         } else {
-          selectedFiles["Bank Passbook"] =
-              "https://testca.uniqbizz.com/uploading/${customer.bankPassbook!}";
+          selectedFiles['Bank Passbook'] =
+              'https://testca.uniqbizz.com/uploading/${customer.bankPassbook!}';
         }
-        Logger.success(selectedFiles["Bank Passbook"]);
+        Logger.success(selectedFiles['Bank Passbook']);
       }
 
       if (customer.votingCard != null) {
         if (customer.votingCard!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Voting Card"] = customer.votingCard!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Voting Card'] = customer.votingCard!;
         } else {
-          selectedFiles["Voting Card"] =
-              "https://testca.uniqbizz.com/uploading/${customer.votingCard!}";
+          selectedFiles['Voting Card'] =
+              'https://testca.uniqbizz.com/uploading/${customer.votingCard!}';
         }
-        Logger.success(selectedFiles["Voting Card"]);
+        Logger.success(selectedFiles['Voting Card']);
       }
 
       if (customer.paymentProof != null) {
         if (customer.paymentProof!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Payment Proof"] = customer.paymentProof!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Payment Proof'] = customer.paymentProof!;
         } else {
-          selectedFiles["Payment Proof"] =
-              "https://testca.uniqbizz.com/uploading/${customer.paymentProof!}";
+          selectedFiles['Payment Proof'] =
+              'https://testca.uniqbizz.com/uploading/${customer.paymentProof!}';
         }
-        Logger.success(selectedFiles["Payment Proof"]);
+        Logger.success(selectedFiles['Payment Proof']);
       }
 
       if (_countries.isEmpty) {
@@ -992,7 +987,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         _selectedCountry =
             countryObject['country_name'] ?? '---- Select Country ----';
         Logger.success(
-            "Set selected country to: $_selectedCountry with ID: $_selectedCountryId");
+            'Set selected country to: $_selectedCountry with ID: $_selectedCountryId');
       });
 
       await _loadStates(_selectedCountryId);
@@ -1007,7 +1002,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       setState(() {
         _selectedState = stateObject['state_name'] ?? '---- Select State ----';
         Logger.success(
-            "Set selected state to: $_selectedState with ID: $_selectedStateId");
+            'Set selected state to: $_selectedState with ID: $_selectedStateId');
       });
 
       await _loadCities(_selectedStateId);
@@ -1022,119 +1017,119 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       setState(() {
         _selectedCity = cityObject['city_name'] ?? '---- Select City -----';
         Logger.success(
-            "Set selected city $_selectedCity with ID: $_selectedCityId");
+            'Set selected city $_selectedCity with ID: $_selectedCityId');
       });
     } catch (e, s) {
       Logger.error(
-          "Error populating pending referral customer: $e, Stacktrace: $s");
+          'Error populating pending referral customer: $e, Stacktrace: $s');
     }
   }
 
-  void populateRegisteredCustomer(RegisteredCustomer customer) async {
+  Future<void> populateRegisteredCustomer(RegisteredCustomer customer) async {
     try {
-      _taRefrenceIdController.text = customer.referenceNo ?? "";
-      _taRefrenceNameController.text = customer.taReferenceName ?? "";
-      _customerRefIdController.text = customer.caCustomerId ?? "";
-      _customerRefNameController.text = customer.registrant ?? "";
-      _firstNameController.text = customer.firstName ?? "";
-      _lastNameController.text = customer.lastName ?? "";
+      _taRefrenceIdController.text = customer.referenceNo ?? '';
+      _taRefrenceNameController.text = customer.taReferenceName ?? '';
+      _customerRefIdController.text = customer.caCustomerId ?? '';
+      _customerRefNameController.text = customer.registrant ?? '';
+      _firstNameController.text = customer.firstName ?? '';
+      _lastNameController.text = customer.lastName ?? '';
       String countryCode = customer.countryCd!;
       if (!countryCode.startsWith('+')) {
         countryCode = '+$countryCode';
       }
-      final allowedCodes = ["+91", "+1", "+44", "+61", "+971"];
+      final allowedCodes = ['+91', '+1', '+44', '+61', '+971'];
       if (allowedCodes.contains(countryCode)) {
         _selectedCountryCode = countryCode;
       } else {
         _selectedCountryCode = '+91';
       }
-      _phoneController.text = customer.phoneNumber ?? "";
-      _emailController.text = customer.email ?? "";
-      _dateController.text = customer.dob ?? "";
+      _phoneController.text = customer.phoneNumber ?? '';
+      _emailController.text = customer.email ?? '';
+      _dateController.text = customer.dob ?? '';
       _selectedGender = normalizeGender(customer.gender!);
-      _addressController.text = customer.address ?? "";
-      _pincodeController.text = customer.pincode ?? "";
-      _chequeNoController.text = customer.chequeNo ?? "";
-      _chequeDateController.text = customer.chequeDate ?? "";
-      _bankNameController.text = customer.bankName ?? "";
-      _transactionIDController.text = customer.transactionNo ?? "";
+      _addressController.text = customer.address ?? '';
+      _pincodeController.text = customer.pincode ?? '';
+      _chequeNoController.text = customer.chequeNo ?? '';
+      _chequeDateController.text = customer.chequeDate ?? '';
+      _bankNameController.text = customer.bankName ?? '';
+      _transactionIDController.text = customer.transactionNo ?? '';
       _selectedPaymentMode = customer.paymentMode![0].toUpperCase() +
           customer.paymentMode!.substring(1);
 
-      if (customer.paidAmount == "Free") {
-        _selectedPayment = "Free";
-      } else if (customer.paidAmount == "10000") {
-        _selectedPayment = "Prime: ₹ 10,000";
-      } else if (customer.paidAmount == "30000") {
-        _selectedPayment = "Premium: ₹ 30,000";
+      if (customer.paidAmount == 'Free') {
+        _selectedPayment = 'Free';
+      } else if (customer.paidAmount == '10000') {
+        _selectedPayment = 'Prime: ₹ 10,000';
+      } else if (customer.paidAmount == '30000') {
+        _selectedPayment = 'Premium: ₹ 30,000';
       } else {
-        _selectedPayment = "Premium Plus: ₹ 35000";
+        _selectedPayment = 'Premium Plus: ₹ 35000';
       }
 
       if (customer.profilePicture != null) {
         if (customer.profilePicture!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Profile Picture"] = customer.profilePicture!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Profile Picture'] = customer.profilePicture!;
         } else {
-          selectedFiles["Profile Picture"] =
-              "https://testca.uniqbizz.com/uploading/${customer.profilePicture!}";
+          selectedFiles['Profile Picture'] =
+              'https://testca.uniqbizz.com/uploading/${customer.profilePicture!}';
         }
-        Logger.success(selectedFiles["Profile Picture"]);
+        Logger.success(selectedFiles['Profile Picture']);
       }
 
       if (customer.adharCard != null) {
         if (customer.adharCard!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Aadhar Card"] = customer.adharCard!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Aadhar Card'] = customer.adharCard!;
         } else {
-          selectedFiles["Aadhar Card"] =
-              "https://testca.uniqbizz.com/uploading/${customer.adharCard!}";
+          selectedFiles['Aadhar Card'] =
+              'https://testca.uniqbizz.com/uploading/${customer.adharCard!}';
         }
-        Logger.success(selectedFiles["Aadhar Card"]);
+        Logger.success(selectedFiles['Aadhar Card']);
       }
 
       if (customer.panCard != null) {
         if (customer.panCard!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Pan Card"] = customer.panCard!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Pan Card'] = customer.panCard!;
         } else {
-          selectedFiles["Pan Card"] =
-              "https://testca.uniqbizz.com/uploading/${customer.panCard!}";
+          selectedFiles['Pan Card'] =
+              'https://testca.uniqbizz.com/uploading/${customer.panCard!}';
         }
-        Logger.success(selectedFiles["Pan Card"]);
+        Logger.success(selectedFiles['Pan Card']);
       }
 
       if (customer.bankPassbook != null) {
         if (customer.bankPassbook!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Bank Passbook"] = customer.bankPassbook!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Bank Passbook'] = customer.bankPassbook!;
         } else {
-          selectedFiles["Bank Passbook"] =
-              "https://testca.uniqbizz.com/uploading/${customer.bankPassbook!}";
+          selectedFiles['Bank Passbook'] =
+              'https://testca.uniqbizz.com/uploading/${customer.bankPassbook!}';
         }
-        Logger.success(selectedFiles["Bank Passbook"]);
+        Logger.success(selectedFiles['Bank Passbook']);
       }
 
       if (customer.votingCard != null) {
         if (customer.votingCard!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Voting Card"] = customer.votingCard!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Voting Card'] = customer.votingCard!;
         } else {
-          selectedFiles["Voting Card"] =
-              "https://testca.uniqbizz.com/uploading/${customer.votingCard!}";
+          selectedFiles['Voting Card'] =
+              'https://testca.uniqbizz.com/uploading/${customer.votingCard!}';
         }
-        Logger.success(selectedFiles["Voting Card"]);
+        Logger.success(selectedFiles['Voting Card']);
       }
 
       if (customer.paymentProof != null) {
         if (customer.paymentProof!
-            .startsWith("https://testca.uniqbizz.com/uploading/")) {
-          selectedFiles["Payment Proof"] = customer.paymentProof!;
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Payment Proof'] = customer.paymentProof!;
         } else {
-          selectedFiles["Payment Proof"] =
-              "https://testca.uniqbizz.com/uploading/${customer.paymentProof!}";
+          selectedFiles['Payment Proof'] =
+              'https://testca.uniqbizz.com/uploading/${customer.paymentProof!}';
         }
-        Logger.success(selectedFiles["Payment Proof"]);
+        Logger.success(selectedFiles['Payment Proof']);
       }
 
       if (_countries.isEmpty) {
@@ -1153,7 +1148,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         _selectedCountry =
             countryObject['country_name'] ?? '---- Select Country ----';
         Logger.success(
-            "Set selected country to: $_selectedCountry with ID: $_selectedCountryId");
+            'Set selected country to: $_selectedCountry with ID: $_selectedCountryId');
       });
 
       await _loadStates(_selectedCountryId);
@@ -1168,7 +1163,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       setState(() {
         _selectedState = stateObject['state_name'] ?? '---- Select State ----';
         Logger.success(
-            "Set selected state to: $_selectedState with ID: $_selectedStateId");
+            'Set selected state to: $_selectedState with ID: $_selectedStateId');
       });
 
       await _loadCities(_selectedStateId);
@@ -1183,21 +1178,21 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       setState(() {
         _selectedCity = cityObject['city_name'] ?? '---- Select City -----';
         Logger.success(
-            "Set selected city $_selectedCity with ID: $_selectedCityId");
+            'Set selected city $_selectedCity with ID: $_selectedCityId');
       });
     } catch (e, s) {
-      Logger.error("Error populating registered customer: $e, Stacktrace: $s");
+      Logger.error('Error populating registered customer: $e, Stacktrace: $s');
     }
   }
 
-  void _pickFile(String fileType) async {
+  Future<void> _pickFile(String fileType) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;
 
-      String originalPath = result.files.single.path!;
+      final String originalPath = result.files.single.path!;
 
       final appDir = await getApplicationDocumentsDirectory();
       final bizmirthDir = Directory('${appDir.path}/bizmirth');
@@ -1213,30 +1208,30 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
       String subFolderName;
       switch (fileType) {
-        case "Profile Picture":
-          subFolderName = "profile_pic";
+        case 'Profile Picture':
+          subFolderName = 'profile_pic';
           break;
-        case "ID Proof":
-          subFolderName = "id_proof";
+        case 'ID Proof':
+          subFolderName = 'id_proof';
           break;
-        case "Bank Passbook":
-          subFolderName = "passbook";
+        case 'Bank Passbook':
+          subFolderName = 'passbook';
           break;
 
-        case "Aadhar Card":
-          subFolderName = "aadhar_card";
+        case 'Aadhar Card':
+          subFolderName = 'aadhar_card';
           break;
-        case "Pan Card":
-          subFolderName = "pan_card";
+        case 'Pan Card':
+          subFolderName = 'pan_card';
           break;
-        case "Voting Card":
-          subFolderName = "voting_card";
+        case 'Voting Card':
+          subFolderName = 'voting_card';
           break;
-        case "Payment Proof":
-          subFolderName = "payment_proof";
+        case 'Payment Proof':
+          subFolderName = 'payment_proof';
           break;
         default:
-          subFolderName = "other_documents";
+          subFolderName = 'other_documents';
       }
 
       final typeDir = Directory('${bizmirthDir.path}/$subFolderName');
@@ -1255,7 +1250,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         selectedFiles[fileType] = File(savedImagePath);
       });
     } catch (e) {
-      Logger.error("Error picking file: $e");
+      Logger.error('Error picking file: $e');
     }
   }
 
@@ -1283,7 +1278,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
               fieldKey?.currentState?.validate();
             }
           },
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         // ignore: deprecated_member_use
@@ -1308,7 +1303,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     String? emptyMessage,
     GlobalKey<FormFieldState>? fieldKey,
   }) {
-    String defaultOption = "---- Select $label ----";
+    final String defaultOption = '---- Select $label ----';
 
     // Handle empty items list with emptyMessage
     if (items.isEmpty && emptyMessage != null) {
@@ -1322,13 +1317,14 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                     color: const Color.fromARGB(255, 255, 255, 255)
                         .withValues(alpha: 0.8))),
             Container(
-              padding: EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(emptyMessage, style: TextStyle(color: Colors.red)),
+              child:
+                  Text(emptyMessage, style: const TextStyle(color: Colors.red)),
             ),
           ],
         ),
@@ -1348,7 +1344,8 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
             enabled: widget.isViewMode,
             key: fieldKey,
             value: defaultOption, // Placeholder value
-            child: Text(defaultOption, style: TextStyle(color: Colors.white)),
+            child: Text(defaultOption,
+                style: const TextStyle(color: Colors.white)),
           ),
           ...items.map((e) => DropdownMenuItem(
               value: e,
@@ -1394,7 +1391,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ViewCustomersPage(),
+              builder: (context) => const ViewCustomersPage(),
             ),
           );
         },
@@ -1417,7 +1414,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
               ),
             ),
             child: customerController.isLoading
-                ? Center(
+                ? const Center(
                     child: CircularProgressIndicator(),
                   )
                 : Padding(
@@ -1428,7 +1425,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             _buildTextField('Customer Reference Id *',
                                 _customerRefIdController,
                                 fieldKey: _customerRefrenceIdKey,
@@ -1438,7 +1435,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                               }
                               return null;
                             }),
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             _buildTextField('Customer Reference Name *',
                                 _customerRefNameController,
                                 fieldKey: _customerRefrenceNameKey,
@@ -1448,7 +1445,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                               }
                               return null;
                             }),
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             _buildTextField(
                                 'TA Reference Id *', _taRefrenceIdController,
                                 fieldKey: _taRefrenceIdKey,
@@ -1458,7 +1455,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                               }
                               return null;
                             }),
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             _buildTextField(
                                 'TA Refrence Name *', _taRefrenceNameController,
                                 fieldKey: _taRefrenceNameKey,
@@ -1468,7 +1465,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                               }
                               return null;
                             }),
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             _buildTextField(
                               'First Name*',
                               _firstNameController,
@@ -1480,7 +1477,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 return null;
                               },
                             ),
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             _buildTextField('Last Name*', _lastNameController,
                                 fieldKey: _lastNameKey, validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -1488,7 +1485,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                               }
                               return null;
                             }),
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(vertical: 8.0),
@@ -1505,50 +1502,49 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                     ),
                                     child: DropdownButton<String>(
                                       value: _selectedCountryCode,
-                                      onChanged: (String? newValue) {
+                                      onChanged: (newValue) {
                                         setState(() {
                                           _selectedCountryCode = newValue!;
                                         });
                                       },
-                                      items: ["+91", "+1", "+44", "+61", "+971"]
-                                          .map((String value) {
+                                      items: ['+91', '+1', '+44', '+61', '+971']
+                                          .map((value) {
                                         return DropdownMenuItem<String>(
                                           value: value,
                                           child: Container(
                                             width: 50,
                                             alignment: Alignment.center,
                                             child: Text(value,
-                                                style: TextStyle(
-                                                    color: const Color.fromARGB(
+                                                style: const TextStyle(
+                                                    color: Color.fromARGB(
                                                         255, 255, 255, 255))),
                                           ),
                                         );
                                       }).toList(),
                                       dropdownColor:
                                           const Color.fromARGB(255, 83, 83, 83),
-                                      isExpanded: false,
-                                      underline: SizedBox(),
+                                      underline: const SizedBox(),
                                     ),
                                   ),
                                   // Phone number text field
-                                  SizedBox(width: 10),
+                                  const SizedBox(width: 10),
                                   Expanded(
                                     child: TextFormField(
                                       controller: _phoneController,
                                       key: _mobileKey,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return "Phone Number is required";
+                                          return 'Phone Number is required';
                                         }
                                         return null;
                                       },
                                       keyboardType: TextInputType.phone,
                                       maxLength: 10,
-                                      style: TextStyle(
-                                          color: const Color.fromARGB(
+                                      style: const TextStyle(
+                                          color: Color.fromARGB(
                                               255, 255, 255, 255)),
                                       decoration: InputDecoration(
-                                        labelText: "Phone number",
+                                        labelText: 'Phone number',
                                         labelStyle: TextStyle(
                                             color: Colors.white
                                                 .withValues(alpha: 0.8)),
@@ -1560,14 +1556,14 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                               BorderRadius.circular(12),
                                           borderSide: BorderSide.none,
                                         ),
-                                        counterText: "",
+                                        counterText: '',
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             _buildTextField(
                               'Email *',
                               _emailController,
@@ -1592,9 +1588,9 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                   if (customerController.emailError != null &&
                                       customerController.emailError!
                                           .toLowerCase()
-                                          .contains("exists")) {
+                                          .contains('exists')) {
                                     ToastHelper.showWarningToast(
-                                      title: "Email Error",
+                                      title: 'Email Error',
                                       description:
                                           customerController.emailError!,
                                     );
@@ -1602,7 +1598,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 });
                               },
                             ),
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             _buildDropdown(
                                 'Gender *',
                                 ['Male', 'Female', 'Other'],
@@ -1614,12 +1610,12 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                       },
                                     ), validator: (value) {
                               if (value == null ||
-                                  value == "---- Select Gender * ----") {
+                                  value == '---- Select Gender * ----') {
                                 return 'Please select a gender';
                               }
                               return null;
                             }),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(vertical: 8.0),
@@ -1627,14 +1623,14 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 key: _dobKey,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return "Date of Birth is required";
+                                    return 'Date of Birth is required';
                                   }
                                   return null;
                                 },
                                 controller: _dateController,
                                 readOnly:
                                     true, // Makes the TextFormField non-editable
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   labelText: 'Date of Birth *',
                                   labelStyle: TextStyle(
@@ -1649,18 +1645,17 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                       Colors.white.withValues(alpha: 0.2),
                                   suffixIcon: _dateController.text.isNotEmpty
                                       ? IconButton(
-                                          icon: Icon(Icons.close,
+                                          icon: const Icon(Icons.close,
                                               color: Colors.white),
                                           onPressed: () {
-                                            setState(() {
-                                              _dateController.clear();
-                                            });
+                                            setState(_dateController.clear);
                                           },
                                         )
                                       : null,
                                 ),
                                 onTap: () async {
-                                  DateTime? pickedDate = await showDatePicker(
+                                  final DateTime? pickedDate =
+                                      await showDatePicker(
                                     context: context,
                                     initialDate: _dateController.text.isNotEmpty
                                         ? DateFormat('dd-MM-yyyy')
@@ -1679,11 +1674,11 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 },
                               ),
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             _buildDropdown('Country *', _countryNames,
                                 fieldKey: _countryKey, validator: (value) {
                               if (value == null ||
-                                  value == "---- Select Country * ----") {
+                                  value == '---- Select Country * ----') {
                                 return 'Please select a Country';
                               }
                               return null;
@@ -1702,17 +1697,17 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                             selectedCountryObject['id']
                                                 .toString();
                                         Logger.success(
-                                            "selected country is $_selectedCountry ID : $_selectedCountryId");
+                                            'selected country is $_selectedCountry ID : $_selectedCountryId');
                                       }
                                       _loadStates(_selectedCountryId);
                                     })),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             _buildDropdown('State *', _stateNames,
                                 fieldKey: _stateKey,
-                                emptyMessage: "Please select a country first",
+                                emptyMessage: 'Please select a country first',
                                 validator: (value) {
                               if (value == null ||
-                                  value == "---- Select State * ----") {
+                                  value == '---- Select State * ----') {
                                 return 'Please select a state';
                               }
                               return null;
@@ -1731,16 +1726,16 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                             selectedStateObject['id']
                                                 .toString();
                                         Logger.success(
-                                            "selected state is $_selectedState ID : $_selectedStateId");
+                                            'selected state is $_selectedState ID : $_selectedStateId');
                                         _loadCities(_selectedStateId);
                                       }
                                     })),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             _buildDropdown('City *', _cityNames, _selectedCity,
-                                emptyMessage: "Please select a state first",
+                                emptyMessage: 'Please select a state first',
                                 fieldKey: _cityKey, validator: (value) {
                               if (value == null ||
-                                  value == "---- Select City * ----") {
+                                  value == '---- Select City * ----') {
                                 return 'Please select a city';
                               }
                               return null;
@@ -1756,11 +1751,11 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                         _selectedCityId =
                                             selectedCityObject['id'].toString();
                                         Logger.success(
-                                            "selected city is $_selectedCity ID : $_selectedCityId");
+                                            'selected city is $_selectedCity ID : $_selectedCityId');
                                       }
                                       getPincode(_selectedCityId);
                                     })),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             _buildTextField('Pincode *', _pincodeController,
                                 fieldKey: _pincodeKey, validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -1768,7 +1763,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                               }
                               return null;
                             }, forceReadOnly: true),
-                            SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             _buildTextField(
                               'Address *',
                               _addressController,
@@ -1780,7 +1775,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 return null;
                               },
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             _buildDropdown(
                                 'Payment Fee *',
                                 [
@@ -1794,29 +1789,29 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 (value) => setState(() {
                                       _selectedPayment = value!;
                                       Logger.success(
-                                          "Customer Type : $_selectedPayment");
+                                          'Customer Type : $_selectedPayment');
                                     }), validator: (value) {
                               if (value == null ||
-                                  value == "---- Select Payment Fee * ----") {
+                                  value == '---- Select Payment Fee * ----') {
                                 return 'Please select a payment fee';
                               }
                               return null;
                             }),
-                            SizedBox(height: 10),
-                            if (_selectedPayment != "Free")
+                            const SizedBox(height: 10),
+                            if (_selectedPayment != 'Free')
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   RichText(
-                                    text: TextSpan(
-                                      text: "Payment Mode * ",
+                                    text: const TextSpan(
+                                      text: 'Payment Mode * ',
                                       style: TextStyle(
                                           fontSize: 16, color: Colors.white),
                                     ),
                                   ),
-                                  SizedBox(height: 2),
+                                  const SizedBox(height: 2),
                                   Container(
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 4),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
@@ -1826,7 +1821,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                       ),
                                     ),
                                     child: Row(
-                                      children: ["Cash", "Cheque", "UPI/NEFT"]
+                                      children: ['Cash', 'Cheque', 'UPI/NEFT']
                                           .map((package) {
                                         return GestureDetector(
                                           onTap: () {
@@ -1860,7 +1855,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                                       _selectedPaymentMode =
                                                           value!;
                                                       Logger.success(
-                                                          "Selected payment Mode: $_selectedPaymentMode");
+                                                          'Selected payment Mode: $_selectedPaymentMode');
                                                     });
                                                   },
                                                   child: Radio<String>(
@@ -1868,14 +1863,14 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                                   )),
                                               Text(
                                                 package,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w500,
                                                   color: Colors
                                                       .white, // Gray out text if disabled
                                                 ),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                   width:
                                                       10), // Spacing between radio buttons
                                             ],
@@ -1886,73 +1881,73 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                   ),
                                 ],
                               ),
-                            SizedBox(height: 10),
-                            if (_selectedPaymentMode == "Cheque") ...{
+                            const SizedBox(height: 10),
+                            if (_selectedPaymentMode == 'Cheque') ...[
                               _buildTextField(
                                   'Cheque No. *', _chequeNoController,
                                   fieldKey: _chequeNoKey, validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Cheque No. is required";
+                                  return 'Cheque No. is required';
                                 }
                                 return null;
                               }),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               _buildTextField(
                                   'Cheque  Date *', _chequeDateController,
                                   fieldKey: _chequeDateKey, validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Cheque Date is required";
+                                  return 'Cheque Date is required';
                                 }
                                 return null;
                               }),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               _buildTextField(
                                   'Bank Name *', _bankNameController,
                                   fieldKey: _bankNameKey, validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Bank Date is required";
+                                  return 'Bank Date is required';
                                 }
                                 return null;
                               }),
-                              SizedBox(height: 10),
-                            } else if (_selectedPaymentMode == "UPI/NEFT") ...{
+                              const SizedBox(height: 10),
+                            ] else if (_selectedPaymentMode == 'UPI/NEFT') ...[
                               _buildTextField(
                                   'Transaction No. *', _transactionIDController,
                                   fieldKey: _transactionNoKey,
                                   validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Transaction No. is required";
+                                  return 'Transaction No. is required';
                                 }
                                 return null;
                               }),
-                              SizedBox(height: 10),
-                            },
-                            SizedBox(height: 20),
+                              const SizedBox(height: 10),
+                            ],
+                            const SizedBox(height: 20),
                             Text(
-                              "Attachments",
+                              'Attachments',
                               style: Appwidget.normalSubTitle(),
                             ),
-                            SizedBox(height: 10),
-                            _buildUploadButton("Profile Picture",
+                            const SizedBox(height: 10),
+                            _buildUploadButton('Profile Picture',
                                 showError: _showImageValidationErrors,
                                 uploadKey: _profilePictureKey),
-                            _buildUploadButton("Aadhar Card",
+                            _buildUploadButton('Aadhar Card',
                                 showError: _showImageValidationErrors,
                                 uploadKey: _aadharCardKey),
-                            _buildUploadButton("Pan Card",
+                            _buildUploadButton('Pan Card',
                                 showError: _showImageValidationErrors,
                                 uploadKey: _panCardKey),
-                            _buildUploadButton("Bank Passbook",
+                            _buildUploadButton('Bank Passbook',
                                 showError: _showImageValidationErrors,
                                 uploadKey: _bankPassbookKey),
-                            _buildUploadButton("Voting Card",
+                            _buildUploadButton('Voting Card',
                                 showError: _showImageValidationErrors,
                                 uploadKey: _votingCardKey),
-                            if (_selectedPayment != "Free")
-                              _buildUploadButton("Payment Proof",
+                            if (_selectedPayment != 'Free')
+                              _buildUploadButton('Payment Proof',
                                   showError: _showImageValidationErrors,
                                   uploadKey: _paymentProofKey),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
                             if (widget.isEditMode) ...[
                               Center(
                                 child: ElevatedButton(
@@ -1967,14 +1962,14 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                         horizontal: 20, vertical: 12),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(25),
                                     ),
                                   ),
-                                  child: Text(
-                                    "Save Changes",
+                                  child: const Text(
+                                    'Save Changes',
                                     style: TextStyle(
                                         color: Colors.blueAccent, fontSize: 16),
                                   ),
@@ -1983,19 +1978,17 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                             ] else if (!widget.isViewMode) ...[
                               Center(
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    _submitForm();
-                                  },
+                                  onPressed: _submitForm,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                         horizontal: 20, vertical: 12),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(25),
                                     ),
                                   ),
-                                  child: Text(
-                                    "Submit",
+                                  child: const Text(
+                                    'Submit',
                                     style: TextStyle(
                                         color: Colors.blueAccent, fontSize: 16),
                                   ),
@@ -2015,8 +2008,10 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
   Widget _buildUploadButton(String fileType,
       {bool showError = false, GlobalKey? uploadKey}) {
-    bool isRequired = fileType != "Payment Proof" || _selectedPayment != "Free";
-    bool hasError = showError && isRequired && selectedFiles[fileType] == null;
+    final bool isRequired =
+        fileType != 'Payment Proof' || _selectedPayment != 'Free';
+    final bool hasError =
+        showError && isRequired && selectedFiles[fileType] == null;
     return Padding(
       key: uploadKey,
       padding: const EdgeInsets.only(bottom: 10),
@@ -2025,17 +2020,18 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
           if (!widget.isViewMode) // later change this to isViewMode
             ElevatedButton.icon(
               onPressed: () => _pickFile(fileType),
-              icon: Icon(Icons.upload_file),
-              label: Text("Upload $fileType"),
+              icon: const Icon(Icons.upload_file),
+              label: Text('Upload $fileType'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
             ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           if (selectedFiles[fileType] != null)
             Stack(
               children: [
@@ -2059,7 +2055,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 selectedFiles[fileType],
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return Center(
+                                  return const Center(
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -2070,7 +2066,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                         ),
                                         SizedBox(height: 4),
                                         Text(
-                                          "Image unavailable",
+                                          'Image unavailable',
                                           style: TextStyle(
                                             color: Colors.white70,
                                           ),
@@ -2084,7 +2080,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 selectedFiles[fileType],
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return Center(
+                                  return const Center(
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -2100,7 +2096,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                                 loadingBuilder:
                                     (context, child, loadingProgress) {
                                   if (loadingProgress == null) return child;
-                                  return Center(
+                                  return const Center(
                                     child: CircularProgressIndicator(),
                                   );
                                 },
@@ -2114,12 +2110,12 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                     child: InkWell(
                       onTap: () => _removeFile(fileType),
                       child: Container(
-                        padding: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
                           color: Colors.red,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.close,
                           color: Colors.white,
                           size: 16,
@@ -2138,14 +2134,13 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.3),
-                  width: 1,
                 ),
               ),
               child: Center(
                 child: Text(
                   // widget.isViewMode ? "No $fileType available"
-                  "No $fileType uploaded",
-                  style: TextStyle(
+                  'No $fileType uploaded',
+                  style: const TextStyle(
                     color: Colors.white70,
                   ),
                 ),
@@ -2155,7 +2150,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
             Padding(
               padding: const EdgeInsets.only(top: 4, left: 8),
               child: Text(
-                "Please Upload $fileType",
+                'Please Upload $fileType',
                 style: TextStyle(color: Colors.red.shade300, fontSize: 12),
               ),
             )

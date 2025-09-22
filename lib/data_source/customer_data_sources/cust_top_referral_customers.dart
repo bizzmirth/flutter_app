@@ -22,12 +22,12 @@ class CustTopReferralCustomers extends DataTableSource {
           child: Container(
             width: imageSize,
             height: imageSize,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
             ),
             clipBehavior: Clip.antiAlias,
             child: Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -39,16 +39,16 @@ class CustTopReferralCustomers extends DataTableSource {
         imageUrl = profilePicture;
       } else {
         final newpath = extractPathSegment(profilePicture, 'profile_pic/');
-        imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+        imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
       }
 
-      Logger.success("Final image URL: $imageUrl");
+      Logger.success('Final image URL: $imageUrl');
 
       return Center(
         child: Container(
           width: imageSize,
           height: imageSize,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
           clipBehavior: Clip.antiAlias,
@@ -59,7 +59,7 @@ class CustTopReferralCustomers extends DataTableSource {
               child: CircularProgressIndicator(strokeWidth: 1.5),
             ),
             errorWidget: (context, url, error) => Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -70,7 +70,7 @@ class CustTopReferralCustomers extends DataTableSource {
     return DataRow(cells: [
       DataCell(
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: (index + 1) <= 3
                 ? Colors.amber.withValues(alpha: 0.2)
@@ -99,7 +99,7 @@ class CustTopReferralCustomers extends DataTableSource {
       DataCell(
         Text(
           customer.name ?? 'N/A',
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 14,
           ),
@@ -110,14 +110,14 @@ class CustTopReferralCustomers extends DataTableSource {
       DataCell(
         Text(
           customer.registeredDate ?? 'N/A',
-          style: TextStyle(fontSize: 13),
+          style: const TextStyle(fontSize: 13),
         ),
       ),
 
       // Count
       DataCell(
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: Colors.blue.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
@@ -135,13 +135,12 @@ class CustTopReferralCustomers extends DataTableSource {
       // Status
       DataCell(
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: _getStatusColor(customer.status!).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: _getStatusColor(customer.status!).withValues(alpha: 0.3),
-              width: 1,
             ),
           ),
           child: Text(
@@ -158,27 +157,27 @@ class CustTopReferralCustomers extends DataTableSource {
       // Is Active
       DataCell(
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(width: 4),
+              const SizedBox(width: 4),
               RichText(
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: "${customer.activeReferrals}",
-                      style: TextStyle(
+                      text: '${customer.activeReferrals}',
+                      style: const TextStyle(
                         color: Colors.green,
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),
                     ),
-                    TextSpan(
-                      text: " / ",
+                    const TextSpan(
+                      text: ' / ',
                       style: TextStyle(
                         color: Colors.grey,
                         fontWeight: FontWeight.w600,
@@ -186,8 +185,8 @@ class CustTopReferralCustomers extends DataTableSource {
                       ),
                     ),
                     TextSpan(
-                      text: "${customer.inActiveReferrals ?? 0}",
-                      style: TextStyle(
+                      text: '${customer.inActiveReferrals ?? 0}',
+                      style: const TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.w600,
                         fontSize: 12,

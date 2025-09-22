@@ -26,8 +26,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildAboutUsSection() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -43,10 +43,10 @@ class _HomePageState extends State<HomePage> {
         children: [
           // Main Heading with improved design
           Container(
-            margin: EdgeInsets.only(bottom: 30),
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              "Best Travel Experience With Bizzmirth Holidays",
+            margin: const EdgeInsets.only(bottom: 30),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: const Text(
+              'Best Travel Experience With Bizzmirth Holidays',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 30,
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 15,
-                  offset: Offset(0, 5),
+                  offset: const Offset(0, 5),
                   spreadRadius: 2,
                 ),
               ],
@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -87,14 +87,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(30),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Decorative icon
                       Container(
-                        margin: EdgeInsets.only(bottom: 20),
-                        child: Icon(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: const Icon(
                           Icons.flight_takeoff_rounded,
                           size: 40,
                           color: Color(0xFF0A3D62),
@@ -104,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                       // Company description
                       RichText(
                         textAlign: TextAlign.center,
-                        text: TextSpan(
+                        text: const TextSpan(
                           style: TextStyle(
                             fontSize: 16,
                             color: Color(0xFF2C3E50),
@@ -113,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           children: [
                             TextSpan(
-                              text: "Bizzmirth Holidays Pvt. Ltd.",
+                              text: 'Bizzmirth Holidays Pvt. Ltd.',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF0A3D62),
@@ -122,15 +121,15 @@ class _HomePageState extends State<HomePage> {
                             ),
                             TextSpan(
                               text:
-                                  " is a premier travel industry enabler, offering entrepreneurs a comprehensive business platform designed for success.\n\n",
+                                  ' is a premier travel industry enabler, offering entrepreneurs a comprehensive business platform designed for success.\n\n',
                             ),
                             TextSpan(
                               text:
-                                  "Our integrated solutions encompass enterprise systems, inventory management, regulatory compliance, professional training, customer portfolio management, and revenue optimization. ",
+                                  'Our integrated solutions encompass enterprise systems, inventory management, regulatory compliance, professional training, customer portfolio management, and revenue optimization. ',
                             ),
                             TextSpan(
                               text:
-                                  "We deliver technology-driven strategies and expert guidance, ensuring seamless operations, sustainable growth, and enhanced profitability for our partners across the holiday and business travel sectors.",
+                                  'We deliver technology-driven strategies and expert guidance, ensuring seamless operations, sustainable growth, and enhanced profitability for our partners across the holiday and business travel sectors.',
                               style: TextStyle(
                                 fontStyle: FontStyle.italic,
                                 color: Color(0xFF1A5276),
@@ -142,14 +141,14 @@ class _HomePageState extends State<HomePage> {
 
                       // Decorative divider
                       Container(
-                        margin: EdgeInsets.symmetric(vertical: 25),
+                        margin: const EdgeInsets.symmetric(vertical: 25),
                         height: 2,
                         width: 100,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
                               Colors.transparent,
-                              Color(0xFF0A3D62).withValues(alpha: 0.5),
+                              const Color(0xFF0A3D62).withValues(alpha: 0.5),
                               Colors.transparent,
                             ],
                           ),
@@ -172,16 +171,16 @@ class _HomePageState extends State<HomePage> {
     // Logger.info("Device Width: $deviceWidth pixels");
     return Consumer<HomePageController>(builder: (context, controller, child) {
       return Scaffold(
-        drawer: SideNavDrawer(),
+        drawer: const SideNavDrawer(),
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 81, 131, 246),
+          backgroundColor: const Color.fromARGB(255, 81, 131, 246),
           title: Text(
             'Bizzmirth Holidays Pvt. Ltd.',
             style: Appwidget.poppinsAppBarTitle(),
             overflow: TextOverflow.ellipsis,
           ),
           centerTitle: true,
-          actions: [
+          actions: const [
             // IconButton(
             //   icon: Icon(Icons.refresh, color: Colors.white),
             //   onPressed: refreshUserTypes,
@@ -212,13 +211,13 @@ class _HomePageState extends State<HomePage> {
                 : RefreshIndicator(
                     onRefresh: controller.refreshUserTypes,
                     child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
+                      physics: const AlwaysScrollableScrollPhysics(),
                       child: Column(
                         children: [
-                          HeaderSection(),
-                          SizedBox(height: 5),
-                          CarouselSection(),
-                          SizedBox(height: 15),
+                          const HeaderSection(),
+                          const SizedBox(height: 5),
+                          const CarouselSection(),
+                          const SizedBox(height: 15),
                           MembershipPromotionCard(
                             isForFreeUser:
                                 false, // This shows "Start Your Journey With Us"
@@ -231,13 +230,13 @@ class _HomePageState extends State<HomePage> {
                               //             SignUpPage(selectedPlan: planName)));
                             },
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           _buildAboutUsSection(),
-                          SizedBox(height: 15),
-                          FancyVideoSlider(),
-                          TopSellingDestinations(),
-                          TopSellingPackages(),
-                          FooterSection(),
+                          const SizedBox(height: 15),
+                          const FancyVideoSlider(),
+                          const TopSellingDestinations(),
+                          const TopSellingPackages(),
+                          const FooterSection(),
                         ],
                       ),
                     ),

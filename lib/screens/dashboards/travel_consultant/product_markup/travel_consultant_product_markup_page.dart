@@ -37,30 +37,30 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Divider(thickness: 1, color: Colors.black26),
-              Center(
+              const Divider(thickness: 1, color: Colors.black26),
+              const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Product Markup",
+                    'Product Markup',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
+              const Divider(thickness: 1, color: Colors.black26),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Row(
                   children: [
-                    Text(
-                      "Select Travel Type:",
+                    const Text(
+                      'Select Travel Type:',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     DropdownButtonHideUnderline(
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade400),
                           borderRadius: BorderRadius.circular(10),
@@ -81,8 +81,7 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
                               });
                             }
                           },
-                          isExpanded: false,
-                          icon: Icon(Icons.arrow_drop_down),
+                          icon: const Icon(Icons.arrow_drop_down),
                           dropdownColor: Colors.white,
                         ),
                       ),
@@ -90,7 +89,7 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
                   ],
                 ),
               ),
-              FilterBar(),
+              const FilterBar(),
 
               // Dropdown Section for Travel Type
 
@@ -107,18 +106,18 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
                   child: PaginatedDataTable(
                     columnSpacing: 40,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Package Name")),
-                      DataColumn(label: Text("Price")),
-                      DataColumn(label: Text("Commission")),
-                      DataColumn(label: Text("Markup")),
-                      DataColumn(label: Text("Selling Price")),
-                      DataColumn(label: Text("Action"))
+                    columns: const [
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Package Name')),
+                      DataColumn(label: Text('Price')),
+                      DataColumn(label: Text('Commission')),
+                      DataColumn(label: Text('Markup')),
+                      DataColumn(label: Text('Selling Price')),
+                      DataColumn(label: Text('Action'))
                     ],
                     source: TcProductMarkupDataSource(productmarkup),
                     rowsPerPage: _rowsPerPage,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {
@@ -140,38 +139,38 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
 
 final List<Map<String, dynamic>> productmarkup = [
   {
-    "id": "1",
-    "pname": "Shimla",
-    "price": "32000",
-    "com": "2000",
-    "sprice": "34000",
+    'id': '1',
+    'pname': 'Shimla',
+    'price': '32000',
+    'com': '2000',
+    'sprice': '34000',
   },
   {
-    "id": "2",
-    "pname": "Shimla",
-    "price": "32000",
-    "com": "2000",
-    "sprice": "34000",
+    'id': '2',
+    'pname': 'Shimla',
+    'price': '32000',
+    'com': '2000',
+    'sprice': '34000',
   },
   {
-    "id": "3",
-    "pname": "Shimla",
-    "price": "32000",
-    "com": "2000",
-    "sprice": "34000",
+    'id': '3',
+    'pname': 'Shimla',
+    'price': '32000',
+    'com': '2000',
+    'sprice': '34000',
   },
   {
-    "id": "4",
-    "pname": "Shimla",
-    "price": "32000",
-    "com": "2000",
-    "sprice": "34000",
+    'id': '4',
+    'pname': 'Shimla',
+    'price': '32000',
+    'com': '2000',
+    'sprice': '34000',
   },
   {
-    "id": "5",
-    "pname": "Shimla",
-    "price": "32000",
-    "com": "2000",
-    "sprice": "34000",
+    'id': '5',
+    'pname': 'Shimla',
+    'price': '32000',
+    'com': '2000',
+    'sprice': '34000',
   },
 ];

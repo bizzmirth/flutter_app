@@ -28,12 +28,12 @@ class MyrefCustRegDataSource extends DataTableSource {
           child: Container(
             width: imageSize,
             height: imageSize,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
             ),
             clipBehavior: Clip.antiAlias,
             child: Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -45,16 +45,16 @@ class MyrefCustRegDataSource extends DataTableSource {
         imageUrl = profilePicture;
       } else {
         final newpath = extractPathSegment(profilePicture, 'profile_pic/');
-        imageUrl = "https://testca.uniqbizz.com/uploading/$newpath";
+        imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
       }
 
-      Logger.success("Final image URL: $imageUrl");
+      Logger.success('Final image URL: $imageUrl');
 
       return Center(
         child: Container(
           width: imageSize,
           height: imageSize,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
           clipBehavior: Clip.antiAlias,
@@ -65,7 +65,7 @@ class MyrefCustRegDataSource extends DataTableSource {
               child: CircularProgressIndicator(strokeWidth: 1.5),
             ),
             errorWidget: (context, url, error) => Image.asset(
-              "assets/default_profile.png",
+              'assets/default_profile.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -105,20 +105,19 @@ class MyrefCustRegDataSource extends DataTableSource {
           ),
         ),
         DataCell(Text(regCustomer.caCustomerId!)),
-        DataCell(Text(regCustomer.name ?? "N/A")),
-        DataCell(Text(regCustomer.taReferenceNo ?? "N/A")),
-        DataCell(Text(regCustomer.taReferenceName ?? "N/A")),
-        DataCell(Text(regCustomer.registerDate ?? "N/A")),
+        DataCell(Text(regCustomer.name ?? 'N/A')),
+        DataCell(Text(regCustomer.taReferenceNo ?? 'N/A')),
+        DataCell(Text(regCustomer.taReferenceName ?? 'N/A')),
+        DataCell(Text(regCustomer.registerDate ?? 'N/A')),
         DataCell(
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: getStatusColor(regCustomer.status!).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color:
                     getStatusColor(regCustomer.status!).withValues(alpha: 0.3),
-                width: 1,
               ),
             ),
             child: Text(
@@ -145,24 +144,24 @@ class MyrefCustRegDataSource extends DataTableSource {
         onSelected: (value) async {
           // Handle menu actions
           switch (value) {
-            case "add_ref":
+            case 'add_ref':
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddTAcustPage(isHidden: false),
+                  builder: (context) => const AddTAcustPage(isHidden: false),
                 ),
               );
               if (result == true) {
                 await _refreshData();
               }
               break;
-            case "edit":
+            case 'edit':
               // This case is handled by onTap in PopupMenuItem
               break;
-            case "delete":
+            case 'delete':
               // This case is handled by onTap in PopupMenuItem
               break;
-            case "restore":
+            case 'restore':
               await customerController.apiRestoreCustomer(context, regCustomer);
               await _refreshData();
               break;
@@ -170,16 +169,16 @@ class MyrefCustRegDataSource extends DataTableSource {
               break;
           }
         },
-        itemBuilder: (BuildContext context) {
-          List<PopupMenuEntry<String>> menuItems = [];
+        itemBuilder: (context) {
+          final List<PopupMenuEntry<String>> menuItems = [];
 
-          if (regCustomer.status == "1") {
+          if (regCustomer.status == '1') {
             menuItems.addAll([
               PopupMenuItem(
-                value: "edit",
+                value: 'edit',
                 child: ListTile(
-                  leading: Icon(Icons.edit, color: Colors.blueAccent),
-                  title: Text("Edit"),
+                  leading: const Icon(Icons.edit, color: Colors.blueAccent),
+                  title: const Text('Edit'),
                   onTap: () async {
                     // Close the popup menu first
                     Navigator.pop(context);
@@ -202,10 +201,10 @@ class MyrefCustRegDataSource extends DataTableSource {
                 ),
               ),
               PopupMenuItem(
-                value: "delete",
+                value: 'delete',
                 child: ListTile(
-                  leading: Icon(Icons.delete, color: Colors.red),
-                  title: Text("Delete"),
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title: const Text('Delete'),
                   onTap: () async {
                     Navigator.pop(context);
                     await customerController.apiDeleteCustomer(
@@ -215,13 +214,13 @@ class MyrefCustRegDataSource extends DataTableSource {
                 ),
               ),
             ]);
-          } else if (regCustomer.status == "3") {
+          } else if (regCustomer.status == '3') {
             menuItems.add(
               PopupMenuItem(
-                value: "restore",
+                value: 'restore',
                 child: ListTile(
-                  leading: Icon(Icons.restore, color: Colors.green),
-                  title: Text("Restore"),
+                  leading: const Icon(Icons.restore, color: Colors.green),
+                  title: const Text('Restore'),
                   onTap: () async {
                     Navigator.pop(context);
                     await customerController.apiRestoreCustomer(
@@ -235,7 +234,7 @@ class MyrefCustRegDataSource extends DataTableSource {
 
           return menuItems;
         },
-        icon: Icon(Icons.more_vert, color: Colors.black54),
+        icon: const Icon(Icons.more_vert, color: Colors.black54),
       );
     });
   }
@@ -252,7 +251,7 @@ class MyrefCustRegDataSource extends DataTableSource {
       onDataChanged?.call();
       notifyListeners();
     } catch (e) {
-      Logger.error("Error refreshing data: $e");
+      Logger.error('Error refreshing data: $e');
     }
   }
 

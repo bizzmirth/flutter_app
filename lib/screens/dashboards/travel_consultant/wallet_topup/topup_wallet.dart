@@ -25,12 +25,12 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
   String? customerType;
 
   final TextEditingController _amountController = TextEditingController();
-  String _selectedPaymentMode = "Credit Card";
+  String _selectedPaymentMode = 'Credit Card';
   final List<String> _paymentModes = [
-    "Credit Card",
-    "Debit Card",
-    "UPI",
-    "Net Banking"
+    'Credit Card',
+    'Debit Card',
+    'UPI',
+    'Net Banking'
   ];
 
   @override
@@ -41,25 +41,25 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
       context.read<CustomerController>().getRegCustomerCount();
     });
     _controller = AnimationController(
-      duration: Duration(seconds: 1),
+      duration: const Duration(seconds: 1),
       vsync: this,
     );
   }
 
-  void getSharedPrefData() async {
+  Future<void> getSharedPrefData() async {
     customerType = await SharedPrefHelper().getUserType();
   }
 
   void _addPendingTransaction() {
-    double? amount = double.tryParse(_amountController.text);
+    final double? amount = double.tryParse(_amountController.text);
     if (amount == null || amount <= 0) return;
 
     setState(() {
       _pendingTransactions.insert(0, {
-        "id": "TA12345",
-        "name": "John Doe",
-        "amount": "₹${amount.toStringAsFixed(2)}",
-        "mode": _selectedPaymentMode,
+        'id': 'TA12345',
+        'name': 'John Doe',
+        'amount': '₹${amount.toStringAsFixed(2)}',
+        'mode': _selectedPaymentMode,
       });
     });
 
@@ -68,9 +68,10 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
 
   void _approveTransaction(int index) {
     setState(() {
-      var transaction = _pendingTransactions.removeAt(index);
+      final transaction = _pendingTransactions.removeAt(index);
       _transactions.insert(0, transaction);
-      double amount = double.parse(transaction["amount"]!.replaceAll("₹", ""));
+      final double amount =
+          double.parse(transaction['amount']!.replaceAll('₹', ''));
       _balance += amount;
       _controller.forward(from: 0);
     });
@@ -87,34 +88,31 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.white)),
+        title: Text(widget.title, style: const TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _buildAnimatedWallet(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildTopUpFields(context),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
               width: 300,
               height: 50,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [Colors.blueAccent, Colors.purpleAccent],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
                 ),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.blueAccent.withValues(alpha: 0.3),
                     blurRadius: 8,
-                    offset: Offset(0, 4),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -123,7 +121,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: _addPendingTransaction,
-                  child: Center(
+                  child: const Center(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -131,7 +129,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                             color: Colors.white, size: 20),
                         SizedBox(width: 8),
                         Text(
-                          "Add Balance",
+                          'Add Balance',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -144,7 +142,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _buildNavigationButtons(),
           ],
         ),
@@ -158,13 +156,13 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildReadOnlyField(
-            "TA Reference ID", controller.userTaReferenceNo ?? ""),
-        SizedBox(height: 10),
+            'TA Reference ID', controller.userTaReferenceNo ?? ''),
+        const SizedBox(height: 10),
         _buildReadOnlyField(
-            "TA Reference Name", controller.userTaRefrenceName ?? ""),
-        SizedBox(height: 10),
+            'TA Reference Name', controller.userTaRefrenceName ?? ''),
+        const SizedBox(height: 10),
         _buildAmountField(),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         _buildPaymentModeDropdown(),
       ],
     );
@@ -188,7 +186,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
       controller: _amountController,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
-        labelText: "Enter Amount",
+        labelText: 'Enter Amount',
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -211,7 +209,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
         );
       }).toList(),
       decoration: InputDecoration(
-        labelText: "Payment Mode",
+        labelText: 'Payment Mode',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         filled: true,
         fillColor: Colors.white,
@@ -220,12 +218,12 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
   }
 
   Widget _buildAnimatedWallet() {
-    List<Color> colors = [Colors.blueAccent, Colors.purpleAccent];
+    final List<Color> colors = [Colors.blueAccent, Colors.purpleAccent];
     int currentColorIndex = 0;
 
     return StatefulBuilder(
       builder: (context, setState) {
-        Timer.periodic(Duration(seconds: 60000), (timer) {
+        Timer.periodic(const Duration(seconds: 60000), (timer) {
           if (mounted) {
             setState(() {
               currentColorIndex = (currentColorIndex + 1) % colors.length;
@@ -234,7 +232,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
         });
 
         return TweenAnimationBuilder<double>(
-          duration: Duration(milliseconds: 800),
+          duration: const Duration(milliseconds: 800),
           tween: Tween<double>(begin: _balance - 50, end: _balance),
           builder: (context, value, child) {
             return Container(
@@ -252,17 +250,17 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                   end: Alignment.bottomRight,
                 ),
               ),
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  const Row(
                     children: [
                       Icon(Icons.account_balance_wallet,
                           size: 35, color: Colors.white),
                       SizedBox(width: 8),
                       Text(
-                        "MY WALLET",
+                        'MY WALLET',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -271,10 +269,10 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                       ),
                     ],
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Text(
-                    "₹${value.toStringAsFixed(2)}",
-                    style: TextStyle(
+                    '₹${value.toStringAsFixed(2)}',
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -292,7 +290,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
   Widget _buildNavigationButtons() {
     return Column(
       children: [
-        customerType == "Admin"
+        customerType == 'Admin'
             ? Container(
                 width: 300,
                 height: 48,
@@ -302,15 +300,13 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                       Colors.blueAccent.withValues(alpha: 0.8),
                       Colors.purpleAccent.withValues(alpha: 0.8)
                     ],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
                   ),
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.blueAccent.withValues(alpha: 0.2),
                       blurRadius: 6,
-                      offset: Offset(0, 2),
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
@@ -330,7 +326,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                         ),
                       );
                     },
-                    child: Center(
+                    child: const Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -338,7 +334,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                               color: Colors.white, size: 18),
                           SizedBox(width: 8),
                           Text(
-                            "Approve Payments",
+                            'Approve Payments',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 15,
@@ -351,8 +347,8 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                   ),
                 ),
               )
-            : SizedBox(),
-        SizedBox(height: 12),
+            : const SizedBox(),
+        const SizedBox(height: 12),
         Container(
           width: 300,
           height: 48,
@@ -364,7 +360,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
               BoxShadow(
                 color: Colors.grey.withValues(alpha: 0.1),
                 blurRadius: 6,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -381,14 +377,14 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                   ),
                 );
               },
-              child: Center(
+              child: const Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.history, color: Colors.blueAccent, size: 18),
                     SizedBox(width: 8),
                     Text(
-                      "View Transaction History",
+                      'View Transaction History',
                       style: TextStyle(
                         color: Colors.blueAccent,
                         fontSize: 15,
@@ -401,7 +397,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
             ),
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Container(
           width: 300,
           height: 48,
@@ -413,7 +409,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
               BoxShadow(
                 color: Colors.grey.withValues(alpha: 0.1),
                 blurRadius: 6,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -431,7 +427,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                   ),
                 );
               },
-              child: Center(
+              child: const Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -439,7 +435,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                         color: Colors.blueAccent, size: 18),
                     SizedBox(width: 8),
                     Text(
-                      "View Pending History",
+                      'View Pending History',
                       style: TextStyle(
                         color: Colors.blueAccent,
                         fontSize: 15,

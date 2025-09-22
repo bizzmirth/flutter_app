@@ -27,12 +27,12 @@ class AddViewTechnoPage extends StatefulWidget {
 
 class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
   Map<String, dynamic> selectedFiles = {
-    "Profile Picture": null,
-    "Aadhar Card": null,
-    "Pan Card": null,
-    "Bank Passbook": null,
-    "Voting Card": null,
-    "Payment Proof": null
+    'Profile Picture': null,
+    'Aadhar Card': null,
+    'Pan Card': null,
+    'Bank Passbook': null,
+    'Voting Card': null,
+    'Payment Proof': null
   };
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _refNameController = TextEditingController();
@@ -48,16 +48,16 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
   final TextEditingController _gstController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _pincodeController = TextEditingController();
-  var savedImagePath = "";
-  String selectedGender = "---- Select Gender ----";
-  String selectedCountry = "---- Select Country ----";
-  String selectedState = "---- Select State ----";
-  String selectedCity = "---- Select City ----";
-  String selectedUserId = "---- Select User Id ----";
-  String selectedBusinessPackage = "---- Select Business Package ----";
+  var savedImagePath = '';
+  String selectedGender = '---- Select Gender ----';
+  String selectedCountry = '---- Select Country ----';
+  String selectedState = '---- Select State ----';
+  String selectedCity = '---- Select City ----';
+  String selectedUserId = '---- Select User Id ----';
+  String selectedBusinessPackage = '---- Select Business Package ----';
   final IsarService _isarService = IsarService();
 
-  String _selectedPackage = "Cash"; // Default selection
+  String _selectedPackage = 'Cash'; // Default selection
 
   String _selectedCountryCode = '+91'; // Default country code
 
@@ -69,41 +69,41 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
     }
   }
 
-  void updatePendingTechnoEnterprise() async {
+  Future<void> updatePendingTechnoEnterprise() async {
     try {
-      Map<String, String> documentPaths = {};
+      final Map<String, String> documentPaths = {};
       selectedFiles.forEach((key, value) {
         if (value != null) {
-          String filePath = value.path;
+          final String filePath = value.path;
 
           switch (key) {
-            case "Profile Picture":
+            case 'Profile Picture':
               documentPaths['profilePicture'] = filePath;
               break;
-            case "Aadhar Card":
+            case 'Aadhar Card':
               documentPaths['adharCard'] = filePath;
               break;
-            case "Pan Card":
+            case 'Pan Card':
               documentPaths['panCard'] = filePath;
               break;
-            case "Bank Passbook":
+            case 'Bank Passbook':
               documentPaths['bankPassbook'] = filePath;
               break;
-            case "Voting Card":
+            case 'Voting Card':
               documentPaths['votingCard'] = filePath;
               break;
-            case "Payment Proof":
+            case 'Payment Proof':
               documentPaths['paymentProof'] = filePath;
               break;
           }
         }
       });
-      final String formattedDate = DateFormat("yyyy-MM-dd").format(
-        DateFormat("dd-MM-yyyy").parse(_dateController.text),
+      final String formattedDate = DateFormat('yyyy-MM-dd').format(
+        DateFormat('dd-MM-yyyy').parse(_dateController.text),
       );
-      Logger.success("formatted date:: $formattedDate");
-      int? id = widget.pendingTechnoEnterprise!.id;
-      PendingTechnoEnterpriseModel updateTechnoEnterprise =
+      Logger.success('formatted date:: $formattedDate');
+      final int? id = widget.pendingTechnoEnterprise!.id;
+      final PendingTechnoEnterpriseModel updateTechnoEnterprise =
           PendingTechnoEnterpriseModel()
             ..id = id
             ..userId = selectedUserId
@@ -114,7 +114,7 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
             ..businessPackage = selectedBusinessPackage
             ..amount = _amountController.text
             ..gstNo = _gstController.text
-            ..countryCd = "91"
+            ..countryCd = '91'
             ..phoneNumber = _phoneController.text
             ..email = _emailController.text
             ..dob = formattedDate
@@ -126,27 +126,27 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
             ..pincode = _pincodeController.text
             ..address = _addressController.text
             ..packageFor = _selectedPackage
-            ..profilePicture = documentPaths["profilePicture"]
-            ..adharCard = documentPaths["adharCard"]
-            ..panCard = documentPaths["panCard"]
-            ..bankPassbook = documentPaths["bankPassbook"]
-            ..votingCard = documentPaths["votingCard"]
-            ..paymentProof = documentPaths["paymentProof"];
+            ..profilePicture = documentPaths['profilePicture']
+            ..adharCard = documentPaths['adharCard']
+            ..panCard = documentPaths['panCard']
+            ..bankPassbook = documentPaths['bankPassbook']
+            ..votingCard = documentPaths['votingCard']
+            ..paymentProof = documentPaths['paymentProof'];
 
       final updated = await _isarService.update(updateTechnoEnterprise, id!);
-      Logger.success("Updating the techno enterprise was : $updated");
+      Logger.success('Updating the techno enterprise was : $updated');
     } catch (e) {
-      Logger.error("Error updating pending techno enterprise: $e");
+      Logger.error('Error updating pending techno enterprise: $e');
     }
   }
 
   void _populatePendingTechnoEnterprise(
       PendingTechnoEnterpriseModel technoEnterprise) {
     selectedUserId = technoEnterprise.userId!;
-    DateTime? originalDate = DateTime.tryParse(technoEnterprise.dob!);
+    final DateTime? originalDate = DateTime.tryParse(technoEnterprise.dob!);
     _refNameController.text = technoEnterprise.refName!;
-    _firstNameController.text = technoEnterprise.name?.split(" ").first ?? '';
-    _lastNameController.text = technoEnterprise.name?.split(" ").last ?? '';
+    _firstNameController.text = technoEnterprise.name?.split(' ').first ?? '';
+    _lastNameController.text = technoEnterprise.name?.split(' ').last ?? '';
     _nomineeNameController.text = technoEnterprise.nomineeName!;
     _nomineeRelationController.text = technoEnterprise.nomineeRelation!;
     selectedBusinessPackage = technoEnterprise.packageFor!;
@@ -167,14 +167,14 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
     selectedBusinessPackage = technoEnterprise.businessPackage!;
   }
 
-  void _pickFile(String fileType) async {
+  Future<void> _pickFile(String fileType) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
       if (result == null) return;
 
-      String originalPath = result.files.single.path!;
+      final String originalPath = result.files.single.path!;
 
       final appDir = await getApplicationDocumentsDirectory();
       final bizmirthDir = Directory('${appDir.path}/bizmirth');
@@ -185,29 +185,29 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
 
       String subFolderName;
       switch (fileType) {
-        case "Profile Picture":
-          subFolderName = "profile_pic";
+        case 'Profile Picture':
+          subFolderName = 'profile_pic';
           break;
-        case "ID Proof":
-          subFolderName = "id_proof";
+        case 'ID Proof':
+          subFolderName = 'id_proof';
           break;
-        case "Bank Details":
-          subFolderName = "passbook";
+        case 'Bank Details':
+          subFolderName = 'passbook';
           break;
-        case "Aadhar Card":
-          subFolderName = "aadhar_card";
+        case 'Aadhar Card':
+          subFolderName = 'aadhar_card';
           break;
-        case "Pan Card":
-          subFolderName = "pan_card";
+        case 'Pan Card':
+          subFolderName = 'pan_card';
           break;
-        case "Voting Card":
-          subFolderName = "voting_card";
+        case 'Voting Card':
+          subFolderName = 'voting_card';
           break;
-        case "Payment Proof":
-          subFolderName = "payment_proof";
+        case 'Payment Proof':
+          subFolderName = 'payment_proof';
           break;
         default:
-          subFolderName = "other_documents";
+          subFolderName = 'other_documents';
       }
 
       // Create the specific subfolder
@@ -227,7 +227,7 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
         selectedFiles[fileType] = File(savedImagePath);
       });
     } catch (e) {
-      Logger.error("Error picking file: $e");
+      Logger.error('Error picking file: $e');
     }
   }
 
@@ -255,51 +255,51 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
     final city = selectedCity;
     final pincode = _pincodeController.text;
     final address = _addressController.text;
-    final String formattedDate = DateFormat("yyyy-MM-dd").format(
-      DateFormat("dd-MM-yyyy").parse(_dateController.text),
+    final String formattedDate = DateFormat('yyyy-MM-dd').format(
+      DateFormat('dd-MM-yyyy').parse(_dateController.text),
     );
-    Logger.success("formattedDate: $formattedDate");
-    Logger.success("Selected User Id : $userId");
-    Logger.success("Name: $name");
-    Logger.success("Ref Name: $refName");
-    Logger.success("Nominee Name: $nomineeName");
-    Logger.success("Nominee Relation: $nomineeRelation");
-    Logger.success("Business Package: $businessPackage");
-    Logger.success("Amount: $amount");
-    Logger.success("GST: $gst");
-    Logger.success("Phone: $phone");
-    Logger.success("Email: $email");
-    Logger.success("Gender: $gender");
-    Logger.success("Date: $date");
-    Logger.success("Country: $country");
-    Logger.success("State: $state");
-    Logger.success("City: $city");
-    Logger.success("Pincode: $pincode");
-    Logger.success("Address: $address");
+    Logger.success('formattedDate: $formattedDate');
+    Logger.success('Selected User Id : $userId');
+    Logger.success('Name: $name');
+    Logger.success('Ref Name: $refName');
+    Logger.success('Nominee Name: $nomineeName');
+    Logger.success('Nominee Relation: $nomineeRelation');
+    Logger.success('Business Package: $businessPackage');
+    Logger.success('Amount: $amount');
+    Logger.success('GST: $gst');
+    Logger.success('Phone: $phone');
+    Logger.success('Email: $email');
+    Logger.success('Gender: $gender');
+    Logger.success('Date: $date');
+    Logger.success('Country: $country');
+    Logger.success('State: $state');
+    Logger.success('City: $city');
+    Logger.success('Pincode: $pincode');
+    Logger.success('Address: $address');
 
     try {
-      Map<String, String> documentPaths = {};
+      final Map<String, String> documentPaths = {};
       selectedFiles.forEach((key, value) {
         if (value != null) {
-          String filePath = value.path;
+          final String filePath = value.path;
 
           switch (key) {
-            case "Profile Picture":
+            case 'Profile Picture':
               documentPaths['profilePicture'] = filePath;
               break;
-            case "Aadhar Card":
+            case 'Aadhar Card':
               documentPaths['adharCard'] = filePath;
               break;
-            case "Pan Card":
+            case 'Pan Card':
               documentPaths['panCard'] = filePath;
               break;
-            case "Bank Passbook":
+            case 'Bank Passbook':
               documentPaths['bankPassbook'] = filePath;
               break;
-            case "Voting Card":
+            case 'Voting Card':
               documentPaths['votingCard'] = filePath;
               break;
-            case "Payment Proof":
+            case 'Payment Proof':
               documentPaths['paymentProof'] = filePath;
               break;
           }
@@ -314,7 +314,7 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
         ..businessPackage = businessPackage
         ..amount = amount.toString()
         ..gstNo = gst.toString()
-        ..countryCd = "91"
+        ..countryCd = '91'
         ..phoneNumber = phone.toString()
         ..email = email
         ..dob = formattedDate
@@ -326,17 +326,17 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
         ..pincode = pincode
         ..address = address
         ..packageFor = _selectedPackage
-        ..profilePicture = documentPaths["profilePicture"]
-        ..adharCard = documentPaths["adharCard"]
-        ..panCard = documentPaths["panCard"]
-        ..bankPassbook = documentPaths["bankPassbook"]
-        ..votingCard = documentPaths["votingCard"]
-        ..paymentProof = documentPaths["paymentProof"];
+        ..profilePicture = documentPaths['profilePicture']
+        ..adharCard = documentPaths['adharCard']
+        ..panCard = documentPaths['panCard']
+        ..bankPassbook = documentPaths['bankPassbook']
+        ..votingCard = documentPaths['votingCard']
+        ..paymentProof = documentPaths['paymentProof'];
 
       await _isarService
           .save<PendingTechnoEnterpriseModel>(newTechnoEnterprise);
     } catch (e) {
-      Logger.error("Error in form submission: $e");
+      Logger.error('Error in form submission: $e');
     }
   }
 
@@ -347,7 +347,7 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
       maxLines: maxLines,
       validator: validator,
       controller: controller,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
@@ -368,7 +368,8 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
     Function(String?) onValueChanged, {
     String? Function(String?)? validator, // Add this parameter
   }) {
-    String defaultOption = "---- Select $label ----"; // Default placeholder
+    final String defaultOption =
+        '---- Select $label ----'; // Default placeholder
     if (!items.contains(selectedValue) && selectedValue != defaultOption) {
       selectedValue = defaultOption;
     }
@@ -381,7 +382,8 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
           DropdownMenuItem(
             enabled: widget.isViewMode,
             value: defaultOption, // Placeholder value
-            child: Text(defaultOption, style: TextStyle(color: Colors.white)),
+            child: Text(defaultOption,
+                style: const TextStyle(color: Colors.white)),
           ),
           ...items.map((e) => DropdownMenuItem(
               value: e,
@@ -444,35 +446,35 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                       'User Id & Name *',
                       ['Margao', 'Panjim', 'Other'],
                       selectedUserId,
                       (value) => setState(() => selectedUserId = value!)),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Reference Name *', _refNameController),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('First Name*', _firstNameController),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Last Name*', _lastNameController),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Nominee Name*', _nomineeNameController),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField(
                       'Nominee Relation*', _nomineeRelationController),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                     'Business Package/Amount',
                     ['Standard', 'Prime', 'Premium'],
                     selectedBusinessPackage,
                     (value) => setState(() => selectedBusinessPackage = value!),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Amount', _amountController),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('GST NO', _gstController),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
@@ -489,13 +491,13 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                             value: _selectedCountryCode,
                             onChanged: widget.isViewMode
                                 ? null
-                                : (String? newValue) {
+                                : (newValue) {
                                     setState(() {
                                       _selectedCountryCode = newValue!;
                                     });
                                   },
-                            items: ["+91", "+1", "+44", "+61", "+971"]
-                                .map((String value) {
+                            items: ['+91', '+1', '+44', '+61', '+971']
+                                .map((value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Container(
@@ -503,21 +505,20 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                                       50, // Adjust this value to reduce the width of each item
                                   alignment: Alignment.center,
                                   child: Text(value,
-                                      style: TextStyle(
-                                          color: const Color.fromARGB(
+                                      style: const TextStyle(
+                                          color: Color.fromARGB(
                                               255, 255, 255, 255))),
                                 ),
                               );
                             }).toList(),
                             dropdownColor:
                                 const Color.fromARGB(255, 83, 83, 83),
-                            isExpanded: false,
                             underline:
-                                SizedBox(), // Hides the default underline
+                                const SizedBox(), // Hides the default underline
                           ),
                         ),
                         // Phone number text field
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
                             readOnly: widget.isViewMode,
@@ -525,11 +526,10 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                             keyboardType: TextInputType.phone,
                             maxLength:
                                 10, // Limit to typical phone number length
-                            style: TextStyle(
-                                color:
-                                    const Color.fromARGB(255, 255, 255, 255)),
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 255, 255, 255)),
                             decoration: InputDecoration(
-                              labelText: "Phone number",
+                              labelText: 'Phone number',
                               labelStyle: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
@@ -538,30 +538,30 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
                               ),
-                              counterText: "", // Hide character counter
+                              counterText: '', // Hide character counter
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Email *', _emailController),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildDropdown(
                     'Gender *',
                     ['Male', 'Female', 'Other'],
                     selectedGender,
                     (value) => setState(() => selectedGender = value!),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextFormField(
                       controller: _dateController,
                       readOnly: true, // Makes the TextFormField non-editable
                       enabled: !widget.isViewMode,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Date of Joining *',
                         labelStyle: TextStyle(
@@ -575,18 +575,16 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                         suffixIcon: _dateController.text.isNotEmpty &&
                                 !widget.isViewMode
                             ? IconButton(
-                                icon: Icon(Icons.close, color: Colors.white),
+                                icon: const Icon(Icons.close,
+                                    color: Colors.white),
                                 onPressed: () {
-                                  setState(() {
-                                    _dateController
-                                        .clear(); // Clears the date when cancel button is pressed
-                                  });
+                                  setState(_dateController.clear);
                                 },
                               )
                             : null, // Only show cancel button if date is selected
                       ),
                       onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
+                        final DateTime? pickedDate = await showDatePicker(
                           context: context,
                           initialDate: _dateController.text.isNotEmpty
                               ? DateFormat('dd-MM-yyyy')
@@ -600,48 +598,48 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                             _dateController.text =
                                 DateFormat('dd-MM-yyyy').format(pickedDate);
                             Logger.warning(
-                                "Selected date ${_dateController.text}");
+                                'Selected date ${_dateController.text}');
                           });
                         }
                       },
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                     'Country *',
                     ['India', 'Pakistan', 'Other'],
                     selectedCountry,
                     (value) => setState(() => selectedCountry = value!),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                     'State *',
                     ['Goa', 'Delhi', 'Other'],
                     selectedState,
                     (value) => setState(() => selectedState = value!),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown(
                     'City *',
                     ['Margao', 'Panjim', 'Other'],
                     selectedCity,
                     (value) => setState(() => selectedCity = value!),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildTextField('Pincode *', _pincodeController),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Address *', _addressController),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       RichText(
-                        text: TextSpan(
-                          text: "Package applicable for ",
+                        text: const TextSpan(
+                          text: 'Package applicable for ',
                           style: TextStyle(fontSize: 16, color: Colors.white),
                           children: [
                             TextSpan(
-                              text: "*",
+                              text: '*',
                               style: TextStyle(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold),
@@ -649,9 +647,9 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Row(
-                        children: ["Cash", "Cheque", "UPI/NEFT"].map((package) {
+                        children: ['Cash', 'Cheque', 'UPI/NEFT'].map((package) {
                           return GestureDetector(
                             onTap: widget.isViewMode
                                 ? null
@@ -674,20 +672,20 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                                             setState(() {
                                               _selectedPackage = value;
                                               Logger.success(
-                                                  "Selected package: $_selectedPackage");
+                                                  'Selected package: $_selectedPackage');
                                             });
                                           }
                                         },
                                 ),
                                 Text(
                                   package,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.white,
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                               ],
                             ),
                           );
@@ -695,19 +693,19 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
-                    "Attachments",
+                    'Attachments',
                     style: Appwidget.normalSubTitle(),
                   ),
-                  SizedBox(height: 10),
-                  _buildUploadButton("Profile Picture"),
-                  _buildUploadButton("Aadhar Card"),
-                  _buildUploadButton("Pan Card"),
-                  _buildUploadButton("Bank Passbook"),
-                  _buildUploadButton("Voting Card"),
-                  _buildUploadButton("Payment Proof"),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 10),
+                  _buildUploadButton('Profile Picture'),
+                  _buildUploadButton('Aadhar Card'),
+                  _buildUploadButton('Pan Card'),
+                  _buildUploadButton('Bank Passbook'),
+                  _buildUploadButton('Voting Card'),
+                  _buildUploadButton('Payment Proof'),
+                  const SizedBox(height: 20),
                   if (widget.isEditMode) ...[
                     Center(
                       child: ElevatedButton(
@@ -722,14 +720,14 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                         ),
-                        child: Text(
-                          "Save Changes",
+                        child: const Text(
+                          'Save Changes',
                           style:
                               TextStyle(color: Colors.blueAccent, fontSize: 16),
                         ),
@@ -741,14 +739,14 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                         onPressed: submitForm,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                         ),
-                        child: Text(
-                          "Submit",
+                        child: const Text(
+                          'Submit',
                           style:
                               TextStyle(color: Colors.blueAccent, fontSize: 16),
                         ),
@@ -772,17 +770,18 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
           if (!widget.isViewMode)
             ElevatedButton.icon(
               onPressed: () => _pickFile(fileType),
-              icon: Icon(Icons.upload_file),
-              label: Text("Upload $fileType"),
+              icon: const Icon(Icons.upload_file),
+              label: Text('Upload $fileType'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
             ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           if (selectedFiles[fileType] != null)
             Stack(
               children: [
@@ -804,7 +803,7 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                             selectedFiles[fileType],
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              return Center(
+                              return const Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -826,12 +825,12 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                     child: InkWell(
                       onTap: () => _removeFile(fileType),
                       child: Container(
-                        padding: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
                           color: Colors.red,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.close,
                           color: Colors.white,
                           size: 16,
@@ -850,14 +849,13 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.3),
-                  width: 1,
                 ),
               ),
               child: Center(
                 child: Text(
                   // widget.isViewMode ? "No $fileType available"
-                  "No $fileType uploaded",
-                  style: TextStyle(
+                  'No $fileType uploaded',
+                  style: const TextStyle(
                     color: Colors.white70,
                   ),
                 ),

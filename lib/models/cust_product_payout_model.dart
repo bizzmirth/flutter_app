@@ -21,7 +21,7 @@ class CustProductPayoutModel {
     return CustProductPayoutModel(
       date: json['date']?.toString() ?? '',
       payoutDetails: json['payout_details']?.toString() ?? '',
-      message: json['message']?.toString() ?? "",
+      message: json['message']?.toString() ?? '',
       amount: json['amount']?.toString() ?? '',
       tds: json['tds']?.toString() ?? '',
       totalPayable:

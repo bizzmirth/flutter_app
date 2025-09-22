@@ -8,22 +8,23 @@ class TransactionHistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('Transaction History', style: TextStyle(color: Colors.white)),
+        title: const Text('Transaction History',
+            style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
       body: ListView.builder(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         itemCount: transactions.length,
         itemBuilder: (context, index) {
           final transaction = transactions[index];
           return Card(
             child: ListTile(
-              title: Text(transaction["name"] ?? "N/A"),
+              title: Text(transaction['name'] ?? 'N/A'),
               subtitle: Text(
                   "Amount: ${transaction["amount"]} | Mode: ${transaction["mode"]}"),
-              leading: Icon(Icons.account_balance_wallet, color: Colors.blue),
+              leading:
+                  const Icon(Icons.account_balance_wallet, color: Colors.blue),
             ),
           );
         },

@@ -23,15 +23,15 @@ class _PendingTransactionsPageState extends State<PendingTransactionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('Pending Transactions', style: TextStyle(color: Colors.white)),
+        title: const Text('Pending Transactions',
+            style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
       body: _localPendingTransactions.isEmpty
-          ? Center(
+          ? const Center(
               child: Text(
-                "No pending transactions",
+                'No pending transactions',
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
@@ -39,7 +39,7 @@ class _PendingTransactionsPageState extends State<PendingTransactionsPage> {
               ),
             )
           : Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: ListView.builder(
                 itemCount: _localPendingTransactions.length,
                 itemBuilder: (context, index) {
@@ -54,28 +54,28 @@ class _PendingTransactionsPageState extends State<PendingTransactionsPage> {
   Widget _buildTransactionCard(Map<String, String> transaction) {
     return Card(
       elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: Colors.white,
       child: Padding(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInfoRow("Transaction ID", transaction["id"]!),
-            _buildInfoRow("Name", transaction["name"]!),
-            _buildInfoRow("Amount", transaction["amount"]!, isBold: true),
-            _buildInfoRow("Payment Mode", transaction["mode"]!),
-            SizedBox(height: 8),
+            _buildInfoRow('Transaction ID', transaction['id']!),
+            _buildInfoRow('Name', transaction['name']!),
+            _buildInfoRow('Amount', transaction['amount']!, isBold: true),
+            _buildInfoRow('Payment Mode', transaction['mode']!),
+            const SizedBox(height: 8),
             Container(
-              padding: EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.symmetric(vertical: 6),
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: Colors.orangeAccent.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(
-                "Pending Approval",
+              child: const Text(
+                'Pending Approval',
                 style: TextStyle(
                     color: Colors.orange, fontWeight: FontWeight.bold),
               ),

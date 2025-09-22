@@ -78,19 +78,19 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: selectedDepartment ?? "  Select Department    ",
+        value: selectedDepartment ?? '  Select Department    ',
         items: [
-          DropdownMenuItem(
-            value: "  Select Department    ",
+          const DropdownMenuItem(
+            value: '  Select Department    ',
             child: Text(
-              "  Select Department    ",
-              style: TextStyle(color: const Color.fromARGB(166, 29, 29, 29)),
+              '  Select Department    ',
+              style: TextStyle(color: Color.fromARGB(166, 29, 29, 29)),
             ),
           ),
           ...departments.map((dept) => DropdownMenuItem(
@@ -101,7 +101,7 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
         onChanged: widget.isViewMode
             ? null
             : (value) {
-                if (value != "  Select Department    ") {
+                if (value != '  Select Department    ') {
                   // Find the corresponding department ID
                   final selectedDept = departments.firstWhere(
                     (dept) => dept['dept_name'] == value,
@@ -132,7 +132,7 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
               : const Color.fromARGB(255, 255, 255, 255),
         ),
         style: widget.isViewMode
-            ? TextStyle(color: Colors.black54)
+            ? const TextStyle(color: Colors.black54)
             : const TextStyle(color: Colors.black),
         dropdownColor: Colors.white,
         isExpanded: true,

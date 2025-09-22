@@ -43,7 +43,7 @@ class AdminCustomerController extends ChangeNotifier {
         headers: {'Content-Type': 'application/json'},
       );
 
-      Logger.success("Fetched Pending customer ${response.body}");
+      Logger.success('Fetched Pending customer ${response.body}');
 
       final Map<String, dynamic> jsonData = json.decode(response.body);
 
@@ -54,11 +54,11 @@ class AdminCustomerController extends ChangeNotifier {
         _pendingCustomer = customers;
         notifyListeners();
       } else {
-        Logger.error("Unexpected response format or empty data.");
+        Logger.error('Unexpected response format or empty data.');
       }
     } catch (e, s) {
       Logger.error(
-          "Error fetching pending customer, Error: $e, Stacktrace: $s");
+          'Error fetching pending customer, Error: $e, Stacktrace: $s');
     } finally {
       setLoading(false);
     }
@@ -77,7 +77,7 @@ class AdminCustomerController extends ChangeNotifier {
         Uri.parse(fullUrl),
         headers: {'Content-Type': 'application/json'},
       );
-      Logger.success("Fetched Registered Customer: ${response.body}");
+      Logger.success('Fetched Registered Customer: ${response.body}');
 
       final Map<String, dynamic> jsonData = json.decode(response.body);
 
@@ -89,11 +89,11 @@ class AdminCustomerController extends ChangeNotifier {
         notifyListeners();
       } else {
         Logger.error(
-            "Unexpected response format or empty data ${response.body}");
+            'Unexpected response format or empty data ${response.body}');
       }
     } catch (e, s) {
       Logger.error(
-          "Error fetching registered customer, Error $e, Stacktrace $s");
+          'Error fetching registered customer, Error $e, Stacktrace $s');
     } finally {
       setLoading(false);
     }
@@ -127,10 +127,10 @@ class AdminCustomerController extends ChangeNotifier {
 
   Future<List<dynamic>> apiGetCountry() async {
     try {
-      final fullUrl = "https://testca.uniqbizz.com/api/country.php";
+      final fullUrl = 'https://testca.uniqbizz.com/api/country.php';
 
       final response = await http.get(Uri.parse(fullUrl));
-      Logger.success("message");
+      Logger.success('message');
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -143,24 +143,24 @@ class AdminCustomerController extends ChangeNotifier {
           return [];
         }
       } else {
-        Logger.error("API returned error code: ${response.statusCode}");
+        Logger.error('API returned error code: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      Logger.error("Error getting countries: $e");
+      Logger.error('Error getting countries: $e');
       return [];
     }
   }
 
   Future<List<dynamic>> apiGetStates(String countryId) async {
     try {
-      final fullUrl = "http://testca.uniqbizz.com/api/state_city.php";
-      final requestBody = {"country_id": countryId};
+      final fullUrl = 'http://testca.uniqbizz.com/api/state_city.php';
+      final requestBody = {'country_id': countryId};
       final encodeBody = json.encode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
-      Logger.success("State Response ${response.body}");
-      Logger.success("State request body $encodeBody");
-      Logger.success("State response code ${response.statusCode}");
+      Logger.success('State Response ${response.body}');
+      Logger.success('State request body $encodeBody');
+      Logger.success('State response code ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -173,24 +173,24 @@ class AdminCustomerController extends ChangeNotifier {
           return [];
         }
       } else {
-        Logger.error("API returned error code: ${response.statusCode}");
+        Logger.error('API returned error code: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      Logger.error("Error fetching States $e");
+      Logger.error('Error fetching States $e');
       return [];
     }
   }
 
   Future<List<dynamic>> apiGetCity(String stateId) async {
     try {
-      final fullUrl = "http://testca.uniqbizz.com/api/state_city.php";
-      final requestBody = {"state_id": stateId};
+      final fullUrl = 'http://testca.uniqbizz.com/api/state_city.php';
+      final requestBody = {'state_id': stateId};
       final encodeBody = json.encode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
-      Logger.success("City Response : ${response.body}");
-      Logger.success("City Request Body : $encodeBody");
-      Logger.success("City Full Url : $fullUrl");
+      Logger.success('City Response : ${response.body}');
+      Logger.success('City Request Body : $encodeBody');
+      Logger.success('City Full Url : $fullUrl');
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
 
@@ -202,11 +202,11 @@ class AdminCustomerController extends ChangeNotifier {
           return [];
         }
       } else {
-        Logger.error("API returned error code: ${response.statusCode}");
+        Logger.error('API returned error code: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      Logger.error("Error fethcing cities : $e");
+      Logger.error('Error fethcing cities : $e');
       return [];
     }
   }
@@ -218,7 +218,7 @@ class AdminCustomerController extends ChangeNotifier {
           'https://testca.uniqbizz.com/api/employees/all_employees/add_employees_zone.php';
       final response = await http.get(Uri.parse(fullUrl));
       Logger.success(
-          "Response Code: ${response.statusCode} Api Response: ${response.body}");
+          'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -228,7 +228,7 @@ class AdminCustomerController extends ChangeNotifier {
 
           final zonesData = json.encode(zonesList);
           await prefs.setString('zones', zonesData);
-          Logger.success("Zones data saved to SharedPreferences");
+          Logger.success('Zones data saved to SharedPreferences');
 
           // Return the zones list directly
           return zonesList;
@@ -240,14 +240,14 @@ class AdminCustomerController extends ChangeNotifier {
       }
       return [];
     } catch (e) {
-      Logger.error("Error getting zones: $e");
+      Logger.error('Error getting zones: $e');
       return [];
     }
   }
 
   Future<String> apiGetPincode(String cityId) async {
     try {
-      final fullUrl = "https://testca.uniqbizz.com/api/pincode.php";
+      final fullUrl = 'https://testca.uniqbizz.com/api/pincode.php';
       final requestBody = {'city_id': cityId};
       final encodedBody = json.encode(requestBody);
 
@@ -257,36 +257,36 @@ class AdminCustomerController extends ChangeNotifier {
       );
 
       Logger.success(
-          "Response Code: ${response.statusCode} Api Response: ${response.body}");
+          'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
 
         if (jsonData['status'] == 'success' && jsonData['data'] != null) {
-          return jsonData['data']['pincode'] ?? "";
+          return jsonData['data']['pincode'] ?? '';
         } else {
-          Logger.error("API returned success code but invalid data structure");
-          return "";
+          Logger.error('API returned success code but invalid data structure');
+          return '';
         }
       } else {
-        Logger.error("API returned error code: ${response.statusCode}");
-        return "";
+        Logger.error('API returned error code: ${response.statusCode}');
+        return '';
       }
     } catch (e) {
-      Logger.success("Error fetching Pincode: $e");
-      return "";
+      Logger.success('Error fetching Pincode: $e');
+      return '';
     }
   }
 
   Future<List<dynamic>> apiGetBranchs(String zoneId) async {
     try {
       final fullUrl =
-          "https://testca.uniqbizz.com/api/employees/all_employees/add_employees_branch.php";
+          'https://testca.uniqbizz.com/api/employees/all_employees/add_employees_branch.php';
       final requestBody = {'zone_id': zoneId};
       final encodeBody = json.encode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success(
-          "Response Code: ${response.statusCode} Api Response: ${response.body}");
+          'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -302,7 +302,7 @@ class AdminCustomerController extends ChangeNotifier {
       }
       return [];
     } catch (e) {
-      Logger.error("Error getting branches: $e");
+      Logger.error('Error getting branches: $e');
       return [];
     }
   }
@@ -311,35 +311,35 @@ class AdminCustomerController extends ChangeNotifier {
       context, String folder, String savedImagePath) async {
     try {
       final fullUrl = 'http://testca.uniqbizz.com/api/upload_mobile.php';
-      var request = http.MultipartRequest('POST', Uri.parse(fullUrl));
+      final request = http.MultipartRequest('POST', Uri.parse(fullUrl));
       request.files
           .add(await http.MultipartFile.fromPath('file', savedImagePath));
       request.fields['folder'] = folder;
 
-      var response = await request.send();
-      var responseBody = await response.stream.bytesToString();
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
       Logger.warning('Raw API response body: $responseBody');
-      Logger.success("Upload Api FULL URL: $fullUrl");
+      Logger.success('Upload Api FULL URL: $fullUrl');
       Logger.info('this is reuest $request');
 
       if (responseBody == '1') {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Upload Failed  $responseBody")));
+            SnackBar(content: Text('Upload Failed  $responseBody')));
       } else if (responseBody == '2') {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Invalid File Extension  $responseBody")));
+            SnackBar(content: Text('Invalid File Extension  $responseBody')));
       } else if (responseBody == '3') {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("No File Selected  $responseBody")));
+            SnackBar(content: Text('No File Selected  $responseBody')));
       } else if (responseBody == '4') {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("File Size Exceeds 2MB  $responseBody")));
+            SnackBar(content: Text('File Size Exceeds 2MB  $responseBody')));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Upload Successful: $responseBody")));
+            SnackBar(content: Text('Upload Successful: $responseBody')));
       }
     } catch (e) {
-      Logger.error("Error uploading image: $e");
+      Logger.error('Error uploading image: $e');
     }
   }
 
@@ -356,65 +356,65 @@ class AdminCustomerController extends ChangeNotifier {
       final newVotingCard =
           extractPathSegment(customer.votingCard!, 'voting_card/');
       final newPaymentProof =
-          extractPathSegment(customer.paymentProof ?? "", 'payment_proof');
+          extractPathSegment(customer.paymentProof ?? '', 'payment_proof');
 
       final fullUrl = '$baseUrl/add_customers_data.php';
       final now = DateTime.now();
       final formattedDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
 
       final Map<String, dynamic> requestBody = {
-        "ca_customer_id": null,
-        "ta_reference_name": customer.taReferenceName,
-        "ta_reference_no": customer.taReferenceNo,
-        "comp_chek": customer.compChek,
-        "firstname": customer.firstname,
-        "lastname": customer.lastname,
-        "nominee_name": customer.nomineeName,
-        "nominee_relation": customer.nomineeRelation,
-        "email": customer.email,
-        "country_code": customer.countryCd,
-        "contact_no": customer.phoneNumber,
-        "date_of_birth": customer.dob,
-        "age": calculateAge(customer.dob!),
-        "gender": customer.gender,
-        "country": customer.country,
-        "state": customer.state,
-        "city": customer.city,
-        "pincode": customer.pincode,
-        "address": customer.address,
-        "profile_pic": newProfilePic,
-        "pan_card": newPanCard,
-        "aadhar_card": newAdharCard,
-        "voting_card": newVotingCard,
-        "passbook": newBankPassbook,
-        "payment_proof": newPaymentProof,
-        "payment_mode": customer.paymentMode,
-        "paid_amount": customer.paidAmount,
-        "cheque_no": customer.chequeNo,
-        "cheque_date": customer.chequeDate,
-        "bank_name": customer.bankName,
-        "transaction_no": customer.transactionNo,
-        "note": customer.note,
-        "status": customer.status,
-        "user_type": "10",
-        "customer_type": customer.customerType,
-        "added_on": formattedDateTime,
-        "deleted_date": null,
-        "register_date": "N/A",
-        "reference_no": null,
-        "register_by": ""
+        'ca_customer_id': null,
+        'ta_reference_name': customer.taReferenceName,
+        'ta_reference_no': customer.taReferenceNo,
+        'comp_chek': customer.compChek,
+        'firstname': customer.firstname,
+        'lastname': customer.lastname,
+        'nominee_name': customer.nomineeName,
+        'nominee_relation': customer.nomineeRelation,
+        'email': customer.email,
+        'country_code': customer.countryCd,
+        'contact_no': customer.phoneNumber,
+        'date_of_birth': customer.dob,
+        'age': calculateAge(customer.dob!),
+        'gender': customer.gender,
+        'country': customer.country,
+        'state': customer.state,
+        'city': customer.city,
+        'pincode': customer.pincode,
+        'address': customer.address,
+        'profile_pic': newProfilePic,
+        'pan_card': newPanCard,
+        'aadhar_card': newAdharCard,
+        'voting_card': newVotingCard,
+        'passbook': newBankPassbook,
+        'payment_proof': newPaymentProof,
+        'payment_mode': customer.paymentMode,
+        'paid_amount': customer.paidAmount,
+        'cheque_no': customer.chequeNo,
+        'cheque_date': customer.chequeDate,
+        'bank_name': customer.bankName,
+        'transaction_no': customer.transactionNo,
+        'note': customer.note,
+        'status': customer.status,
+        'user_type': '10',
+        'customer_type': customer.customerType,
+        'added_on': formattedDateTime,
+        'deleted_date': null,
+        'register_date': 'N/A',
+        'reference_no': null,
+        'register_by': ''
       };
       final encodeBody = json.encode(requestBody);
 
-      Logger.warning("The request body is $encodeBody");
+      Logger.warning('The request body is $encodeBody');
 
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
-      Logger.success("fullUrl: $fullUrl");
-      Logger.success("RequestBody: $encodeBody");
-      Logger.success("status code : ${response.statusCode}");
-      Logger.success("API response: ${response.body}");
+      Logger.success('fullUrl: $fullUrl');
+      Logger.success('RequestBody: $encodeBody');
+      Logger.success('status code : ${response.statusCode}');
+      Logger.success('API response: ${response.body}');
     } catch (e, s) {
-      Logger.error("Error adding customer: Error: $e, Stacktrace: $s");
+      Logger.error('Error adding customer: Error: $e, Stacktrace: $s');
     } finally {
       setLoading(false);
     }
