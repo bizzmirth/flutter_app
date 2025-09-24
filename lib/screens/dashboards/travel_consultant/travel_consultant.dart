@@ -277,12 +277,12 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
               currentStep: 3,
               progressColor: Colors.green,
             ),
-            // SizedBox(height: 20),
-            // ReferralTrackerCard(
-            //   totalSteps: 10,
-            //   currentStep: 6,
-            //   progressColor: Colors.purpleAccent,
-            // ),
+            const SizedBox(height: 20),
+            const ReferralTrackerCard(
+              totalSteps: 10,
+              currentStep: 6,
+              progressColor: Colors.purpleAccent,
+            ),
             const SizedBox(height: 20),
             const ImprovedLineChart(),
             const SizedBox(height: 20),

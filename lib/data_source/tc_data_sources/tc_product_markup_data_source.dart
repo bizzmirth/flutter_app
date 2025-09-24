@@ -43,7 +43,7 @@ class TcProductMarkupDataSource extends DataTableSource {
       children: [
         const Text('₹ '), // Rupee Symbol
         SizedBox(
-          width: 50,
+          width: 100,
           child: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
