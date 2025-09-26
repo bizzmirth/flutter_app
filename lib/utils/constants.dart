@@ -2,13 +2,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/book_now_page/book_now_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/widgets/enquire_now_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -30,6 +30,197 @@ Widget contactInfo(IconData icon, String text) {
 Widget divider() {
   // ignore: deprecated_member_use
   return Divider(color: Colors.white.withOpacity(0.5));
+}
+
+Widget _customAdultInputField({
+  required IconData icon,
+  required String label,
+  required TextEditingController controller,
+  int maxLines = 1,
+  VoidCallback? onClear, // Function to handle clearing input
+}) {
+  return StatefulBuilder(builder: (context, setState) {
+    return TextField(
+      keyboardType: TextInputType.phone,
+      controller: controller,
+      maxLines: maxLines,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+        prefixIcon: Icon(icon, color: Colors.white),
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: 0.2),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      onChanged: (value) {
+        if (value.isEmpty || value == '0') {
+          setState(() {
+            controller.text = '1'; // Reset to 1 if user enters 0
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('At least 1 adult is a must'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+    );
+  });
+}
+
+Widget _customInputField({
+  required IconData icon,
+  required String label,
+  required TextEditingController controller,
+  int maxLines = 1,
+  VoidCallback? onClear, // Function to handle clearing input
+}) {
+  return TextField(
+    keyboardType: TextInputType.phone,
+    controller: controller,
+    maxLines: maxLines,
+    style: const TextStyle(color: Colors.white),
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+      prefixIcon: Icon(icon, color: Colors.white),
+      suffixIcon: controller.text.isNotEmpty
+          ? IconButton(
+              icon:
+                  Icon(Icons.clear, color: Colors.white.withValues(alpha: 0.8)),
+              onPressed: onClear, // Clear input when tapped
+            )
+          : null,
+      filled: true,
+      fillColor: Colors.white.withValues(alpha: 0.2),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+    ),
+  );
+}
+
+Widget customInputRow({
+  required IconData icon1,
+  required String label1,
+  required TextEditingController controller1,
+  required IconData icon2,
+  required String label2,
+  required TextEditingController controller2,
+  required IconData icon3,
+  required String label3,
+  required TextEditingController controller3,
+  required VoidCallback onUpdate, // Callback to update state
+  double width1 = 0.33,
+  double width2 = 0.33,
+  double width3 = 0.33,
+}) {
+  controller1.text = controller1.text.isEmpty ? '1' : controller1.text;
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          // Adults Input
+          Expanded(
+            flex: (width1 * 10).toInt(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _customAdultInputField(
+                  icon: icon1,
+                  label: label1,
+                  controller: controller1,
+                  onClear: () {
+                    controller1.clear();
+                    onUpdate(); // Update state
+                  },
+                ),
+                const SizedBox(height: 2), // Spacing
+                Center(
+                  child: Text(
+                    '12+ Years',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // Children Input
+          Expanded(
+            flex: (width2 * 10).toInt(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _customInputField(
+                  icon: icon2,
+                  label: label2,
+                  controller: controller2,
+                  onClear: () {
+                    controller2.clear();
+                    onUpdate(); // Update state
+                  },
+                ),
+                const SizedBox(height: 2), // Spacing
+                Center(
+                  child: Text(
+                    '3-11 Years',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // Infants Input
+          Expanded(
+            flex: (width3 * 10).toInt(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _customInputField(
+                  icon: icon3,
+                  label: label3,
+                  controller: controller3,
+                  onClear: () {
+                    controller3.clear();
+                    onUpdate(); // Update state
+                  },
+                ),
+                const SizedBox(height: 2), // Spacing
+                Center(
+                  child: Text(
+                    'Under 2 Years',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
 // Custom Input Field

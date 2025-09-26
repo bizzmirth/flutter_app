@@ -1,0 +1,100 @@
+import 'package:flutter/material.dart';
+
+class BCHBMDataSource extends DataTableSource {
+  final List<Map<String, dynamic>> data;
+  BCHBMDataSource(this.data);
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= data.length) return null;
+    final order = data[index];
+
+    return DataRow(
+      cells: [
+        DataCell(
+          Center(
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(order['profilePicture']),
+            ),
+          ),
+        ),
+        DataCell(Text(order['id']?.toString() ?? 'N/A')),
+        DataCell(Text(order['name']?.toString() ?? 'N/A')),
+        DataCell(Text(order['phone']?.toString() ?? 'N/A')),
+        DataCell(Text(order['phone1']?.toString() ?? 'N/A')),
+        DataCell(Text(order['jd']?.toString() ?? 'N/A')),
+        DataCell(
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: _getStatusColor(order['status']?.toString() ?? ''),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              order['status']?.toString() ?? 'Unknown',
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+        DataCell(_buildActionMenu()),
+      ],
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return Colors.blue;
+      case 'processing':
+        return Colors.purple;
+      case 'pending':
+        return Colors.orange;
+      case 'completed':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+// Action Menu Widget
+  Widget _buildActionMenu() {
+    return PopupMenuButton<String>(
+      onSelected: (value) {
+        // Handle menu actions
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 'view',
+          child: ListTile(
+            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
+            title: Text('View'),
+          ),
+        ),
+        const PopupMenuItem(
+          value: 'edit',
+          child: ListTile(
+            leading: Icon(Icons.edit, color: Color.fromARGB(255, 0, 105, 190)),
+            title: Text('Edit'),
+          ),
+        ),
+        const PopupMenuItem(
+          value: 'delete',
+          child: ListTile(
+            leading: Icon(Icons.delete, color: Colors.red),
+            title: Text('Delete'),
+          ),
+        ),
+      ],
+      icon: const Icon(Icons.more_vert, color: Colors.black54),
+    );
+  }
+
+  @override
+  int get rowCount => data.length;
+  @override
+  bool get isRowCountApproximate => false;
+  @override
+  int get selectedRowCount => 0;
+}

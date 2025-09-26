@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bizzmirth_app/controllers/admin_controller/admin_busniess_mentor_controller.dart';
+import 'package:bizzmirth_app/data_source/admin_data_sources/bm_data_source/admin_reg_bm_data_source.dart';
 import 'package:bizzmirth_app/data_source/bm_data_sources/bm_pending_business_mentors.dart';
 import 'package:bizzmirth_app/entities/pending_business_mentor/pending_business_mentor_model.dart';
 import 'package:bizzmirth_app/main.dart';
@@ -184,7 +185,7 @@ class _BusinessMentorPageState extends State<BusinessMentorPage> {
                             DataColumn(label: Text('Status')),
                             DataColumn(label: Text('Action'))
                           ],
-                          source: MyBMRegDataSource(orders1BM),
+                          source: AdminRegBMDataSource(orders1BM),
                           rowsPerPage: _rowsPerPage1,
                           availableRowsPerPage: const [5, 10, 15, 20, 25],
                           onRowsPerPageChanged: (value) {
