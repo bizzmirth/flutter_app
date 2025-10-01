@@ -10,6 +10,7 @@ import 'package:bizzmirth_app/screens/dashboards/travel_consultant/product_marku
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
@@ -222,13 +223,8 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                         color: Colors.red,
                       ),
                       title: const Text('Log Out'),
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const HomePage()),
-                          (route) => false,
-                        );
+                      onTap: () async {
+                        await performLogout(context);
                       },
                     ),
                   ),

@@ -735,6 +735,7 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
 
   @override
   Widget build(BuildContext context) {
+    Logger.success('Building ViewCustomersPage');
     return Consumer<CustomerController>(
         builder: (context, customerController, child) {
       // String pendingUserCount = filteredPendingCustomers.isEmpty

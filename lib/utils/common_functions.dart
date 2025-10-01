@@ -1,4 +1,8 @@
 // function to convert [3 star, 4 star, 5 star] to [3,4,5]
+import 'package:bizzmirth_app/screens/login_page/login.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:flutter/material.dart';
+
 List<String> convertStarsToNumbers(List<String> selectedStars) {
   return selectedStars.map((star) {
     switch (star) {
@@ -92,4 +96,18 @@ List<String> formatItineraryText(String? text) {
       .where((e) => e.isNotEmpty)
       .map((e) => '- $e.') // add `-` at start & keep period
       .toList();
+}
+
+// logs out user clearing all the data from the shared pref
+Future<void> performLogout(BuildContext context) async {
+  final sharedPrefHelper = SharedPrefHelper();
+  await sharedPrefHelper.removeDetails();
+
+  // Navigate to LoginPage and remove all previous routes
+  if (!context.mounted) return;
+  await Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => const LoginPage()),
+    (route) => false,
+  );
 }
