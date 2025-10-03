@@ -21,25 +21,52 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   final _loginFormKey = GlobalKey<FormState>();
   late VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        _controller = VideoPlayerController.asset('assets/videos/sea.mp4')
-          ..initialize().then((_) {
-            _controller.setLooping(true);
-            _controller.setVolume(0); // mute for background
-            _controller.play();
-            setState(() {});
-          });
+    WidgetsBinding.instance.addObserver(this); // Add observer
+
+    _controller = VideoPlayerController.asset('assets/videos/sea.mp4')
+      ..initialize().then((_) {
+        if (mounted) {
+          _controller.setLooping(true);
+          _controller.setVolume(0);
+          _controller.play();
+          setState(() {});
+        }
+      }).catchError((error) {
+        // Handle initialization errors
+        debugPrint('Video initialization error: $error');
+      });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = Provider.of<LoginController>(context, listen: false);
       controller.loadUserTypes();
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // Pause video when app goes to background
+    if (state == AppLifecycleState.paused) {
+      _controller.pause();
+    } else if (state == AppLifecycleState.resumed) {
+      _controller.play();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Remove observer
+    _controller.pause(); // Pause before disposing
+    _controller.dispose();
+    super.dispose();
   }
 
   void navigateWithLoader(BuildContext context, Widget nextPage) {
@@ -581,12 +608,6 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose(); // very important!
-    super.dispose();
   }
 
   @override

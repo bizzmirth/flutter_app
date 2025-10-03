@@ -11,6 +11,7 @@ import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
+import 'package:bizzmirth_app/widgets/booking_tracker.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
@@ -274,11 +275,15 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
               progressColor: Colors.green,
             ),
             const SizedBox(height: 20),
-            const ReferralTrackerCard(
-              totalSteps: 10,
-              currentStep: 6,
-              progressColor: Colors.purpleAccent,
-            ),
+            // const ReferralTrackerCard(
+            //   totalSteps: 10,
+            //   currentStep: 6,
+            //   progressColor: Colors.purpleAccent,
+            // ),
+            const BookingTrackerCard(
+                title: 'Booking tracker',
+                bookingCount: 15,
+                accentColor: Colors.blue),
             const SizedBox(height: 20),
             const ImprovedLineChart(),
             const SizedBox(height: 20),

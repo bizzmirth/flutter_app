@@ -169,79 +169,81 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     // double deviceWidth = MediaQuery.of(context).size.width;
     // Logger.info("Device Width: $deviceWidth pixels");
-    return Consumer<HomePageController>(builder: (context, controller, child) {
-      return Scaffold(
-        drawer: const SideNavDrawer(),
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 81, 131, 246),
-          title: Text(
-            'Bizzmirth Holidays Pvt. Ltd.',
-            style: Appwidget.poppinsAppBarTitle(),
-            overflow: TextOverflow.ellipsis,
+    return Consumer<HomePageController>(
+      builder: (context, controller, child) {
+        return Scaffold(
+          drawer: const SideNavDrawer(),
+          appBar: AppBar(
+            backgroundColor: const Color.fromARGB(255, 81, 131, 246),
+            title: Text(
+              'Bizzmirth Holidays Pvt. Ltd.',
+              style: Appwidget.poppinsAppBarTitle(),
+              overflow: TextOverflow.ellipsis,
+            ),
+            centerTitle: true,
+            actions: const [
+              // IconButton(
+              //   icon: Icon(Icons.refresh, color: Colors.white),
+              //   onPressed: refreshUserTypes,
+              //   tooltip: 'Refresh Data',
+              // ),
+            ],
           ),
-          centerTitle: true,
-          actions: const [
-            // IconButton(
-            //   icon: Icon(Icons.refresh, color: Colors.white),
-            //   onPressed: refreshUserTypes,
-            //   tooltip: 'Refresh Data',
-            // ),
-          ],
-        ),
-        body: controller.isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : controller.error.isNotEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Error: ${controller.error}',
-                          style: const TextStyle(color: Colors.red),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: controller.refreshUserTypes,
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  )
-                : RefreshIndicator(
-                    onRefresh: controller.refreshUserTypes,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
+          body: controller.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : controller.error.isNotEmpty
+                  ? Center(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const HeaderSection(),
-                          const SizedBox(height: 5),
-                          const CarouselSection(),
-                          const SizedBox(height: 15),
-                          MembershipPromotionCard(
-                            isForFreeUser:
-                                false, // This shows "Start Your Journey With Us"
-                            onPlanSelected: (planName) {
-                              // Navigate to a signup page or show a dialog for visitors
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) =>
-                              //             SignUpPage(selectedPlan: planName)));
-                            },
+                          Text(
+                            'Error: ${controller.error}',
+                            style: const TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 15),
-                          _buildAboutUsSection(),
-                          const SizedBox(height: 15),
-                          const FancyVideoSlider(),
-                          const TopSellingDestinations(),
-                          const TopSellingPackages(),
-                          const FooterSection(),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: controller.refreshUserTypes,
+                            child: const Text('Retry'),
+                          ),
                         ],
                       ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: controller.refreshUserTypes,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                          children: [
+                            const HeaderSection(),
+                            const SizedBox(height: 5),
+                            const CarouselSection(),
+                            const SizedBox(height: 15),
+                            MembershipPromotionCard(
+                              isForFreeUser:
+                                  false, // This shows "Start Your Journey With Us"
+                              onPlanSelected: (planName) {
+                                // Navigate to a signup page or show a dialog for visitors
+                                // Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (context) =>
+                                //             SignUpPage(selectedPlan: planName)));
+                              },
+                            ),
+                            const SizedBox(height: 15),
+                            _buildAboutUsSection(),
+                            const SizedBox(height: 15),
+                            const FancyVideoSlider(),
+                            const TopSellingDestinations(),
+                            const TopSellingPackages(),
+                            const FooterSection(),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-      );
-    });
+        );
+      },
+    );
   }
 }
