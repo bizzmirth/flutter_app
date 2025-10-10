@@ -193,8 +193,7 @@ class ProfileController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      const String fullUrl =
-          'https://testca.uniqbizz.com/api/customers/profile_page.php';
+      final String fullUrl = AppUrls.getPersonalDetails;
 
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final Map<String, dynamic> body = {'userId': userId, 'userType': '10'};
@@ -220,6 +219,7 @@ class ProfileController extends ChangeNotifier {
 
           Logger.success(
               'User Details loaded successfully - Name: $_firstName $_lastName, Profile Pic: $_profilePic');
+          Logger.success('User details api URL: $fullUrl');
         } else {
           _errorMessage = decoded['message'] ?? 'Unknown error occurred.';
         }

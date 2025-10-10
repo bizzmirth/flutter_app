@@ -30,8 +30,12 @@ class AppUrls {
   static String get login => '$baseUrl/login/login.php';
   static String get getAllUserTypes => '$baseUrl/homepage/user_type.php';
 
-  // ==================== PROFILE PAGE ENDPOINTS ====================
-  static String get getPersonalDetails => '$baseUrl/customers/profile_page.php';
+  // ==================== CUSTOMER PROFILE PAGE ENDPOINTS ====================
+  static String get getPersonalDetails =>
+      '$baseUrl/users/customers/profile_page/profile/profile_page.php';
+
+  static String get getCouponDetails =>
+      '$baseUrl/users/customers/profile_page/coupons/coupons.php';
 
   // ==================== CONTACT US ENDPOINTS ====================
   static String get contactUs => '$baseUrl/contact_us.php';
