@@ -5,30 +5,30 @@ class AppUrls {
   static const Environment _currentEnvironment = Environment.testing;
 
   static const Map<Environment, String> _baseUrls = {
-    Environment.testing: 'https://testca.uniqbizz.com/api',
-    Environment.live: 'https://ca.uniqbizz.com/api'
+    Environment.testing: 'https://testca.uniqbizz.com/bizzmirth_apis',
+    Environment.live: 'https://ca.uniqbizz.com/bizzmirth_apis'
   };
 
   static String get baseUrl => _baseUrls[_currentEnvironment]!;
 
   // ==================== HOMEPAGE TOUR PACKAGE DETAILS ====================
   static String get getTourPackages =>
-      '$baseUrl/packages/best_destinations.php';
+      '$baseUrl/homepage/packages/best_destinations.php';
 
   static String get getFilteredTourPackages =>
-      '$baseUrl/packages/filtered_package.php';
+      '$baseUrl/homepage/packages/filtered_package.php';
 
-  static String get getBestDeals => '$baseUrl/packages/best_deals.php';
+  static String get getBestDeals => '$baseUrl/homepage/packages/best_deals.php';
 
   static String get getTourPackageDetails =>
-      '$baseUrl/packages/view_package_details/package_details.php';
+      '$baseUrl/homepage/packages/view_package_details/package_details.php';
 
   // ==================== BASE URL TO GET IMAGES ====================
   static String get getImageBaseUrl => 'https://testca.uniqbizz.com/';
 
   // ==================== AUTHENTICATION ENDPOINTS ====================
-  static String get login => '$baseUrl/login.php';
-  static String get getAllUserTypes => '$baseUrl/user_type';
+  static String get login => '$baseUrl/login/login.php';
+  static String get getAllUserTypes => '$baseUrl/homepage/user_type.php';
 
   // ==================== PROFILE PAGE ENDPOINTS ====================
   static String get getPersonalDetails => '$baseUrl/customers/profile_page.php';
@@ -38,17 +38,19 @@ class AppUrls {
 
   // ==================== CUSTOMER DASHBOARD ENDPOINTS ====================
   static String get registeredCustomers =>
-      '$baseUrl/customers/customers.php?action=registered_cust'; // to get the registered customers
+      '$baseUrl/users/customers/referral_customers/customers.php?action=registered_cust'; // to get the registered customers
   static String get pendingCustomers =>
-      '$baseUrl/customers/customers.php?action=pending_cust';
+      '$baseUrl/users/customers/referral_customers/customers.php?action=pending_cust';
   static String get dashboardCounts =>
-      '$baseUrl/customers/dashboard_counts.php';
-  static String get dashboardChartsData => '$baseUrl/dashboard/chartData.php';
+      '$baseUrl/users/customers/dashboard/dashboard_counts.php';
+  static String get dashboardChartsData =>
+      '$baseUrl/users/customers/dashboard/chartData.php';
   static String get topCustomerReferrals =>
-      '$baseUrl/dashboard/top_customer_refereral.php';
+      '$baseUrl/users/customers/dashboard/top_customer_refereral.php';
   static String get uploadImage => '$baseUrl/upload_mobile.php';
   static String get addCustomer => '$baseUrl/customers/add_customers_data.php';
-  static String get validateEmail => '$baseUrl/customers/valid_email.php';
+  static String get validateEmail =>
+      '$baseUrl/users/customers/dashboard/valid_email.php';
   static String get editCustomers =>
       '$baseUrl/customers/edit_customers_data.php';
   static String get deleteCustomers =>
