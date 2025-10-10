@@ -22,7 +22,6 @@ class FancyVideoSlider extends StatefulWidget {
 
 class _FancyVideoSliderState extends State<FancyVideoSlider>
     with WidgetsBindingObserver {
-  // Added lifecycle observer
   late PageController _pageController;
   int _currentPage = 0;
   List<VideoPlayerController?> _controllers = [];
@@ -40,12 +39,17 @@ class _FancyVideoSliderState extends State<FancyVideoSlider>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this); // Add lifecycle observer
+    WidgetsBinding.instance.addObserver(this);
     _pageController = PageController();
-    _controllers =
-        List<VideoPlayerController?>.filled(widget.videoUrls.length, null);
 
-    // Initialize the first video
+    // ✅ make list growable to avoid "Cannot clear a fixed-length list" error
+    _controllers = List<VideoPlayerController?>.filled(
+      widget.videoUrls.length,
+      null,
+      growable: true,
+    );
+
+    // Initialize first video
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && !_isDisposed) {
         _initializeController(0);
@@ -59,13 +63,10 @@ class _FancyVideoSliderState extends State<FancyVideoSlider>
 
     if (_isDisposed) return;
 
-    // Pause all videos when app goes to background
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
       _pauseAllVideos();
-    }
-    // Resume current video when app comes to foreground
-    else if (state == AppLifecycleState.resumed) {
+    } else if (state == AppLifecycleState.resumed) {
       _resumeCurrentVideo();
     }
   }
@@ -98,17 +99,11 @@ class _FancyVideoSliderState extends State<FancyVideoSlider>
     try {
       final controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.videoUrls[index]),
-        videoPlayerOptions: VideoPlayerOptions(
-          mixWithOthers: true,
-          allowBackgroundPlayback: false, // Prevent background playback
-        ),
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
-      // Set properties before initialization
       await controller.setVolume(0.0);
       await controller.setLooping(true);
-
-      // Initialize the controller
       await controller.initialize();
 
       if (!_isDisposed && mounted) {
@@ -116,14 +111,12 @@ class _FancyVideoSliderState extends State<FancyVideoSlider>
           _controllers[index] = controller;
         });
 
-        // Auto-play if it's the current page and app is active
         if (index == _currentPage &&
             WidgetsBinding.instance.lifecycleState ==
                 AppLifecycleState.resumed) {
           await controller.play();
         }
       } else {
-        // If disposed during initialization, clean up immediately
         await controller.dispose();
       }
     } catch (e) {
@@ -140,12 +133,10 @@ class _FancyVideoSliderState extends State<FancyVideoSlider>
     if (index < _controllers.length && _controllers[index] != null) {
       final controller = _controllers[index]!;
 
-      // Pause before disposing to release buffers properly
       if (controller.value.isInitialized && controller.value.isPlaying) {
         await controller.pause();
       }
 
-      // Dispose the controller
       await controller.dispose();
 
       if (mounted && !_isDisposed) {
@@ -159,7 +150,6 @@ class _FancyVideoSliderState extends State<FancyVideoSlider>
   void _handlePageChange(int newPage) {
     if (newPage == _currentPage || _isDisposed) return;
 
-    // Pause and reset old video
     if (_currentPage < _controllers.length &&
         _controllers[_currentPage] != null &&
         _controllers[_currentPage]!.value.isInitialized) {
@@ -170,31 +160,26 @@ class _FancyVideoSliderState extends State<FancyVideoSlider>
     final oldPage = _currentPage;
     setState(() => _currentPage = newPage);
 
-    // Initialize current + adjacent videos
     _initializeController(newPage);
     if (newPage > 0) _initializeController(newPage - 1);
     if (newPage < widget.videoUrls.length - 1) {
       _initializeController(newPage + 1);
     }
 
-    // Play current video when ready
     if (_controllers[newPage] != null &&
         _controllers[newPage]!.value.isInitialized) {
       _controllers[newPage]!.play();
     }
 
-    // Dispose videos that are too far away (free buffers immediately)
     Future.microtask(() async {
       for (int i = 0; i < _controllers.length; i++) {
         if (i < newPage - 1 || i > newPage + 1) {
           if (i != oldPage) {
-            // Don't dispose the old page yet
             await _disposeController(i);
           }
         }
       }
 
-      // Dispose old page after a short delay
       if (oldPage < newPage - 1 || oldPage > newPage + 1) {
         await Future.delayed(const Duration(milliseconds: 300));
         if (!_isDisposed) {
@@ -207,12 +192,10 @@ class _FancyVideoSliderState extends State<FancyVideoSlider>
   @override
   void dispose() {
     _isDisposed = true;
-    WidgetsBinding.instance.removeObserver(this); // Remove lifecycle observer
+    WidgetsBinding.instance.removeObserver(this);
 
-    // Dispose page controller first
     _pageController.dispose();
 
-    // Dispose all video controllers synchronously
     for (int i = 0; i < _controllers.length; i++) {
       if (_controllers[i] != null) {
         _controllers[i]!.pause();
@@ -221,7 +204,8 @@ class _FancyVideoSliderState extends State<FancyVideoSlider>
       }
     }
 
-    _controllers.clear();
+    // ✅ no need to clear manually — removing this prevents fixed-length list crash
+    // _controllers.clear();
 
     super.dispose();
   }

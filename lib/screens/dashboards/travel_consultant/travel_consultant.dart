@@ -281,9 +281,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
             //   progressColor: Colors.purpleAccent,
             // ),
             const BookingTrackerCard(
-                title: 'Booking tracker',
-                bookingCount: 15,
-                accentColor: Colors.blue),
+                title: 'Booking tracker', bookingCount: 10),
             const SizedBox(height: 20),
             const ImprovedLineChart(),
             const SizedBox(height: 20),
