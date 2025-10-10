@@ -15,8 +15,10 @@ import 'package:bizzmirth_app/controllers/customer_controller/cust_product_payou
 import 'package:bizzmirth_app/controllers/customer_controller/cust_referral_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller/cust_wallet_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
+import 'package:bizzmirth_app/controllers/tc_controller/tc_controller.dart';
 import 'package:bizzmirth_app/data_source/te_data_sources/te_view_package_data_source.dart';
-import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_referral_payout_model.dart';
+
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
@@ -133,6 +135,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => TourPackagesController()),
         ChangeNotifierProvider(create: (_) => ContactUsController()),
         ChangeNotifierProvider(create: (_) => PackageDetailsController()),
+        ChangeNotifierProvider(create: (_) => TcController()),
       ],
       child: ToastificationWrapper(
         child: SessionTimeoutManager(

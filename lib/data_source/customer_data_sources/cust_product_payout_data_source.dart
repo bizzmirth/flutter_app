@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/models/cust_product_payout_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_product_payout_model.dart';
 import 'package:flutter/material.dart';
 
 class PayoutDataSource extends DataTableSource {

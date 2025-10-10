@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';

@@ -1,8 +1,8 @@
-import 'package:bizzmirth_app/models/package_details_model.dart';
-import 'package:bizzmirth_app/models/package_images_model.dart';
-import 'package:bizzmirth_app/models/package_itinerary_model.dart';
-import 'package:bizzmirth_app/models/package_price_model.dart';
-import 'package:bizzmirth_app/models/package_tour_plan_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_details_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_images_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_itinerary_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_price_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_tour_plan_model.dart';
 
 class PackageResponse {
   final String status;

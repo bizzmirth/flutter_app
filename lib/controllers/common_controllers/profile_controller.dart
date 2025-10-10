@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:bizzmirth_app/models/coupons_data_model.dart';
+import 'package:bizzmirth_app/models/profile_models/coupons_data_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';

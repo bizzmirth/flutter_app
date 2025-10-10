@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 

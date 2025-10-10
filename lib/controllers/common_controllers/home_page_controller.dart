@@ -18,7 +18,7 @@ class HomePageController extends ChangeNotifier {
 
   HomePageController() {
     loadUserTypes();
-    Logger.warning('home page controller constructor called');
+    // Logger.warning('home page controller constructor called');
   }
 
   Future<void> loadUserTypes() async {

@@ -1,5 +1,5 @@
 import 'package:bizzmirth_app/controllers/common_controllers/profile_controller.dart';
-import 'package:bizzmirth_app/models/coupons_data_model.dart';
+import 'package:bizzmirth_app/models/profile_models/coupons_data_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';

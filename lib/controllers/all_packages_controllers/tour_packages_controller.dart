@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:bizzmirth_app/models/best_deals_model.dart';
-import 'package:bizzmirth_app/models/tour_package_model.dart';
-import 'package:bizzmirth_app/models/travel_plan.dart';
+import 'package:bizzmirth_app/models/homepage_models/best_deals_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/tour_package_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/travel_plan.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';

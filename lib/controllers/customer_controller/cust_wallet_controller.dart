@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bizzmirth_app/models/cust_booking_wallet_history_model.dart';
-import 'package:bizzmirth_app/models/cust_redeemable_wallet_history_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_booking_wallet_history_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_redeemable_wallet_history_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';

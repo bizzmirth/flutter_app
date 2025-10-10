@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/controllers/tc_controller/tc_controller.dart';
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_current_booking_data_source.dart';
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_top_customers_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
@@ -18,6 +19,7 @@ import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class TCDashboardPage extends StatefulWidget {
   const TCDashboardPage({super.key});
@@ -77,6 +79,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
   @override
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.of(context).size.width > 600;
+    final tcController = Provider.of<TcController>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -235,160 +238,216 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // _buildHeader(),
-            const SizedBox(height: 20),
-            CustomAnimatedSummaryCards(
-              cardData: [
-                SummaryCardData(
-                    title: 'CUSTOMER REGISTERED',
-                    value: '3',
-                    thisMonthValue: '0',
-                    icon: Icons.people),
-                SummaryCardData(
-                    title: 'TOTAL BOOKING',
-                    value: '9',
-                    thisMonthValue: '0',
-                    icon: Icons.calendar_today),
-                SummaryCardData(
-                    title: 'Topup Wallet',
-                    value: '₹ 2000',
-                    thisMonthValue: '₹ 100',
-                    icon: Icons.account_balance_wallet),
-              ],
-            ),
-            // SizedBox(height: 20),
-            // ProgressTrackerCard(
-            //   totalSteps: 10,
-            //   currentStep: 3,
-            //   message: "Keep going! You're doing great!",
-            //   progressColor: Colors.orange,
-            // ),
-            const SizedBox(height: 20),
-            const ReferralTrackerCard(
-              totalSteps: 10,
-              currentStep: 3,
-              progressColor: Colors.green,
-            ),
-            const SizedBox(height: 20),
-            // const ReferralTrackerCard(
-            //   totalSteps: 10,
-            //   currentStep: 6,
-            //   progressColor: Colors.purpleAccent,
-            // ),
-            const BookingTrackerCard(
-                title: 'Booking tracker', bookingCount: 10),
-            const SizedBox(height: 20),
-            const ImprovedLineChart(),
-            const SizedBox(height: 20),
-            // _buildTopPerformersSection(),
-            const Divider(thickness: 1, color: Colors.black26),
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  "Top Customer's List:",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            const Divider(thickness: 1, color: Colors.black26),
-            const FilterBar(),
-            isTablet
-                ? Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: SizedBox(
-                      height: (_rowsPerPage * dataRowHeight) +
-                          headerHeight +
-                          paginationHeight,
-                      child: PaginatedDataTable(
-                        columnSpacing: 60,
-                        dataRowMinHeight: 40,
-                        columns: const [
-                          DataColumn(label: Text('ID')),
-                          DataColumn(label: Text('Full Name')),
-                          DataColumn(label: Text('Date Reg.')),
-                          DataColumn(label: Text('Total CU Ref')),
-                          DataColumn(label: Text('Active/Inactive')),
-                        ],
-                        source: TcTopCustomersDataSource(data: customersTA),
-                        rowsPerPage: _rowsPerPage,
-                        availableRowsPerPage: const [5, 10, 15, 20, 25],
-                        onRowsPerPageChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _rowsPerPage = value;
-                            });
-                          }
-                        },
-                        arrowHeadColor: Colors.blue,
+      body: tcController.isLoading // Add loading check
+          ? const Center(child: CircularProgressIndicator())
+          : tcController.error != null // Add error check
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        tcController.error!,
+                        style: const TextStyle(color: Colors.red),
                       ),
-                    ),
-                  )
-                : _buildTopCustomerList(),
-
-            const SizedBox(height: 20),
-            // _buildTopPerformersSection1(),
-            const Divider(thickness: 1, color: Colors.black26),
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  "Current Booking's:",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            const Divider(thickness: 1, color: Colors.black26),
-            const FilterBar(),
-            isTablet
-                ? Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: SizedBox(
-                      height: (_rowsPerPage * dataRowHeight) +
-                          headerHeight +
-                          paginationHeight,
-                      child: PaginatedDataTable(
-                        columnSpacing: 60,
-                        dataRowMinHeight: 40,
-                        columns: const [
-                          DataColumn(label: Text('Booking ID')),
-                          DataColumn(label: Text('Customer Name')),
-                          DataColumn(label: Text('Package Name')),
-                          DataColumn(label: Text('Amount')),
-                          DataColumn(label: Text('Booking Date')),
-                          DataColumn(label: Text('Travel Date')),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: tcController.getDashboardDataCounts,
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                )
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // _buildHeader(),
+                      const SizedBox(height: 20),
+                      CustomAnimatedSummaryCards(
+                        cardData: [
+                          // SummaryCardData(
+                          //     title: 'CUSTOMER REGISTERED',
+                          //     value: tcController.totalRegisteredCustomers ?? '0',
+                          //     thisMonthValue: tcController.monthlyRegisteredCustomers ?? '0',
+                          //     icon: Icons.people),
+                          // SummaryCardData(
+                          //     title: 'TOTAL BOOKING',
+                          //     value: '9',
+                          //     thisMonthValue: '0',
+                          //     icon: Icons.calendar_today),
+                          // SummaryCardData(
+                          //     title: 'Topup Wallet',
+                          //     value: '₹ 2000',
+                          //     thisMonthValue: '₹ 100',
+                          //     icon: Icons.account_balance_wallet),
+                          SummaryCardData(
+                            title: 'COMPLETED TOURS',
+                            value: tcController.totalCompletedTours ?? '0',
+                            thisMonthValue:
+                                tcController.monthlyCompletedTours ?? '0',
+                            icon: Icons.check_circle,
+                          ),
+                          SummaryCardData(
+                            title: 'UPCOMING TOURS',
+                            value: tcController.totalUpcomingTours ?? '0',
+                            thisMonthValue:
+                                tcController.monthlyUpcomingTours ?? '0',
+                            icon: Icons.calendar_today,
+                          ),
+                          SummaryCardData(
+                            title: 'CONFIRMED COMMISSION',
+                            value:
+                                '₹ ${tcController.confirmedCommission ?? '0.00'}',
+                            thisMonthValue:
+                                '₹ ${tcController.pendingCommission ?? '0.00'}',
+                            icon: Icons.account_balance_wallet,
+                          ),
                         ],
-                        source: TcCurrentBookingDataSource(
-                          data: tcCurrentBookingDummyData,
+                      ),
+                      // SizedBox(height: 20),
+                      // ProgressTrackerCard(
+                      //   totalSteps: 10,
+                      //   currentStep: 3,
+                      //   message: "Keep going! You're doing great!",
+                      //   progressColor: Colors.orange,
+                      // ),
+                      const SizedBox(height: 20),
+                      const ReferralTrackerCard(
+                        totalSteps: 10,
+                        currentStep: 3,
+                        progressColor: Colors.green,
+                      ),
+                      const SizedBox(height: 20),
+                      // const ReferralTrackerCard(
+                      //   totalSteps: 10,
+                      //   currentStep: 6,
+                      //   progressColor: Colors.purpleAccent,
+                      // ),
+                      const BookingTrackerCard(
+                          title: 'Booking tracker', bookingCount: 10),
+                      const SizedBox(height: 20),
+                      const ImprovedLineChart(),
+                      const SizedBox(height: 20),
+                      // _buildTopPerformersSection(),
+                      const Divider(thickness: 1, color: Colors.black26),
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            "Top Customer's List:",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        rowsPerPage: _rowsPerPage,
-                        availableRowsPerPage: const [5, 10, 15, 20, 25],
-                        onRowsPerPageChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _rowsPerPage = value;
-                            });
-                          }
-                        },
-                        arrowHeadColor: Colors.blue,
                       ),
-                    ),
-                  )
-                : _buildCurrentBookingList(),
-          ],
-        ),
-      ),
+                      const Divider(thickness: 1, color: Colors.black26),
+                      const FilterBar(),
+                      isTablet
+                          ? Card(
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: SizedBox(
+                                height: (_rowsPerPage * dataRowHeight) +
+                                    headerHeight +
+                                    paginationHeight,
+                                child: PaginatedDataTable(
+                                  columnSpacing: 60,
+                                  dataRowMinHeight: 40,
+                                  columns: const [
+                                    DataColumn(label: Text('ID')),
+                                    DataColumn(label: Text('Full Name')),
+                                    DataColumn(label: Text('Date Reg.')),
+                                    DataColumn(label: Text('Total CU Ref')),
+                                    DataColumn(label: Text('Active/Inactive')),
+                                  ],
+                                  source: TcTopCustomersDataSource(
+                                      data: customersTA),
+                                  rowsPerPage: _rowsPerPage,
+                                  availableRowsPerPage: const [
+                                    5,
+                                    10,
+                                    15,
+                                    20,
+                                    25
+                                  ],
+                                  onRowsPerPageChanged: (value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _rowsPerPage = value;
+                                      });
+                                    }
+                                  },
+                                  arrowHeadColor: Colors.blue,
+                                ),
+                              ),
+                            )
+                          : _buildTopCustomerList(),
+
+                      const SizedBox(height: 20),
+                      // _buildTopPerformersSection1(),
+                      const Divider(thickness: 1, color: Colors.black26),
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            "Current Booking's:",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      const Divider(thickness: 1, color: Colors.black26),
+                      const FilterBar(),
+                      isTablet
+                          ? Card(
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: SizedBox(
+                                height: (_rowsPerPage * dataRowHeight) +
+                                    headerHeight +
+                                    paginationHeight,
+                                child: PaginatedDataTable(
+                                  columnSpacing: 60,
+                                  dataRowMinHeight: 40,
+                                  columns: const [
+                                    DataColumn(label: Text('Booking ID')),
+                                    DataColumn(label: Text('Customer Name')),
+                                    DataColumn(label: Text('Package Name')),
+                                    DataColumn(label: Text('Amount')),
+                                    DataColumn(label: Text('Booking Date')),
+                                    DataColumn(label: Text('Travel Date')),
+                                  ],
+                                  source: TcCurrentBookingDataSource(
+                                    data: tcCurrentBookingDummyData,
+                                  ),
+                                  rowsPerPage: _rowsPerPage,
+                                  availableRowsPerPage: const [
+                                    5,
+                                    10,
+                                    15,
+                                    20,
+                                    25
+                                  ],
+                                  onRowsPerPageChanged: (value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _rowsPerPage = value;
+                                      });
+                                    }
+                                  },
+                                  arrowHeadColor: Colors.blue,
+                                ),
+                              ),
+                            )
+                          : _buildCurrentBookingList(),
+                    ],
+                  ),
+                ),
     );
   }
 
