@@ -47,44 +47,45 @@ class AppUrls {
       '$baseUrl/users/customers/dashboard/chartData.php';
   static String get topCustomerReferrals =>
       '$baseUrl/users/customers/dashboard/top_customer_refereral.php';
-  static String get uploadImage => '$baseUrl/upload_mobile.php';
-  static String get addCustomer => '$baseUrl/customers/add_customers_data.php';
+  static String get uploadImage => '$baseUrl/uploading/upload_mobile.php';
+  static String get addCustomer =>
+      '$baseUrl/users/customers/referral_customers/add_customers.php';
   static String get validateEmail =>
       '$baseUrl/users/customers/dashboard/valid_email.php';
   static String get editCustomers =>
-      '$baseUrl/customers/edit_customers_data.php';
+      '$baseUrl/users/customers/referral_customers/edit_customers.php';
   static String get deleteCustomers =>
-      '$baseUrl/customers/delete_customers_data.php';
+      '$baseUrl/users/customers/referral_customers/delete_customers.php';
 
   // ==================== CUSTOMER WALLET ENDPOINTS ====================
   static String get getWalletDetails =>
-      '$baseUrl/customers/wallets/wallets_api.php';
+      '$baseUrl/users/customers/wallets/wallets_api.php';
 
   // ==================== CUSTOMER PRODUCT PAYOUTS ENDPOINTS ====================
   static String get getAllPayoutsProduct =>
-      '$baseUrl/payouts/product_payouts/customer_all_payouts.php';
+      '$baseUrl/users/customers/payouts/product_payouts/customer_all_payouts.php';
 
   static String get getTotalPayoutsProduct =>
-      '$baseUrl/payouts/product_payouts/customer_total_payout.php';
+      '$baseUrl/users/customers/payouts/product_payouts/customer_total_payout.php';
 
   static String get getPayoutsProduct =>
-      '$baseUrl/payouts/product_payouts/customer_payouts.php'; // this is used to call all previous,next and all
+      '$baseUrl/users/customers/payouts/product_payouts/customer_payouts.php'; // this is used to call all previous,next and all
 
   // ==================== CUSTOMER REFERRAL PAYOUTS ENDPOINTS ====================
 
   static String get getAllPayoutsReference =>
-      '$baseUrl/payouts/reference_payouts/customer_all_payouts.php';
+      '$baseUrl/users/customers/payouts/reference_payouts/customer_all_payouts.php';
 
   static String get getPreviousPayoutsReference =>
-      '$baseUrl/payouts/reference_payouts/customer_prev_payouts.php';
+      '$baseUrl/users/customers/payouts/reference_payouts/customer_prev_payouts.php';
 
   static String get getNextPayoutReference =>
-      '$baseUrl/payouts/reference_payouts/customer_next_payouts.php';
+      '$baseUrl/users/customers/payouts/reference_payouts/customer_next_payouts.php';
 
   static String get getTotalPayoutsReference =>
-      '$baseUrl/payouts/reference_payouts/customer_total_payouts.php';
+      '$baseUrl/users/customers/payouts/reference_payouts/customer_total_payouts.php';
 
   // ==================== CUSTOMER ORDER HISTORY ENDPOINTS ====================
   static String get getOrderHistoryStatCounts =>
-      '$baseUrl/orders/get_counts.php';
+      '$baseUrl/users/customers/orders/get_counts.php';
 }
