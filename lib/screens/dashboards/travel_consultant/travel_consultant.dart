@@ -281,6 +281,35 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                           //     value: '₹ 2000',
                           //     thisMonthValue: '₹ 100',
                           //     icon: Icons.account_balance_wallet),
+                          // SummaryCardData(
+                          //   title: 'COMPLETED TOURS',
+                          //   value: tcController.totalCompletedTours ?? '0',
+                          //   thisMonthValue:
+                          //       tcController.monthlyCompletedTours ?? '0',
+                          //   icon: Icons.check_circle,
+                          // ),
+                          // SummaryCardData(
+                          //   title: 'UPCOMING TOURS',
+                          //   value: tcController.totalUpcomingTours ?? '0',
+                          //   thisMonthValue:
+                          //       tcController.monthlyUpcomingTours ?? '0',
+                          //   icon: Icons.calendar_today,
+                          // ),
+                          // SummaryCardData(
+                          //   title: 'CONFIRMED COMMISSION',
+                          //   value:
+                          //       '₹ ${tcController.confirmedCommission ?? '0.00'}',
+                          //   thisMonthValue:
+                          //       '₹ ${tcController.pendingCommission ?? '0.00'}',
+                          //   icon: Icons.account_balance_wallet,
+                          // ),
+                          SummaryCardData(
+                            title: 'CUSTOMER REGISTERED',
+                            value: tcController.totalRegisteredCustomers ?? '0',
+                            thisMonthValue:
+                                tcController.monthlyRegisteredCustomers ?? '0',
+                            icon: Icons.people,
+                          ),
                           SummaryCardData(
                             title: 'COMPLETED TOURS',
                             value: tcController.totalCompletedTours ?? '0',

@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/models/tc_models/tc_dashboard/tc_dashboard_stat_mo
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,6 +12,8 @@ class TcController extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   DashboardStatsModel? _dashboardStats;
+  List<double> _chartData = [];
+  String? _selectedYear;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -32,6 +35,8 @@ class TcController extends ChangeNotifier {
   String? get confirmedCommission =>
       _dashboardStats?.data?.commission?.confirmed;
   String? get pendingCommission => _dashboardStats?.data?.commission?.pending;
+  List<double> get chartData => _chartData;
+  String? get selectedYear => _selectedYear;
 
   TcController() {
     getDashboardDataCounts();
@@ -77,5 +82,52 @@ class TcController extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> apiGetChartData(String selectedYear) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final String url = AppUrls.getTechnoEnterpriseLineChartData;
+      final Map<String, dynamic> body = {
+        'year': selectedYear,
+        'current_year': 2025,
+        'userId': userId,
+        'user_type': '11',
+      };
+      final encodeBody = json.encode(body);
+      final response = await http.post(Uri.parse(url), body: encodeBody);
+      Logger.info('Fetching line chart data from $url with body: $body');
+      Logger.info('Raw response body: ${response.body}');
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        Logger.info('Line chart data response: $jsonData');
+      }
+    } catch (e, s) {
+      Logger.error('Error fetching line chart data: Error $e, StackTrace: $s');
+      _error = 'An error occurred while fetching line chart data.';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  List<FlSpot> getChartSpots() {
+    final int currentYear = DateTime.now().year;
+    final int currentMonth = DateTime.now().month;
+    final int limit = selectedYear == currentYear.toString()
+        ? currentMonth
+        : _chartData.length;
+
+    final List<FlSpot> spots = [];
+
+    for (int i = 0; i < limit && i < _chartData.length; i++) {
+      spots.add(FlSpot((i + 1).toDouble(), _chartData[i]));
+    }
+
+    return spots;
   }
 }
