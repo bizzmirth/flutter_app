@@ -393,7 +393,8 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                                     DataColumn(label: Text('Active/Inactive')),
                                   ],
                                   source: TcTopCustomersDataSource(
-                                      data: customersTA),
+                                      data:
+                                          tcController.tcTopCustomerReferrals),
                                   rowsPerPage: _rowsPerPage,
                                   availableRowsPerPage: const [
                                     5,

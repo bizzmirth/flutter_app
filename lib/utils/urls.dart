@@ -104,15 +104,15 @@ class AppUrls {
   static String get getOrderHistoryStatCounts =>
       '$_customers/orders/get_counts.php';
 
-  // ==================== TECHNO ENTERPRISE DASHBOARD ENDPOINTS ====================
-  static String get getTechnoEnterpriseDashboardCounts =>
+  // ==================== TRAVEL CONSULTANT DASHBOARD ENDPOINTS ====================
+  static String get getTravelConsultantDashboardCounts =>
       '$_travelConsultant/dashboard/dashboard_count.php';
 
-  static String get getTechnoEnterpriseLineChartData =>
+  static String get getTravelConsultantLineChartData =>
       '$_travelConsultant/dashboard/line_chart.php';
 
-  static String get getTopReferralCustomers =>
+  static String get getTravelConsultantTopReferralCustomers =>
       '$_travelConsultant/dashboard/top_referrals.php';
 
-  static String get getTechnoEnterpriseCurrentBookings => '$_travelConsultant/';
+  static String get getTravelConsultantCurrentBookings => '$_travelConsultant/';
 }

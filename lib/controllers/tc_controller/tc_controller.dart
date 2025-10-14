@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bizzmirth_app/models/tc_models/tc_dashboard/tc_dashboard_stat_model.dart';
+import 'package:bizzmirth_app/models/tc_models/tc_dashboard/tc_top_customer_referral_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -14,6 +15,7 @@ class TcController extends ChangeNotifier {
   DashboardStatsModel? _dashboardStats;
   List<double> _chartData = [];
   String? _selectedYear;
+  List<TcTopCustomerReferralModel> _tcTopCustomerReferrals = [];
 
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -37,9 +39,16 @@ class TcController extends ChangeNotifier {
   String? get pendingCommission => _dashboardStats?.data?.commission?.pending;
   List<double> get chartData => _chartData;
   String? get selectedYear => _selectedYear;
+  List<TcTopCustomerReferralModel> get tcTopCustomerReferrals =>
+      _tcTopCustomerReferrals;
 
   TcController() {
-    getDashboardDataCounts();
+    intialiseTCDasboard();
+  }
+
+  Future<void> intialiseTCDasboard() async {
+    await getDashboardDataCounts();
+    await apiGetTcTopCustomerReferral();
   }
 
   Future<void> getDashboardDataCounts() async {
@@ -48,7 +57,7 @@ class TcController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final String url = AppUrls.getTechnoEnterpriseDashboardCounts;
+      final String url = AppUrls.getTravelConsultantDashboardCounts;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
       final Map<String, dynamic> body = {
         'userId': userId,
@@ -91,7 +100,7 @@ class TcController extends ChangeNotifier {
       notifyListeners();
 
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final String url = AppUrls.getTechnoEnterpriseLineChartData;
+      final String url = AppUrls.getTravelConsultantLineChartData;
       final Map<String, dynamic> body = {
         'year': selectedYear,
         'current_year': 2025,
@@ -129,5 +138,62 @@ class TcController extends ChangeNotifier {
     }
 
     return spots;
+  }
+
+  Future<void> apiGetTcTopCustomerReferral() async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final String url = AppUrls.getTravelConsultantTopReferralCustomers;
+      final Map<String, dynamic> body = {
+        'userId': userId,
+      };
+      final encodeBody = json.encode(body);
+
+      Logger.info('Fetching top customer referrals from $url with body: $body');
+
+      final response = await http.post(Uri.parse(url), body: encodeBody);
+
+      Logger.info('Raw response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+
+        if (jsonResponse['status'] == 'success') {
+          _tcTopCustomerReferrals = [];
+
+          if (jsonResponse['top_customers'] != null) {
+            final List<dynamic> customersList = jsonResponse['top_customers'];
+
+            for (var customerJson in customersList) {
+              _tcTopCustomerReferrals
+                  .add(TcTopCustomerReferralModel.fromJson(customerJson));
+            }
+
+            Logger.info(
+                'Top customer referrals fetched successfully. Count: ${_tcTopCustomerReferrals.length}');
+          } else {
+            Logger.warning('No top customers found in response');
+          }
+        } else {
+          _error = 'Failed to fetch top customer referrals';
+          Logger.error('Top customer referrals status not success');
+        }
+      } else {
+        _error = 'Server error: ${response.statusCode}';
+        Logger.error('Server error: ${response.statusCode}');
+      }
+    } catch (e, s) {
+      Logger.error(
+          'Error fetching top customer referrals: Error $e, StackTrace: $s');
+      _error =
+          'An error occurred while fetching top customer referrals. Error: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }
