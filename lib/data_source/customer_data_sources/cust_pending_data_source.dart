@@ -1,6 +1,5 @@
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
-import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +41,7 @@ class MyrefCustPendingDataSource extends DataTableSource {
         imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
       }
 
-      Logger.success('Final image URL: $imageUrl');
+      // Logger.success('Final image URL: $imageUrl');
 
       return Center(
         child: Container(

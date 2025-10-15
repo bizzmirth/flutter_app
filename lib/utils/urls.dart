@@ -115,4 +115,11 @@ class AppUrls {
       '$_travelConsultant/dashboard/top_referrals.php';
 
   static String get getTravelConsultantCurrentBookings => '$_travelConsultant/';
+
+  // ==================== TRAVEL CONSULTANT CUSTOMER DASHBOARD ====================
+  static String get getTcPendingCustomers =>
+      '$_travelConsultant/referral_customers/customers.php?action=pending_cust';
+
+  static String get getTcRegisteredCustomers =>
+      '$_travelConsultant/referral_customers/customers.php?action=registered_cust';
 }

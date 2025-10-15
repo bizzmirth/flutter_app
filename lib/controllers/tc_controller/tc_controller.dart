@@ -114,6 +114,17 @@ class TcController extends ChangeNotifier {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         Logger.info('Line chart data response: $jsonData');
+        if (jsonData is List && jsonData.isNotEmpty && jsonData[0] is List) {
+          // response looks like [[0,0,0,0,0,0,0,0,0,0,0,0]]
+          final List<dynamic> dataArray = jsonData[0];
+          _chartData =
+              dataArray.map((item) => (item as num).toDouble()).toList();
+          Logger.success('Line chart data fetched successfully: $_chartData');
+          _selectedYear = selectedYear;
+        } else {
+          _error = 'Unexpected data format for line chart data.';
+          Logger.error('Unexpected data format for line chart data: $jsonData');
+        }
       }
     } catch (e, s) {
       Logger.error('Error fetching line chart data: Error $e, StackTrace: $s');

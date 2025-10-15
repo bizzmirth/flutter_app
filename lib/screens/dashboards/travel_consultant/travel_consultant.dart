@@ -171,7 +171,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ViewCustomersPage1()),
+                            builder: (context) => const ViewTcCustomers()),
                       );
                     },
                   ),

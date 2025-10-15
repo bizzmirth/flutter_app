@@ -1,7 +1,6 @@
 import 'package:bizzmirth_app/controllers/all_packages_controllers/tour_packages_controller.dart';
 import 'package:bizzmirth_app/screens/more_top_selling_packages/more_top_selling_packages.dart';
 import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
-import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +74,7 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
             else
               ...bestDeals.map((trip) {
                 final imageUrl = '${AppUrls.getImageBaseUrl}${trip.image}';
-                Logger.success('Top selling package image URL: $imageUrl');
+                // Logger.success('Top selling package image URL: $imageUrl');
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
