@@ -12,8 +12,8 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
   @override
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
-    final order = data[index];
-    final fullName = '${order.firstname} ${order.lastname}';
+    final regCus = data[index];
+    final fullName = '${regCus.firstname} ${regCus.lastname}';
 
     Widget getProfileImage(String? profilePicture) {
       const double imageSize = 40;
@@ -64,21 +64,21 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
 
     return DataRow(
       cells: [
-        DataCell(getProfileImage(order.profilePic)),
-        DataCell(Text(order.id ?? 'N/A')),
+        DataCell(getProfileImage(regCus.profilePic)),
+        DataCell(Text(regCus.id ?? 'N/A')),
         DataCell(Text(fullName)),
-        DataCell(Text(order.referenceNo ?? 'N/A')),
-        DataCell(Text(order.taReferenceName ?? 'N/A')),
-        DataCell(Text(order.registerDate ?? 'N/A')),
+        DataCell(Text(regCus.referenceNo ?? 'N/A')),
+        DataCell(Text(regCus.taReferenceName ?? 'N/A')),
+        DataCell(Text(regCus.addedOn ?? 'N/A')),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: _getStatusColor(order.status ?? ''),
+              color: getStatusColor(regCus.status ?? ''),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              order.status ?? 'Unknown',
+              getStatusText(regCus.status!),
               style: const TextStyle(color: Colors.white),
             ),
           ),
@@ -88,17 +88,22 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'approved':
-        return Colors.blue;
-      case 'processing':
-        return Colors.purple;
-      case 'pending':
-        return Colors.orange;
-      case 'completed':
+  String getStatusText(String status) {
+    switch (status) {
+      case '1':
+        return 'Active';
+      case '3':
+        return 'Inactive';
+      default:
+        return 'Pending';
+    }
+  }
+
+  Color getStatusColor(String status) {
+    switch (status) {
+      case '1':
         return Colors.green;
-      case 'cancelled':
+      case '3':
         return Colors.red;
       default:
         return Colors.grey;

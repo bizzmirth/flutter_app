@@ -12,8 +12,9 @@ class TcPendingCustomerDataSource extends DataTableSource {
   @override
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
-    final order = data[index];
-    final String fullName = '${order.firstname ?? ''} ${order.lastname ?? ''}';
+    final pendingCus = data[index];
+    final String fullName =
+        '${pendingCus.firstname ?? ''} ${pendingCus.lastname ?? ''}';
 
     Widget getProfileImage(String? profilePicture) {
       const double imageSize = 40;
@@ -65,21 +66,21 @@ class TcPendingCustomerDataSource extends DataTableSource {
 
     return DataRow(
       cells: [
-        DataCell(getProfileImage(order.profilePic)),
-        DataCell(Text(order.id ?? 'N/A')),
+        DataCell(getProfileImage(pendingCus.profilePic)),
+        DataCell(Text(pendingCus.id ?? 'N/A')),
         DataCell(Text(fullName)),
-        DataCell(Text(order.referenceNo ?? 'N/A')),
-        DataCell(Text(order.taReferenceName ?? 'N/A')),
-        DataCell(Text(order.registerDate ?? 'N/A')),
+        DataCell(Text(pendingCus.referenceNo ?? 'N/A')),
+        DataCell(Text(pendingCus.taReferenceName ?? 'N/A')),
+        DataCell(Text(pendingCus.addedOn ?? 'N/A')),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: getStatusColor(order.status ?? ''),
+              color: getStatusColor(pendingCus.status ?? ''),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              getStatusText(order.status!),
+              getStatusText(pendingCus.status!),
               style: const TextStyle(color: Colors.white),
             ),
           ),
