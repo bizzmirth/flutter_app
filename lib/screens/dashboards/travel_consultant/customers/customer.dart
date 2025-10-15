@@ -1,6 +1,6 @@
 import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_pending_customer_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/data_source/tc_data_sources/tc_registered_customer_data_source.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/add_customer_tc.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -67,9 +67,6 @@ class _ViewTcCustomersState extends State<ViewTcCustomers> {
             );
           }
 
-          // ✅ Show data (pending customers)
-          final pendingCustomers = tcController.pendingCustomers;
-
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -115,7 +112,7 @@ class _ViewTcCustomersState extends State<ViewTcCustomers> {
                           DataColumn(label: Text('Action')),
                         ],
                         source: TcPendingCustomerDataSource(
-                          data: pendingCustomers,
+                          data: tcController.pendingCustomers,
                           context: context,
                         ),
                         rowsPerPage: _rowsPerPage,
@@ -167,7 +164,9 @@ class _ViewTcCustomersState extends State<ViewTcCustomers> {
                           DataColumn(label: Text('Status')),
                           DataColumn(label: Text('Action')),
                         ],
-                        source: MyBDMCustRegDataSource([], context),
+                        source: TcRegisteredCustomerDataSource(
+                            data: tcController.registeredCustomers,
+                            context: context),
                         rowsPerPage: _rowsPerPage1,
                         availableRowsPerPage: const [5, 10, 15, 20, 25],
                         onRowsPerPageChanged: (value) {
