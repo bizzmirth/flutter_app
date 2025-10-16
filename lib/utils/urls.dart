@@ -116,10 +116,17 @@ class AppUrls {
 
   static String get getTravelConsultantCurrentBookings => '$_travelConsultant/';
 
-  // ==================== TRAVEL CONSULTANT CUSTOMER DASHBOARD ====================
+  // ==================== TRAVEL CONSULTANT CUSTOMER ENDPOINTS ====================
   static String get getTcPendingCustomers =>
       '$_travelConsultant/referral_customers/customers.php?action=pending_cust';
 
   static String get getTcRegisteredCustomers =>
       '$_travelConsultant/referral_customers/customers.php?action=registered_cust';
+
+  // ==================== TRAVEL CONSULTANT MARKUP ENDPOINTS ====================
+  static String get getTcMarkupDetails =>
+      '$_travelConsultant/markup/markup.php';
+
+  static String get getTcUpdateMarkup =>
+      '$_travelConsultant/markup/update_markup.php';
 }
