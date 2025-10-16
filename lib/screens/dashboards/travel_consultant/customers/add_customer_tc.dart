@@ -19,7 +19,6 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     'Bank Passbook': null,
     'Voting Card': null,
   };
-  // String _selectedPayment = "Free";
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _dateController = TextEditingController();
@@ -58,10 +57,8 @@ class _AddCustomerTc extends State<AddCustomerTc> {
         labelStyle: TextStyle(
           color: Colors.white.withValues(alpha: 0.8),
         ),
-
         filled: true,
-        // ignore: deprecated_member_use
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white.withValues(alpha: 0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -286,7 +283,10 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                       'Free',
                       'Prime: ₹ 10,000',
                       'Premium: ₹ 30,000',
-                      'Premium Plus: ₹ 35,000'
+                      'Premium Plus: ₹ 35,000',
+                      'Premium Select: ₹ 35,000',
+                      'Premium Select Lite: ₹ 21,000',
+                      'Neo Select: ₹ 11,000'
                     ],
                   ),
                   const Text(

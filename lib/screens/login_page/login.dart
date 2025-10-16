@@ -208,8 +208,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
             // Dark Overlay
             Positioned.fill(
-              // ignore: deprecated_member_use
-              child: Container(color: Colors.black.withOpacity(0.5)),
+              child: Container(color: Colors.black.withValues(alpha: 0.5)),
             ),
 
             // Login Form
@@ -241,8 +240,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                             borderRadius: BorderRadius.circular(15),
                             boxShadow: [
                               BoxShadow(
-                                // ignore: deprecated_member_use
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withValues(alpha: 0.2),
                                 blurRadius: 10,
                                 offset: const Offset(0, 5),
                               ),

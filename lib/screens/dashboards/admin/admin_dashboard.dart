@@ -364,10 +364,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ),
                   const Divider(),
                   Padding(
-                    padding: false
-                        // ignore: dead_code
-                        ? const EdgeInsets.only(left: 16.0)
-                        : EdgeInsets.zero,
+                    padding: EdgeInsets.zero,
                     child: ListTile(
                       leading: const Icon(
                         Icons.power_settings_new_rounded,
@@ -504,18 +501,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                               day.year, day.month, day.day)] ??
                                           [])
                                       .map((event) {
-                                    // ignore: unnecessary_type_check
-                                    if (event is Map<String, Object>) {
-                                      return {
-                                        'name': event['name']?.toString() ??
-                                            'Unnamed Event',
-                                        'type': event['type']?.toString() ??
-                                            'other',
-                                      };
-                                    }
                                     return {
-                                      'name': 'Invalid Event',
-                                      'type': 'other'
+                                      'name': event['name']?.toString() ??
+                                          'Unnamed Event',
+                                      'type':
+                                          event['type']?.toString() ?? 'other',
                                     };
                                   }).toList();
                                 },

@@ -28,8 +28,7 @@ Widget contactInfo(IconData icon, String text) {
 
 // Divider for spacing
 Widget divider() {
-  // ignore: deprecated_member_use
-  return Divider(color: Colors.white.withOpacity(0.5));
+  return Divider(color: Colors.white.withValues(alpha: 0.5));
 }
 
 Widget _customAdultInputField({

@@ -143,10 +143,7 @@ class _BMDashboardPageState extends State<BMDashboardPage> {
                   ),
                   const Divider(),
                   Padding(
-                    padding: false
-                        // ignore: dead_code
-                        ? const EdgeInsets.only(left: 16.0)
-                        : EdgeInsets.zero,
+                    padding: EdgeInsets.zero,
                     child: ListTile(
                       leading: const Icon(
                         Icons.power_settings_new_rounded,
