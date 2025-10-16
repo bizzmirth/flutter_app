@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bizzmirth_app/models/tc_models/tc_dashboard/tc_dashboard_stat_model.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_dashboard/tc_top_customer_referral_model.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -105,7 +106,7 @@ class TcController extends ChangeNotifier {
         'year': selectedYear,
         'current_year': 2025,
         'userId': userId,
-        'user_type': '11',
+        'user_type': AppData.tcUserType,
       };
       final encodeBody = json.encode(body);
       final response = await http.post(Uri.parse(url), body: encodeBody);

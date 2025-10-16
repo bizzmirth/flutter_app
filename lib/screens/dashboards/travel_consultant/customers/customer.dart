@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_pending_customer_data_source.dart';
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_registered_customer_data_source.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/add_customer_tc.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -116,7 +117,7 @@ class _ViewTcCustomersState extends State<ViewTcCustomers> {
                           context: context,
                         ),
                         rowsPerPage: _rowsPerPage,
-                        availableRowsPerPage: const [5, 10, 15, 20, 25],
+                        availableRowsPerPage: AppData.availableRowsPerPage,
                         onRowsPerPageChanged: (value) {
                           if (value != null) {
                             setState(() => _rowsPerPage = value);
@@ -168,7 +169,7 @@ class _ViewTcCustomersState extends State<ViewTcCustomers> {
                             data: tcController.registeredCustomers,
                             context: context),
                         rowsPerPage: _rowsPerPage1,
-                        availableRowsPerPage: const [5, 10, 15, 20, 25],
+                        availableRowsPerPage: AppData.availableRowsPerPage,
                         onRowsPerPageChanged: (value) {
                           if (value != null) {
                             setState(() => _rowsPerPage1 = value);

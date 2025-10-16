@@ -22,12 +22,13 @@ class AddReferralCustomer extends StatefulWidget {
   final RegisteredCustomer? registeredCustomer;
   final bool isViewMode;
   final bool isEditMode;
-  const AddReferralCustomer(
-      {super.key,
-      this.pendingCustomer,
-      this.registeredCustomer,
-      this.isViewMode = false,
-      this.isEditMode = false});
+  const AddReferralCustomer({
+    super.key,
+    this.pendingCustomer,
+    this.registeredCustomer,
+    this.isViewMode = false,
+    this.isEditMode = false,
+  });
 
   @override
   State<AddReferralCustomer> createState() => _AddAddReferralCustomerState();

@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/data_source/customer_data_sources/cust_pending_dat
 import 'package:bizzmirth_app/data_source/customer_data_sources/cust_reg_data_source.dart';
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
 import 'package:bizzmirth_app/services/my_navigator.dart';
@@ -834,13 +835,8 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                                               : filteredPendingCustomers,
                                           this.context),
                                       rowsPerPage: _rowsPerPage,
-                                      availableRowsPerPage: const [
-                                        5,
-                                        10,
-                                        15,
-                                        20,
-                                        25
-                                      ],
+                                      availableRowsPerPage:
+                                          AppData.availableRowsPerPage,
                                       onRowsPerPageChanged: (value) {
                                         if (value != null) {
                                           setState(() {
@@ -947,13 +943,8 @@ class _ViewCustomersPageState extends State<ViewCustomersPage> {
                                         });
                                       }),
                                       rowsPerPage: _rowsPerPage1,
-                                      availableRowsPerPage: const [
-                                        5,
-                                        10,
-                                        15,
-                                        20,
-                                        25
-                                      ],
+                                      availableRowsPerPage:
+                                          AppData.availableRowsPerPage,
                                       onRowsPerPageChanged: (value) {
                                         if (value != null) {
                                           setState(() {

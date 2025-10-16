@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/controllers/customer_controller/customer_controlle
 import 'package:bizzmirth_app/data_source/customer_data_sources/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/screens/contact_us/contact_us.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_referral_payouts.dart';
@@ -400,13 +401,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       customers: customerController
                                           .topCustomerRefererals),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
+                                  availableRowsPerPage:
+                                      AppData.availableRowsPerPage,
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -1626,13 +1622,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                   source: CustTopReferralCustomers(
                                       customers: filteredCustomers),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
+                                  availableRowsPerPage:
+                                      AppData.availableRowsPerPage,
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -1955,13 +1946,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       customers: customerController
                                           .topCustomerRefererals),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
+                                  availableRowsPerPage:
+                                      AppData.availableRowsPerPage,
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -2286,13 +2272,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       customers: customerController
                                           .topCustomerRefererals),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
+                                  availableRowsPerPage:
+                                      AppData.availableRowsPerPage,
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {

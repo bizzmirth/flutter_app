@@ -1,5 +1,6 @@
 import 'package:bizzmirth_app/controllers/tc_controller/tc_markup_controller.dart';
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_product_markup_data_source.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
 
   // Dropdown related
   String _selectedTravelType = 'ALL';
-  final List<String> _travelTypes = ['ALL', 'International', 'Domestic'];
+  final List<String> _travelTypes = AppData.travelTypes;
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +147,7 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
                         source: TcProductMarkupDataSource(
                             controller.tcMarkupDetails, context),
                         rowsPerPage: _rowsPerPage,
-                        availableRowsPerPage: const [5, 10, 15, 20, 25],
+                        availableRowsPerPage: AppData.availableRowsPerPage,
                         onRowsPerPageChanged: (value) {
                           if (value != null) {
                             setState(() {

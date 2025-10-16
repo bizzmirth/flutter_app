@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bizzmirth_app/models/tc_models/tc_markup/tc_markup_model.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -32,7 +33,10 @@ class TcMarkupController extends ChangeNotifier {
 
       final String url = AppUrls.getTcMarkupDetails;
       final userId = await SharedPrefHelper().getCurrentUserCustId();
-      final Map<String, dynamic> body = {'user_id': userId, 'user_type': '11'};
+      final Map<String, dynamic> body = {
+        'user_id': userId,
+        'user_type': AppData.tcUserType
+      };
       final encodeBody = jsonEncode(body);
 
       final response = await http.post(Uri.parse(url), body: encodeBody);

@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/data_source/tc_data_sources/tc_current_booking_dat
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_top_customers_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_cu_membership_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_product_payouts.dart';
@@ -393,13 +394,8 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                                       data:
                                           tcController.tcTopCustomerReferrals),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
+                                  availableRowsPerPage:
+                                      AppData.availableRowsPerPage,
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -453,13 +449,8 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                                     data: tcCurrentBookingDummyData,
                                   ),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
+                                  availableRowsPerPage:
+                                      AppData.availableRowsPerPage,
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
