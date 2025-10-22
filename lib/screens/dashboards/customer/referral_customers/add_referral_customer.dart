@@ -1306,27 +1306,24 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
     // Handle empty items list with emptyMessage
     if (items.isEmpty && emptyMessage != null) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label,
-                style: TextStyle(
-                    color: const Color.fromARGB(255, 255, 255, 255)
-                        .withValues(alpha: 0.8))),
-            Container(
-              padding: const EdgeInsets.all(15),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child:
-                  Text(emptyMessage, style: const TextStyle(color: Colors.red)),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label,
+              style: TextStyle(
+                  color: const Color.fromARGB(255, 255, 255, 255)
+                      .withValues(alpha: 0.8))),
+          Container(
+            padding: const EdgeInsets.all(15),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
             ),
-          ],
-        ),
+            child:
+                Text(emptyMessage, style: const TextStyle(color: Colors.red)),
+          ),
+        ],
       );
     }
 
@@ -1338,10 +1335,10 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
         value: selectedValue,
+        key: fieldKey,
         items: [
           DropdownMenuItem(
             enabled: widget.isViewMode,
-            key: fieldKey,
             value: defaultOption, // Placeholder value
             child: Text(defaultOption,
                 style: const TextStyle(color: Colors.white)),

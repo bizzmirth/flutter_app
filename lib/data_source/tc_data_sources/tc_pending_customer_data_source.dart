@@ -1,4 +1,3 @@
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_customer/tc_pending_customer_model.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -85,7 +84,7 @@ class TcPendingCustomerDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(_buildActionMenu()),
+        // DataCell(_buildActionMenu(pendingCus)),
       ],
     );
   }
@@ -113,53 +112,61 @@ class TcPendingCustomerDataSource extends DataTableSource {
   }
 
 // Action Menu Widget
-  Widget _buildActionMenu() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // Handle menu actions
-        switch (value) {
-          case 'add_ref':
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AddTAcustPage(isHidden: false),
-              ),
-            );
-            break;
-          case 'edit':
-            break;
-          case 'delete':
-            break;
-          default:
-            break;
-        }
-      },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'add_ref',
-          child: ListTile(
-            leading: Icon(Icons.person_add_alt_1, color: Colors.blue),
-            title: Text('Add Ref'),
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'edit',
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text('Edit'),
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'delete',
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text('Delete'),
-          ),
-        ),
-      ],
-      icon: const Icon(Icons.more_vert, color: Colors.black54),
-    );
-  }
+  // Widget _buildActionMenu(TcPendingCustomerModel customer) {
+  //   return PopupMenuButton<String>(
+  //     onSelected: (value) {
+  //       // Handle menu actions
+  //       switch (value) {
+  //         case 'add_ref':
+  //           Navigator.push(
+  //             context,
+  //             MaterialPageRoute(
+  //               builder: (context) => const AddTAcustPage(isHidden: false),
+  //             ),
+  //           );
+  //           break;
+  //         case 'edit':
+  //           break;
+  //         case 'delete':
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //     },
+  //     itemBuilder: (context) => [
+  //       const PopupMenuItem(
+  //         value: 'add_ref',
+  //         child: ListTile(
+  //           leading: Icon(Icons.person_add_alt_1, color: Colors.blue),
+  //           title: Text('Add Ref'),
+  //         ),
+  //       ),
+  //       const PopupMenuItem(
+  //         value: 'edit',
+  //         child: ListTile(
+  //           leading: Icon(Icons.edit, color: Colors.blueAccent),
+  //           title: Text('Edit'),
+  //         ),
+  //       ),
+  //       PopupMenuItem(
+  //         value: 'delete',
+  //         child: ListTile(
+  //           leading: const Icon(Icons.delete, color: Colors.red),
+  //           title: const Text('Delete'),
+  //           onTap: () {
+  //             Navigator.pop(context);
+  //             final controller =
+  //                 Provider.of<TcCustomerController>(context, listen: false);
+  //             Logger.warning(
+  //                 'selected customer name and id are ${customer.firstname} ${customer.lastname}, ${customer.id}');
+  //             controller.apiDeletePendingCustomer(context, customer);
+  //           },
+  //         ),
+  //       ),
+  //     ],
+  //     icon: const Icon(Icons.more_vert, color: Colors.black54),
+  //   );
+  // }
 
   @override
   int get rowCount => data.length;

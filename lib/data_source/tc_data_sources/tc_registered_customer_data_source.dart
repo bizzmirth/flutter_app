@@ -1,8 +1,11 @@
+import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_customer/tc_registered_customer_model.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TcRegisteredCustomerDataSource extends DataTableSource {
   final List<TcRegisteredCustomerModel> data;
@@ -83,7 +86,7 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(_buildActionMenu()),
+        DataCell(_buildActionMenu(regCus)),
       ],
     );
   }
@@ -111,10 +114,9 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
   }
 
 // Action Menu Widget
-  Widget _buildActionMenu() {
+  Widget _buildActionMenu(TcRegisteredCustomerModel customer) {
     return PopupMenuButton<String>(
       onSelected: (value) {
-        // Handle menu actions
         switch (value) {
           case 'add_ref':
             Navigator.push(
@@ -125,36 +127,76 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
             );
             break;
           case 'edit':
+            // Handle edit action
             break;
           case 'delete':
+
+            // controller.apiDeleteRegisteredCustomer(context, customer);
+            break;
+          case 'restore':
             break;
           default:
             break;
         }
       },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'add_ref',
-          child: ListTile(
-            leading: Icon(Icons.person_add_alt_1, color: Colors.blue),
-            title: Text('Add Ref'),
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'edit',
-          child: ListTile(
-            leading: Icon(Icons.edit, color: Colors.blueAccent),
-            title: Text('Edit'),
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'delete',
-          child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text('Delete'),
-          ),
-        ),
-      ],
+      itemBuilder: (context) {
+        if (customer.status == '3') {
+          // Inactive - show only restore option
+          return [
+            PopupMenuItem(
+              value: 'restore',
+              child: ListTile(
+                leading: const Icon(Icons.restore, color: Colors.green),
+                title: const Text('Restore'),
+                onTap: () {
+                  final controller =
+                      Provider.of<TcCustomerController>(context, listen: false);
+                  Logger.success(
+                      'data to be send ${customer.status} ${customer.firstname} ${customer.caCustomerId}');
+                  Navigator.pop(context);
+                  controller.apiRestoreRegisteredCustomer(context, customer);
+                },
+              ),
+            ),
+          ];
+        } else if (customer.status == '1') {
+          // Active - show all options
+          return [
+            const PopupMenuItem(
+              value: 'add_ref',
+              child: ListTile(
+                leading: Icon(Icons.person_add_alt_1, color: Colors.blue),
+                title: Text('Add Ref'),
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'edit',
+              child: ListTile(
+                leading: Icon(Icons.edit, color: Colors.blueAccent),
+                title: Text('Edit'),
+              ),
+            ),
+            PopupMenuItem(
+              value: 'delete',
+              child: ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete'),
+                onTap: () {
+                  final controller =
+                      Provider.of<TcCustomerController>(context, listen: false);
+                  Navigator.pop(context);
+                  Logger.warning(
+                      'Deleting customer: ${customer.status} ${customer.id} ${customer.taReferenceName} ${customer.taReferenceNo} ${customer.caCustomerId}');
+                  controller.apiDeleteRegisteredCustomer(context, customer);
+                },
+              ),
+            ),
+          ];
+        } else {
+          // Unknown status - no options
+          return [];
+        }
+      },
       icon: const Icon(Icons.more_vert, color: Colors.black54),
     );
   }

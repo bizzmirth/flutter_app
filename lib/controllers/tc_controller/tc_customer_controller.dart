@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:bizzmirth_app/models/tc_models/tc_customer/tc_pending_customer_model.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_customer/tc_registered_customer_model.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class TcCustomerController extends ChangeNotifier {
@@ -103,6 +104,103 @@ class TcCustomerController extends ChangeNotifier {
           'Error fetching registered customers: Error: $e, StackTrace: $s');
     } finally {
       _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiDeleteRegisteredCustomer(
+    BuildContext context,
+    TcRegisteredCustomerModel customer,
+  ) async {
+    try {
+      // _isLoading = true;
+      // _error = null;
+      // notifyListeners();
+
+      final url = AppUrls.deleteTcCustomer;
+      final Map<String, dynamic> body = {
+        'id': customer.id,
+        'fid': customer.taReferenceNo,
+        'refid': customer.caCustomerId,
+        'action': 'registered',
+      };
+      final encodeBody = jsonEncode(body);
+      Logger.success(
+          'request body for tc delete registered customer $encodeBody');
+
+      final response = await http.post(Uri.parse(url), body: encodeBody);
+      Logger.success(
+          'raw response for deleting registered customer ${response.body}');
+
+      if (response.statusCode == 200) {
+        final index =
+            _registeredCustomers.indexWhere((c) => c.id == customer.id);
+
+        if (index != -1) {
+          _registeredCustomers[index].status = '3';
+          notifyListeners();
+        }
+        ToastHelper.showSuccessToast(
+            title: 'Customer status updated successfully!');
+      } else {
+        _error = 'Failed to update status';
+        ToastHelper.showErrorToast(title: _error ?? 'Error updating status');
+      }
+    } catch (e, s) {
+      _error = 'Error deleting customer. Error: $e';
+      Logger.error('Error deleting customer. Stacktrace: $s');
+      ToastHelper.showErrorToast(title: _error ?? 'Error updating status : $e');
+    } finally {
+      // _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiRestoreRegisteredCustomer(
+    BuildContext context,
+    TcRegisteredCustomerModel customer,
+  ) async {
+    try {
+      _error = null;
+      notifyListeners();
+
+      final url = AppUrls.deleteTcCustomer;
+
+      final Map<String, dynamic> body = {
+        'id': customer.id,
+        'fid': customer.taReferenceNo,
+        'refid': customer.caCustomerId,
+        'action': 'deactivate',
+      };
+
+      final encodeBody = jsonEncode(body);
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: encodeBody,
+      );
+
+      if (response.statusCode == 200) {
+        // final responseData = jsonDecode(response.body);
+
+        customer.status = '1';
+        Logger.info('Customer restored successfully: ${customer.id}');
+
+        ToastHelper.showSuccessToast(title: 'Customer restored successfully!');
+
+        notifyListeners();
+      } else {
+        _error = 'Server error: ${response.statusCode}';
+
+        ToastHelper.showErrorToast(
+            title: _error ?? 'Server Error: ${response.statusCode}');
+      }
+    } catch (e, s) {
+      _error = 'Error restoring customer: $e';
+      Logger.error('$_error\nStacktrace: $s');
+
+      ToastHelper.showErrorToast(title: _error ?? 'Error restoring customer');
+    } finally {
       notifyListeners();
     }
   }

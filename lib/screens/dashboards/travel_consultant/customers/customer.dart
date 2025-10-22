@@ -110,7 +110,7 @@ class _ViewTcCustomersState extends State<ViewTcCustomers> {
                           DataColumn(label: Text('Ref. Name')),
                           DataColumn(label: Text('Joining Date')),
                           DataColumn(label: Text('Status')),
-                          DataColumn(label: Text('Action')),
+                          // DataColumn(label: Text('Action')),
                         ],
                         source: TcPendingCustomerDataSource(
                           data: tcController.pendingCustomers,

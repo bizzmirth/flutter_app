@@ -36,6 +36,8 @@ class _AddCustomerTc extends State<AddCustomerTc> {
   };
 
   final _formKey = GlobalKey<FormState>();
+
+  // ------------------------------- text controller for the form fields ---------------------------------------
   final TextEditingController _taReferenceIdController =
       TextEditingController();
   final TextEditingController _taReferenceNameController =
@@ -44,6 +46,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
   final TextEditingController _lNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   final TextEditingController _pincodeController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _chequeNoController = TextEditingController();
@@ -51,17 +54,42 @@ class _AddCustomerTc extends State<AddCustomerTc> {
   final TextEditingController _bankNameController = TextEditingController();
   final TextEditingController _transactionIDController =
       TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
 
-  String _selectedPaymentMode = 'Cash';
-
+  // selected option for dropdown with default already defined
+  String _selectedCountryCode = '+91'; // Default country code
   String _selectedGender = '---- Select Gender ----';
   String _selectedCountry = '---- Select Country ----';
   String _selectedState = '---- Select State ----';
   String _selectedCity = '---- Select City ----';
-
-  String _selectedCountryCode = '+91'; // Default country code
   String _selectedPaymentFee = 'Free';
+  String _selectedPaymentMode = 'Cash';
+
+  // ----------------------------- global form keys ---------------------------------------------
+  final _taRefIdKey = GlobalKey<FormFieldState>();
+  final _taRefNameKey = GlobalKey<FormFieldState>();
+  final _fNameKey = GlobalKey<FormFieldState>();
+  final _lNameKey = GlobalKey<FormFieldState>();
+  final _mobileKey = GlobalKey<FormFieldState>();
+  final _emailKey = GlobalKey<FormFieldState>();
+  final _genderKey = GlobalKey<FormFieldState>();
+  final _dobKey = GlobalKey<FormFieldState>();
+  final _countryKey = GlobalKey<FormFieldState>();
+  final _stateKey = GlobalKey<FormFieldState>();
+  final _cityKey = GlobalKey<FormFieldState>();
+  final _pincodeKey = GlobalKey<FormFieldState>();
+  final _addressKey = GlobalKey<FormFieldState>();
+  final _paymentFeeKey = GlobalKey<FormFieldState>();
+  final _paymentModeKey = GlobalKey<FormFieldState>();
+  final _chequeNoKey = GlobalKey<FormFieldState>();
+  final _chequeDateKey = GlobalKey<FormFieldState>();
+  final _bankNameKey = GlobalKey<FormFieldState>();
+  final _transactionNoKey = GlobalKey<FormFieldState>();
+  final _profilePicKey = GlobalKey<FormFieldState>();
+  final _aadharCardKey = GlobalKey<FormFieldState>();
+  final _panCardKey = GlobalKey<FormFieldState>();
+  final _bankPassbookKey = GlobalKey<FormFieldState>();
+  final _votingCardKey = GlobalKey<FormFieldState>();
+
   var savedImagePath = '';
   bool _showImageValidationErrors = false;
 
@@ -312,10 +340,10 @@ class _AddCustomerTc extends State<AddCustomerTc> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
         value: selectedValue,
+        key: fieldKey,
         items: [
           DropdownMenuItem(
             enabled: widget.isViewMode,
-            key: fieldKey,
             value: defaultOption, // Placeholder value
             child: Text(defaultOption,
                 style: const TextStyle(color: Colors.white)),
@@ -379,15 +407,18 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 10),
-                  _buildTextField(
-                      'TA Reference ID *', _taReferenceIdController),
+                  _buildTextField('TA Reference ID *', _taReferenceIdController,
+                      fieldKey: _taRefIdKey),
                   const SizedBox(height: 15),
                   _buildTextField(
-                      'TA Reference Name *', _taReferenceNameController),
+                      'TA Reference Name *', _taReferenceNameController,
+                      fieldKey: _taRefNameKey),
                   const SizedBox(height: 15),
-                  _buildTextField('First Name*', _fNameController),
+                  _buildTextField('First Name*', _fNameController,
+                      fieldKey: _fNameKey),
                   const SizedBox(height: 15),
-                  _buildTextField('Last Name*', _lNameController),
+                  _buildTextField('Last Name*', _lNameController,
+                      fieldKey: _lNameKey),
                   const SizedBox(height: 15),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -433,6 +464,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                         Expanded(
                           child: TextFormField(
                             controller: _phoneController,
+                            key: _mobileKey,
                             keyboardType: TextInputType.phone,
                             maxLength:
                                 10, // Limit to typical phone number length
@@ -456,7 +488,8 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  _buildTextField('Email *', _emailController),
+                  _buildTextField('Email *', _emailController,
+                      fieldKey: _emailKey),
                   const SizedBox(height: 15),
                   _buildDropdown(
                       'Gender *',
@@ -464,12 +497,14 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                       _selectedGender,
                       (value) => setState(() {
                             _selectedGender = value!;
-                          })),
+                          }),
+                      fieldKey: _genderKey),
                   const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextFormField(
                       controller: _dateController,
+                      key: _dobKey,
                       readOnly: true, // Makes the TextFormField non-editable
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
@@ -531,181 +566,206 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                         _loadStates(_selectedCountryId);
                       },
                     ),
+                    fieldKey: _countryKey,
                   ),
                   const SizedBox(height: 10),
                   _buildDropdown(
-                      'State *',
-                      _stateNames,
-                      _selectedState,
-                      (value) => setState(
-                            () {
-                              _selectedState = value!;
+                    'State *',
+                    _stateNames,
+                    _selectedState,
+                    (value) => setState(
+                      () {
+                        _selectedState = value!;
 
-                              final selectedStateObject = _states.firstWhere(
-                                  (state) => state['state_name'] == value,
-                                  orElse: () => null);
-                              if (selectedStateObject != null) {
-                                _selectedStateId =
-                                    selectedStateObject['id'].toString();
-                                Logger.success(
-                                    'selected state is $_selectedState ID : $_selectedStateId');
-                                _loadCities(_selectedStateId);
-                              }
-                            },
-                          ),
-                      emptyMessage: 'Please select a country first.'),
+                        final selectedStateObject = _states.firstWhere(
+                            (state) => state['state_name'] == value,
+                            orElse: () => null);
+                        if (selectedStateObject != null) {
+                          _selectedStateId =
+                              selectedStateObject['id'].toString();
+                          Logger.success(
+                              'selected state is $_selectedState ID : $_selectedStateId');
+                          _loadCities(_selectedStateId);
+                        }
+                      },
+                    ),
+                    emptyMessage: 'Please select a country first.',
+                    fieldKey: _stateKey,
+                  ),
                   const SizedBox(height: 10),
                   _buildDropdown(
-                      'City *',
-                      _cityNames,
-                      _selectedCity,
-                      (value) => setState(
-                            () {
-                              _selectedCity = value!;
-                              final selectedCityObject = _cities.firstWhere(
-                                  (city) => city['city_name'] == value,
-                                  orElse: () => null);
-                              if (selectedCityObject != null) {
-                                _selectedCityId =
-                                    selectedCityObject['id'].toString();
-                                Logger.success(
-                                    'selected city is $_selectedCity ID : $_selectedCityId');
-                              }
-                              getPincode(_selectedCityId);
-                            },
-                          ),
-                      emptyMessage: 'Please select a state first'),
+                    'City *',
+                    _cityNames,
+                    _selectedCity,
+                    (value) => setState(
+                      () {
+                        _selectedCity = value!;
+                        final selectedCityObject = _cities.firstWhere(
+                            (city) => city['city_name'] == value,
+                            orElse: () => null);
+                        if (selectedCityObject != null) {
+                          _selectedCityId = selectedCityObject['id'].toString();
+                          Logger.success(
+                              'selected city is $_selectedCity ID : $_selectedCityId');
+                        }
+                        getPincode(_selectedCityId);
+                      },
+                    ),
+                    emptyMessage: 'Please select a state first',
+                    fieldKey: _cityKey,
+                  ),
                   const SizedBox(height: 10),
-                  _buildTextField('Pincode *', _pincodeController),
+                  _buildTextField(
+                    'Pincode *',
+                    _pincodeController,
+                    fieldKey: _pincodeKey,
+                  ),
                   const SizedBox(height: 15),
-                  _buildTextField('Address *', _addressController),
+                  _buildTextField(
+                    'Address *',
+                    _addressController,
+                    fieldKey: _addressKey,
+                  ),
                   const SizedBox(height: 20),
                   _buildDropdown(
-                      'Payment Fee *',
-                      AppData.paymentFeeOptions,
-                      _selectedPaymentFee,
-                      (value) => setState(() {
-                            _selectedPaymentFee = value!;
-                          })),
+                    'Payment Fee *',
+                    AppData.paymentFeeOptions,
+                    _selectedPaymentFee,
+                    (value) => setState(() {
+                      _selectedPaymentFee = value!;
+                    }),
+                    fieldKey: _paymentFeeKey,
+                  ),
                   const SizedBox(height: 10),
                   if (_selectedPaymentFee != 'Free')
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        RichText(
-                          text: const TextSpan(
-                            text: 'Payment Mode * ',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
                         const SizedBox(height: 2),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.2),
-                            ),
-                          ),
-                          child: Row(
-                            children:
-                                ['Cash', 'Cheque', 'UPI/NEFT'].map((package) {
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedPaymentMode = package;
-                                  });
-                                },
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    // Radio<String>(
-                                    //   value: package,
-                                    //   groupValue:
-                                    //       _selectedPaymentMode,
-                                    //   activeColor: Colors
-                                    //       .white, // Change radio button color
-                                    //   onChanged: (value) {
-                                    //     setState(() {
-                                    //       _selectedPaymentMode =
-                                    //           value!;
-                                    //       Logger.success(
-                                    //           "Selected payment Mode: $_selectedPaymentMode");
-                                    //     });
-                                    //   },
-                                    // ),
-                                    RadioGroup<String>(
-                                        groupValue: _selectedPaymentMode,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _selectedPaymentMode = value!;
-                                            Logger.success(
-                                                'Selected payment Mode: $_selectedPaymentMode');
-                                          });
-                                        },
-                                        child: Radio<String>(
-                                          value: package,
-                                        )),
-                                    Text(
-                                      package,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors
-                                            .white, // Gray out text if disabled
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                        width:
-                                            10), // Spacing between radio buttons
-                                  ],
+                        FormField<String>(
+                          key: _paymentModeKey,
+                          validator: (value) {
+                            if (_selectedPaymentMode.isEmpty) {
+                              return 'Please select a payment mode';
+                            }
+                            return null;
+                          },
+                          builder: (fieldState) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              RichText(
+                                text: const TextSpan(
+                                  text: 'Payment Mode * ',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.white),
                                 ),
-                              );
-                            }).toList(),
+                              ),
+                              const SizedBox(height: 4),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 4),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.2),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: ['Cash', 'Cheque', 'UPI/NEFT']
+                                      .map((mode) {
+                                    return Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Radio<String>(
+                                          value: mode,
+                                          groupValue: _selectedPaymentMode,
+                                          activeColor: Colors.white,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _selectedPaymentMode = value!;
+                                            });
+                                            // Update validation state
+                                            fieldState.didChange(value);
+                                          },
+                                        ),
+                                        Text(
+                                          mode,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                      ],
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                              if (fieldState.hasError)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: Text(
+                                    fieldState.errorText ?? '',
+                                    style: const TextStyle(
+                                        color: Colors.redAccent, fontSize: 13),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   const SizedBox(height: 10),
                   if (_selectedPaymentMode == 'Cheque') ...[
-                    _buildTextField('Cheque No. *', _chequeNoController,
-                        // fieldKey: _chequeNoKey,
-                        validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Cheque No. is required';
-                      }
-                      return null;
-                    }),
+                    _buildTextField(
+                      'Cheque No. *', _chequeNoController,
+                      // fieldKey: _chequeNoKey,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Cheque No. is required';
+                        }
+                        return null;
+                      },
+                      fieldKey: _chequeNoKey,
+                    ),
                     const SizedBox(height: 10),
-                    _buildTextField('Cheque  Date *', _chequeDateController,
-                        // fieldKey: _chequeDateKey,
-                        validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Cheque Date is required';
-                      }
-                      return null;
-                    }),
+                    _buildTextField(
+                      'Cheque  Date *', _chequeDateController,
+                      // fieldKey: _chequeDateKey,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Cheque Date is required';
+                        }
+                        return null;
+                      },
+                      fieldKey: _chequeDateKey,
+                    ),
                     const SizedBox(height: 10),
-                    _buildTextField('Bank Name *', _bankNameController,
-                        // fieldKey: _bankNameKey,
-                        validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Bank Date is required';
-                      }
-                      return null;
-                    }),
+                    _buildTextField(
+                      'Bank Name *',
+                      _bankNameController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Bank Date is required';
+                        }
+                        return null;
+                      },
+                      fieldKey: _bankNameKey,
+                    ),
                     const SizedBox(height: 10),
                   ] else if (_selectedPaymentMode == 'UPI/NEFT') ...[
                     _buildTextField(
-                        'Transaction No. *', _transactionIDController,
-                        // fieldKey: _transactionNoKey,
-                        validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Transaction No. is required';
-                      }
-                      return null;
-                    }),
+                      'Transaction No. *',
+                      _transactionIDController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Transaction No. is required';
+                        }
+                        return null;
+                      },
+                      fieldKey: _transactionNoKey,
+                    ),
                     const SizedBox(height: 10),
                   ],
                   const SizedBox(height: 20),
@@ -718,16 +778,31 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  _buildUploadButton('Profile Picture',
-                      showError: _showImageValidationErrors),
-                  _buildUploadButton('Aadhar Card',
-                      showError: _showImageValidationErrors),
-                  _buildUploadButton('Pan Card',
-                      showError: _showImageValidationErrors),
-                  _buildUploadButton('Bank Passbook',
-                      showError: _showImageValidationErrors),
-                  _buildUploadButton('Voting Card',
-                      showError: _showImageValidationErrors),
+                  _buildUploadButton(
+                    'Profile Picture',
+                    showError: _showImageValidationErrors,
+                    uploadKey: _profilePicKey,
+                  ),
+                  _buildUploadButton(
+                    'Aadhar Card',
+                    showError: _showImageValidationErrors,
+                    uploadKey: _aadharCardKey,
+                  ),
+                  _buildUploadButton(
+                    'Pan Card',
+                    showError: _showImageValidationErrors,
+                    uploadKey: _panCardKey,
+                  ),
+                  _buildUploadButton(
+                    'Bank Passbook',
+                    showError: _showImageValidationErrors,
+                    uploadKey: _bankPassbookKey,
+                  ),
+                  _buildUploadButton(
+                    'Voting Card',
+                    showError: _showImageValidationErrors,
+                    uploadKey: _votingCardKey,
+                  ),
                   const SizedBox(height: 20),
                   Center(
                     child: ElevatedButton(

@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/controllers/tc_controller/tc_markup_controller.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_markup/tc_markup_model.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -65,11 +66,9 @@ class TcProductMarkupDataSource extends DataTableSource {
                     final controller =
                         Provider.of<TcMarkupController>(context, listen: false);
 
-                    // Set row loading = true
                     _rowLoading[index] = true;
                     notifyListeners();
 
-                    // Call API with entered value
                     await controller.apiUpdateMarkUp(
                       order.packageId!,
                       enteredValue.toString(),
@@ -77,20 +76,16 @@ class TcProductMarkupDataSource extends DataTableSource {
                       order.childPrice.toString(),
                     );
 
-                    // Update the model & controller after API call
                     order.markup = enteredValue.toDouble();
                     controllers[index].text = enteredValue.toString();
 
-                    // Set row loading = false
                     _rowLoading[index] = false;
                     notifyListeners();
 
                     // Show SnackBar
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text('Markup updated: ₹$enteredValue')),
-                      );
+                      ToastHelper.showSuccessToast(
+                          title: 'Markup updated: $enteredValue');
                     }
 
                     Logger.success(
