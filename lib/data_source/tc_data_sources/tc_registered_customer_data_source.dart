@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_customer/tc_registered_customer_model.dart';
+import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/add_customer_tc.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -169,11 +170,22 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
                 title: Text('Add Ref'),
               ),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'edit',
               child: ListTile(
-                leading: Icon(Icons.edit, color: Colors.blueAccent),
-                title: Text('Edit'),
+                leading: const Icon(Icons.edit, color: Colors.blueAccent),
+                title: const Text('Edit'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddCustomerTc(
+                        customer: customer,
+                        isEditMode: true,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             PopupMenuItem(

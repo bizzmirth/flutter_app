@@ -1,8 +1,15 @@
+import 'dart:async';
 import 'dart:io';
-
 import 'package:bizzmirth_app/controllers/admin_controller/admin_customer_controller.dart';
+import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
+import 'package:bizzmirth_app/models/tc_models/tc_customer/tc_pending_customer_model.dart';
+import 'package:bizzmirth_app/models/tc_models/tc_customer/tc_registered_customer_model.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,11 +19,12 @@ import 'package:provider/provider.dart';
 
 class AddCustomerTc extends StatefulWidget {
   // final PendingCustomer? pendingCustomer;
-  // final RegisteredCustomer? registeredCustomer;
+  final TcRegisteredCustomerModel? customer;
   final bool isViewMode;
   final bool isEditMode;
   const AddCustomerTc({
     super.key,
+    this.customer,
     this.isViewMode = false,
     this.isEditMode = false,
   });
@@ -36,6 +44,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
   };
 
   final _formKey = GlobalKey<FormState>();
+  final SharedPrefHelper _sharedPrefHelper = SharedPrefHelper();
 
   // ------------------------------- text controller for the form fields ---------------------------------------
   final TextEditingController _taReferenceIdController =
@@ -64,6 +73,12 @@ class _AddCustomerTc extends State<AddCustomerTc> {
   String _selectedPaymentFee = 'Free';
   String _selectedPaymentMode = 'Cash';
 
+  String chequeNo = '';
+  String chequeDate = '';
+  String bankName = '';
+  String transactionId = '';
+  // Timer? _debounce;
+
   // ----------------------------- global form keys ---------------------------------------------
   final _taRefIdKey = GlobalKey<FormFieldState>();
   final _taRefNameKey = GlobalKey<FormFieldState>();
@@ -89,6 +104,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
   final _panCardKey = GlobalKey<FormFieldState>();
   final _bankPassbookKey = GlobalKey<FormFieldState>();
   final _votingCardKey = GlobalKey<FormFieldState>();
+  final _paymentProofKey = GlobalKey<FormFieldState>();
 
   var savedImagePath = '';
   bool _showImageValidationErrors = false;
@@ -111,7 +127,61 @@ class _AddCustomerTc extends State<AddCustomerTc> {
   @override
   void initState() {
     super.initState();
+    if (widget.customer != null) {
+      populateRegisteredCustomer(widget.customer!);
+    }
     _loadCountry();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getSharedPrefData();
+    });
+  }
+
+  void clearFormFields() {
+    // 🧹 Clear all text controllers
+    _taReferenceIdController.clear();
+    _taReferenceNameController.clear();
+    _fNameController.clear();
+    _lNameController.clear();
+    _phoneController.clear();
+    _emailController.clear();
+    _dateController.clear();
+    _pincodeController.clear();
+    _addressController.clear();
+    _chequeNoController.clear();
+    _chequeDateController.clear();
+    _bankNameController.clear();
+    _transactionIDController.clear();
+
+    // 🧾 Reset dropdown selections to default values
+    _selectedCountryCode = '+91';
+    _selectedGender = '---- Select Gender ----';
+    _selectedCountry = '---- Select Country ----';
+    _selectedState = '---- Select State ----';
+    _selectedCity = '---- Select City ----';
+    _selectedPaymentFee = 'Free';
+    _selectedPaymentMode = 'Cash';
+
+    // 💳 Clear cheque/payment-related strings
+    chequeNo = '';
+    chequeDate = '';
+    bankName = '';
+    transactionId = '';
+
+    selectedFiles.updateAll((key, value) => null);
+
+    _formKey.currentState?.reset();
+
+    setState(() {});
+  }
+
+  Future<void> getSharedPrefData() async {
+    final loginData = await _sharedPrefHelper.getLoginResponse();
+
+    if (loginData != null) {
+      _taReferenceIdController.text = loginData.userId ?? 'N/A';
+      _taReferenceNameController.text =
+          '${loginData.userFname} ${loginData.userLname}';
+    }
   }
 
   Future<void> _loadCountry() async {
@@ -374,12 +444,463 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     );
   }
 
+  Future<void> _submitForm() async {
+    try {
+      setState(() {
+        _showImageValidationErrors = false;
+      });
+      final controller =
+          Provider.of<TcCustomerController>(context, listen: false);
+      final formState = _formKey.currentState;
+      final String customerType;
+      final String paidAmount;
+      final Map<String, String> documentPaths = {};
+      final bool isFormValid = formState != null && formState.validate();
+
+      final bool areImagesValid = _validateImages();
+
+      if (!isFormValid || !areImagesValid) {
+        if (!areImagesValid) {
+          setState(() {
+            _showImageValidationErrors = true;
+          });
+        }
+
+        _scrollToFirstError();
+        ToastHelper.showErrorToast(
+            title:
+                'Please fill all the required fields and upload required documents');
+        return;
+      }
+
+      selectedFiles.forEach((key, value) {
+        if (value != null) {
+          final String filePath = value.path;
+
+          switch (key) {
+            case 'Profile Picture':
+              documentPaths['profilePicture'] = filePath;
+              break;
+            case 'Aadhar Card':
+              documentPaths['adharCard'] = filePath;
+              break;
+            case 'Pan Card':
+              documentPaths['panCard'] = filePath;
+              break;
+            case 'Bank Passbook':
+              documentPaths['bankPassbook'] = filePath;
+              break;
+            case 'Voting Card':
+              documentPaths['votingCard'] = filePath;
+              break;
+            case 'Payment Proof':
+              documentPaths['paymentProof'] = filePath;
+          }
+        }
+      });
+
+// -------------------------------- upload the selected image ------------------------------------
+      if (selectedFiles['Profile Picture'] != null) {
+        await controller.uploadImage(
+            'profile_pic', selectedFiles['Profile Picture']!.path);
+      }
+      if (selectedFiles['Aadhar Card'] != null) {
+        await controller.uploadImage(
+            'aadhar_card', selectedFiles['Aadhar Card']!.path);
+      }
+      if (selectedFiles['Pan Card'] != null) {
+        await controller.uploadImage(
+            'pan_card', selectedFiles['Pan Card']!.path);
+      }
+      if (selectedFiles['Voting Card'] != null) {
+        await controller.uploadImage(
+            'voting_card', selectedFiles['Voting Card']!.path);
+      }
+      if (selectedFiles['Bank Passbook'] != null) {
+        await controller.uploadImage(
+            'passbook', selectedFiles['Bank Passbook']!.path);
+      }
+      if (selectedFiles['Payment Proof'] != null) {
+        await controller.uploadImage(
+            'payment_proof', selectedFiles['Payment Proof']!.path);
+      }
+      if (_selectedPaymentMode == 'Cheque') {
+        chequeNo = _chequeNoController.text;
+        chequeDate = _chequeDateController.text;
+        bankName = _bankNameController.text;
+      } else if (_selectedPaymentMode == 'UPI/NEFT') {
+        transactionId = _transactionIDController.text;
+      }
+
+      if (_selectedPaymentFee == 'Free') {
+        customerType = 'Free';
+        paidAmount = 'Free';
+      } else if (_selectedPaymentFee == 'Prime: ₹ 10,000') {
+        customerType = 'Prime';
+        paidAmount = '10,000';
+      } else if (_selectedPaymentFee == 'Premium: ₹ 30,000') {
+        customerType = 'Premium';
+        paidAmount = '30,000';
+      } else {
+        customerType = 'Premium Plus';
+        paidAmount = '35,000';
+      }
+
+      final newCustomer = TcPendingCustomerModel()
+        ..taReferenceNo = _taReferenceIdController.text
+        ..taReferenceName = _taReferenceNameController.text
+        ..firstname = _fNameController.text
+        ..lastname = _lNameController.text
+        ..countryCode = _selectedCountryId
+        ..contactNo = _phoneController.text
+        ..email = _emailController.text
+        ..gender = _selectedGender
+        ..dateOfBirth = _dateController.text
+        ..country = _selectedCountryId
+        ..state = _selectedStateId
+        ..city = _selectedCityId
+        ..pincode = _pincodeController.text
+        ..address = _addressController.text
+        ..paymentMode = _selectedPaymentMode
+        ..chequeNo = chequeNo
+        ..chequeDate = chequeDate
+        ..bankName = bankName
+        ..transactionNo = transactionId
+        ..paidAmount = paidAmount
+        ..customerType = customerType
+        ..registerBy = '11'
+        ..registrant = _taReferenceIdController.text
+        ..aadharCard = documentPaths['adharCard']
+        ..profilePic = documentPaths['profilePicture']
+        ..panCard = documentPaths['panCard']
+        ..passbook = documentPaths['bankPassbook']
+        ..votingCard = documentPaths['votingCard']
+        ..paymentProof = documentPaths['paymentProof']
+        ..compChek = '2'
+        ..paymentLabel = customerType;
+      await controller.apiAddCustomer(newCustomer);
+      clearFormFields();
+      MyNavigator.pop(true);
+    } catch (e, s) {
+      Logger.error('Error submitting form: $e, Stacktrace: $s');
+    }
+  }
+
+  void _scrollToFirstError() {
+    final Map<String, GlobalKey<FormFieldState>> fieldKeys = {
+      'firstName': _fNameKey,
+      'lastName': _lNameKey,
+      'phoneNumber': _mobileKey,
+      'pincode': _pincodeKey,
+      'dateOfBirth': _dobKey,
+      'address': _addressKey
+    };
+
+    if (_selectedPaymentMode == 'Cheque') {
+      fieldKeys.addAll({
+        'chequeNo': _chequeNoKey,
+        'chequeDate': _chequeDateKey,
+        'bankName': _bankNameKey,
+      });
+    } else if (_selectedPaymentMode == 'UPI/NEFT') {
+      fieldKeys.addAll({
+        'transactionNo': _transactionNoKey,
+      });
+    }
+
+    for (final entry in fieldKeys.entries) {
+      final fieldState = entry.value.currentState;
+      if (fieldState != null && fieldState.hasError) {
+        Logger.error('Found error in field: ${entry.key}');
+        Scrollable.ensureVisible(
+          entry.value.currentContext!,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+        return;
+      }
+    }
+
+    if (_selectedGender == '---- Select Gender ----') {
+      final RenderObject? renderObject =
+          _genderKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _genderKey.currentContext!,
+          duration: const Duration(milliseconds: 500),
+        );
+        return;
+      }
+    }
+
+    if (_selectedCountry == '---- Select Country ----') {
+      final RenderObject? renderObject =
+          _countryKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _countryKey.currentContext!,
+          duration: const Duration(milliseconds: 500),
+        );
+        return;
+      }
+    }
+    if (_selectedState == '---- Select State ----') {
+      final RenderObject? renderObject =
+          _stateKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _stateKey.currentContext!,
+          duration: const Duration(milliseconds: 500),
+        );
+        return;
+      }
+    }
+
+    if (_selectedCity == '---- Select City ----') {
+      final RenderObject? renderObject =
+          _cityKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _cityKey.currentContext!,
+          duration: const Duration(milliseconds: 500),
+        );
+        return;
+      }
+    }
+
+    final Map<String, GlobalKey> imageKeys = {
+      'Profile Picture': _profilePicKey,
+      'Aadhar Card': _aadharCardKey,
+      'Pan Card': _panCardKey,
+      'Bank Passbook': _bankPassbookKey,
+      'Voting Card': _votingCardKey,
+    };
+
+    if (_selectedPaymentFee != 'Free') {
+      imageKeys['Payment Proof'] = _paymentProofKey;
+    }
+
+    for (final entry in imageKeys.entries) {
+      final String imageType = entry.key;
+      final GlobalKey imageKey = entry.value;
+
+      if (selectedFiles[imageType] == null) {
+        Logger.error('Missing required image: $imageType');
+
+        // Show validation errors
+        setState(() {
+          _showImageValidationErrors = true;
+        });
+
+        // Scroll to the missing image upload button
+        final RenderObject? renderObject =
+            imageKey.currentContext?.findRenderObject();
+        if (renderObject != null) {
+          Scrollable.ensureVisible(
+            imageKey.currentContext!,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+          return;
+        }
+      }
+    }
+  }
+
+  bool _validateImages() {
+    final List<String> requiredImages = [
+      'Profile Picture',
+      'Aadhar Card',
+      'Pan Card',
+      'Bank Passbook',
+      'Voting Card'
+    ];
+
+    if (_selectedPaymentFee != 'Free') {
+      requiredImages.add('Payment Proof');
+    }
+
+    for (String imageType in requiredImages) {
+      if (selectedFiles[imageType] == null) {
+        Logger.error('Missing required image: $imageType');
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  Future<void> populateRegisteredCustomer(
+      TcRegisteredCustomerModel customer) async {
+    try {
+      _taReferenceIdController.text = customer.referenceNo ?? '';
+      _taReferenceNameController.text = customer.taReferenceName ?? '';
+      _fNameController.text = customer.firstname ?? '';
+      _lNameController.text = customer.lastname ?? '';
+      String countryCode = customer.countryCode!;
+      if (!countryCode.startsWith('+')) {
+        countryCode = '+$countryCode';
+      }
+      final allowedCodes = ['+91', '+1', '+44', '+61', '+971'];
+      if (allowedCodes.contains(countryCode)) {
+        _selectedCountryCode = countryCode;
+      } else {
+        _selectedCountryCode = '+91';
+      }
+      _phoneController.text = customer.contactNo ?? '';
+      _emailController.text = customer.email ?? '';
+      _dateController.text = customer.dateOfBirth ?? '';
+      _selectedGender = normalizeGender(customer.gender!);
+      _addressController.text = customer.address ?? '';
+      _pincodeController.text = customer.pincode ?? '';
+      _chequeNoController.text = customer.chequeNo ?? '';
+      _chequeDateController.text = customer.chequeDate ?? '';
+      _bankNameController.text = customer.bankName ?? '';
+      _transactionIDController.text = customer.transactionNo ?? '';
+      _selectedPaymentMode = customer.paymentMode![0].toUpperCase() +
+          customer.paymentMode!.substring(1);
+
+      if (customer.paidAmount == 'Free') {
+        _selectedPaymentFee = 'Free';
+      } else if (customer.paidAmount == '10000') {
+        _selectedPaymentFee = 'Prime: ₹ 10,000';
+      } else if (customer.paidAmount == '30000') {
+        _selectedPaymentFee = 'Premium: ₹ 30,000';
+      } else {
+        _selectedPaymentFee = 'Premium Plus: ₹ 35000';
+      }
+      if (customer.profilePic != null) {
+        if (customer.profilePic!
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Profile Picture'] = customer.profilePic!;
+        } else {
+          selectedFiles['Profile Picture'] =
+              'https://testca.uniqbizz.com/uploading/${customer.profilePic!}';
+        }
+        Logger.success(selectedFiles['Profile Picture']);
+      }
+
+      if (customer.aadharCard != null) {
+        if (customer.aadharCard!
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Aadhar Card'] = customer.aadharCard!;
+        } else {
+          selectedFiles['Aadhar Card'] =
+              'https://testca.uniqbizz.com/uploading/${customer.aadharCard!}';
+        }
+        Logger.success(selectedFiles['Aadhar Card']);
+      }
+
+      if (customer.panCard != null) {
+        if (customer.panCard!
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Pan Card'] = customer.panCard!;
+        } else {
+          selectedFiles['Pan Card'] =
+              'https://testca.uniqbizz.com/uploading/${customer.panCard!}';
+        }
+        Logger.success(selectedFiles['Pan Card']);
+      }
+
+      if (customer.passbook != null) {
+        if (customer.passbook!
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Bank Passbook'] = customer.passbook!;
+        } else {
+          selectedFiles['Bank Passbook'] =
+              'https://testca.uniqbizz.com/uploading/${customer.passbook!}';
+        }
+        Logger.success(selectedFiles['Bank Passbook']);
+      }
+
+      if (customer.votingCard != null) {
+        if (customer.votingCard!
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Voting Card'] = customer.votingCard!;
+        } else {
+          selectedFiles['Voting Card'] =
+              'https://testca.uniqbizz.com/uploading/${customer.votingCard!}';
+        }
+        Logger.success(selectedFiles['Voting Card']);
+      }
+
+      if (customer.paymentProof != null) {
+        if (customer.paymentProof!
+            .startsWith('https://testca.uniqbizz.com/uploading/')) {
+          selectedFiles['Payment Proof'] = customer.paymentProof!;
+        } else {
+          selectedFiles['Payment Proof'] =
+              'https://testca.uniqbizz.com/uploading/${customer.paymentProof!}';
+        }
+        Logger.success(selectedFiles['Payment Proof']);
+      }
+      if (_countries.isEmpty) {
+        await _loadCountry();
+      }
+
+      final String countryId = customer.country!;
+      _selectedCountryId = countryId;
+
+      final countryObject = _countries.firstWhere(
+        (country) => country['id'].toString() == countryId,
+        orElse: () => {'country_name': '---- Select Country ----'},
+      );
+
+      setState(() {
+        _selectedCountry =
+            countryObject['country_name'] ?? '---- Select Country ----';
+        Logger.success(
+            'Set selected country to: $_selectedCountry with ID: $_selectedCountryId');
+      });
+
+      await _loadStates(_selectedCountryId);
+      final String stateId = customer.state!;
+      _selectedStateId = stateId;
+
+      final stateObject = _states.firstWhere(
+        (state) => state['id'].toString() == stateId,
+        orElse: () => {'state_name': '---- Select State ----'},
+      );
+
+      setState(() {
+        _selectedState = stateObject['state_name'] ?? '---- Select State ----';
+        Logger.success(
+            'Set selected state to: $_selectedState with ID: $_selectedStateId');
+      });
+
+      await _loadCities(_selectedStateId);
+      final String cityId = customer.city!;
+      _selectedCityId = cityId;
+
+      final cityObject = _cities.firstWhere(
+        (city) => city['id'].toString() == cityId,
+        orElse: () => {'city_name': '---- Select City -----'},
+      );
+
+      setState(() {
+        _selectedCity = cityObject['city_name'] ?? '---- Select City -----';
+        Logger.success(
+            'Set selected city $_selectedCity with ID: $_selectedCityId');
+      });
+    } catch (e, s) {
+      Logger.error('Error populating registered customer: $e, Stacktrace: $s');
+      ToastHelper.showErrorToast(
+          title: 'Error displaying registered customer. $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    String appBarTitle = 'Add Referral Customer';
+    if (widget.isViewMode) {
+      appBarTitle = 'View Referral Customer';
+    } else {
+      appBarTitle = 'Edit Referral Customer';
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add Customer',
+          appBarTitle,
           style: GoogleFonts.poppins(
             fontSize: 22,
             fontWeight: FontWeight.w600,
@@ -407,18 +928,31 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 10),
-                  _buildTextField('TA Reference ID *', _taReferenceIdController,
-                      fieldKey: _taRefIdKey),
+                  _buildTextField(
+                    'TA Reference ID *',
+                    _taReferenceIdController,
+                    fieldKey: _taRefIdKey,
+                    forceReadOnly: true,
+                  ),
                   const SizedBox(height: 15),
                   _buildTextField(
-                      'TA Reference Name *', _taReferenceNameController,
-                      fieldKey: _taRefNameKey),
+                    'TA Reference Name *',
+                    _taReferenceNameController,
+                    fieldKey: _taRefNameKey,
+                    forceReadOnly: true,
+                  ),
                   const SizedBox(height: 15),
-                  _buildTextField('First Name*', _fNameController,
-                      fieldKey: _fNameKey),
+                  _buildTextField(
+                    'First Name*',
+                    _fNameController,
+                    fieldKey: _fNameKey,
+                  ),
                   const SizedBox(height: 15),
-                  _buildTextField('Last Name*', _lNameController,
-                      fieldKey: _lNameKey),
+                  _buildTextField(
+                    'Last Name*',
+                    _lNameController,
+                    fieldKey: _lNameKey,
+                  ),
                   const SizedBox(height: 15),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -488,17 +1022,21 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  _buildTextField('Email *', _emailController,
-                      fieldKey: _emailKey),
+                  _buildTextField(
+                    'Email *',
+                    _emailController,
+                    fieldKey: _emailKey,
+                  ),
                   const SizedBox(height: 15),
                   _buildDropdown(
-                      'Gender *',
-                      AppData.genderOptions,
-                      _selectedGender,
-                      (value) => setState(() {
-                            _selectedGender = value!;
-                          }),
-                      fieldKey: _genderKey),
+                    'Gender *',
+                    AppData.genderOptions,
+                    _selectedGender,
+                    (value) => setState(() {
+                      _selectedGender = value!;
+                    }),
+                    fieldKey: _genderKey,
+                  ),
                   const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -619,6 +1157,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                     'Pincode *',
                     _pincodeController,
                     fieldKey: _pincodeKey,
+                    forceReadOnly: true,
                   ),
                   const SizedBox(height: 15),
                   _buildTextField(
@@ -803,23 +1342,42 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                     showError: _showImageValidationErrors,
                     uploadKey: _votingCardKey,
                   ),
+                  if (_selectedPaymentFee != 'Free')
+                    _buildUploadButton('Payment Proof',
+                        showError: _showImageValidationErrors,
+                        uploadKey: _paymentProofKey),
                   const SizedBox(height: 20),
                   Center(
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      child: const Text(
-                        'Submit',
-                        style:
-                            TextStyle(color: Colors.blueAccent, fontSize: 16),
-                      ),
+                    child: Consumer<TcCustomerController>(
+                      builder: (context, controller, child) {
+                        return ElevatedButton(
+                          onPressed: controller.isLoading
+                              ? null
+                              : _submitForm, // disable while loading
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                          ),
+                          child: controller.isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.blueAccent,
+                                  ),
+                                )
+                              : const Text(
+                                  'Submit',
+                                  style: TextStyle(
+                                      color: Colors.blueAccent, fontSize: 16),
+                                ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -831,18 +1389,32 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     );
   }
 
-  Widget _buildUploadButton(String fileType,
-      {bool showError = false, GlobalKey? uploadKey}) {
+  Widget _buildUploadButton(
+    String fileType, {
+    bool showError = false,
+    GlobalKey? uploadKey,
+  }) {
     final bool isRequired =
         fileType != 'Payment Proof' || _selectedPaymentFee != 'Free';
     final bool hasError =
         showError && isRequired && selectedFiles[fileType] == null;
+
+    Future<bool> isImageAvailable(String url) async {
+      try {
+        final response =
+            await HttpClient().headUrl(Uri.parse(url)).then((r) => r.close());
+        return response.statusCode == 200;
+      } catch (_) {
+        return false;
+      }
+    }
+
     return Padding(
       key: uploadKey,
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         children: [
-          if (!widget.isViewMode) // later change this to isViewMode
+          if (!widget.isViewMode)
             ElevatedButton.icon(
               onPressed: () => _pickFile(fileType),
               icon: const Icon(Icons.upload_file),
@@ -874,61 +1446,51 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                             selectedFiles[fileType]!,
                             fit: BoxFit.cover,
                           )
-                        : (selectedFiles[fileType] != null &&
-                                selectedFiles[fileType].toString().isNotEmpty)
-                            ? Image.network(
-                                selectedFiles[fileType],
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.image,
+                        : FutureBuilder<bool>(
+                            future: isImageAvailable(selectedFiles[fileType]),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              } else if (snapshot.hasError ||
+                                  snapshot.data == false) {
+                                return const Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.broken_image,
+                                        color: Colors.white70,
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Image unavailable',
+                                        style: TextStyle(
                                           color: Colors.white70,
                                         ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          'Image unavailable',
-                                          style: TextStyle(
-                                            color: Colors.white70,
-                                          ),
-                                        ),
-                                      ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return Image.network(
+                                  selectedFiles[fileType],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      color: Colors.white70,
                                     ),
-                                  );
-                                },
-                              )
-                            : Image.network(
-                                selectedFiles[fileType],
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.broken_image,
-                                          color: Colors.white,
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                },
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                },
-                              ),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                   ),
                 ),
-                if (!widget.isViewMode) // later change it to !widget.isViewMode
+                if (!widget.isViewMode)
                   Positioned(
                     top: 5,
                     right: 5,
@@ -963,11 +1525,8 @@ class _AddCustomerTc extends State<AddCustomerTc> {
               ),
               child: Center(
                 child: Text(
-                  // widget.isViewMode ? "No $fileType available"
                   'No $fileType uploaded',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                  ),
+                  style: const TextStyle(color: Colors.white70),
                 ),
               ),
             ),
@@ -978,7 +1537,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                 'Please Upload $fileType',
                 style: TextStyle(color: Colors.red.shade300, fontSize: 12),
               ),
-            )
+            ),
         ],
       ),
     );

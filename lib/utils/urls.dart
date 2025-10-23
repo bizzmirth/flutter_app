@@ -123,6 +123,9 @@ class AppUrls {
   static String get getTcRegisteredCustomers =>
       '$_travelConsultant/referral_customers/customers.php?action=registered_cust';
 
+  static String get addTcCustomer =>
+      '$_travelConsultant/referral_customers/add_customers.php';
+
   static String get deleteTcCustomer =>
       '$_travelConsultant/referral_customers/delete_customers.php';
 

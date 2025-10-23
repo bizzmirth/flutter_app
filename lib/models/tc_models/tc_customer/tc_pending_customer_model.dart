@@ -40,6 +40,7 @@ class TcPendingCustomerModel {
   String? addedOn;
   String? registerDate;
   String? deletedDate;
+  String? paymentLabel;
   String? status;
 
   TcPendingCustomerModel(
@@ -165,15 +166,16 @@ class TcPendingCustomerModel {
     data['user_type'] = userType;
     data['registrant'] = registrant;
     data['reference_no'] = referenceNo;
-    data['ta_reference_no'] = taReferenceNo;
+    data['ta_user_id_name'] = taReferenceNo;
     data['ta_reference_name'] = taReferenceName;
     data['register_by'] = registerBy;
     data['paid_amount'] = paidAmount;
     data['customer_type'] = customerType;
-    data['comp_chek'] = compChek;
+    data['isComplementary'] = compChek;
     data['added_on'] = addedOn;
     data['register_date'] = registerDate;
     data['deleted_date'] = deletedDate;
+    data['payment_label'] = paymentLabel;
     data['status'] = status;
     return data;
   }
