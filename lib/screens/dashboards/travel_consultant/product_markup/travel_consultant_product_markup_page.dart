@@ -2,6 +2,7 @@ import 'package:bizzmirth_app/controllers/tc_controller/tc_markup_controller.dar
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_product_markup_data_source.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -107,6 +108,11 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
                                 if (value != null) {
                                   setState(() {
                                     _selectedTravelType = value;
+                                    Logger.success(
+                                        'selected travel type $value');
+                                    // controller.filterMarkupByPackageType(value);
+                                    controller
+                                        .apiGetFilterMarkupByPackageType(value);
                                   });
                                 }
                               },
@@ -138,6 +144,7 @@ class _ProductMarkupPageState extends State<ProductMarkupPage> {
                         columns: const [
                           DataColumn(label: Text('ID')),
                           DataColumn(label: Text('Package Name')),
+                          DataColumn(label: Text('Package Type')),
                           DataColumn(label: Text('Price')),
                           DataColumn(label: Text('Commission')),
                           DataColumn(label: Text('Markup')),

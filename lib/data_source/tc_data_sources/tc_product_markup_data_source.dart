@@ -32,6 +32,7 @@ class TcProductMarkupDataSource extends DataTableSource {
       cells: [
         DataCell(Text(order.packageId ?? 'N/A')),
         DataCell(Text(order.packageName ?? 'N/A')),
+        DataCell(Text(order.packageType ?? 'N/A')),
         DataCell(Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

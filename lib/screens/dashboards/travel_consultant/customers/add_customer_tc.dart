@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/models/tc_models/tc_customer/tc_registered_custome
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
@@ -769,71 +770,13 @@ class _AddCustomerTc extends State<AddCustomerTc> {
       } else {
         _selectedPaymentFee = 'Premium Plus: ₹ 35000';
       }
-      if (customer.profilePic != null) {
-        if (customer.profilePic!
-            .startsWith('https://testca.uniqbizz.com/uploading/')) {
-          selectedFiles['Profile Picture'] = customer.profilePic!;
-        } else {
-          selectedFiles['Profile Picture'] =
-              'https://testca.uniqbizz.com/uploading/${customer.profilePic!}';
-        }
-        Logger.success(selectedFiles['Profile Picture']);
-      }
+      handleFile(selectedFiles, 'Profile Picture', customer.profilePic);
+      handleFile(selectedFiles, 'Aadhar Card', customer.aadharCard);
+      handleFile(selectedFiles, 'Pan Card', customer.panCard);
+      handleFile(selectedFiles, 'Bank Passbook', customer.passbook);
+      handleFile(selectedFiles, 'Voting Card', customer.votingCard);
+      handleFile(selectedFiles, 'Payment Proof', customer.paymentProof);
 
-      if (customer.aadharCard != null) {
-        if (customer.aadharCard!
-            .startsWith('https://testca.uniqbizz.com/uploading/')) {
-          selectedFiles['Aadhar Card'] = customer.aadharCard!;
-        } else {
-          selectedFiles['Aadhar Card'] =
-              'https://testca.uniqbizz.com/uploading/${customer.aadharCard!}';
-        }
-        Logger.success(selectedFiles['Aadhar Card']);
-      }
-
-      if (customer.panCard != null) {
-        if (customer.panCard!
-            .startsWith('https://testca.uniqbizz.com/uploading/')) {
-          selectedFiles['Pan Card'] = customer.panCard!;
-        } else {
-          selectedFiles['Pan Card'] =
-              'https://testca.uniqbizz.com/uploading/${customer.panCard!}';
-        }
-        Logger.success(selectedFiles['Pan Card']);
-      }
-
-      if (customer.passbook != null) {
-        if (customer.passbook!
-            .startsWith('https://testca.uniqbizz.com/uploading/')) {
-          selectedFiles['Bank Passbook'] = customer.passbook!;
-        } else {
-          selectedFiles['Bank Passbook'] =
-              'https://testca.uniqbizz.com/uploading/${customer.passbook!}';
-        }
-        Logger.success(selectedFiles['Bank Passbook']);
-      }
-
-      if (customer.votingCard != null) {
-        if (customer.votingCard!
-            .startsWith('https://testca.uniqbizz.com/uploading/')) {
-          selectedFiles['Voting Card'] = customer.votingCard!;
-        } else {
-          selectedFiles['Voting Card'] =
-              'https://testca.uniqbizz.com/uploading/${customer.votingCard!}';
-        }
-        Logger.success(selectedFiles['Voting Card']);
-      }
-
-      if (customer.paymentProof != null) {
-        if (customer.paymentProof!
-            .startsWith('https://testca.uniqbizz.com/uploading/')) {
-          selectedFiles['Payment Proof'] = customer.paymentProof!;
-        } else {
-          selectedFiles['Payment Proof'] =
-              'https://testca.uniqbizz.com/uploading/${customer.paymentProof!}';
-        }
-        Logger.success(selectedFiles['Payment Proof']);
-      }
       if (_countries.isEmpty) {
         await _loadCountry();
       }
@@ -1255,7 +1198,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                         ),
                       ],
                     ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   if (_selectedPaymentMode == 'Cheque') ...[
                     _buildTextField(
                       'Cheque No. *', _chequeNoController,

@@ -1,6 +1,7 @@
 // function to convert [3 star, 4 star, 5 star] to [3,4,5]
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 
 List<String> convertStarsToNumbers(List<String> selectedStars) {
@@ -110,4 +111,21 @@ Future<void> performLogout(BuildContext context) async {
     MaterialPageRoute(builder: (context) => const LoginPage()),
     (route) => false,
   );
+}
+
+/// handleFile(selectedFiles, 'Profile Picture', customer.profilePic);
+/// takes the required input and generates the required url for the key
+void handleFile(
+    Map<String, dynamic> selectedFiles, String key, String? fileUrl) {
+  if (fileUrl == null) return;
+
+  const baseUrl = 'https://testca.uniqbizz.com/uploading/';
+
+  if (fileUrl.startsWith(baseUrl)) {
+    selectedFiles[key] = fileUrl;
+  } else {
+    selectedFiles[key] = '$baseUrl$fileUrl';
+  }
+
+  Logger.success('$key: ${selectedFiles[key]}');
 }
