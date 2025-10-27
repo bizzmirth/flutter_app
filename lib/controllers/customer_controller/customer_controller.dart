@@ -802,7 +802,6 @@ class CustomerController extends ChangeNotifier {
         'customer_type': 'undefined',
       };
 
-      Logger.warning('Update request body: $body');
       Logger.warning('Encoded body: ${jsonEncode(body)}');
 
       final response = await http.post(Uri.parse(fullUrl),

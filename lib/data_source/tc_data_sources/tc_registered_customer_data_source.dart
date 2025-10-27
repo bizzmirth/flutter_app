@@ -69,9 +69,9 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
     return DataRow(
       cells: [
         DataCell(getProfileImage(regCus.profilePic)),
-        DataCell(Text(regCus.id ?? 'N/A')),
+        DataCell(Text(regCus.caCustomerId ?? 'N/A')),
         DataCell(Text(fullName)),
-        DataCell(Text(regCus.referenceNo ?? 'N/A')),
+        DataCell(Text(regCus.taReferenceNo ?? 'N/A')),
         DataCell(Text(regCus.taReferenceName ?? 'N/A')),
         DataCell(Text(regCus.addedOn ?? 'N/A')),
         DataCell(
@@ -176,6 +176,7 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
                 leading: const Icon(Icons.edit, color: Colors.blueAccent),
                 title: const Text('Edit'),
                 onTap: () {
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -185,6 +186,7 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
                       ),
                     ),
                   );
+                  // Navigator.pop(context);
                 },
               ),
             ),

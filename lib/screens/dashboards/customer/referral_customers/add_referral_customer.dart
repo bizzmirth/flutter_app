@@ -691,6 +691,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         ..customerType = customerType;
 
       await controller.apiUpdateRegisteredCustomer(updatedCustomer);
+      clearFormFields();
       MyNavigator.pop(true);
     } catch (e, s) {
       Logger.error('Error updating form: $e, Stacktrace: $s');

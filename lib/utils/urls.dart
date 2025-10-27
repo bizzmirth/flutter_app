@@ -14,7 +14,7 @@ class AppUrls {
   static String get _homepage => '$baseUrl/homepage';
   static String get _users => '$baseUrl/users';
   static String get _customers => '$_users/customers';
-  static String get _travelConsultant => '$_users/travel%20consultant';
+  static String get _travelConsultant => '$_users/travel_consultant';
 
   // ==================== HOMEPAGE TOUR PACKAGE DETAILS ====================
   static String get getTourPackages =>
@@ -128,6 +128,9 @@ class AppUrls {
 
   static String get deleteTcCustomer =>
       '$_travelConsultant/referral_customers/delete_customers.php';
+
+  static String get updateTcCustomer =>
+      '$_travelConsultant/referral_customers/edit_customers.php';
 
   // ==================== TRAVEL CONSULTANT MARKUP ENDPOINTS ====================
   static String get getTcMarkupDetails =>

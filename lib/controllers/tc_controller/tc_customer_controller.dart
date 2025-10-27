@@ -278,6 +278,73 @@ class TcCustomerController extends ChangeNotifier {
     }
   }
 
+  Future<void> apiUpdateRegsiteredCustomer(
+      TcRegisteredCustomerModel customer) async {
+    try {
+      _isLoading = false;
+      _error = null;
+      notifyListeners();
+
+      final url = AppUrls.updateTcCustomer;
+
+      if (customer.dateOfBirth != null && customer.dateOfBirth!.isNotEmpty) {
+        try {
+          final oldDob = customer.dateOfBirth!;
+          final DateTime parsedDate = DateFormat('dd-MM-yyyy').parse(oldDob);
+          customer.dateOfBirth = DateFormat('yyyy-MM-dd').format(parsedDate);
+        } catch (e) {
+          Logger.warning('Invalid DOB format: ${customer.dateOfBirth}');
+        }
+      }
+
+      if (customer.profilePic != null) {
+        customer.profilePic =
+            extractPathSegment(customer.profilePic!, 'profile_pic/');
+      }
+      if (customer.aadharCard != null) {
+        customer.aadharCard =
+            extractPathSegment(customer.aadharCard!, 'aadhar_card/');
+      }
+      if (customer.panCard != null) {
+        customer.panCard = extractPathSegment(customer.panCard!, 'pan_card/');
+      }
+      if (customer.passbook != null) {
+        customer.passbook = extractPathSegment(customer.passbook!, 'passbook/');
+      }
+      if (customer.votingCard != null) {
+        customer.votingCard =
+            extractPathSegment(customer.votingCard!, 'voting_card/');
+      }
+      if (customer.paymentProof != null) {
+        customer.paymentProof =
+            extractPathSegment(customer.paymentProof!, 'payment_proof/');
+      }
+
+      final Map<String, dynamic> body = customer.toJson();
+      body['editfor'] = 'registered';
+      final encodeBody = jsonEncode(body);
+      Logger.success('final url : $url, final customer body : $encodeBody');
+
+      final response = await http.post(Uri.parse(url), body: encodeBody);
+      if (response.statusCode == 200) {
+        ToastHelper.showSuccessToast(title: 'Customer updated successfully');
+        await apiGetTcRegisteredCustomers();
+      } else {
+        ToastHelper.showErrorToast(
+            title: 'Error adding customer ${response.body}');
+      }
+
+      Logger.success(
+          'API Response: ${response.body} and statuscode: ${response.statusCode}');
+    } catch (e, s) {
+      Logger.error('Error updating customer: $e, Stacktrace: $s');
+      _error = 'Error adding customer $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> checkEmail(String email) async {
     if (email.isEmpty) {
       _emailError = 'Please enter your email';

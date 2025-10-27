@@ -129,3 +129,17 @@ void handleFile(
 
   Logger.success('$key: ${selectedFiles[key]}');
 }
+
+// takes the selected gender string and return a api ready gender string
+String formatGender(String gender) {
+  switch (gender.toLowerCase().trim()) {
+    case 'male':
+      return 'male';
+    case 'female':
+      return 'female';
+    case 'other':
+      return 'other';
+    default:
+      return '---- Select Gender ----';
+  }
+}

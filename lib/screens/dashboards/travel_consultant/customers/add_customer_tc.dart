@@ -555,7 +555,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
         ..countryCode = _selectedCountryId
         ..contactNo = _phoneController.text
         ..email = _emailController.text
-        ..gender = _selectedGender
+        ..gender = formatGender(_selectedGender)
         ..dateOfBirth = _dateController.text
         ..country = _selectedCountryId
         ..state = _selectedStateId
@@ -832,12 +832,159 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     }
   }
 
+  Future<void> updateRegisteredCustomer() async {
+    try {
+      final controller =
+          Provider.of<TcCustomerController>(context, listen: false);
+      final Map<String, String> documentPaths = {};
+      final String customerType;
+      final String paidAmount;
+
+      // Helper function to extract relative path from full URL or return as-is
+      String getRelativePath(dynamic value) {
+        if (value == null) return '';
+
+        String filePath;
+        if (value is File) {
+          filePath = value.path;
+        } else {
+          filePath = value.toString();
+        }
+
+        // If it's a full URL from existing data, extract just the filename part
+        if (filePath.startsWith('https://testca.uniqbizz.com/uploading/')) {
+          // Extract everything after "/uploading/"
+          return filePath.split('/uploading/').last;
+        }
+
+        return filePath;
+      }
+
+      selectedFiles.forEach((key, value) {
+        if (value != null) {
+          final String relativePath = getRelativePath(value);
+
+          switch (key) {
+            case 'Profile Picture':
+              documentPaths['profilePicture'] = relativePath;
+              break;
+            case 'Aadhar Card':
+              documentPaths['adharCard'] = relativePath;
+              break;
+            case 'Pan Card':
+              documentPaths['panCard'] = relativePath;
+              break;
+            case 'Bank Passbook':
+              documentPaths['bankPassbook'] = relativePath;
+              break;
+            case 'Voting Card':
+              documentPaths['votingCard'] = relativePath;
+              break;
+            case 'Payment Proof':
+              documentPaths['paymentProof'] = relativePath;
+          }
+        }
+      });
+
+      if (selectedFiles['Profile Picture'] != null &&
+          selectedFiles['Profile Picture'] is File) {
+        await controller.uploadImage(
+            'profile_pic', selectedFiles['Profile Picture']!.path);
+      }
+      if (selectedFiles['Aadhar Card'] != null &&
+          selectedFiles['Aadhar Card'] is File) {
+        await controller.uploadImage(
+            'aadhar_card', selectedFiles['Aadhar Card']!.path);
+      }
+      if (selectedFiles['Pan Card'] != null &&
+          selectedFiles['Pan Card'] is File) {
+        await controller.uploadImage(
+            'pan_card', selectedFiles['Pan Card']!.path);
+      }
+      if (selectedFiles['Voting Card'] != null &&
+          selectedFiles['Voting Card'] is File) {
+        await controller.uploadImage(
+            'voting_card', selectedFiles['Voting Card']!.path);
+      }
+      if (selectedFiles['Bank Passbook'] != null &&
+          selectedFiles['Bank Passbook'] is File) {
+        await controller.uploadImage(
+            'passbook', selectedFiles['Bank Passbook']!.path);
+      }
+      if (selectedFiles['Payment Proof'] != null &&
+          selectedFiles['Payment Proof'] is File) {
+        await controller.uploadImage(
+            'payment_proof', selectedFiles['Payment Proof']!.path);
+      }
+
+      if (_selectedPaymentMode == 'Cheque') {
+        chequeNo = _chequeNoController.text;
+        chequeDate = _chequeDateController.text;
+        bankName = _bankNameController.text;
+      } else if (_selectedPaymentMode == 'UPI/NEFT') {
+        transactionId = _transactionIDController.text;
+      }
+
+      if (_selectedPaymentFee == 'Free') {
+        customerType = 'Free';
+        paidAmount = 'Free';
+      } else if (_selectedPaymentFee == 'Prime: ₹ 10,000') {
+        customerType = 'Prime';
+        paidAmount = '10,000';
+      } else if (_selectedPaymentFee == 'Premium: ₹ 30,000') {
+        customerType = 'Premium';
+        paidAmount = '30,000';
+      } else {
+        customerType = 'Premium Plus';
+        paidAmount = '35,000';
+      }
+
+      final String id = widget.customer!.caCustomerId!;
+
+      final updatedCustomer = TcRegisteredCustomerModel()
+        ..id = id
+        ..caCustomerId = widget.customer!.caCustomerId!
+        ..firstname = _fNameController.text
+        ..lastname = _lNameController.text
+        ..email = _emailController.text
+        ..dateOfBirth = _dateController.text
+        ..gender = formatGender(_selectedGender)
+        ..countryCode = _selectedCountryCode
+        ..contactNo = _phoneController.text
+        ..country = _selectedCountryId
+        ..state = _selectedStateId
+        ..city = _selectedCityId
+        ..pincode = _pincodeController.text
+        ..address = _addressController.text
+        ..profilePic = documentPaths['profilePicture']
+        ..aadharCard = documentPaths['adharCard']
+        ..panCard = documentPaths['panCard']
+        ..passbook = documentPaths['bankPassbook']
+        ..votingCard = documentPaths['votingCard']
+        ..paymentProof = documentPaths['paymentProof']
+        ..registerBy = '11'
+        ..paymentMode = _selectedPaymentMode
+        ..chequeNo = chequeNo
+        ..bankName = bankName
+        ..transactionNo = transactionId
+        ..paidAmount = paidAmount
+        ..customerType = customerType
+        ..compChek = '2';
+
+      await controller.apiUpdateRegsiteredCustomer(updatedCustomer);
+      clearFormFields();
+      MyNavigator.pop(true);
+    } catch (e, s) {
+      Logger.error('Error updating form: $e, Stacktrace: $s');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String appBarTitle = 'Add Referral Customer';
     if (widget.isViewMode) {
       appBarTitle = 'View Referral Customer';
-    } else {
+    } else if (widget.isEditMode) {
       appBarTitle = 'Edit Referral Customer';
     }
     return Scaffold(
@@ -1290,39 +1437,60 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                         showError: _showImageValidationErrors,
                         uploadKey: _paymentProofKey),
                   const SizedBox(height: 20),
-                  Center(
-                    child: Consumer<TcCustomerController>(
-                      builder: (context, controller, child) {
-                        return ElevatedButton(
-                          onPressed: controller.isLoading
-                              ? null
-                              : _submitForm, // disable while loading
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
+                  if (widget.isEditMode) ...[
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: updateRegisteredCustomer,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
                           ),
-                          child: controller.isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.blueAccent,
-                                  ),
-                                )
-                              : const Text(
-                                  'Submit',
-                                  style: TextStyle(
-                                      color: Colors.blueAccent, fontSize: 16),
-                                ),
-                        );
-                      },
+                        ),
+                        child: const Text(
+                          'Save Changes',
+                          style:
+                              TextStyle(color: Colors.blueAccent, fontSize: 16),
+                        ),
+                      ),
                     ),
-                  ),
+                  ] else if (!widget.isViewMode) ...[
+                    Center(
+                      child: Consumer<TcCustomerController>(
+                        builder: (context, controller, child) {
+                          return ElevatedButton(
+                            onPressed: controller.isLoading
+                                ? null
+                                : _submitForm, // disable while loading
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
+                            child: controller.isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.blueAccent,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Submit',
+                                    style: TextStyle(
+                                        color: Colors.blueAccent, fontSize: 16),
+                                  ),
+                          );
+                        },
+                      ),
+                    ),
+                  ]
                 ],
               ),
             ),
