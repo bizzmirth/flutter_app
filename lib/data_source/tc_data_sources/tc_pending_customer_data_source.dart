@@ -72,7 +72,7 @@ class TcPendingCustomerDataSource extends DataTableSource {
         DataCell(Text(pendingCus.taReferenceNo ?? 'N/A')),
 
         DataCell(Text(pendingCus.taReferenceName ?? 'N/A')),
-        DataCell(Text(pendingCus.addedOn ?? 'N/A')),
+        DataCell(Text(formatDate(pendingCus.addedOn))),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

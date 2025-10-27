@@ -552,7 +552,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
         ..taReferenceName = _taReferenceNameController.text
         ..firstname = _fNameController.text
         ..lastname = _lNameController.text
-        ..countryCode = _selectedCountryId
+        ..countryCode = sanitizeCountryCode(_selectedCountryId)
         ..contactNo = _phoneController.text
         ..email = _emailController.text
         ..gender = formatGender(_selectedGender)
@@ -949,7 +949,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
         ..email = _emailController.text
         ..dateOfBirth = _dateController.text
         ..gender = formatGender(_selectedGender)
-        ..countryCode = _selectedCountryCode
+        ..countryCode = sanitizeCountryCode(_selectedCountryId)
         ..contactNo = _phoneController.text
         ..country = _selectedCountryId
         ..state = _selectedStateId

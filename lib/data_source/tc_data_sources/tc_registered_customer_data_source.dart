@@ -73,7 +73,7 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
         DataCell(Text(fullName)),
         DataCell(Text(regCus.taReferenceNo ?? 'N/A')),
         DataCell(Text(regCus.taReferenceName ?? 'N/A')),
-        DataCell(Text(regCus.addedOn ?? 'N/A')),
+        DataCell(Text(formatDate(regCus.addedOn))),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

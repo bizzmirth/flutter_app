@@ -18,9 +18,9 @@ class TcTopCustomerReferralModel {
     id = json['id'];
     name = json['name'];
     registerDate = json['register_date'];
-    totalReferrals = json['total_referrals'];
-    activeCount = json['active_count'];
-    inactiveCount = json['inactive_count'];
+    totalReferrals = json['total_referrals']?.toString();
+    activeCount = json['active_count']?.toString();
+    inactiveCount = json['inactive_count']?.toString();
   }
 
   Map<String, dynamic> toJson() {

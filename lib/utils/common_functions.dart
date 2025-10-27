@@ -143,3 +143,11 @@ String formatGender(String gender) {
       return '---- Select Gender ----';
   }
 }
+
+// helper function that takes the selected country code with the leading +91 and return 91
+String? sanitizeCountryCode(String? countryCode) {
+  if (countryCode == null || countryCode.isEmpty) return null;
+
+  // Remove any leading '+' and trim whitespace
+  return countryCode.replaceAll('+', '').trim();
+}
