@@ -138,4 +138,14 @@ class AppUrls {
 
   static String get getTcUpdateMarkup =>
       '$_travelConsultant/markup/update_markup.php';
+
+  // ==================== TRAVEL CONSULTANT CU MEMBERSHIP PAYOUT ENDPOINTS ====================
+  static String get getTcCuAllPayouts =>
+      '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_all_payouts.php';
+
+  static String get getTcCuNextPayouts =>
+      '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_next_payouts.php';
+
+  static String get getTcCuPreviousPayouts =>
+      '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_previous_payouts.php';
 }

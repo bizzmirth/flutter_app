@@ -16,6 +16,7 @@ import 'package:bizzmirth_app/controllers/customer_controller/cust_referral_payo
 import 'package:bizzmirth_app/controllers/customer_controller/cust_wallet_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_controller.dart';
+import 'package:bizzmirth_app/controllers/tc_controller/tc_cu_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_markup_controller.dart';
 import 'package:bizzmirth_app/data_source/te_data_sources/te_view_package_data_source.dart';
@@ -139,6 +140,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => TcController()),
         ChangeNotifierProvider(create: (_) => TcCustomerController()),
         ChangeNotifierProvider(create: (_) => TcMarkupController()),
+        ChangeNotifierProvider(create: (_) => TcCuPayoutController()),
       ],
       child: ToastificationWrapper(
         child: SessionTimeoutManager(
@@ -3492,66 +3494,6 @@ class MyBMProductionPayoutDataSource extends DataTableSource {
       cells: [
         DataCell(Text(order['date']?.toString() ?? 'N/A')),
         DataCell(Text(order['name']?.toString() ?? 'N/A')),
-        DataCell(Text(order['total']?.toString() ?? 'N/A')),
-        DataCell(Text(order['tds']?.toString() ?? 'N/A')),
-        DataCell(Text(order['payable']?.toString() ?? 'N/A')),
-        DataCell(
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order['remark']?.toString() ?? ''),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order['remark']?.toString() ?? 'Unknown',
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'approved':
-        return Colors.blue;
-      case 'processing':
-        return Colors.purple;
-      case 'pending':
-        return Colors.orange;
-      case 'completed':
-        return Colors.green;
-      case 'cancelled':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  @override
-  int get rowCount => data.length;
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get selectedRowCount => 0;
-}
-
-class MyTCProductionPayoutDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
-  MyTCProductionPayoutDataSource(this.data);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final order = data[index];
-
-    return DataRow(
-      cells: [
-        DataCell(Text(order['date']?.toString() ?? 'N/A')),
-        DataCell(Text(order['name']?.toString() ?? 'N/A')),
-        DataCell(Text(order['markup']?.toString() ?? 'N/A')),
-        DataCell(Text(order['prodpay']?.toString() ?? 'N/A')),
         DataCell(Text(order['total']?.toString() ?? 'N/A')),
         DataCell(Text(order['tds']?.toString() ?? 'N/A')),
         DataCell(Text(order['payable']?.toString() ?? 'N/A')),

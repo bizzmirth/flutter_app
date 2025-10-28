@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/data_source/customer_data_sources/cust_all_payout_
 import 'package:bizzmirth_app/models/customer_models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
@@ -73,27 +74,6 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
 
   Future<void> onRefresh() async {
     await getAllStatData();
-  }
-
-  String getMonthName(String? monthNumber) {
-    if (monthNumber == null) return '';
-
-    const monthNames = {
-      '01': 'January',
-      '02': 'February',
-      '03': 'March',
-      '04': 'April',
-      '05': 'May',
-      '06': 'June',
-      '07': 'July',
-      '08': 'August',
-      '09': 'September',
-      '10': 'October',
-      '11': 'November',
-      '12': 'December',
-    };
-
-    return monthNames[monthNumber] ?? '';
   }
 
   void showPayoutDialog(

@@ -1,4 +1,6 @@
+import 'package:bizzmirth_app/data_source/tc_data_sources/tc_cu_payouts_data_source/tc_cu_membership_all_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/models/tc_models/tc_cu_membership_payouts/tc_cu_all_payout_model.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -106,15 +108,13 @@ class _TCProductPayoutsPageState extends State<TCProductPayoutsPage> {
                       columns: const [
                         DataColumn(label: Text('Date')),
                         DataColumn(label: Text('Payout Details')),
-                        DataColumn(label: Text('Markup')),
-                        DataColumn(label: Text('Product Payout')),
-                        DataColumn(label: Text('Total')),
+                        DataColumn(label: Text('Amount')),
                         DataColumn(label: Text('TDS')),
                         DataColumn(label: Text('Total Payable')),
-                        DataColumn(label: Text('Remarks')),
+                        DataColumn(label: Text('Remark')),
                       ],
-                      source:
-                          MyTCProductionPayoutDataSource(tCrecruitmentpayout),
+                      source: TcCuMembershipAllDataSource(
+                          tCrecruitmentpayout.cast<TcCuAllPayoutModel>()),
                       rowsPerPage: _rowsPerPage,
                       availableRowsPerPage: const [5, 10, 15, 20, 25],
                       onRowsPerPageChanged: (value) {
