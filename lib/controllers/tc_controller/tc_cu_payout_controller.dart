@@ -162,7 +162,7 @@ class TcCuPayoutController extends ChangeNotifier {
   // ================= ALL Payout API =================
   Future<void> apiGetAllTcCuAllPayouts() async {
     try {
-      _isLoading = false;
+      _isLoading = true;
       _error = null;
       notifyListeners();
 
@@ -178,9 +178,8 @@ class TcCuPayoutController extends ChangeNotifier {
         final jsonData = jsonDecode(response.body);
         if (jsonData['success'] == true && jsonData['payouts'] != null) {
           final List payouts = jsonData['payouts'];
-          _tcCuAllPayout.addAll(payouts
-              .map((item) => TcCuAllPayoutModel.fromJson(item))
-              .toList());
+          _tcCuAllPayout =
+              payouts.map((item) => TcCuAllPayoutModel.fromJson(item)).toList();
           Logger.success(
               'successfully fetched ${_tcCuAllPayout.length} cu all payouts');
         } else {
