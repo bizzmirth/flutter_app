@@ -1,14 +1,22 @@
 import 'package:bizzmirth_app/controllers/tc_controller/tc_cu_payout_controller.dart';
+import 'package:bizzmirth_app/data_source/tc_data_sources/tc_cu_payouts_data_source/tc_cu_all_payout_data_cource.dart';
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_cu_payouts_data_source/tc_cu_membership_all_data_source.dart';
+import 'package:bizzmirth_app/models/tc_models/tc_cu_membership_payouts/payout_data.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:provider/provider.dart';
 
 class TcCuMembershipPayouts extends StatefulWidget {
-  const TcCuMembershipPayouts({super.key});
+  final String? username;
+  const TcCuMembershipPayouts({super.key, this.username});
 
   @override
   State<TcCuMembershipPayouts> createState() => _TcCuMembershipPayoutsState();
@@ -20,334 +28,551 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+  String? username;
+  String? userId;
+  DateTime? _selectedDateTime;
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final controller =
+        Provider.of<TcCuPayoutController>(context, listen: false);
+    final DateTime now = DateTime.now();
+    final DateTime? picked = await showMonthPicker(
       context: context,
-      initialDate: DateTime.now(),
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      lastDate: now,
+      initialDate: _selectedDateTime ?? now,
     );
     if (picked != null) {
       setState(() {
+        _selectedDateTime = picked;
         selectedDate = DateFormat('MMMM, yyyy').format(picked);
       });
+      await controller.apiGetTcCuTotalPayouts(
+          picked.month.toString(), picked.year.toString());
+
+      Logger.success('Selected month-year: $selectedDate');
     }
   }
 
-  // void showPayoutDialog(
-  //     BuildContext context,
-  //     String payoutType,
-  //     String date,
-  //     String amount,
-  //     String userId,
-  //     String userName,
-  //     CustReferralPayoutController controller) {
-  //   List<CustReferralPayoutModel> getPayoutList() {
-  //     switch (payoutType.toLowerCase()) {
-  //       case 'previous payouts':
-  //       case 'previous payout':
-  //         return controller.previousMonthAllPayouts;
-  //       case 'next payout':
-  //       case 'next payouts':
-  //       case 'next month payout':
-  //       case 'next month payouts':
-  //         return controller.nextMonthAllPayouts;
-  //       case 'total payout':
-  //       case 'total payouts':
-  //       case 'all payouts':
-  //         return controller.totalAllPayouts;
-  //       default:
-  //         return controller.totalAllPayouts;
-  //     }
-  //   }
+  Future<void> getData() async {
+    // userId = await SharedPrefHelper().getCurrentUserCustId();
+    final userDetails = await SharedPrefHelper().getLoginResponse();
+    userId = userDetails?.userId;
+    username =
+        "${userDetails?.userFname ?? ''} ${userDetails?.userLname ?? ''}";
+    ;
+  }
 
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       final payoutList = getPayoutList();
-  //       final isMobile = MediaQuery.of(context).size.width < 600;
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = DateFormat('MMMM, yyyy').format(DateTime.now());
 
-  //       return Dialog(
-  //         insetPadding: EdgeInsets.symmetric(
-  //           horizontal: isMobile ? 10.0 : 40.0,
-  //           vertical: 24.0,
-  //         ),
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(12),
-  //         ),
-  //         child: SingleChildScrollView(
-  //           child: Container(
-  //             width: isMobile
-  //                 ? MediaQuery.of(context).size.width * 0.95
-  //                 : MediaQuery.of(context).size.width * 0.9,
-  //             height:
-  //                 isMobile ? null : MediaQuery.of(context).size.height * 0.8,
-  //             padding: const EdgeInsets.all(16),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 // Header with close button
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     Expanded(
-  //                       child: Text(
-  //                         payoutType,
-  //                         style: GoogleFonts.poppins(
-  //                           fontSize: 20,
-  //                           fontWeight: FontWeight.w600,
-  //                         ),
-  //                         overflow: TextOverflow.ellipsis,
-  //                       ),
-  //                     ),
-  //                     IconButton(
-  //                       onPressed: () => Navigator.of(context).pop(),
-  //                       icon: const Icon(Icons.close),
-  //                       padding: EdgeInsets.zero,
-  //                       constraints: const BoxConstraints(),
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 const SizedBox(height: 16),
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getData();
+    });
+  }
 
-  //                 // Payout summary cards
-  //                 if (isMobile)
-  //                   Column(
-  //                     children: [
-  //                       _buildPayoutCard(payoutType, amount, date),
-  //                       const SizedBox(height: 12),
-  //                       _buildUserCard(userId, userName, amount),
-  //                     ],
-  //                   )
-  //                 else
-  //                   Row(
-  //                     crossAxisAlignment: CrossAxisAlignment.start,
-  //                     children: [
-  //                       Expanded(
-  //                           child: _buildPayoutCard(payoutType, amount, date)),
-  //                       const SizedBox(width: 12),
-  //                       Expanded(
-  //                         child: Container(
-  //                           padding: const EdgeInsets.all(16),
-  //                           decoration: BoxDecoration(
-  //                             border: Border.all(color: Colors.grey),
-  //                             borderRadius: BorderRadius.circular(8),
-  //                           ),
-  //                           child: Column(
-  //                             children: [
-  //                               Row(
-  //                                 children: [
-  //                                   Expanded(
-  //                                     child: Container(
-  //                                       padding: const EdgeInsets.all(8),
-  //                                       decoration: BoxDecoration(
-  //                                         border: Border.all(),
-  //                                         borderRadius:
-  //                                             BorderRadius.circular(4),
-  //                                       ),
-  //                                       child: Text(
-  //                                         'ID: $userId',
-  //                                         style: const TextStyle(fontSize: 12),
-  //                                       ),
-  //                                     ),
-  //                                   ),
-  //                                   const SizedBox(width: 8),
-  //                                 ],
-  //                               ),
-  //                               const SizedBox(height: 8),
-  //                               Row(
-  //                                 children: [
-  //                                   Expanded(
-  //                                     child: Container(
-  //                                       padding: const EdgeInsets.all(8),
-  //                                       decoration: BoxDecoration(
-  //                                         border: Border.all(),
-  //                                         borderRadius:
-  //                                             BorderRadius.circular(4),
-  //                                       ),
-  //                                       child: Text(
-  //                                         'Name: $userName',
-  //                                         style: const TextStyle(fontSize: 12),
-  //                                       ),
-  //                                     ),
-  //                                   ),
-  //                                 ],
-  //                               ),
-  //                               const SizedBox(height: 12),
-  //                               Container(
-  //                                 width: double.infinity,
-  //                                 padding: const EdgeInsets.all(12),
-  //                                 decoration: BoxDecoration(
-  //                                     border: Border.all(),
-  //                                     borderRadius: BorderRadius.circular(4)),
-  //                                 child: Column(
-  //                                   crossAxisAlignment:
-  //                                       CrossAxisAlignment.start,
-  //                                   children: [
-  //                                     Text(
-  //                                       'Name: $userName',
-  //                                       style: const TextStyle(fontSize: 14),
-  //                                     ),
-  //                                     const SizedBox(height: 8),
-  //                                     Row(
-  //                                       children: [
-  //                                         Text(
-  //                                           'Rs.',
-  //                                           style: TextStyle(
-  //                                               fontSize: 14,
-  //                                               color: Colors.grey.shade600),
-  //                                         ),
-  //                                         const SizedBox(width: 5),
-  //                                         Text(
-  //                                           amount.replaceAll('Rs', ''),
-  //                                           style: const TextStyle(
-  //                                               fontSize: 18,
-  //                                               fontWeight: FontWeight.bold),
-  //                                         )
-  //                                       ],
-  //                                     )
-  //                                   ],
-  //                                 ),
-  //                               )
-  //                             ],
-  //                           ),
-  //                         ),
-  //                       )
-  //                     ],
-  //                   ),
+  void showPayoutDialog(
+      BuildContext context,
+      String payoutType,
+      String date,
+      String amount,
+      String userId,
+      String userName,
+      TcCuPayoutController controller) {
+    List<PayoutData> getPayoutList() {
+      switch (payoutType.toLowerCase()) {
+        case 'previous payouts':
+        case 'previous payout':
+          return controller.previousPayout?.data ?? [];
 
-  //                 const SizedBox(height: 16),
+        case 'next payout':
+        case 'next payouts':
+        case 'next month payout':
+        case 'next month payouts':
+          return controller.nextPayout?.data ?? [];
 
-  //                 const Divider(thickness: 1, color: Colors.black26),
-  //                 Padding(
-  //                   padding: const EdgeInsets.symmetric(vertical: 8),
-  //                   child: Center(
-  //                     child: Text(
-  //                       '$payoutType Details',
-  //                       style: const TextStyle(
-  //                         fontSize: 16,
-  //                         fontWeight: FontWeight.bold,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 const Divider(thickness: 1, color: Colors.black26),
-  //                 const FilterBar(),
-  //                 const SizedBox(height: 8),
+        case 'total payout':
+        case 'total payouts':
+        case 'all payouts':
+          final totalList = controller.tcCuTotalPayoutResponse?.payouts ?? [];
 
-  //                 // Payout list
-  //                 if (payoutList.isEmpty) ...[
-  //                   const Padding(
-  //                     padding: EdgeInsets.symmetric(vertical: 20),
-  //                     child: Center(
-  //                       child: Text(
-  //                         'No payout data available',
-  //                         style: TextStyle(fontSize: 16, color: Colors.grey),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ] else if (isMobile) ...[
-  //                   Column(
-  //                     children: [
-  //                       for (int i = 0; i < payoutList.length; i++)
-  //                         _buildPayoutItem(
-  //                             payoutList[i], i == payoutList.length - 1),
-  //                     ],
-  //                   ),
-  //                 ] else ...[
-  //                   Expanded(
-  //                     child: Column(
-  //                       crossAxisAlignment: CrossAxisAlignment.start,
-  //                       children: [
-  //                         const Divider(thickness: 1, color: Colors.black26),
-  //                         Card(
-  //                           elevation: 5,
-  //                           shape: RoundedRectangleBorder(
-  //                             borderRadius: BorderRadius.circular(12),
-  //                           ),
-  //                           child: SizedBox(
-  //                             height: (_rowsPerPage * dataRowHeight) +
-  //                                 headerHeight +
-  //                                 paginationHeight,
-  //                             child: payoutList.isEmpty
-  //                                 ? Center(
-  //                                     child: Padding(
-  //                                       padding: const EdgeInsets.all(20.0),
-  //                                       child: Text(
-  //                                         'No payout data available',
-  //                                         style: TextStyle(
-  //                                           fontSize: 16,
-  //                                           color: Colors.grey[600],
-  //                                         ),
-  //                                       ),
-  //                                     ),
-  //                                   )
-  //                                 : PaginatedDataTable(
-  //                                     columnSpacing: 50,
-  //                                     dataRowMinHeight: 40,
-  //                                     columns: const [
-  //                                       DataColumn(label: Text('Date')),
-  //                                       DataColumn(
-  //                                           label: Text('Payout Details')),
-  //                                       DataColumn(label: Text('Amount')),
-  //                                       DataColumn(label: Text('TDS')),
-  //                                       DataColumn(
-  //                                           label: Text('Total Payable')),
-  //                                       DataColumn(label: Text('Remarks')),
-  //                                     ],
-  //                                     source: CustReferenceAllPayoutDataSource(
-  //                                         payoutList),
-  //                                     rowsPerPage: _rowsPerPage,
-  //                                     availableRowsPerPage: const [
-  //                                       5,
-  //                                       10,
-  //                                       15,
-  //                                       20,
-  //                                       25
-  //                                     ],
-  //                                     onRowsPerPageChanged: (value) {
-  //                                       if (value != null) {
-  //                                         setState(() {
-  //                                           _rowsPerPage = value;
-  //                                         });
-  //                                       }
-  //                                     },
-  //                                     arrowHeadColor: Colors.blue,
-  //                                   ),
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ],
+          // ✅ Convert each TcCuTotalPayoutModel → PayoutData
+          return totalList.map((e) {
+            return PayoutData(
+              id: '',
+              date: e.date ?? '',
+              payoutDetails: e.message ?? '',
+              amount: e.commission?.toString() ?? '0',
+              tds: e.tds?.toString() ?? '0',
+              totalPayable: e.totalPayable.toString(),
+              remark: e.remark ?? '',
+            );
+          }).toList();
 
-  //                 // Close button
-  //                 const SizedBox(height: 16),
-  //                 Align(
-  //                   alignment: Alignment.centerRight,
-  //                   child: ElevatedButton(
-  //                     onPressed: () => Navigator.of(context).pop(),
-  //                     style: ElevatedButton.styleFrom(
-  //                       backgroundColor: Colors.blue,
-  //                       foregroundColor: Colors.white,
-  //                       padding: const EdgeInsets.symmetric(
-  //                         horizontal: 24,
-  //                         vertical: 10,
-  //                       ),
-  //                     ),
-  //                     child: const Text('Close'),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
+        default:
+          return controller.previousPayout?.data ?? [];
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        final payoutList = getPayoutList();
+        final isMobile = MediaQuery.of(context).size.width < 600;
+
+        return Dialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 10.0 : 40.0,
+            vertical: 24.0,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: SingleChildScrollView(
+            child: Container(
+              width: isMobile
+                  ? MediaQuery.of(context).size.width * 0.95
+                  : MediaQuery.of(context).size.width * 0.9,
+              height:
+                  isMobile ? null : MediaQuery.of(context).size.height * 0.8,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header with close button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          payoutType,
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.close),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Payout summary cards
+                  if (isMobile)
+                    Column(
+                      children: [
+                        _buildPayoutCard(payoutType, amount, date),
+                        const SizedBox(height: 12),
+                        _buildUserCard(userId, userName, amount),
+                      ],
+                    )
+                  else
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                            child: _buildPayoutCard(payoutType, amount, date)),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'ID: $userId',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Name: $userName',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(),
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Name: $userName',
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Rs.',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey.shade600),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            amount.replaceAll('Rs', ''),
+                                            style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+
+                  const SizedBox(height: 16),
+
+                  const Divider(thickness: 1, color: Colors.black26),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Center(
+                      child: Text(
+                        '$payoutType Details',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const FilterBar(),
+                  const SizedBox(height: 8),
+
+                  // Payout list
+                  if (payoutList.isEmpty) ...[
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: Text(
+                          'No payout data available',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  ] else if (isMobile) ...[
+                    Column(
+                      children: [
+                        for (int i = 0; i < payoutList.length; i++)
+                          _buildPayoutItem(
+                              payoutList[i], i == payoutList.length - 1),
+                      ],
+                    ),
+                  ] else ...[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(thickness: 1, color: Colors.black26),
+                          Card(
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: SizedBox(
+                              height: (_rowsPerPage * dataRowHeight) +
+                                  headerHeight +
+                                  paginationHeight,
+                              child: payoutList.isEmpty
+                                  ? Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Text(
+                                          'No payout data available',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : PaginatedDataTable(
+                                      columnSpacing: 50,
+                                      dataRowMinHeight: 40,
+                                      columns: const [
+                                        DataColumn(label: Text('Date')),
+                                        DataColumn(
+                                            label: Text('Payout Details')),
+                                        DataColumn(label: Text('Amount')),
+                                        DataColumn(label: Text('TDS')),
+                                        DataColumn(
+                                            label: Text('Total Payable')),
+                                        DataColumn(label: Text('Remarks')),
+                                      ],
+                                      source:
+                                          TcCuAllPayoutDataCource(payoutList),
+                                      rowsPerPage: _rowsPerPage,
+                                      availableRowsPerPage: const [
+                                        5,
+                                        10,
+                                        15,
+                                        20,
+                                        25
+                                      ],
+                                      onRowsPerPageChanged: (value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            _rowsPerPage = value;
+                                          });
+                                        }
+                                      },
+                                      arrowHeadColor: Colors.blue,
+                                    ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  // Close button
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 10,
+                        ),
+                      ),
+                      child: const Text('Close'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPayoutItem(PayoutData payout, bool isLast) {
+    return Container(
+      margin: EdgeInsets.only(bottom: isLast ? 0 : 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey.shade50,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Date: ${payout.date}',
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text('Payout Details: ${payout.payoutDetails}'),
+          const SizedBox(height: 4),
+          Text('Amount: Rs. ${payout.amount}'),
+          const SizedBox(height: 4),
+          Text('TDS: Rs. ${payout.tds}'),
+          const SizedBox(height: 4),
+          Text('Total Payable: Rs. ${payout.totalPayable}'),
+          const SizedBox(height: 4),
+          Text('Remarks: ${payout.remark}'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPayoutCard(String payoutType, String amount, String date) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            payoutType,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  amount,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade100,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  'Paid',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            date,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserCard(String userId, String userName, String amount) {
+    return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'ID: $userId',
+                style: const TextStyle(fontSize: 11),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'Name: $userName',
+                style: const TextStyle(fontSize: 11),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Name: $userName',
+                    style: const TextStyle(fontSize: 12),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Text(
+                        'Rs.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          amount.replaceAll('Rs. ', ''),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -391,24 +616,32 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                          child: payoutCard(
-                              'Previous Payout',
-                              '${getMonthName(controller.prevDateMonth)}, ${controller.prevDateYear}',
-                              'Rs. ${controller.previousPayout!.totalPreviousPayout}/-',
-                              'Paid',
-                              Colors.green.shade100)),
+                        child: payoutCard(
+                          'Previous Payout',
+                          '${getMonthName(controller.prevDateMonth)}, ${controller.prevDateYear}',
+                          'Rs. ${controller.previousPayout!.totalPreviousPayout}/-',
+                          'Paid',
+                          Colors.green.shade100,
+                          controller,
+                        ),
+                      ),
                       const SizedBox(width: 16),
                       Expanded(
-                          child: payoutCard(
-                              'Next Payout',
-                              '${getMonthName(controller.nextDateMonth)}, ${controller.nextDateYear}',
-                              'Rs. 0/-',
-                              'Pending',
-                              Colors.orange.shade100)),
+                        child: payoutCard(
+                          'Next Payout',
+                          '${getMonthName(controller.nextDateMonth)}, ${controller.nextDateYear}',
+                          'Rs. 0/-',
+                          'Pending',
+                          Colors.orange.shade100,
+                          controller,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  totalPayoutCard(),
+                  totalPayoutCard(
+                      controller.tcCuTotalPayoutResponse?.totalPayout,
+                      controller),
                   const SizedBox(height: 50),
                   const Divider(thickness: 1, color: Colors.black26),
                   const Center(
@@ -468,7 +701,7 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
   }
 
   Widget payoutCard(String title, String date, String amount, String status,
-      Color statusColor) {
+      Color statusColor, TcCuPayoutController controller) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -502,9 +735,8 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('View Payout Clicked!')),
-                ),
+                onTap: () => showPayoutDialog(context, title, date, amount,
+                    userId!, username ?? '', controller),
                 child: const Text(
                   'View Payout',
                   style: TextStyle(
@@ -526,7 +758,7 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
     );
   }
 
-  Widget totalPayoutCard() {
+  Widget totalPayoutCard(String? totalPayout, TcCuPayoutController controller) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -538,16 +770,22 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
               const Text('Total Payout',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
-              const Text('Rs. 0/-',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text('Rs. $totalPayout/-',
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('View Payout Clicked!')),
-                    ),
+                    onTap: () => showPayoutDialog(
+                        context,
+                        'Total Payout',
+                        selectedDate,
+                        'Rs. $totalPayout/-',
+                        userId!,
+                        username ?? '',
+                        controller),
                     child: const Text(
                       'View Payout',
                       style: TextStyle(
@@ -558,8 +796,7 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
                   ),
                   GestureDetector(
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Downloading Payout...')),
-                    ),
+                        const SnackBar(content: Text('Downloading Payout...'))),
                     child: const Icon(Icons.download, color: Colors.black54),
                   ),
                 ],

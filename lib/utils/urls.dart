@@ -146,6 +146,9 @@ class AppUrls {
   static String get getTcCuNextPayouts =>
       '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_next_payouts.php';
 
+  static String get getTcCuTotalPayouts =>
+      '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_total_payouts.php';
+
   static String get getTcCuPreviousPayouts =>
       '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_previous_payouts.php';
 }

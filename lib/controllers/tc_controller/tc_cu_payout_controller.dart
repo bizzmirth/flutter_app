@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:bizzmirth_app/models/tc_models/tc_cu_membership_payouts/tc_cu_all_payout_model.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_cu_membership_payouts/tc_cu_next_payout_model.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_cu_membership_payouts/tc_cu_previous_payout_model.dart';
+import 'package:bizzmirth_app/models/tc_models/tc_cu_membership_payouts/tc_cu_total_payout_response.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -13,6 +14,8 @@ class TcCuPayoutController extends ChangeNotifier {
   String? _error;
   TcCuPreviousPayoutModel? _previousPayout;
   TcCuNextPayoutModel? _nextPayout;
+  TcCuTotalPayoutResponse? _tcCuTotalPayoutResponse;
+
   List<TcCuAllPayoutModel> _tcCuAllPayout = [];
 
   // ===== Commonly Used Date Info =====
@@ -25,6 +28,9 @@ class TcCuPayoutController extends ChangeNotifier {
   String? get error => _error;
   TcCuPreviousPayoutModel? get previousPayout => _previousPayout;
   TcCuNextPayoutModel? get nextPayout => _nextPayout;
+  TcCuTotalPayoutResponse? get tcCuTotalPayoutResponse =>
+      _tcCuTotalPayoutResponse;
+
   List<TcCuAllPayoutModel> get tcCuAllPayment => _tcCuAllPayout;
 
   TcCuPayoutController() {
@@ -65,6 +71,7 @@ class TcCuPayoutController extends ChangeNotifier {
     await apiGetTcCuPreviousPayouts();
     await apiGetTcCuNextPayouts();
     await apiGetAllTcCuAllPayouts();
+    await apiGetTcCuTotalPayouts(null, null);
   }
 
   // ================= Previous Payout API =================
@@ -80,7 +87,7 @@ class TcCuPayoutController extends ChangeNotifier {
 
       final Map<String, dynamic> body = {
         'userId': userId,
-        'prevDateMonth': '06',
+        'prevDateMonth': prevDateMonth,
         'prevDateYear': prevDateYear,
       };
 
@@ -153,6 +160,68 @@ class TcCuPayoutController extends ChangeNotifier {
     } catch (e, s) {
       Logger.error('Error fetching TC CU next payouts: $e\n$s');
       _error = 'Error fetching next payouts: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ================= Total Payout API =================
+  Future<void> apiGetTcCuTotalPayouts(
+      String? selectedMonth, String? selectedYeara) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final url = AppUrls.getTcCuTotalPayouts;
+      Logger.info('Fetching TC CU Total Payouts from $url');
+
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final now = DateTime.now();
+      final month = selectedMonth ?? now.month.toString().padLeft(2, '0');
+      final year = selectedYeara ?? now.year.toString();
+
+      // ✅ Prepare body
+      final Map<String, dynamic> body = {
+        'userId': userId,
+        'totalDateMonth': month,
+        'totalDateYear': year,
+      };
+
+      final encodeBody = jsonEncode(body);
+      Logger.success('Request body for TC CU total payouts: $encodeBody');
+
+      // ✅ Send request
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: encodeBody,
+      );
+
+      Logger.success(
+          'Response status for tc cu total payouts: ${response.statusCode}');
+      Logger.success('Response body for tc cu total payouts: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['status'] == true) {
+          _tcCuTotalPayoutResponse =
+              TcCuTotalPayoutResponse.fromJson(jsonResponse);
+          Logger.success('Parsed total payouts successfully');
+        } else {
+          _error = jsonResponse['message'] ?? 'Failed to fetch total payouts';
+          Logger.error('API error message: $_error');
+        }
+      } else {
+        _error = 'Server error: ${response.statusCode}';
+        Logger.error('Failed with status code ${response.statusCode}');
+      }
+    } catch (e, s) {
+      Logger.error('Error fetching TC CU total payouts: $e\n$s');
+      _error = 'Error fetching total payouts: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
