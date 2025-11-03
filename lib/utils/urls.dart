@@ -114,7 +114,8 @@ class AppUrls {
   static String get getTravelConsultantTopReferralCustomers =>
       '$_travelConsultant/dashboard/top_referrals.php';
 
-  static String get getTravelConsultantCurrentBookings => '$_travelConsultant/';
+  static String get getTravelConsultantCurrentBookings =>
+      '$_travelConsultant/dashboard/top_bookings.php';
 
   // ==================== TRAVEL CONSULTANT CUSTOMER ENDPOINTS ====================
   static String get getTcPendingCustomers =>

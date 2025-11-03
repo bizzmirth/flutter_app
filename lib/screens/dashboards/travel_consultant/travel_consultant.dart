@@ -340,19 +340,25 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                       //   progressColor: Colors.orange,
                       // ),
                       const SizedBox(height: 20),
-                      const ReferralTrackerCard(
+                      ReferralTrackerCard(
                         totalSteps: 10,
-                        currentStep: 3,
+                        currentStep: int.tryParse(
+                                tcController.totalRegisteredCustomers ?? '0') ??
+                            0,
                         progressColor: Colors.green,
                       ),
+
                       const SizedBox(height: 20),
                       // const ReferralTrackerCard(
                       //   totalSteps: 10,
                       //   currentStep: 6,
                       //   progressColor: Colors.purpleAccent,
                       // ),
-                      const BookingTrackerCard(
-                          title: 'Booking tracker', bookingCount: 10),
+                      BookingTrackerCard(
+                          title: 'Booking tracker',
+                          bookingCount: int.tryParse(
+                                  tcController.totalCompletedTours ?? '0') ??
+                              0),
                       const SizedBox(height: 20),
                       const ImprovedLineChart(),
                       const SizedBox(height: 20),
@@ -369,7 +375,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                         ),
                       ),
                       const Divider(thickness: 1, color: Colors.black26),
-                      const FilterBar(),
+                      // const FilterBar(),
                       isTablet
                           ? Card(
                               elevation: 5,
@@ -423,7 +429,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                         ),
                       ),
                       const Divider(thickness: 1, color: Colors.black26),
-                      const FilterBar(),
+                      // const FilterBar(),
                       isTablet
                           ? Card(
                               elevation: 5,
@@ -446,7 +452,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                                     DataColumn(label: Text('Travel Date')),
                                   ],
                                   source: TcCurrentBookingDataSource(
-                                    data: tcCurrentBookingDummyData,
+                                    data: tcController.tcTopBookings,
                                   ),
                                   rowsPerPage: _rowsPerPage,
                                   availableRowsPerPage:

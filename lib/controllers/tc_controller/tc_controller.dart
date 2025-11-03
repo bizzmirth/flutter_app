@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bizzmirth_app/models/tc_models/tc_dashboard/tc_dashboard_stat_model.dart';
+import 'package:bizzmirth_app/models/tc_models/tc_dashboard/tc_top_bookings_model.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_dashboard/tc_top_customer_referral_model.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
@@ -17,6 +18,7 @@ class TcController extends ChangeNotifier {
   List<double> _chartData = [];
   String? _selectedYear;
   List<TcTopCustomerReferralModel> _tcTopCustomerReferrals = [];
+  List<TcTopBookingsModel> _tcTopBookings = [];
 
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -42,6 +44,7 @@ class TcController extends ChangeNotifier {
   String? get selectedYear => _selectedYear;
   List<TcTopCustomerReferralModel> get tcTopCustomerReferrals =>
       _tcTopCustomerReferrals;
+  List<TcTopBookingsModel> get tcTopBookings => _tcTopBookings;
 
   TcController() {
     intialiseTCDasboard();
@@ -50,6 +53,7 @@ class TcController extends ChangeNotifier {
   Future<void> intialiseTCDasboard() async {
     await getDashboardDataCounts();
     await apiGetTcTopCustomerReferral();
+    await apiGetTcTopBookings();
   }
 
   Future<void> getDashboardDataCounts() async {
@@ -203,6 +207,46 @@ class TcController extends ChangeNotifier {
           'Error fetching top customer referrals: Error $e, StackTrace: $s');
       _error =
           'An error occurred while fetching top customer referrals. Error: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiGetTcTopBookings() async {
+    // TODO: complete fetching top bookings for travel consultant
+    try {
+      final url = AppUrls.getTravelConsultantCurrentBookings;
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final Map<String, dynamic> body = {
+        'userId': userId,
+      };
+      final encodeBody = jsonEncode(body);
+      final response = await http.post(Uri.parse(url), body: encodeBody);
+      Logger.info('Fetching top bookings from $url with body: $body');
+      Logger.info('Raw response body: ${response.body}');
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['status'] == 'success' &&
+            jsonResponse['data'] != null) {
+          _tcTopBookings.clear();
+          final List<dynamic> bookingsList = jsonResponse['data'];
+          _tcTopBookings = bookingsList
+              .map((bookingJson) => TcTopBookingsModel.fromJson(bookingJson))
+              .toList();
+          Logger.info(
+              'Top bookings fetched successfully. Count: ${_tcTopBookings.length}');
+        } else {
+          _error = 'Failed to fetch top bookings';
+          Logger.error('Top bookings status not success or data is null');
+        }
+      } else {
+        _error = 'Server error: ${response.statusCode}';
+        Logger.error('Server error: ${response.statusCode}');
+      }
+    } catch (e, s) {
+      Logger.error('Error fetching top bookings: Error $e, StackTrace: $s');
+      _error = 'An error occurred while fetching top bookings. Error: $e';
     } finally {
       _isLoading = false;
       notifyListeners();

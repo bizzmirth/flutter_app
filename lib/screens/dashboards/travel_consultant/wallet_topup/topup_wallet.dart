@@ -235,8 +235,8 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
 
   @override
   void dispose() {
-    _taRefNoController.dispose();
-    _taRefNameCOntroller.dispose();
+    // _taRefNoController.dispose();
+    // _taRefNameCOntroller.dispose();
     _amountController.dispose();
     _chequeNumberController.dispose();
     _chequeDateController.dispose();
