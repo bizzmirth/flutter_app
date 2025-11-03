@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bizzmirth_app/models/tc_models/tc_topup_wallets/tc_topup_request_list_model.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_topup_wallets/tc_topup_request_model.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_topup_wallets/tc_topup_wallet_balance_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
@@ -11,10 +12,12 @@ class TcTopupWalletController extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   TcTopupWalletBalanceModel? _walletBalanceModel;
+  List<TcTopupRequestList> _topUpRequests = [];
 
   bool get isLoading => _isLoading;
   String? get error => _error;
   TcTopupWalletBalanceModel? get walletBalanceModel => _walletBalanceModel;
+  List<TcTopupRequestList> get topUpRequests => _topUpRequests;
 
   TcTopupWalletController() {
     initialiseData();
@@ -22,6 +25,7 @@ class TcTopupWalletController extends ChangeNotifier {
 
   Future<void> initialiseData() async {
     await apiGetTcTopupWalletBalance();
+    await apiGetTcTopupRequestList();
   }
 
   Future<void> apiGetTcTopupWalletBalance() async {
@@ -108,6 +112,45 @@ class TcTopupWalletController extends ChangeNotifier {
       _error = 'Error adding wallet balance: $e';
       Logger.error('💥 Exception in Topup Wallet: $e\n$s');
       return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiGetTcTopupRequestList() async {
+    try {
+      final url = AppUrls.getTcTopupRequestList;
+      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final body = {'userId': userId};
+      Logger.info('Fetching topup request list from $url with body: $body');
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+      Logger.success(
+          'Topup Request List Response: ${response.body} and Status Code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true && responseData['data'] != null) {
+          final List<dynamic> data = responseData['data'];
+          _topUpRequests =
+              data.map((item) => TcTopupRequestList.fromJson(item)).toList();
+        } else {
+          _error = responseData['message'] ?? 'Unknown error occurred';
+          Logger.error('Error fetching topup request list: ${response.body}');
+        }
+      } else {
+        _error =
+            'Failed to fetch topup request list. Status code: ${response.statusCode}';
+        Logger.error(
+            'Failed to fetch topup request list. Response Body: ${response.body} Status code: ${response.statusCode}');
+      }
+    } catch (e, s) {
+      Logger.error(
+          'Error fetching topup request list:Error $e, Stacktrace: $s');
+      _error = 'Error fetching topup request list: Error $e';
     } finally {
       _isLoading = false;
       notifyListeners();

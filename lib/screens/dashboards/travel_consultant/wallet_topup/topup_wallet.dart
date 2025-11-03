@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_topup_wallet_controller.dart';
+import 'package:bizzmirth_app/models/tc_models/tc_topup_wallets/tc_topup_request_list_model.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_topup_wallets/tc_topup_request_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/approve_tc_payments_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/pending_transactions_page.dart';
@@ -274,7 +275,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                   const SizedBox(height: 20),
                   _buildSubmitButton(),
                   const SizedBox(height: 10),
-                  _buildNavigationButtons(),
+                  _buildNavigationButtons(controller.topUpRequests),
                 ],
               ),
             ),
@@ -547,7 +548,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
     );
   }
 
-  Widget _buildNavigationButtons() {
+  Widget _buildNavigationButtons(List<TcTopupRequestList> _topUpRequests) {
     return Column(
       children: [
         customerType == 'Admin'
@@ -633,7 +634,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        TransactionHistoryPage(transactions: _transactions),
+                        TransactionHistoryPage(transactions: _topUpRequests),
                   ),
                 );
               },
@@ -682,7 +683,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                   context,
                   MaterialPageRoute(
                     builder: (context) => PendingTransactionsPage(
-                      pendingTransactions: _pendingTransactions,
+                      pendingTransactions: _topUpRequests,
                     ),
                   ),
                 );
