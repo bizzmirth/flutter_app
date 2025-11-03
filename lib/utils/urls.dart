@@ -151,4 +151,15 @@ class AppUrls {
 
   static String get getTcCuPreviousPayouts =>
       '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_previous_payouts.php';
+
+  // ==================== TRAVEL CONSULTANT TOPUP WALLET ENDPOINTS ====================
+
+  static String get getTcTopupWalletDetails =>
+      '$_travelConsultant/wallets/tc_wallet_balance.php';
+
+  static String get addTcTopupWalletAmount =>
+      '$_travelConsultant/wallets/add_tc_topup.php';
+
+  static String get getTcTopupRequestList =>
+      '$_travelConsultant/wallets/tc_request_list.php';
 }
