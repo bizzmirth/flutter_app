@@ -56,6 +56,11 @@ class TcController extends ChangeNotifier {
     await apiGetTcTopBookings();
   }
 
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
+
   Future<void> getDashboardDataCounts() async {
     _isLoading = true;
     _error = null;
@@ -214,7 +219,6 @@ class TcController extends ChangeNotifier {
   }
 
   Future<void> apiGetTcTopBookings() async {
-    // TODO: complete fetching top bookings for travel consultant
     try {
       final url = AppUrls.getTravelConsultantCurrentBookings;
       final userId = await SharedPrefHelper().getCurrentUserCustId();

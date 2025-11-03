@@ -13,6 +13,7 @@ import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/booking_tracker.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -81,6 +82,12 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.of(context).size.width > 600;
     final tcController = Provider.of<TcController>(context);
+    if (tcController.error != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ToastHelper.showErrorToast(title: tcController.error!);
+        tcController.clearError();
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -238,240 +245,222 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
       ),
       body: tcController.isLoading // Add loading check
           ? const Center(child: CircularProgressIndicator())
-          : tcController.error != null // Add error check
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        tcController.error!,
-                        style: const TextStyle(color: Colors.red),
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // _buildHeader(),
+                  const SizedBox(height: 20),
+                  CustomAnimatedSummaryCards(
+                    cardData: [
+                      // SummaryCardData(
+                      //     title: 'CUSTOMER REGISTERED',
+                      //     value: tcController.totalRegisteredCustomers ?? '0',
+                      //     thisMonthValue: tcController.monthlyRegisteredCustomers ?? '0',
+                      //     icon: Icons.people),
+                      // SummaryCardData(
+                      //     title: 'TOTAL BOOKING',
+                      //     value: '9',
+                      //     thisMonthValue: '0',
+                      //     icon: Icons.calendar_today),
+                      // SummaryCardData(
+                      //     title: 'Topup Wallet',
+                      //     value: '₹ 2000',
+                      //     thisMonthValue: '₹ 100',
+                      //     icon: Icons.account_balance_wallet),
+                      // SummaryCardData(
+                      //   title: 'COMPLETED TOURS',
+                      //   value: tcController.totalCompletedTours ?? '0',
+                      //   thisMonthValue:
+                      //       tcController.monthlyCompletedTours ?? '0',
+                      //   icon: Icons.check_circle,
+                      // ),
+                      // SummaryCardData(
+                      //   title: 'UPCOMING TOURS',
+                      //   value: tcController.totalUpcomingTours ?? '0',
+                      //   thisMonthValue:
+                      //       tcController.monthlyUpcomingTours ?? '0',
+                      //   icon: Icons.calendar_today,
+                      // ),
+                      // SummaryCardData(
+                      //   title: 'CONFIRMED COMMISSION',
+                      //   value:
+                      //       '₹ ${tcController.confirmedCommission ?? '0.00'}',
+                      //   thisMonthValue:
+                      //       '₹ ${tcController.pendingCommission ?? '0.00'}',
+                      //   icon: Icons.account_balance_wallet,
+                      // ),
+                      SummaryCardData(
+                        title: 'CUSTOMER REGISTERED',
+                        value: tcController.totalRegisteredCustomers ?? '0',
+                        thisMonthValue:
+                            tcController.monthlyRegisteredCustomers ?? '0',
+                        icon: Icons.people,
                       ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: tcController.getDashboardDataCounts,
-                        child: const Text('Retry'),
+                      SummaryCardData(
+                        title: 'COMPLETED TOURS',
+                        value: tcController.totalCompletedTours ?? '0',
+                        thisMonthValue:
+                            tcController.monthlyCompletedTours ?? '0',
+                        icon: Icons.check_circle,
+                      ),
+                      SummaryCardData(
+                        title: 'UPCOMING TOURS',
+                        value: tcController.totalUpcomingTours ?? '0',
+                        thisMonthValue:
+                            tcController.monthlyUpcomingTours ?? '0',
+                        icon: Icons.calendar_today,
+                      ),
+                      SummaryCardData(
+                        title: 'CONFIRMED COMMISSION',
+                        value:
+                            '₹ ${tcController.confirmedCommission ?? '0.00'}',
+                        thisMonthValue:
+                            '₹ ${tcController.pendingCommission ?? '0.00'}',
+                        icon: Icons.account_balance_wallet,
                       ),
                     ],
                   ),
-                )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // _buildHeader(),
-                      const SizedBox(height: 20),
-                      CustomAnimatedSummaryCards(
-                        cardData: [
-                          // SummaryCardData(
-                          //     title: 'CUSTOMER REGISTERED',
-                          //     value: tcController.totalRegisteredCustomers ?? '0',
-                          //     thisMonthValue: tcController.monthlyRegisteredCustomers ?? '0',
-                          //     icon: Icons.people),
-                          // SummaryCardData(
-                          //     title: 'TOTAL BOOKING',
-                          //     value: '9',
-                          //     thisMonthValue: '0',
-                          //     icon: Icons.calendar_today),
-                          // SummaryCardData(
-                          //     title: 'Topup Wallet',
-                          //     value: '₹ 2000',
-                          //     thisMonthValue: '₹ 100',
-                          //     icon: Icons.account_balance_wallet),
-                          // SummaryCardData(
-                          //   title: 'COMPLETED TOURS',
-                          //   value: tcController.totalCompletedTours ?? '0',
-                          //   thisMonthValue:
-                          //       tcController.monthlyCompletedTours ?? '0',
-                          //   icon: Icons.check_circle,
-                          // ),
-                          // SummaryCardData(
-                          //   title: 'UPCOMING TOURS',
-                          //   value: tcController.totalUpcomingTours ?? '0',
-                          //   thisMonthValue:
-                          //       tcController.monthlyUpcomingTours ?? '0',
-                          //   icon: Icons.calendar_today,
-                          // ),
-                          // SummaryCardData(
-                          //   title: 'CONFIRMED COMMISSION',
-                          //   value:
-                          //       '₹ ${tcController.confirmedCommission ?? '0.00'}',
-                          //   thisMonthValue:
-                          //       '₹ ${tcController.pendingCommission ?? '0.00'}',
-                          //   icon: Icons.account_balance_wallet,
-                          // ),
-                          SummaryCardData(
-                            title: 'CUSTOMER REGISTERED',
-                            value: tcController.totalRegisteredCustomers ?? '0',
-                            thisMonthValue:
-                                tcController.monthlyRegisteredCustomers ?? '0',
-                            icon: Icons.people,
-                          ),
-                          SummaryCardData(
-                            title: 'COMPLETED TOURS',
-                            value: tcController.totalCompletedTours ?? '0',
-                            thisMonthValue:
-                                tcController.monthlyCompletedTours ?? '0',
-                            icon: Icons.check_circle,
-                          ),
-                          SummaryCardData(
-                            title: 'UPCOMING TOURS',
-                            value: tcController.totalUpcomingTours ?? '0',
-                            thisMonthValue:
-                                tcController.monthlyUpcomingTours ?? '0',
-                            icon: Icons.calendar_today,
-                          ),
-                          SummaryCardData(
-                            title: 'CONFIRMED COMMISSION',
-                            value:
-                                '₹ ${tcController.confirmedCommission ?? '0.00'}',
-                            thisMonthValue:
-                                '₹ ${tcController.pendingCommission ?? '0.00'}',
-                            icon: Icons.account_balance_wallet,
-                          ),
-                        ],
-                      ),
-                      // SizedBox(height: 20),
-                      // ProgressTrackerCard(
-                      //   totalSteps: 10,
-                      //   currentStep: 3,
-                      //   message: "Keep going! You're doing great!",
-                      //   progressColor: Colors.orange,
-                      // ),
-                      const SizedBox(height: 20),
-                      ReferralTrackerCard(
-                        totalSteps: 10,
-                        currentStep: int.tryParse(
-                                tcController.totalRegisteredCustomers ?? '0') ??
-                            0,
-                        progressColor: Colors.green,
-                      ),
-
-                      const SizedBox(height: 20),
-                      // const ReferralTrackerCard(
-                      //   totalSteps: 10,
-                      //   currentStep: 6,
-                      //   progressColor: Colors.purpleAccent,
-                      // ),
-                      BookingTrackerCard(
-                          title: 'Booking tracker',
-                          bookingCount: int.tryParse(
-                                  tcController.totalCompletedTours ?? '0') ??
-                              0),
-                      const SizedBox(height: 20),
-                      const ImprovedLineChart(),
-                      const SizedBox(height: 20),
-                      // _buildTopPerformersSection(),
-                      const Divider(thickness: 1, color: Colors.black26),
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            "Top Customer's List:",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      const Divider(thickness: 1, color: Colors.black26),
-                      // const FilterBar(),
-                      isTablet
-                          ? Card(
-                              elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: SizedBox(
-                                height: (_rowsPerPage * dataRowHeight) +
-                                    headerHeight +
-                                    paginationHeight,
-                                child: PaginatedDataTable(
-                                  columnSpacing: 60,
-                                  dataRowMinHeight: 40,
-                                  columns: const [
-                                    DataColumn(label: Text('ID')),
-                                    DataColumn(label: Text('Full Name')),
-                                    DataColumn(label: Text('Date Reg.')),
-                                    DataColumn(label: Text('Total CU Ref')),
-                                    DataColumn(label: Text('Active/Inactive')),
-                                  ],
-                                  source: TcTopCustomersDataSource(
-                                      data:
-                                          tcController.tcTopCustomerReferrals),
-                                  rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage:
-                                      AppData.availableRowsPerPage,
-                                  onRowsPerPageChanged: (value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        _rowsPerPage = value;
-                                      });
-                                    }
-                                  },
-                                  arrowHeadColor: Colors.blue,
-                                ),
-                              ),
-                            )
-                          : _buildTopCustomerList(),
-
-                      const SizedBox(height: 20),
-                      // _buildTopPerformersSection1(),
-                      const Divider(thickness: 1, color: Colors.black26),
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            "Current Booking's:",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      const Divider(thickness: 1, color: Colors.black26),
-                      // const FilterBar(),
-                      isTablet
-                          ? Card(
-                              elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: SizedBox(
-                                height: (_rowsPerPage * dataRowHeight) +
-                                    headerHeight +
-                                    paginationHeight,
-                                child: PaginatedDataTable(
-                                  columnSpacing: 60,
-                                  dataRowMinHeight: 40,
-                                  columns: const [
-                                    DataColumn(label: Text('Booking ID')),
-                                    DataColumn(label: Text('Customer Name')),
-                                    DataColumn(label: Text('Package Name')),
-                                    DataColumn(label: Text('Amount')),
-                                    DataColumn(label: Text('Booking Date')),
-                                    DataColumn(label: Text('Travel Date')),
-                                  ],
-                                  source: TcCurrentBookingDataSource(
-                                    data: tcController.tcTopBookings,
-                                  ),
-                                  rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage:
-                                      AppData.availableRowsPerPage,
-                                  onRowsPerPageChanged: (value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        _rowsPerPage = value;
-                                      });
-                                    }
-                                  },
-                                  arrowHeadColor: Colors.blue,
-                                ),
-                              ),
-                            )
-                          : _buildCurrentBookingList(),
-                    ],
+                  // SizedBox(height: 20),
+                  // ProgressTrackerCard(
+                  //   totalSteps: 10,
+                  //   currentStep: 3,
+                  //   message: "Keep going! You're doing great!",
+                  //   progressColor: Colors.orange,
+                  // ),
+                  const SizedBox(height: 20),
+                  ReferralTrackerCard(
+                    totalSteps: 10,
+                    currentStep: int.tryParse(
+                            tcController.totalRegisteredCustomers ?? '0') ??
+                        0,
+                    progressColor: Colors.green,
                   ),
-                ),
+
+                  const SizedBox(height: 20),
+                  // const ReferralTrackerCard(
+                  //   totalSteps: 10,
+                  //   currentStep: 6,
+                  //   progressColor: Colors.purpleAccent,
+                  // ),
+                  BookingTrackerCard(
+                      title: 'Booking tracker',
+                      bookingCount: int.tryParse(
+                              tcController.totalCompletedTours ?? '0') ??
+                          0),
+                  const SizedBox(height: 20),
+                  const ImprovedLineChart(),
+                  const SizedBox(height: 20),
+                  // _buildTopPerformersSection(),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        "Top Customer's List:",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  // const FilterBar(),
+                  isTablet
+                      ? Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: SizedBox(
+                            height: (_rowsPerPage * dataRowHeight) +
+                                headerHeight +
+                                paginationHeight,
+                            child: PaginatedDataTable(
+                              columnSpacing: 60,
+                              dataRowMinHeight: 40,
+                              columns: const [
+                                DataColumn(label: Text('ID')),
+                                DataColumn(label: Text('Full Name')),
+                                DataColumn(label: Text('Date Reg.')),
+                                DataColumn(label: Text('Total CU Ref')),
+                                DataColumn(label: Text('Active/Inactive')),
+                              ],
+                              source: TcTopCustomersDataSource(
+                                  data: tcController.tcTopCustomerReferrals),
+                              rowsPerPage: _rowsPerPage,
+                              availableRowsPerPage:
+                                  AppData.availableRowsPerPage,
+                              onRowsPerPageChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _rowsPerPage = value;
+                                  });
+                                }
+                              },
+                              arrowHeadColor: Colors.blue,
+                            ),
+                          ),
+                        )
+                      : _buildTopCustomerList(),
+
+                  const SizedBox(height: 20),
+                  // _buildTopPerformersSection1(),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        "Current Booking's:",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  // const FilterBar(),
+                  isTablet
+                      ? Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: SizedBox(
+                            height: (_rowsPerPage * dataRowHeight) +
+                                headerHeight +
+                                paginationHeight,
+                            child: PaginatedDataTable(
+                              columnSpacing: 60,
+                              dataRowMinHeight: 40,
+                              columns: const [
+                                DataColumn(label: Text('Booking ID')),
+                                DataColumn(label: Text('Customer Name')),
+                                DataColumn(label: Text('Package Name')),
+                                DataColumn(label: Text('Amount')),
+                                DataColumn(label: Text('Booking Date')),
+                                DataColumn(label: Text('Travel Date')),
+                              ],
+                              source: TcCurrentBookingDataSource(
+                                data: tcController.tcTopBookings,
+                              ),
+                              rowsPerPage: _rowsPerPage,
+                              availableRowsPerPage:
+                                  AppData.availableRowsPerPage,
+                              onRowsPerPageChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _rowsPerPage = value;
+                                  });
+                                }
+                              },
+                              arrowHeadColor: Colors.blue,
+                            ),
+                          ),
+                        )
+                      : _buildCurrentBookingList(),
+                ],
+              ),
+            ),
     );
   }
 
