@@ -2,6 +2,7 @@ import 'package:bizzmirth_app/controllers/tc_controller/tc_cu_payout_controller.
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_cu_payouts_data_source/tc_cu_all_payout_data_cource.dart';
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_cu_payouts_data_source/tc_cu_membership_all_data_source.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_cu_membership_payouts/payout_data.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
@@ -60,7 +61,6 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
     userId = userDetails?.userId;
     username =
         "${userDetails?.userFname ?? ''} ${userDetails?.userLname ?? ''}";
-    ;
   }
 
   @override
@@ -354,13 +354,8 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
                                       source:
                                           TcCuAllPayoutDataCource(payoutList),
                                       rowsPerPage: _rowsPerPage,
-                                      availableRowsPerPage: const [
-                                        5,
-                                        10,
-                                        15,
-                                        20,
-                                        25
-                                      ],
+                                      availableRowsPerPage:
+                                          AppData.availableRowsPerPage,
                                       onRowsPerPageChanged: (value) {
                                         if (value != null) {
                                           setState(() {
@@ -497,81 +492,82 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
 
   Widget _buildUserCard(String userId, String userName, String amount) {
     return Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                'ID: $userId',
-                style: const TextStyle(fontSize: 11),
-                overflow: TextOverflow.ellipsis,
-              ),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(4),
             ),
-            const SizedBox(height: 6),
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                'Name: $userName',
-                style: const TextStyle(fontSize: 11),
-                overflow: TextOverflow.ellipsis,
-              ),
+            child: Text(
+              'ID: $userId',
+              style: const TextStyle(fontSize: 11),
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Name: $userName',
-                    style: const TextStyle(fontSize: 12),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Text(
-                        'Rs.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              'Name: $userName',
+              style: const TextStyle(fontSize: 11),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Name: $userName',
+                  style: const TextStyle(fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Text(
+                      'Rs.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
                       ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          amount.replaceAll('Rs. ', ''),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        amount.replaceAll('Rs. ', ''),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -630,7 +626,7 @@ class _TcCuMembershipPayoutsState extends State<TcCuMembershipPayouts> {
                         child: payoutCard(
                           'Next Payout',
                           '${getMonthName(controller.nextDateMonth)}, ${controller.nextDateYear}',
-                          'Rs. 0/-',
+                          'Rs. ${controller.nextPayout!.totalNextPayout}/-',
                           'Pending',
                           Colors.orange.shade100,
                           controller,

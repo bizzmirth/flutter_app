@@ -32,7 +32,7 @@ class TcProductPayoutModel {
     noOfAdults = json['noOfAdults'];
     noOfChildren = json['noOfChildren'];
     message = json['message'];
-    amount = json['amount'];
+    amount = json['amount'].toString();
     tds = json['tds'];
     totalPayable = json['totalPayable'];
     status = json['status'];
