@@ -21,9 +21,9 @@ android {
  
     defaultConfig {
         applicationId "com.example.bizzmirth_app"
-        minSdkVersion 21
-        ndkVersion "27.0.12077973"
-        targetSdkVersion 34   // ✅ keep this instead of targetSdk
+        minSdkVersion flutter.minSdkVersion
+        ndkVersion "29.0.13599879" 
+        targetSdkVersion 34   
         versionCode flutter.versionCode
         versionName flutter.versionName
     }
