@@ -200,8 +200,9 @@ class TcController extends ChangeNotifier {
             Logger.warning('No top customers found in response');
           }
         } else {
-          _error = 'Failed to fetch top customer referrals';
-          Logger.error('Top customer referrals status not success');
+          // _error = 'Failed to fetch top customer referrals';
+          // Logger.error('Top customer referrals status not success');
+          _tcTopCustomerReferrals = [];
         }
       } else {
         _error = 'Server error: ${response.statusCode}';

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:bizzmirth_app/controllers/admin_controller/admin_busniess_mentor_controller.dart';
 import 'package:bizzmirth_app/controllers/admin_controller/admin_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/admin_controller/admin_designation_department_controller.dart';
@@ -27,6 +26,7 @@ import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/http_overrides.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
@@ -181,18 +181,6 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
-  }
-}
-
-void bypassSSLVerification() {
-  HttpOverrides.global = MyHttpOverrides();
-}
-
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (cert, host, port) => true;
   }
 }
 
