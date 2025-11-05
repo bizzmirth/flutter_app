@@ -36,7 +36,9 @@ class CustWalletController extends ChangeNotifier {
 
     try {
       final String fullUrl = AppUrls.getWalletDetails;
-      final String? userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
 
       final Map<String, dynamic> body = {'userId': userId};
       final encodeBody = json.encode(body);

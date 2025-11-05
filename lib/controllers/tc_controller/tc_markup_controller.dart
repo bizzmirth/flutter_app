@@ -34,7 +34,9 @@ class TcMarkupController extends ChangeNotifier {
       notifyListeners();
 
       final String url = AppUrls.getTcMarkupDetails;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'user_id': userId,
         'user_type': AppData.tcUserType,
@@ -118,7 +120,9 @@ class TcMarkupController extends ChangeNotifier {
         return;
       }
       final String url = AppUrls.getTcMarkupDetails;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'user_id': userId,
         'user_type': AppData.tcUserType,
@@ -171,7 +175,9 @@ class TcMarkupController extends ChangeNotifier {
       notifyListeners();
 
       final String url = AppUrls.getTcUpdateMarkup;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'ta_id': userId,
         'package_id': packageId,

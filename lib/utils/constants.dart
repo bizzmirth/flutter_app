@@ -658,7 +658,9 @@ Future<void> _handleUserAction(BuildContext context, String action) async {
 
   navigator.pop();
 
-  final userType = await SharedPrefHelper().getUserType();
+  final loginRes = await SharedPrefHelper().getLoginResponse();
+
+  final userType = loginRes!.userType;
 
   if (userType == null || userType.isEmpty) {
     scaffoldMessenger.showSnackBar(
@@ -793,7 +795,8 @@ void showBookingPopupAlternative(BuildContext context) {
 
 Future<void> _handleUserActionWithBanner(
     BuildContext context, String action) async {
-  final userType = await SharedPrefHelper().getUserType();
+  final loginRes = await SharedPrefHelper().getLoginResponse();
+  final userType = loginRes!.userType;
 
   if (!context.mounted) return;
 

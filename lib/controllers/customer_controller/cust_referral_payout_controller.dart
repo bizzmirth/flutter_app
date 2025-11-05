@@ -101,7 +101,8 @@ class CustReferralPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getPreviousPayoutsReference;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final now = DateTime.now();
       final prevMonth =
           (now.month == 1 ? 12 : now.month - 1).toString().padLeft(2, '0');
@@ -158,7 +159,8 @@ class CustReferralPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getNextPayoutReference;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final now = DateTime.now();
       final nextMonth = (now.month % 12).toString().padLeft(2, '0');
       final currentYear = now.year.toString();
@@ -214,7 +216,8 @@ class CustReferralPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getTotalPayoutsReference;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
 
       // Create base body with userId
       final Map<String, dynamic> body = {

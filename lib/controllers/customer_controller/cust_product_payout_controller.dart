@@ -104,7 +104,9 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getPayoutsProduct;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'action': 'previous',
         'userId': userId,
@@ -185,7 +187,8 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getPayoutsProduct;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'action': 'next',
         'userId': userId,
@@ -272,7 +275,9 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getTotalPayoutsProduct;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
 
       final now = DateTime.now();
       final selectedMonth = month ?? now.month;

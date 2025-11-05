@@ -7,6 +7,7 @@ class LoginResponseModel {
   final String? userId;
   final String? userFname;
   final String? userLname;
+  final String? name; // ✅ Combined full name
   final String? email;
   final String? token;
   final Map<String, dynamic>? extra; // store any extra unknown keys
@@ -18,12 +19,16 @@ class LoginResponseModel {
     this.userId,
     this.userFname,
     this.userLname,
+    this.name, // ✅
     this.email,
     this.token,
     this.extra,
   });
 
-  factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
+  factory LoginResponseModel.fromJson(
+    Map<String, dynamic> json, {
+    String? fallbackEmail,
+  }) {
     final extraData = Map<String, dynamic>.from(json);
     extraData.removeWhere((key, _) => [
           'status',
@@ -36,14 +41,19 @@ class LoginResponseModel {
           'token'
         ].contains(key));
 
+    final fname = json['user_fname']?.toString().trim() ?? '';
+    final lname = json['user_lname']?.toString().trim() ?? '';
+    final fullName = [fname, lname].where((e) => e.isNotEmpty).join(' ');
+
     return LoginResponseModel(
       status: json['status'],
       message: json['message'],
       userType: json['user_type'],
       userId: json['user_id'],
-      userFname: json['user_fname'],
-      userLname: json['user_lname'],
-      email: json['email'],
+      userFname: fname,
+      userLname: lname,
+      name: fullName, // ✅ combined name
+      email: json['email'] ?? fallbackEmail,
       token: json['token'],
       extra: extraData.isNotEmpty ? extraData : null,
     );
@@ -56,6 +66,7 @@ class LoginResponseModel {
         'user_id': userId,
         'user_fname': userFname,
         'user_lname': userLname,
+        'name': name, // ✅ added
         'email': email,
         'token': token,
         if (extra != null) ...extra!,

@@ -36,7 +36,8 @@ class TcTopupWalletController extends ChangeNotifier {
 
       final url = AppUrls.getTcTopupWalletDetails;
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'userId': userId,
       };
@@ -121,7 +122,9 @@ class TcTopupWalletController extends ChangeNotifier {
   Future<void> apiGetTcTopupRequestList() async {
     try {
       final url = AppUrls.getTcTopupRequestList;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final body = {'userId': userId};
       Logger.info('Fetching topup request list from $url with body: $body');
       final response = await http.post(

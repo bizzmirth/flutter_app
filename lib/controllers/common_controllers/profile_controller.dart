@@ -118,7 +118,9 @@ class ProfileController extends ChangeNotifier {
     try {
       final String fullUrl = AppUrls.getPersonalDetails;
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
+      // TODO: find a way to store userType dynamically in the local DB
       final Map<String, dynamic> body = {'userId': userId, 'userType': '10'};
 
       final response = await http.post(
@@ -195,7 +197,8 @@ class ProfileController extends ChangeNotifier {
     try {
       final String fullUrl = AppUrls.getPersonalDetails;
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {'userId': userId, 'userType': '10'};
 
       final response = await http.post(
@@ -203,6 +206,7 @@ class ProfileController extends ChangeNotifier {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(body),
       );
+      // TODO change the request body as per the new profile-api
 
       Logger.success('Response from User Details API: ${response.body}');
 
@@ -243,7 +247,9 @@ class ProfileController extends ChangeNotifier {
 
     try {
       final fullUrl = 'https://testca.uniqbizz.com/api/customers/coupons.php';
-      final String? userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final body = {'userId': userId};
       final encodeBody = jsonEncode(body);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);

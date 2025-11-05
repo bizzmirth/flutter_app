@@ -68,7 +68,9 @@ class TcController extends ChangeNotifier {
 
     try {
       final String url = AppUrls.getTravelConsultantDashboardCounts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'userId': userId,
       };
@@ -109,7 +111,8 @@ class TcController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.getTravelConsultantLineChartData;
       final Map<String, dynamic> body = {
         'year': selectedYear,
@@ -167,7 +170,8 @@ class TcController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.getTravelConsultantTopReferralCustomers;
       final Map<String, dynamic> body = {
         'userId': userId,
@@ -222,7 +226,9 @@ class TcController extends ChangeNotifier {
   Future<void> apiGetTcTopBookings() async {
     try {
       final url = AppUrls.getTravelConsultantCurrentBookings;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'userId': userId,
       };
@@ -242,7 +248,8 @@ class TcController extends ChangeNotifier {
           Logger.info(
               'Top bookings fetched successfully. Count: ${_tcTopBookings.length}');
         } else {
-          _error = 'Failed to fetch top bookings';
+          // _error = 'Failed to fetch top bookings';
+          _tcTopBookings = [];
           Logger.error('Top bookings status not success or data is null');
         }
       } else {

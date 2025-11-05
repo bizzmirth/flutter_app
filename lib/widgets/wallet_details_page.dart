@@ -82,7 +82,10 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
   Future<void> getCustomerWalletDetails() async {
     final controller =
         Provider.of<CustWalletController>(context, listen: false);
-    _customerType = await SharedPrefHelper().getCurrentUserCustId();
+
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+
+    _customerType = loginRes?.userId ?? '';
     await controller.apiGetWalletDetails().then((_) {
       _initializeFilterRedeemableHistory();
       _initializeFilterBookingHistory();

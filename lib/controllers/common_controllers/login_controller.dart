@@ -218,14 +218,15 @@ class LoginController extends ChangeNotifier {
       // --- Parse Response ---
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final loginResponse = LoginResponseModel.fromJson(responseData);
+        final loginResponse = LoginResponseModel.fromJson(responseData,
+            fallbackEmail: emailController.text);
 
         if (loginResponse.status == 1) {
           // --- Save Data in Shared Pref ---
-          await _sharedPrefHelper.saveUserType(loginResponse.userType ?? '');
-          await _sharedPrefHelper.saveUserEmail(emailController.text);
-          await _sharedPrefHelper
-              .saveCurrentUserCustId(loginResponse.userId ?? '');
+          // TODO: removes the un-necessary data that gets stored in the local storage
+          // await _sharedPrefHelper.saveUserType(loginResponse.userType ?? '');
+          // await _sharedPrefHelper.saveUserEmail(emailController.text);
+
           await _sharedPrefHelper.saveUsername(
             '${loginResponse.userFname ?? ''} ${loginResponse.userLname ?? ''}'
                 .trim(),

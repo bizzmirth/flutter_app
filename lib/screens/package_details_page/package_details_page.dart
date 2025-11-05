@@ -27,7 +27,8 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
   String? customerType;
 
   Future<void> getShredPrefData() async {
-    customerType = await SharedPrefHelper().getUserType();
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    customerType = loginRes?.userType ?? '';
     setState(() {});
   }
 

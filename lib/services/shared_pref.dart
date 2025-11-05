@@ -6,12 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPrefHelper {
   static final String _userDataTypeKey = 'user_data_type';
 
-  static final String _userTypeKey = 'user_type';
-
-  static final String _userEmailKey = 'user_email';
-
-  static final String _currUserCustId = 'ca_customer_id';
-
   static final String _currentUserRegDate = 'current_user_reg_date';
 
   static final String _customerTypeKey = 'customer_type';
@@ -19,6 +13,14 @@ class SharedPrefHelper {
   static final String _userNameKey = 'user_name';
 
   static final String _saveLoginResponse = 'login_response';
+
+  static final String _rememberMe = 'remember_me';
+
+  static final String _savedUserTypeId = 'saved_user_type_id';
+
+  static final String _savedPassword = 'saved_password';
+
+  static final String _savedEmail = 'saved_email';
 
   Future<void> saveUserDataType(String userDataType) async {
     final prefs = await SharedPreferences.getInstance();
@@ -30,21 +32,6 @@ class SharedPrefHelper {
     await prefs.setString(_customerTypeKey, customerType);
   }
 
-  Future<void> saveUserType(String userType) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_userTypeKey, userType);
-  }
-
-  Future<void> saveUserEmail(String userEmail) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_userEmailKey, userEmail);
-  }
-
-  Future<void> saveCurrentUserCustId(String custId) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_currUserCustId, custId);
-  }
-
   Future<void> saveCurrentUserRegDate(String regDate) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_currentUserRegDate, regDate);
@@ -53,7 +40,7 @@ class SharedPrefHelper {
   // Save remember me preference
   Future<void> saveRememberMe(bool value) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('remember_me', value);
+    await prefs.setBool(_rememberMe, value);
   }
 
   Future<void> saveUsername(String name) async {
@@ -66,29 +53,14 @@ class SharedPrefHelper {
     await prefs.setString(_saveLoginResponse, jsonEncode(data));
   }
 
-  Future<String?> getUserType() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_userTypeKey);
-  }
-
   Future<String?> getCurrentUserRegDate() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_currentUserRegDate);
   }
 
-  Future<String?> getUserEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_userEmailKey);
-  }
-
   Future<String?> getUserDataType(String s) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userDataTypeKey);
-  }
-
-  Future<String?> getCurrentUserCustId() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_currUserCustId);
   }
 
   Future<String?> getCustomerType() async {
@@ -116,11 +88,8 @@ class SharedPrefHelper {
 
   Future<void> removeDetails() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_userEmailKey);
     await prefs.remove(_currentUserRegDate);
     await prefs.remove(_customerTypeKey);
-    await prefs.remove(_currUserCustId);
-    await prefs.remove(_userTypeKey);
     Logger.warning('message: User details removed from shared preferences');
   }
 
@@ -132,51 +101,51 @@ class SharedPrefHelper {
 // Get remember me preference
   Future<bool> getRememberMe() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('remember_me') ?? false;
+    return prefs.getBool(_rememberMe) ?? false;
   }
 
 // Save email
   Future<void> saveEmail(String email) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('saved_email', email);
+    await prefs.setString(_savedEmail, email);
   }
 
 // Get saved email
   Future<String?> getSavedEmail() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('saved_email');
+    return prefs.getString(_savedEmail);
   }
 
 // Save password
   Future<void> savePassword(String password) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('saved_password', password);
+    await prefs.setString(_savedPassword, password);
   }
 
 // Get saved password
   Future<String?> getSavedPassword() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('saved_password');
+    return prefs.getString(_savedPassword);
   }
 
 // Save user type ID
   Future<void> saveUserTypeId(String userTypeId) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('saved_user_type_id', userTypeId);
+    await prefs.setString(_savedUserTypeId, userTypeId);
   }
 
 // Get saved user type ID
   Future<String?> getSavedUserTypeId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('saved_user_type_id');
+    return prefs.getString(_savedUserTypeId);
   }
 
 // Clear all saved credentials
   Future<void> clearSavedCredentials() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('saved_email');
-    await prefs.remove('saved_password');
-    await prefs.remove('saved_user_type_id');
+    await prefs.remove(_savedEmail);
+    await prefs.remove(_savedPassword);
+    await prefs.remove(_savedUserTypeId);
   }
 
 // Clear session data (for logout)

@@ -30,11 +30,11 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
   }
 
   Future<void> getUserType() async {
-    final getUserType = await SharedPrefHelper().getUserType();
-    Logger.info('User Type from Shared Preferences: $getUserType');
+    final getUserType = await SharedPrefHelper().getLoginResponse();
+    Logger.info('User Type from Shared Preferences: $userType');
 
     setState(() {
-      userType = getUserType;
+      userType = getUserType?.userType ?? '';
       isLoading = false;
     });
   }

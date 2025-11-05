@@ -45,7 +45,9 @@ class _CustProductPayoutsPageState extends State<CustProductPayoutsPage> {
   Future<void> getAllData() async {
     final controller =
         Provider.of<CustProductPayoutController>(context, listen: false);
-    userId = await SharedPrefHelper().getCurrentUserCustId();
+
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    final userId = loginRes?.userId ?? '';
     await controller.getAllPayouts(userId);
     await controller.apiGetPreviousPayouts();
     await controller.apiGetNextMonthPayouts();

@@ -96,7 +96,9 @@ class TcProductPayoutController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcProductPayouts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final userType = AppData.tcUserType;
 
       final Map<String, dynamic> body = {
@@ -169,7 +171,8 @@ class TcProductPayoutController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcProductPayouts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final userType = AppData.tcUserType;
 
       final Map<String, dynamic> body = {
@@ -248,7 +251,9 @@ class TcProductPayoutController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcTotalProductPayouts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final userType = AppData.tcUserType;
 
       final now = DateTime.now();
@@ -323,7 +328,9 @@ class TcProductPayoutController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcProductAllPayouts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final userType = AppData.tcUserType;
       final Map<String, dynamic> body = {
         'userId': userId,
