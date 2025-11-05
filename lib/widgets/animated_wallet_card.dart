@@ -56,16 +56,16 @@ class _AnimatedWalletCardState extends State<AnimatedWalletCard> {
             borderRadius: BorderRadius.circular(12),
             gradient: LinearGradient(
               colors: [
-                colors[currentColorIndex].withOpacity(0.8),
+                colors[currentColorIndex].withValues(alpha: 0.8),
                 colors[(currentColorIndex + 1) % colors.length]
-                    .withOpacity(0.8),
+                    .withValues(alpha: 0.8),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: colors[currentColorIndex].withOpacity(0.25),
+                color: colors[currentColorIndex].withValues(alpha: 0.25),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),

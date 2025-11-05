@@ -1335,7 +1335,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: selectedValue,
+        initialValue: selectedValue,
         key: fieldKey,
         items: [
           DropdownMenuItem(

@@ -151,7 +151,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: controller.selectedUserTypeId, // Default selection
+        initialValue: controller.selectedUserTypeId, // Default selection
         hint: Text('Select $label'),
         isExpanded: true,
         items: controller.userTypeNames.map((e) {

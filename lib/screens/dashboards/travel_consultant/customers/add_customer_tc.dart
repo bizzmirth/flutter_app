@@ -410,7 +410,7 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: selectedValue,
+        initialValue: selectedValue,
         key: fieldKey,
         items: [
           DropdownMenuItem(

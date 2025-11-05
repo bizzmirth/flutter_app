@@ -69,19 +69,15 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
 
   void _clearFormFields() {
     setState(() {
-      // Clear basic amount & payment details
       _amountController.clear();
       _selectedPaymentMode = null;
 
-      // Clear cheque-specific fields
       _chequeNumberController.clear();
       _chequeDateController.clear();
       _bankNameController.clear();
 
-      // Clear UPI/NEFT-specific field
       _transactionIdController.clear();
 
-      // Clear uploaded files
       selectedFiles.updateAll((key, value) => null);
     });
 
@@ -173,6 +169,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
       _balance += amount;
       _controller.forward(from: 0);
     });
+    Logger.success('$_balance');
   }
 
   void _rejectTransaction(int index) {
@@ -312,7 +309,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.blueAccent.withOpacity(0.3),
+            color: Colors.blueAccent.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -378,7 +375,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownButtonFormField<String>(
-          value: _selectedPaymentMode,
+          initialValue: _selectedPaymentMode,
           hint: const Text('Select Payment Mode'),
           onChanged: (newValue) {
             setState(() {
@@ -548,7 +545,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
     );
   }
 
-  Widget _buildNavigationButtons(List<TcTopupRequestList> _topUpRequests) {
+  Widget _buildNavigationButtons(List<TcTopupRequestList> topUpRequests) {
     return Column(
       children: [
         customerType == 'Admin'
@@ -634,7 +631,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        TransactionHistoryPage(transactions: _topUpRequests),
+                        TransactionHistoryPage(transactions: topUpRequests),
                   ),
                 );
               },
@@ -683,7 +680,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
                   context,
                   MaterialPageRoute(
                     builder: (context) => PendingTransactionsPage(
-                      pendingTransactions: _topUpRequests,
+                      pendingTransactions: topUpRequests,
                     ),
                   ),
                 );

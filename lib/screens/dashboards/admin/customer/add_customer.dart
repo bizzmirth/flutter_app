@@ -361,7 +361,7 @@ class _AddcustState extends State<AddcustPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: selectedValue, // Use the provided selected value
+        initialValue: selectedValue, // Use the provided selected value
         items: [
           DropdownMenuItem(
             enabled: widget.isViewMode, // change with is viewmode

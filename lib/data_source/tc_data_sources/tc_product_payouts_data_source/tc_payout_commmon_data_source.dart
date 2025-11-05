@@ -14,7 +14,7 @@ class TcPayoutCommmonDataSource extends DataTableSource {
       DataCell(Text(payout.message ?? 'N/A')),
       DataCell(Text(payout.markup ?? 'N/A')),
       DataCell(Text('₹${payout.amount}')),
-      DataCell(Text(payout.tds == 'NA' ? 'N/A' : '₹${payout.tds}')),
+      DataCell(Text(payout.tds == null ? 'N/A' : '₹${payout.tds}')),
       DataCell(Text('₹${payout.totalPayable}')),
       DataCell(
         Container(
