@@ -10,13 +10,9 @@ class SharedPrefHelper {
 
   static final String _customerTypeKey = 'customer_type';
 
-  static final String _userNameKey = 'user_name';
-
   static final String _saveLoginResponse = 'login_response';
 
   static final String _rememberMe = 'remember_me';
-
-  static final String _savedUserTypeId = 'saved_user_type_id';
 
   static final String _savedPassword = 'saved_password';
 
@@ -43,11 +39,6 @@ class SharedPrefHelper {
     await prefs.setBool(_rememberMe, value);
   }
 
-  Future<void> saveUsername(String name) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_userNameKey, name);
-  }
-
   Future<void> saveLoginResponse(Map<String, dynamic> data) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_saveLoginResponse, jsonEncode(data));
@@ -66,11 +57,6 @@ class SharedPrefHelper {
   Future<String?> getCustomerType() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_customerTypeKey);
-  }
-
-  Future<String?> getUserName() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_userNameKey);
   }
 
   Future<LoginResponseModel?> getLoginResponse() async {
@@ -129,23 +115,22 @@ class SharedPrefHelper {
   }
 
 // Save user type ID
-  Future<void> saveUserTypeId(String userTypeId) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_savedUserTypeId, userTypeId);
-  }
+  // Future<void> saveUserTypeId(String userTypeId) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString(_savedUserTypeId, userTypeId);
+  // }
 
 // Get saved user type ID
-  Future<String?> getSavedUserTypeId() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_savedUserTypeId);
-  }
+  // Future<String?> getSavedUserTypeId() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString(_savedUserTypeId);
+  // }
 
 // Clear all saved credentials
   Future<void> clearSavedCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_savedEmail);
     await prefs.remove(_savedPassword);
-    await prefs.remove(_savedUserTypeId);
   }
 
 // Clear session data (for logout)

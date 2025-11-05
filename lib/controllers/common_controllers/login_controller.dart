@@ -35,10 +35,11 @@ class LoginController extends ChangeNotifier {
   Future<void> _loadSavedCredentials() async {
     try {
       final savedRememberMe = await _sharedPrefHelper.getRememberMe();
+      final loginRes = await _sharedPrefHelper.getLoginResponse();
       if (savedRememberMe) {
         final savedEmail = await _sharedPrefHelper.getSavedEmail();
         final savedPassword = await _sharedPrefHelper.getSavedPassword();
-        final savedUserTypeId = await _sharedPrefHelper.getSavedUserTypeId();
+        final savedUserTypeId = loginRes?.userTypeId;
 
         if (savedEmail != null) emailController.text = savedEmail;
         if (savedPassword != null) passwordController.text = savedPassword;
@@ -66,9 +67,6 @@ class LoginController extends ChangeNotifier {
       await _sharedPrefHelper.saveRememberMe(true);
       await _sharedPrefHelper.saveEmail(emailController.text);
       await _sharedPrefHelper.savePassword(passwordController.text);
-      if (selectedUserTypeId != null) {
-        await _sharedPrefHelper.saveUserTypeId(selectedUserTypeId!);
-      }
     } else {
       // Clear saved credentials if "Remember Me" is disabled
       await _sharedPrefHelper.saveRememberMe(false);
@@ -218,21 +216,14 @@ class LoginController extends ChangeNotifier {
       // --- Parse Response ---
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final loginResponse = LoginResponseModel.fromJson(responseData,
-            fallbackEmail: emailController.text);
+        final loginResponse = LoginResponseModel.fromJson(
+          responseData,
+          fallbackEmail: emailController.text,
+          userTypeId: selectedUserTypeId,
+        );
 
         if (loginResponse.status == 1) {
           // --- Save Data in Shared Pref ---
-          // TODO: removes the un-necessary data that gets stored in the local storage
-          // await _sharedPrefHelper.saveUserType(loginResponse.userType ?? '');
-          // await _sharedPrefHelper.saveUserEmail(emailController.text);
-
-          await _sharedPrefHelper.saveUsername(
-            '${loginResponse.userFname ?? ''} ${loginResponse.userLname ?? ''}'
-                .trim(),
-          );
-
-          // Save entire response (for easy access later)
           await _sharedPrefHelper.saveLoginResponse(loginResponse.toJson());
 
           // Save credentials if rememberMe is enabled

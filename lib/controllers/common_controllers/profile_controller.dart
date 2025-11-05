@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 class ProfileController extends ChangeNotifier {
   // Loading and error state
-  static const String _baseUrl = 'https://testca.uniqbizz.com/';
+  static const String _baseUrl = 'https://testca.uniqbizz.com/uploading/';
   bool _isLoading = false;
   String? _errorMessage;
   bool get isLoading => _isLoading;
@@ -69,6 +69,15 @@ class ProfileController extends ChangeNotifier {
   int _eligibleCouponCount = 0;
   int get eligibleCouponCount => _eligibleCouponCount;
 
+  ProfileController() {
+    initiazeProfile();
+  }
+
+  Future<void> initiazeProfile() async {
+    await apiGetPersonalDetails();
+    await apiGetUserDetails();
+  }
+
   String? _formatUrl(String? path) {
     if (path == null || path.isEmpty) return null;
     return path.startsWith('http')
@@ -117,17 +126,21 @@ class ProfileController extends ChangeNotifier {
 
     try {
       final String fullUrl = AppUrls.getPersonalDetails;
-
       final loginRes = await SharedPrefHelper().getLoginResponse();
       final userId = loginRes?.userId ?? '';
-      // TODO: find a way to store userType dynamically in the local DB
-      final Map<String, dynamic> body = {'userId': userId, 'userType': '10'};
+      final userTypeId = loginRes?.userTypeId ?? '';
+
+      final Map<String, dynamic> body = {
+        'userId': userId,
+        'userType': userTypeId,
+      };
 
       final response = await http.post(
         Uri.parse(fullUrl),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(body),
       );
+
       Logger.success('Request Body: ${jsonEncode(body)}');
       Logger.success('Request URL: $fullUrl');
       Logger.success('Response from Profile API: ${response.body}');
@@ -135,43 +148,36 @@ class ProfileController extends ChangeNotifier {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
 
-        if (decoded['status'] == 'success') {
-          _customerType = decoded['data']['customer_type'];
-          final basicInfo = decoded['data']['basic_info'];
-          final location = decoded['data']['location'];
-          final documents = decoded['data']['documents'];
-          final compCheck = decoded['data']['comp_chek'];
-          _compCheck = compCheck;
+        if (decoded['status'] == true) {
+          final data = decoded['data'];
 
-          Logger.success('Customer Type from API: $_customerType');
-          Logger.success('documents $documents and comp check is $_compCheck');
+          // ✅ Personal Info
+          _firstName = data['firstname'];
+          _lastName = data['lastname'];
+          _email = data['email'];
+          _phone = data['phone_no'];
+          _gender = data['gender'];
+          _dob = data['dob'];
+          _fullAddress = data['address'];
 
-          // Personal Info
-          _firstName = basicInfo['first_name'];
-          _lastName = basicInfo['last_name'];
-          _email = basicInfo['email'];
-          _phone = basicInfo['phone'];
-          _gender = basicInfo['gender'];
-          _dob = basicInfo['dob'];
-          _fullAddress = basicInfo['address'];
+          // ✅ Location Info
+          _country = data['country'];
+          _state = data['state'];
+          _city = data['city'];
+          _zipCode = data['pincode'];
 
-          // Location Info
-          _country = location['country']?['name'];
-          _state = location['state']?['name'];
-          _city = location['city']?['name'];
-          _zipCode = location['pincode']?.toString();
+          // ✅ Documents (with proper URL formatting)
+          _profilePic = _formatUrl(data['profile_pic']);
+          _bankPassbook = _formatUrl(data['bank_passbook']);
+          _panCard = _formatUrl(data['pan_card']);
+          _aadharCard = _formatUrl(data['aadhar_card']);
+          _votingCard = _formatUrl(data['voting_card']);
+          _idProof =
+              _formatUrl(data['id_proof']); // keep optional if not provided
 
-          // Documents
-          // Documents with formatted full URLs
-          _profilePic = _formatUrl(basicInfo['profile_pic']);
-          _bankPassbook = _formatUrl(documents['bank_passbook']);
-          _panCard = _formatUrl(documents['pan_card']);
-          _aadharCard = _formatUrl(documents['aadhar_card']);
-          _votingCard = _formatUrl(documents['voting_card']);
-          _idProof = _formatUrl(documents['id_proof']);
-
-          Logger.success(
-              'Profile Picture $_profilePic, $_bankPassbook, $_panCard');
+          // ✅ Other fields (if available)
+          _compCheck = data['comp_chek']; // optional if still used
+          _customerType = data['customer_type']; // optional if exists
 
           Logger.success('Personal Details loaded successfully');
         } else {
@@ -182,7 +188,7 @@ class ProfileController extends ChangeNotifier {
       }
     } catch (e, s) {
       _errorMessage = 'Failed to fetch personal details. ${e.toString()}';
-      Logger.error('Error in apiGetPersonalDetails: $e, Stack trace: $s');
+      Logger.error('Error in apiGetPersonalDetails: $e\nStack trace: $s');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -199,31 +205,38 @@ class ProfileController extends ChangeNotifier {
 
       final loginRes = await SharedPrefHelper().getLoginResponse();
       final userId = loginRes?.userId ?? '';
-      final Map<String, dynamic> body = {'userId': userId, 'userType': '10'};
+      final userTypeId = loginRes?.userTypeId ?? '';
+
+      final Map<String, dynamic> body = {
+        'userId': userId,
+        'userType': userTypeId,
+      };
 
       final response = await http.post(
         Uri.parse(fullUrl),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(body),
       );
-      // TODO change the request body as per the new profile-api
 
+      Logger.success('Request Body: ${jsonEncode(body)}');
+      Logger.success('User details API URL: $fullUrl');
       Logger.success('Response from User Details API: ${response.body}');
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
 
-        if (decoded['status'] == 'success') {
-          final basicInfo = decoded['data']['basic_info'];
+        // ✅ Now the API returns status as boolean
+        if (decoded['status'] == true) {
+          final data = decoded['data'];
 
-          // Only populate user name and profile pic
-          _firstName = basicInfo['first_name'];
-          _lastName = basicInfo['last_name'];
-          _profilePic = _formatUrl(basicInfo['profile_pic']);
+          // ✅ Directly extract the flat fields
+          _firstName = data['firstname'];
+          _lastName = data['lastname'];
+          _profilePic = _formatUrl(data['profile_pic']);
 
           Logger.success(
-              'User Details loaded successfully - Name: $_firstName $_lastName, Profile Pic: $_profilePic');
-          Logger.success('User details api URL: $fullUrl');
+            'User Details loaded successfully - Name: $_firstName $_lastName, Profile Pic: $_profilePic',
+          );
         } else {
           _errorMessage = decoded['message'] ?? 'Unknown error occurred.';
         }
@@ -233,7 +246,7 @@ class ProfileController extends ChangeNotifier {
       }
     } catch (e, s) {
       _errorMessage = 'Failed to fetch user details. ${e.toString()}';
-      Logger.error('Error in apiGetUserDetails: $e, Stack trace: $s');
+      Logger.error('Error in apiGetUserDetails: $e\nStack trace: $s');
     } finally {
       _isLoading = false;
       notifyListeners();

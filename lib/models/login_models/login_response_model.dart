@@ -4,6 +4,7 @@ class LoginResponseModel {
   final int? status;
   final String? message;
   final String? userType;
+  final String? userTypeId; // ✅ Added
   final String? userId;
   final String? userFname;
   final String? userLname;
@@ -12,14 +13,15 @@ class LoginResponseModel {
   final String? token;
   final Map<String, dynamic>? extra; // store any extra unknown keys
 
-  LoginResponseModel({
+  const LoginResponseModel({
     this.status,
     this.message,
     this.userType,
+    this.userTypeId,
     this.userId,
     this.userFname,
     this.userLname,
-    this.name, // ✅
+    this.name,
     this.email,
     this.token,
     this.extra,
@@ -28,12 +30,14 @@ class LoginResponseModel {
   factory LoginResponseModel.fromJson(
     Map<String, dynamic> json, {
     String? fallbackEmail,
+    String? userTypeId, // optional override
   }) {
     final extraData = Map<String, dynamic>.from(json);
     extraData.removeWhere((key, _) => [
           'status',
           'message',
           'user_type',
+          'user_type_id', // ✅ include in cleanup
           'user_id',
           'user_fname',
           'user_lname',
@@ -49,10 +53,12 @@ class LoginResponseModel {
       status: json['status'],
       message: json['message'],
       userType: json['user_type'],
+      userTypeId:
+          json['user_type_id']?.toString() ?? userTypeId, // ✅ safe fallback
       userId: json['user_id'],
       userFname: fname,
       userLname: lname,
-      name: fullName, // ✅ combined name
+      name: fullName,
       email: json['email'] ?? fallbackEmail,
       token: json['token'],
       extra: extraData.isNotEmpty ? extraData : null,
@@ -63,10 +69,11 @@ class LoginResponseModel {
         'status': status,
         'message': message,
         'user_type': userType,
+        'user_type_id': userTypeId, // ✅ include it here
         'user_id': userId,
         'user_fname': userFname,
         'user_lname': userLname,
-        'name': name, // ✅ added
+        'name': name,
         'email': email,
         'token': token,
         if (extra != null) ...extra!,
