@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterp
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -183,12 +184,14 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
                   title: Text((userType != null && userType!.isNotEmpty)
                       ? 'Log out'
                       : 'Log in'),
-                  onTap: () {
+                  onTap: () async {
                     if (userType != null && userType!.isNotEmpty) {
-                      _handleLogout();
+                      await performLogout(context);
+                      userType = '';
+                      setState(() {});
                     } else {
                       // Handle login
-                      Navigator.pushReplacement(
+                      await Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const LoginPage()),
@@ -209,13 +212,5 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
         ],
       ),
     );
-  }
-
-  Future<void> _handleLogout() async {
-    await SharedPrefHelper().removeDetails();
-    setState(() {
-      userType = '';
-    });
-    Logger.info('User logged out successfully');
   }
 }

@@ -18,6 +18,8 @@ class SharedPrefHelper {
 
   static final String _savedEmail = 'saved_email';
 
+  static const String _savedUserTypeIdKey = 'saved_user_type_id';
+
   Future<void> saveUserDataType(String userDataType) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userDataTypeKey, userDataType);
@@ -42,6 +44,11 @@ class SharedPrefHelper {
   Future<void> saveLoginResponse(Map<String, dynamic> data) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_saveLoginResponse, jsonEncode(data));
+  }
+
+  Future<void> saveUserTypeId(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_savedUserTypeIdKey, id);
   }
 
   Future<String?> getCurrentUserRegDate() async {
@@ -74,6 +81,9 @@ class SharedPrefHelper {
 
   Future<void> removeDetails() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_currentUserRegDate);
+    await prefs.remove(_customerTypeKey);
+    await prefs.remove(_saveLoginResponse);
     await prefs.remove(_currentUserRegDate);
     await prefs.remove(_customerTypeKey);
     Logger.warning('message: User details removed from shared preferences');
@@ -114,17 +124,10 @@ class SharedPrefHelper {
     return prefs.getString(_savedPassword);
   }
 
-// Save user type ID
-  // Future<void> saveUserTypeId(String userTypeId) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString(_savedUserTypeId, userTypeId);
-  // }
-
-// Get saved user type ID
-  // Future<String?> getSavedUserTypeId() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   return prefs.getString(_savedUserTypeId);
-  // }
+  Future<String?> getSavedUserTypeId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_savedUserTypeIdKey);
+  }
 
 // Clear all saved credentials
   Future<void> clearSavedCredentials() async {

@@ -35,11 +35,10 @@ class LoginController extends ChangeNotifier {
   Future<void> _loadSavedCredentials() async {
     try {
       final savedRememberMe = await _sharedPrefHelper.getRememberMe();
-      final loginRes = await _sharedPrefHelper.getLoginResponse();
       if (savedRememberMe) {
         final savedEmail = await _sharedPrefHelper.getSavedEmail();
         final savedPassword = await _sharedPrefHelper.getSavedPassword();
-        final savedUserTypeId = loginRes?.userTypeId;
+        final savedUserTypeId = await _sharedPrefHelper.getSavedUserTypeId();
 
         if (savedEmail != null) emailController.text = savedEmail;
         if (savedPassword != null) passwordController.text = savedPassword;
@@ -225,6 +224,7 @@ class LoginController extends ChangeNotifier {
         if (loginResponse.status == 1) {
           // --- Save Data in Shared Pref ---
           await _sharedPrefHelper.saveLoginResponse(loginResponse.toJson());
+          await _sharedPrefHelper.saveUserTypeId(selectedUserTypeId!);
 
           // Save credentials if rememberMe is enabled
           await _saveCredentials();
