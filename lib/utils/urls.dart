@@ -39,8 +39,7 @@ class AppUrls {
   static String get contactUs => '$baseUrl/contact_us.php';
 
   // ==================== CUSTOMER PROFILE PAGE ENDPOINTS ====================
-  static String get getPersonalDetails =>
-      '$_customers/profile_page/profile/profile_page.php';
+  static String get getPersonalDetails => '$baseUrl/profile.php';
 
   static String get getCouponDetails =>
       '$_customers/profile_page/coupons/coupons.php';

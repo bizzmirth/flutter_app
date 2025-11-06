@@ -1,7 +1,6 @@
 import 'package:bizzmirth_app/controllers/tc_controller/tc_controller.dart';
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_current_booking_data_source.dart';
 import 'package:bizzmirth_app/data_source/tc_data_sources/tc_top_customers_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/customer.dart';
@@ -16,7 +15,7 @@ import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/booking_tracker.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
-import 'package:bizzmirth_app/widgets/filter_bar.dart';
+// import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
 import 'package:flutter/material.dart';
@@ -35,48 +34,6 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
-  final List<Map<String, dynamic>> tcCurrentBookingDummyData = [
-    {
-      'bookingId': 'BKG001',
-      'customerName': 'John Doe',
-      'packageName': 'Beach Holiday',
-      'amount': 1200.50,
-      'bookingDate': '2025-09-01',
-      'travelDate': '2025-09-15',
-    },
-    {
-      'bookingId': 'BKG002',
-      'customerName': 'Jane Smith',
-      'packageName': 'Mountain Trek',
-      'amount': 850.00,
-      'bookingDate': '2025-09-03',
-      'travelDate': '2025-10-01',
-    },
-    {
-      'bookingId': 'BKG003',
-      'customerName': 'Michael Johnson',
-      'packageName': 'City Tour',
-      'amount': 500.75,
-      'bookingDate': '2025-09-05',
-      'travelDate': '2025-09-20',
-    },
-    {
-      'bookingId': 'BKG004',
-      'customerName': 'Emily Davis',
-      'packageName': 'Safari Adventure',
-      'amount': 2300.00,
-      'bookingDate': '2025-09-07',
-      'travelDate': '2025-11-05',
-    },
-    {
-      'bookingId': 'BKG005',
-      'customerName': 'Robert Wilson',
-      'packageName': 'Cruise Trip',
-      'amount': 1500.25,
-      'bookingDate': '2025-09-09',
-      'travelDate': '2025-10-15',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -402,7 +359,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                             ),
                           ),
                         )
-                      : _buildTopCustomerList(),
+                      : _buildTopCustomerList(tcController),
 
                   const SizedBox(height: 20),
                   // _buildTopPerformersSection1(),
@@ -457,105 +414,112 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                             ),
                           ),
                         )
-                      : _buildCurrentBookingList(),
+                      : _buildCurrentBookingList(tcController),
                 ],
               ),
             ),
     );
   }
 
-  Widget _buildTopCustomerList() {
-    Color getStatusColor(String status) {
-      switch (status) {
-        case 'Active':
-          return Colors.green;
-        case 'Inactive':
-          return Colors.red;
-        default:
-          return Colors.orange.shade800;
-      }
-    }
-
+  Widget _buildTopCustomerList(TcController controller) {
     return ListView.builder(
-        itemCount: customersTA.length,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          final topCus = customersTA[index];
-          return Card(
-            elevation: 5,
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    topCus['name'] ?? 'N/A',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+      itemCount: controller.tcTopCustomerReferrals.length,
+      shrinkWrap: true,
+      physics: controller.tcTopCustomerReferrals.length > 5
+          ? const AlwaysScrollableScrollPhysics()
+          : const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        final topCus = controller.tcTopCustomerReferrals[index];
+
+        return Card(
+          elevation: 5,
+          margin: const EdgeInsets.only(bottom: 12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Customer name
+                Text(
+                  topCus.name ?? 'N/A',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+
+                // ID
+                Text(
+                  'ID: ${topCus.id ?? "N/A"}',
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+
+                // Registration date
+                Text(
+                  "Date Reg.: ${topCus.registerDate ?? "N/A"}",
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+
+                // Active / Inactive counts
+                Row(
+                  children: [
+                    const Text(
+                      'Active / Inactive: ',
+                      style: TextStyle(fontSize: 14),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "ID: ${topCus['id']}",
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Date Reg.: ${topCus['dateReg'] ?? "N/A"}",
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Total CU Ref: ${topCus['totalCURef'].toString()}",
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Text('Status: '),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: getStatusColor(topCus['status'])
-                              .withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: getStatusColor(topCus['status'])
-                                .withValues(alpha: 0.3),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '${topCus.activeCount ?? 0}',
+                            style: const TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          topCus['status'],
-                          style: TextStyle(
-                            color: getStatusColor(topCus['status']),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                          const TextSpan(
+                            text: ' / ',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
                           ),
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
+                          TextSpan(
+                            text: '${topCus.inactiveCount ?? 0}',
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
-  Widget _buildCurrentBookingList() {
+  Widget _buildCurrentBookingList(TcController controller) {
     return ListView.builder(
-      physics: tcCurrentBookingDummyData.length > 5
+      physics: controller.tcTopBookings.length > 5
           ? const AlwaysScrollableScrollPhysics()
           : const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      itemCount: tcCurrentBookingDummyData.length,
+      itemCount: controller.tcTopBookings.length,
       itemBuilder: (context, index) {
-        final booking = tcCurrentBookingDummyData[index];
+        final booking = controller.tcTopBookings[index];
         return Card(
           elevation: 5,
           margin: const EdgeInsets.only(bottom: 12),
@@ -565,7 +529,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  booking['customerName'] ?? 'N/A',
+                  booking.name ?? 'N/A',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -573,27 +537,27 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "ID: ${booking['bookingId']}",
+                  'Booking ID: ${booking.orderId}',
                   style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Ref. ID: ${booking['packageName'] ?? "N/A"}",
+                  "Customer Name: ${booking.name ?? "N/A"}",
                   style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Ref. Name: ${booking['amount'].toString()}",
+                  'Package Name: ${booking.packageName}',
                   style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Joining Date: ${booking['bookingDate'] ?? "N/A"}",
+                  "Amount: ${booking.amount ?? "N/A"}",
                   style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Travel Date: ${booking['travelDate'] ?? "N/A"}",
+                  "Travel Date: ${booking.travelDate ?? "N/A"}",
                   style: const TextStyle(fontSize: 14),
                 ),
               ],

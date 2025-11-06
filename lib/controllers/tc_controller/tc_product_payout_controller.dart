@@ -89,8 +89,6 @@ class TcProductPayoutController extends ChangeNotifier {
         'Initialized payout date info → prev: $prevDateMonth/$prevDateYear | next: $nextDateMonth/$nextDateYear');
   }
 
-  // TODO: change the all the hardcoded months and years after testing is done
-
   Future<void> apiGetPreviousProductPayouts() async {
     try {
       _isLoading = true;
@@ -98,14 +96,16 @@ class TcProductPayoutController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcProductPayouts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final userType = AppData.tcUserType;
 
       final Map<String, dynamic> body = {
-        'userId': 'TA250022',
-        'userType': '11',
-        'month': '06',
-        'year': '2025',
+        'userId': userId,
+        'userType': userType,
+        'month': prevDateMonth,
+        'year': prevDateYear,
         'action': 'previous',
       };
 
@@ -171,14 +171,15 @@ class TcProductPayoutController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcProductPayouts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final userType = AppData.tcUserType;
 
       final Map<String, dynamic> body = {
-        'userId': 'TA250022',
-        'userType': '11',
-        'month': '06',
-        'year': '2025',
+        'userId': userId,
+        'userType': userType,
+        'month': nextDateMonth,
+        'year': nextDateYear,
         'action': 'next',
       };
 
@@ -250,7 +251,10 @@ class TcProductPayoutController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcTotalProductPayouts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
+      final userType = AppData.tcUserType;
 
       final now = DateTime.now();
       final month = selectedMonth ?? now.month.toString().padLeft(2, '0');
@@ -259,7 +263,7 @@ class TcProductPayoutController extends ChangeNotifier {
       // ✅ Prepare body
       final Map<String, dynamic> body = {
         'userId': userId,
-        'userType': '11',
+        'userType': userType,
         'month': month,
         'year': year,
       };
@@ -324,7 +328,9 @@ class TcProductPayoutController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcProductAllPayouts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final userType = AppData.tcUserType;
       final Map<String, dynamic> body = {
         'userId': userId,

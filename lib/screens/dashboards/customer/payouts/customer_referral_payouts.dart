@@ -65,7 +65,9 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
   Future<void> getAllStatData() async {
     final controller =
         Provider.of<CustReferralPayoutController>(context, listen: false);
-    userId = await SharedPrefHelper().getCurrentUserCustId();
+
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    userId = loginRes?.userId ?? '';
     await controller.getAllPayouts(userId);
     await controller.apiGetPreviousMonthPayouts();
     await controller.apiGetNextMonthPayouts();

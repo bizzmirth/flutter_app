@@ -12,6 +12,7 @@ import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/coupons_tracker.dart';
@@ -219,11 +220,19 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
       if (profileController.customerType != null &&
           profileController.customerType!.isNotEmpty) {
-        // Use the fresh customer_type from API instead of SharedPreferences
         custtype = profileController.customerType!;
-        // Save it to SharedPreferences for future use
         await SharedPrefHelper().saveCustomerType(custtype);
         Logger.success('Using customer_type from API: $custtype');
+      } else {
+        // 🔁 Fallback: try to get from SharedPrefs (in case API delayed)
+        final savedType = await SharedPrefHelper().getCustomerType();
+        if (savedType != null && savedType.isNotEmpty) {
+          custtype = savedType;
+          Logger.success(
+              'Loaded customer_type from SharedPrefs fallback: $custtype');
+        } else {
+          Logger.warning('Customer type still null after API — using freeuser');
+        }
       }
 
       if (mounted) {
@@ -2887,18 +2896,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         ),
                         title: const Text('Log Out'),
                         onTap: () async {
-                          await SharedPrefHelper().removeDetails();
-
-                          if (!context.mounted) {
-                            return; // 👈 use context.mounted instead of just mounted
-                          }
-
-                          await Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const HomePage()),
-                            (route) => false,
-                          );
+                          await performLogout(context);
                         },
                       ),
                     ),

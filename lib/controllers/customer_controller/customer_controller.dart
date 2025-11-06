@@ -134,7 +134,8 @@ class CustomerController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final String email = await SharedPrefHelper().getUserEmail() ?? '';
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final String email = loginRes?.email ?? '';
       final String url = AppUrls.registeredCustomers;
       Logger.success('the stored email is $email');
 
@@ -162,7 +163,7 @@ class CustomerController extends ChangeNotifier {
               _userTaReferenceNo = customer['ta_reference_no'];
               _customerType = customer['customer_type'];
               await SharedPrefHelper().saveCustomerType(_customerType!);
-              await SharedPrefHelper().saveCurrentUserCustId(_userCustomerId!);
+              // await SharedPrefHelper().saveCurrentUserCustId(_userCustomerId!);
               await SharedPrefHelper().saveCurrentUserRegDate(_userRegDate!);
               setUserCustomerId = _userCustomerId;
 
@@ -217,7 +218,9 @@ class CustomerController extends ChangeNotifier {
     notifyListeners();
     try {
       final String fullUrl = AppUrls.dashboardCounts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'userId': userId,
       };
@@ -273,7 +276,8 @@ class CustomerController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.dashboardChartsData;
       _selectedYear = selectedYear;
 
@@ -348,7 +352,8 @@ class CustomerController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
 
       final String url = AppUrls.topCustomerReferrals;
 
@@ -396,7 +401,8 @@ class CustomerController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.registeredCustomers;
 
       final response = await http.get(Uri.parse(url));
@@ -444,7 +450,8 @@ class CustomerController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.pendingCustomers;
 
       final response = await http.get(Uri.parse(url));

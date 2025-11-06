@@ -604,7 +604,6 @@ class _TCProductPayoutsPageState extends State<TCProductPayoutsPage> {
                     children: [
                       Expanded(
                         child: payoutCard(
-                          // TODO: change the harcode values
                           'Previous Payout',
                           '${getMonthName(controller.prevDateMonth)}, ${controller.prevDateYear}',
                           'Rs. ${controller.totalPreviousAmount}/-',
@@ -616,7 +615,6 @@ class _TCProductPayoutsPageState extends State<TCProductPayoutsPage> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: payoutCard(
-                          // TODO: change the harcode values
                           'Next Payout',
                           '${getMonthName(controller.nextDateMonth)}, ${controller.nextDateYear}',
                           'Rs. ${controller.totalNextAmount}/-',

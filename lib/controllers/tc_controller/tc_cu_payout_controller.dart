@@ -83,7 +83,9 @@ class TcCuPayoutController extends ChangeNotifier {
 
       final url = AppUrls.getTcCuPreviousPayouts;
       Logger.info('Fetching TC CU Previous Payouts from $url');
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
 
       final Map<String, dynamic> body = {
         'userId': userId,
@@ -130,7 +132,8 @@ class TcCuPayoutController extends ChangeNotifier {
       final url = AppUrls.getTcCuNextPayouts;
       Logger.info('Fetching TC CU Next Payouts from $url');
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
 
       final Map<String, dynamic> body = {
         'userId': userId,
@@ -177,7 +180,8 @@ class TcCuPayoutController extends ChangeNotifier {
       final url = AppUrls.getTcCuTotalPayouts;
       Logger.info('Fetching TC CU Total Payouts from $url');
 
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
 
       final now = DateTime.now();
       final month = selectedMonth ?? now.month.toString().padLeft(2, '0');
@@ -236,7 +240,9 @@ class TcCuPayoutController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcCuAllPayouts;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {'userId': userId};
       Logger.success('fetching tc cu all payouts from $url');
       Logger.success('response body for fetching tc cu all payouts: $body');

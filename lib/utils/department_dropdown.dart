@@ -84,7 +84,7 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: selectedDepartment ?? '  Select Department    ',
+        initialValue: selectedDepartment ?? '  Select Department    ',
         items: [
           const DropdownMenuItem(
             value: '  Select Department    ',

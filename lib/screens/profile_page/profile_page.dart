@@ -74,49 +74,12 @@ class _ProfilePageState extends State<ProfilePage>
     super.dispose();
   }
 
-  List<CouponData> sampleCoupons = [
-    CouponData(
-      id: '94',
-      userId: 'CU250044',
-      paymentId: 'PAID20250620110449',
-      code: '20250311BA7790E',
-      couponAmt: '3000',
-      usageStatus: '1',
-      confirmStatus: '1',
-      createdDate: '2025-06-20 16:34:49',
-      expiryDate: '2035-06-20 16:34:49',
-    ),
-    CouponData(
-      id: '95',
-      userId: 'CU250045',
-      paymentId: 'PAID20250721125530',
-      code: '20250412CD8891F',
-      couponAmt: '1500',
-      usageStatus: '0',
-      confirmStatus: '1',
-      createdDate: '2025-07-21 18:25:30',
-      usedDate: '2025-07-25 14:20:15',
-      expiryDate: '2025-12-21 18:25:30',
-    ),
-    CouponData(
-      id: '96',
-      userId: 'CU250046',
-      paymentId: 'PAID20250815093025',
-      code: '20250513EF9902G',
-      couponAmt: '5000',
-      usageStatus: '1',
-      confirmStatus: '1',
-      createdDate: '2025-08-15 14:50:25',
-      expiryDate: '2026-02-15 14:50:25',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<ProfileController>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
     final isMobile = !isTablet;
+    Logger.warning('');
 
     return Scaffold(
       appBar: AppBar(
@@ -129,48 +92,51 @@ class _ProfilePageState extends State<ProfilePage>
         elevation: 0,
       ),
       backgroundColor: Colors.grey[100],
-      body: controller.isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : SafeArea(
-              child: Padding(
-                padding: EdgeInsets.all(isTablet ? 24.0 : 12.0),
-                child: isTablet
-                    ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Left Sidebar (Tablet only)
-                          SizedBox(
-                            width: 180,
-                            child: _buildSidebar(isTablet, controller),
-                          ),
-                          const SizedBox(width: 32),
-                          // Main Content Area (Tablet only)
-                          Expanded(
-                            child: _buildMainContent(
-                                isTablet, isMobile, controller),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        // Mobile layout - single column
-                        children: [
-                          // Profile Section (Mobile)
-                          _buildMobileProfileSection(controller),
-                          const SizedBox(height: 16),
-                          // Document Cards (Mobile - horizontal scroll)
-                          _buildMobileDocumentsSection(controller),
-                          const SizedBox(height: 16),
-                          // Main Content (Mobile)
-                          Expanded(
-                            child: _buildMainContent(
-                                isTablet, isMobile, controller),
-                          ),
-                        ],
-                      ),
-              ),
+      body: Consumer<ProfileController>(
+        builder: (context, controller, _) {
+          if (controller.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(isTablet ? 24.0 : 12.0),
+              child: isTablet
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left Sidebar (Tablet only)
+                        SizedBox(
+                          width: 180,
+                          child: _buildSidebar(isTablet, controller),
+                        ),
+                        const SizedBox(width: 32),
+                        // Main Content Area (Tablet only)
+                        Expanded(
+                          child:
+                              _buildMainContent(isTablet, isMobile, controller),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      // Mobile layout - single column
+                      children: [
+                        // Profile Section (Mobile)
+                        _buildMobileProfileSection(controller),
+                        const SizedBox(height: 16),
+                        // Document Cards (Mobile - horizontal scroll)
+                        _buildMobileDocumentsSection(controller),
+                        const SizedBox(height: 16),
+                        // Main Content (Mobile)
+                        Expanded(
+                          child:
+                              _buildMainContent(isTablet, isMobile, controller),
+                        ),
+                      ],
+                    ),
             ),
+          );
+        },
+      ),
     );
   }
 
@@ -279,6 +245,8 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _buildSidebar(bool isTablet, ProfileController controller) {
+    Logger.warning(
+        'profile picccccc: ${controller.profilePic}, Pan card: ${controller.panCard}');
     return SingleChildScrollView(
       child: Column(
         children: [

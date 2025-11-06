@@ -28,8 +28,8 @@ class CustOrderHistoryController extends ChangeNotifier {
 
     try {
       final String fullUrl = AppUrls.getOrderHistoryStatCounts;
-
-      final String? userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {'userId': userId, 'userType': '10'};
       final encodeBody = jsonEncode(body);
       final response = await http.post(Uri.parse(fullUrl),

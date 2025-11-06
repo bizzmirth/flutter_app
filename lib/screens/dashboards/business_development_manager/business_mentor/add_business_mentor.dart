@@ -72,7 +72,7 @@ class _AddbmState1 extends State<AddbmPage1> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: defaultOption, // Set default selection
+        initialValue: defaultOption, // Set default selection
         items: [
           DropdownMenuItem(
             value: defaultOption, // Placeholder value
