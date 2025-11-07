@@ -16,20 +16,31 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  TabController? _tabController;
+
+  String? currUserTypeId;
   String custtype = '';
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getPersonalDetails();
+      _getSharedPrefData();
     });
 
     // Run async work separately
     _initializeData();
+  }
+
+  Future<void> _getSharedPrefData() async {
+    final userTypeId = await SharedPrefHelper().getSavedUserTypeId();
+    if (!mounted) return;
+    setState(() {
+      currUserTypeId = userTypeId;
+    });
+    _setupTabController(); // ✅ setup tab controller after loading
   }
 
   Future<void> _initializeData() async {
@@ -68,10 +79,20 @@ class _ProfilePageState extends State<ProfilePage>
     await controller.getCouponDetails();
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  // @override
+  // void dispose() {
+  //   _tabController.dispose();
+  //   super.dispose();
+  // }
+
+  void _setupTabController() {
+    final int tabCount = currUserTypeId == '10' ? 2 : 1;
+
+    // Dispose old controller to avoid leaks
+    _tabController?.dispose();
+
+    _tabController = TabController(length: tabCount, vsync: this);
+    setState(() {}); // rebuild widgets depending on it
   }
 
   @override
@@ -80,6 +101,9 @@ class _ProfilePageState extends State<ProfilePage>
     final isTablet = screenWidth > 600;
     final isMobile = !isTablet;
     Logger.warning('');
+    if (_tabController == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -419,6 +443,8 @@ class _ProfilePageState extends State<ProfilePage>
 
   Widget _buildMainContent(
       bool isTablet, bool isMobile, ProfileController controller) {
+    final bool showCoupons = currUserTypeId == '10';
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -455,11 +481,12 @@ class _ProfilePageState extends State<ProfilePage>
                   icon: Icon(Icons.home_outlined, size: isTablet ? 24 : 20),
                   text: isTablet ? 'Personal Details' : 'Personal',
                 ),
-                Tab(
-                  icon: Icon(Icons.local_offer_outlined,
-                      size: isTablet ? 24 : 20),
-                  text: 'Coupons',
-                ),
+                if (showCoupons)
+                  Tab(
+                    icon: Icon(Icons.local_offer_outlined,
+                        size: isTablet ? 24 : 20),
+                    text: 'Coupons',
+                  ),
               ],
             ),
           ),
@@ -469,7 +496,7 @@ class _ProfilePageState extends State<ProfilePage>
               controller: _tabController,
               children: [
                 _buildPersonalDetailsTab(isTablet, isMobile, controller),
-                _buildCouponsTab(isTablet, controller),
+                if (showCoupons) _buildCouponsTab(isTablet, controller),
               ],
             ),
           ),

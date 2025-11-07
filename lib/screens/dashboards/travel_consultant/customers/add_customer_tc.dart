@@ -1300,35 +1300,36 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                                   ),
                                 ),
                                 child: Row(
-                                  children: ['Cash', 'Cheque', 'UPI/NEFT']
-                                      .map((mode) {
-                                    return Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Radio<String>(
-                                          value: mode,
-                                          groupValue: _selectedPaymentMode,
-                                          activeColor: Colors.white,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _selectedPaymentMode = value!;
-                                            });
-                                            // Update validation state
-                                            fieldState.didChange(value);
-                                          },
-                                        ),
-                                        Text(
-                                          mode,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.white,
+                                  children: ['Cash', 'Cheque', 'UPI/NEFT'].map(
+                                    (mode) {
+                                      return Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Radio<String>(
+                                            value: mode,
+                                            groupValue: _selectedPaymentMode,
+                                            activeColor: Colors.white,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _selectedPaymentMode = value!;
+                                              });
+                                              // Update validation state
+                                              fieldState.didChange(value);
+                                            },
                                           ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                      ],
-                                    );
-                                  }).toList(),
+                                          Text(
+                                            mode,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                        ],
+                                      );
+                                    },
+                                  ).toList(),
                                 ),
                               ),
                               if (fieldState.hasError)
