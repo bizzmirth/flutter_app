@@ -10,6 +10,7 @@ import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/product_markup/travel_consultant_product_markup_page.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
@@ -18,6 +19,7 @@ import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 // import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +36,70 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+
+  // charts data send from dashboard
+  String selectedYear = DateTime.now().year.toString();
+  List<String> availableYears = [];
+  bool isLoading = true;
+  bool hasError = false;
+  String? errorMessage;
+  List<FlSpot> chartData = [];
+
+  Future<void> _initData() async {
+    try {
+      // final customerController =
+      //     Provider.of<CustomerController>(context, listen: false);
+
+      // load available years
+      final regDate = await SharedPrefHelper().getCurrentUserRegDate();
+      final years = _generateYearList(regDate);
+      setState(() {
+        availableYears = years;
+        selectedYear = years.last;
+      });
+
+      // load chart data
+      await _loadChartData(selectedYear);
+    } catch (e) {
+      setState(() {
+        hasError = true;
+        errorMessage = e.toString();
+      });
+    }
+  }
+
+  Future<void> _loadChartData(String year) async {
+    final customerController =
+        Provider.of<TcController>(context, listen: false);
+    setState(() => isLoading = true);
+
+    await customerController.apiGetChartData(year);
+    final data = customerController.getChartSpots();
+
+    setState(() {
+      chartData = data;
+      isLoading = false;
+    });
+  }
+
+  List<String> _generateYearList(String? regDate) {
+    final currentYear = DateTime.now().year;
+    int startYear = currentYear;
+    if (regDate != null && regDate.isNotEmpty) {
+      final parts = regDate.split('-');
+      if (parts.length == 3) {
+        startYear =
+            parts[0].length == 4 ? int.parse(parts[0]) : int.parse(parts[2]);
+      }
+    }
+    return [for (int y = startYear; y <= currentYear; y++) y.toString()];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -307,7 +373,18 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                               tcController.totalCompletedTours ?? '0') ??
                           0),
                   const SizedBox(height: 20),
-                  const ImprovedLineChart(),
+                  ImprovedLineChart(
+                    chartData: chartData,
+                    availableYears: availableYears,
+                    selectedYear: selectedYear,
+                    isLoading: isLoading,
+                    hasError: hasError,
+                    errorMessage: errorMessage,
+                    onYearChanged: (year) async {
+                      setState(() => selectedYear = year ?? '');
+                      await _loadChartData(year ?? '');
+                    },
+                  ),
                   const SizedBox(height: 20),
                   // _buildTopPerformersSection(),
                   const Divider(thickness: 1, color: Colors.black26),

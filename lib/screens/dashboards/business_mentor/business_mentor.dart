@@ -197,7 +197,7 @@ class _BMDashboardPageState extends State<BMDashboardPage> {
               message: "Keep going! You're doing great!",
             ),
             const SizedBox(height: 20),
-            const ImprovedLineChart(),
+            // const ImprovedLineChart(),
             const SizedBox(height: 20),
             _buildTopPerformersSection(),
             const SizedBox(height: 20),
