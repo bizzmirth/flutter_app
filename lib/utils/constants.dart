@@ -384,7 +384,8 @@ Widget buildStatCard({
         Text(
           label,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
             color: Colors.black54,
           ),
         ),

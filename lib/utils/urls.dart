@@ -103,6 +103,8 @@ class AppUrls {
   static String get getOrderHistoryStatCounts =>
       '$_customers/orders/get_counts.php';
 
+  static String get getRecentBookings => '$_customers/orders/fetch_events.php';
+
   // ==================== TRAVEL CONSULTANT DASHBOARD ENDPOINTS ====================
   static String get getTravelConsultantDashboardCounts =>
       '$_travelConsultant/dashboard/dashboard_count.php';

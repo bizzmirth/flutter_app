@@ -24,4 +24,12 @@ class AppData {
   static const List<int> availableRowsPerPage = [5, 10, 15, 20, 25];
 
   static const List<String> travelTypes = ['ALL', 'International', 'Domestic'];
+
+  static const List<String> orderHistoryFilterOptions = [
+    'All',
+    'Pending',
+    'Booked',
+    'Canceled',
+    'Refund'
+  ];
 }

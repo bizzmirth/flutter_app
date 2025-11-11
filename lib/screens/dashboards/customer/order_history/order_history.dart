@@ -1,8 +1,9 @@
 import 'package:bizzmirth_app/controllers/customer_controller/cust_order_history_controller.dart';
-import 'package:bizzmirth_app/data_source/bch_data_sources/bch_bm_data_source.dart/bm_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_order_history_data_source.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,332 +29,412 @@ class _OrderHistoryState extends State<OrderHistory> {
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
 
-  final List<String> filterOptions = [
-    'All',
-    'Pending',
-    'Booked',
-    'Canceled',
-    'Refund'
+  final List<String> filterOptions = AppData.orderHistoryFilterOptions;
+
+  final List<Map<String, dynamic>> custOrderHistoryData = [
+    {
+      'srNo': 1,
+      'bookingId': '2025400001',
+      'tourDate': '2025-03-12',
+      'packageName': 'Goa 4N5D',
+      'customer': 'Soman M. G.',
+      'travelConsultant': 'TA250007 - Rohit Sharma',
+      'paymentStatus': 'Completed',
+      'status': 'Confirmed',
+    },
+    {
+      'srNo': 2,
+      'bookingId': '2025400002',
+      'tourDate': '2025-04-18',
+      'packageName': 'Shimla Manali Delight',
+      'customer': 'Harbhajan Naik',
+      'travelConsultant': 'TA250010 - Meera Singh',
+      'paymentStatus': 'Pending',
+      'status': 'Confirmed',
+    },
+    {
+      'srNo': 3,
+      'bookingId': '2025400003',
+      'tourDate': '2025-05-02',
+      'packageName': 'Kerala Backwaters',
+      'customer': 'Anjali Desai',
+      'travelConsultant': 'TA250012 - Arjun Patel',
+      'paymentStatus': 'Completed',
+      'status': 'Completed',
+    },
+    {
+      'srNo': 4,
+      'bookingId': '2025400004',
+      'tourDate': '2025-06-21',
+      'packageName': 'Leh-Ladakh Adventure',
+      'customer': 'Ramesh Iyer',
+      'travelConsultant': 'TA250015 - Priya Menon',
+      'paymentStatus': 'Failed',
+      'status': 'Canceled',
+    },
+    {
+      'srNo': 5,
+      'bookingId': '2025400005',
+      'tourDate': '2025-07-10',
+      'packageName': 'Bali Escape',
+      'customer': 'Karan Mehta',
+      'travelConsultant': 'TA250018 - Neha Joshi',
+      'paymentStatus': 'In Progress',
+      'status': 'In Transit',
+    },
   ];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getOrderHistoryData();
-    });
-  }
-
-  Future<void> getOrderHistoryData() async {
-    final controller =
-        Provider.of<CustOrderHistoryController>(context, listen: false);
-    await controller.apiGetStatCount();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CustOrderHistoryController>(
-        builder: (context, controller, child) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Order History',
-            style: Appwidget.poppinsAppBarTitle(),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.blueAccent,
-          elevation: 0,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Order History',
+          style: Appwidget.poppinsAppBarTitle(),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: buildStatCard(
-                          icon: Icons.hourglass_empty,
-                          value: controller.pendingBookingCount ?? '',
-                          label: 'Pending Booking',
-                          backgroundColor: const Color(0xFFE8E5FF),
-                          iconColor: const Color(0xFF6B46C1),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: buildStatCard(
-                          icon: Icons.check_circle,
-                          value: controller.completedBookingCount ?? '',
-                          label: 'Completed Booking',
-                          backgroundColor: const Color(0xFFE8E5FF),
-                          iconColor: const Color(0xFF10B981),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: buildStatCard(
-                          icon: Icons.hourglass_empty,
-                          value:
-                              "₹${double.tryParse(controller.pendingPaymentAmt ?? "0")?.toStringAsFixed(2)}",
-                          label: 'Pending Payment',
-                          backgroundColor: const Color(0xFFE8E5FF),
-                          iconColor: const Color(0xFF6B46C1),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: buildStatCard(
-                          icon: Icons.check_circle,
-                          value:
-                              "₹${double.tryParse(controller.completedPaymentAmt ?? '0')?.toStringAsFixed(2)}",
-                          label: 'Completed Payment',
-                          backgroundColor: const Color(0xFFE8E5FF),
-                          iconColor: const Color(0xFF10B981),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Divider(thickness: 1, color: Colors.black26),
-
-                // ======= 2. Calendar =======
-                SizedBox(
-                  height: 420,
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 420,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: const [
-                            BoxShadow(color: Colors.black12, blurRadius: 4)
-                          ],
-                        ),
-                        child: GestureDetector(
-                          onLongPressStart: (details) {
-                            _showRemoveEventDialog(_selectedDate);
-                          },
-                          child: TableCalendar(
-                            focusedDay: _selectedDate,
-                            firstDay: DateTime.utc(2020),
-                            lastDay: DateTime.utc(2030, 12, 31),
-                            availableCalendarFormats: const {
-                              CalendarFormat.month: 'Month',
-                            },
-                            onDaySelected: (selectedDay, focusedDay) {
-                              setState(() {
-                                _selectedDate = selectedDay;
-                              });
-                              _showAddTaskDialog(selectedDate: selectedDay);
-                            },
-                            selectedDayPredicate: (day) =>
-                                isSameDay(day, _selectedDate),
-                            eventLoader: (day) {
-                              return (_tasks[DateTime(
-                                          day.year, day.month, day.day)] ??
-                                      [])
-                                  .map((event) {
-                                return {
-                                  'name': event['name']?.toString() ??
-                                      'Unnamed Event',
-                                  'type': event['type']?.toString() ?? 'other',
-                                };
-                              }).toList();
-                            },
-                            calendarStyle: CalendarStyle(
-                              todayDecoration: BoxDecoration(
-                                color: Colors.blueAccent.withValues(alpha: 0.5),
-                                shape: BoxShape.circle,
-                              ),
-                              selectedDecoration: const BoxDecoration(
-                                color: Colors.blueAccent,
-                                shape: BoxShape.circle,
-                              ),
-                              markersMaxCount: 3,
-                            ),
-                            calendarBuilders: CalendarBuilders(
-                              markerBuilder: (context, date, events) {
-                                if (events.isNotEmpty) {
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: events.map((event) {
-                                      return Container(
-                                        width: 8,
-                                        height: 8,
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 1),
-                                        decoration: BoxDecoration(
-                                          color: event is Map<String, Object>
-                                              ? _getEventColor(
-                                                  event['type']?.toString() ??
-                                                      'other')
-                                              : Colors.grey,
-                                          shape: BoxShape.circle,
-                                        ),
-                                      );
-                                    }).toList(),
-                                  );
-                                }
-                                return const SizedBox.shrink();
-                              },
-                            ),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        elevation: 0,
+      ),
+      body: Consumer<CustOrderHistoryController>(
+        builder: (context, controller, _) {
+          if (controller.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: buildStatCard(
+                            icon: Icons.hourglass_empty,
+                            value: controller.pendingBookingCount ?? '',
+                            label: 'Pending Booking',
+                            backgroundColor: const Color(0xFFE8E5FF),
+                            iconColor: const Color(0xFF6B46C1),
                           ),
                         ),
-                      ),
-
-                      // Today button
-                      Positioned(
-                        top: 20,
-                        right: 70,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedDate = DateTime.now();
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 1),
-                            backgroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: buildStatCard(
+                            icon: Icons.flight_takeoff,
+                            value: controller.completedBookingCount ?? '',
+                            label: 'In Transit Booking',
+                            backgroundColor: const Color(0xFFE8E5FF),
+                            iconColor: const Color(0xFF10B981),
                           ),
-                          child: const Text('Today',
-                              style: TextStyle(color: Colors.white)),
                         ),
-                      ),
-
-                      // Add event button
-                      Positioned(
-                        bottom: 10,
-                        right: 10,
-                        child: FloatingActionButton(
-                          onPressed: _showManualAddEventDialog,
-                          backgroundColor: Colors.blue,
-                          mini: true,
-                          child: const Icon(Icons.add, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: buildStatCard(
+                            icon: Icons.check_circle,
+                            value:
+                                "₹${double.tryParse(controller.pendingPaymentAmt ?? "0")?.toStringAsFixed(2)}",
+                            label: 'Completed Booking',
+                            backgroundColor: const Color(0xFFE8E5FF),
+                            iconColor: const Color(0xFF6B46C1),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Divider(thickness: 1, color: Colors.black26),
-
-                // ======= 3. Recent Bookings =======
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Recent Bookings',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 10),
-                      const Divider(thickness: 1),
-                      SizedBox(
-                        height: 350, // Adjust as needed
-                        child: _buildRecentBookings(),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Bookings Table Section
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withValues(alpha: 0.1),
-                        spreadRadius: 1,
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: filterOptions
-                            .map((filter) => _buildFilterTab(
-                                filter, selectedFilter == filter))
-                            .toList(),
-                      ),
-
-                      // DateFilterWidget(),
-                      const SizedBox(height: 8),
-                      const Divider(thickness: 1, color: Colors.black26),
-                      const FilterBar(),
-                      Card(
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: buildStatCard(
+                            icon: Icons.cancel,
+                            value:
+                                "₹${double.tryParse(controller.completedPaymentAmt ?? '0')?.toStringAsFixed(2)}",
+                            label: 'Canceled Booking',
+                            backgroundColor: const Color(0xFFE8E5FF),
+                            iconColor: const Color(0xFF10B981),
+                          ),
                         ),
-                        child: SizedBox(
-                          height: (_rowsPerPage * dataRowHeight) +
-                              headerHeight +
-                              paginationHeight,
-                          child: PaginatedDataTable(
-                            columnSpacing: 35,
-                            dataRowMinHeight: 40,
-                            columns: const [
-                              DataColumn(label: Text('Image')),
-                              DataColumn(label: Text('ID')),
-                              DataColumn(label: Text('Full Name')),
-                              DataColumn(label: Text('Ref. ID')),
-                              DataColumn(label: Text('Ref. Name')),
-                              DataColumn(label: Text('Joining Date')),
-                              DataColumn(label: Text('Status')),
-                              DataColumn(label: Text('Action'))
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: buildStatCard(
+                            icon: Icons.hourglass_bottom,
+                            value:
+                                "₹${double.tryParse(controller.pendingPaymentAmt ?? "0")?.toStringAsFixed(2)}",
+                            label: 'Pending Payment',
+                            backgroundColor: const Color(0xFFE8E5FF),
+                            iconColor: const Color(0xFF6B46C1),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: buildStatCard(
+                            icon: Icons.check_circle,
+                            value:
+                                "₹${double.tryParse(controller.completedPaymentAmt ?? '0')?.toStringAsFixed(2)}",
+                            label: 'Completed Payment',
+                            backgroundColor: const Color(0xFFE8E5FF),
+                            iconColor: const Color(0xFF10B981),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(thickness: 1, color: Colors.black26),
+
+                  // ======= 2. Calendar =======
+                  SizedBox(
+                    height: 420,
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 420,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: const [
+                              BoxShadow(color: Colors.black12, blurRadius: 4)
                             ],
-                            source: BCHBMDataSource(ordersBM),
-                            rowsPerPage: _rowsPerPage,
-                            availableRowsPerPage: const [5, 10, 15, 20, 25],
-                            onRowsPerPageChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _rowsPerPage = value;
-                                });
-                              }
+                          ),
+                          child: GestureDetector(
+                            onLongPressStart: (details) {
+                              _showRemoveEventDialog(_selectedDate);
                             },
-                            arrowHeadColor: Colors.blue,
+                            child: TableCalendar(
+                              focusedDay: _selectedDate,
+                              firstDay: DateTime.utc(2020),
+                              lastDay: DateTime.utc(2030, 12, 31),
+                              availableCalendarFormats: const {
+                                CalendarFormat.month: 'Month',
+                              },
+                              onDaySelected: (selectedDay, focusedDay) {
+                                setState(() {
+                                  _selectedDate = selectedDay;
+                                });
+                                _showAddTaskDialog(selectedDate: selectedDay);
+                              },
+                              selectedDayPredicate: (day) =>
+                                  isSameDay(day, _selectedDate),
+                              eventLoader: (day) {
+                                return (_tasks[DateTime(
+                                            day.year, day.month, day.day)] ??
+                                        [])
+                                    .map((event) {
+                                  return {
+                                    'name': event['name']?.toString() ??
+                                        'Unnamed Event',
+                                    'type':
+                                        event['type']?.toString() ?? 'other',
+                                  };
+                                }).toList();
+                              },
+                              calendarStyle: CalendarStyle(
+                                todayDecoration: BoxDecoration(
+                                  color:
+                                      Colors.blueAccent.withValues(alpha: 0.5),
+                                  shape: BoxShape.circle,
+                                ),
+                                selectedDecoration: const BoxDecoration(
+                                  color: Colors.blueAccent,
+                                  shape: BoxShape.circle,
+                                ),
+                                markersMaxCount: 3,
+                              ),
+                              calendarBuilders: CalendarBuilders(
+                                markerBuilder: (context, date, events) {
+                                  if (events.isNotEmpty) {
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: events.map((event) {
+                                        return Container(
+                                          width: 8,
+                                          height: 8,
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 1),
+                                          decoration: BoxDecoration(
+                                            color: event is Map<String, Object>
+                                                ? _getEventColor(
+                                                    event['type']?.toString() ??
+                                                        'other')
+                                                : Colors.grey,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        );
+                                      }).toList(),
+                                    );
+                                  }
+                                  return const SizedBox.shrink();
+                                },
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+
+                        // Today button
+                        Positioned(
+                          top: 20,
+                          right: 70,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedDate = DateTime.now();
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 1),
+                              backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text('Today',
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                        ),
+
+                        // Add event button
+                        // Positioned(
+                        //   bottom: 10,
+                        //   right: 10,
+                        //   child: FloatingActionButton(
+                        //     onPressed: _showManualAddEventDialog,
+                        //     backgroundColor: Colors.blue,
+                        //     mini: true,
+                        //     child: const Icon(Icons.add, color: Colors.white),
+                        //   ),
+                        // ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-              ],
+                  const SizedBox(height: 20),
+                  const Divider(thickness: 1, color: Colors.black26),
+
+                  // ======= 3. Recent Bookings =======
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Recent Bookings',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 10),
+                        const Divider(thickness: 1),
+                        SizedBox(
+                          height: 350, // Adjust as needed
+                          child: _buildRecentBookings(controller),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Bookings Table Section
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withValues(alpha: 0.1),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: filterOptions
+                              .map(
+                                (filter) => _buildFilterTab(
+                                    filter, selectedFilter == filter),
+                              )
+                              .toList(),
+                        ),
+
+                        // DateFilterWidget(),
+                        const SizedBox(height: 8),
+                        const Divider(thickness: 1, color: Colors.black26),
+                        const FilterBar(),
+                        Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: SizedBox(
+                            height: (_rowsPerPage * dataRowHeight) +
+                                headerHeight +
+                                paginationHeight,
+                            child: PaginatedDataTable(
+                              columnSpacing: 35,
+                              dataRowMinHeight: 40,
+                              columns: const [
+                                DataColumn(label: Text('Sr. No.')),
+                                DataColumn(label: Text('Booking ID')),
+                                DataColumn(label: Text('Tour Date')),
+                                DataColumn(label: Text('Package Name')),
+                                DataColumn(label: Text('Customer')),
+                                DataColumn(label: Text('Travel Consultant')),
+                                DataColumn(label: Text('Payment Status')),
+                                DataColumn(label: Text('Status')),
+                                DataColumn(label: Text('Action')),
+                              ],
+                              source: CustOrderHistoryDataSource(
+                                  custOrderHistoryData),
+                              rowsPerPage: _rowsPerPage,
+                              availableRowsPerPage: const [5, 10, 15, 20, 25],
+                              onRowsPerPageChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _rowsPerPage = value;
+                                  });
+                                }
+                              },
+                              arrowHeadColor: Colors.blue,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
-          ),
-        ),
-      );
-    });
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildFilterTab(String text, bool isSelected) {
@@ -362,6 +443,7 @@ class _OrderHistoryState extends State<OrderHistory> {
         setState(() {
           selectedFilter = text;
         });
+        Logger.success(text);
         // Add your filter logic here
         // _handleFilterChange(text);
       },
@@ -388,29 +470,45 @@ class _OrderHistoryState extends State<OrderHistory> {
     );
   }
 
-  Widget _buildRecentBookings() {
-    return ListView(
-      children: [
-        _buildBookingCard(
-          destination: 'Shimla Manali',
-          date: '2025-06-14',
-          imageUrl:
-              'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=150&h=100&fit=crop',
-          status: 'Completed',
-          bookingId: '2025600023',
-          customerName: 'Harbhajan Naik',
+  Widget _buildRecentBookings(CustOrderHistoryController controller) {
+    final bookings = controller.custOrderHistoryRecentBooking;
+
+    if (bookings.isEmpty) {
+      return const Center(
+        child: Text(
+          'No recent bookings available.',
+          style: TextStyle(fontSize: 14, color: Colors.grey),
         ),
-        const SizedBox(height: 8),
-        _buildBookingCard(
-          destination: 'Goa 4N5D',
-          date: '2025-04-22',
-          imageUrl:
-              'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=150&h=100&fit=crop',
-          status: 'Completed',
-          bookingId: '2025400003',
-          customerName: 'Harbhajan Naik',
-        ),
-      ],
+      );
+    }
+
+    return ListView.builder(
+      itemCount: bookings.length,
+      shrinkWrap: true,
+      // physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        final booking = bookings[index];
+
+        return Column(
+          children: [
+            _buildBookingCard(
+              destination: booking.packageName ?? 'Unknown Package',
+              date: booking.date ?? '',
+              imageUrl: booking.packageImage?.isNotEmpty == true
+                  ? 'https://testca.uniqbizz.com/bizzmirth_apis/uploading/${booking.packageImage}'
+                  : 'https://via.placeholder.com/150',
+              status: booking.status == '0'
+                  ? 'Pending'
+                  : booking.status == '1'
+                      ? 'Completed'
+                      : 'Cancelled',
+              bookingId: booking.orderId ?? '',
+              customerName: booking.name ?? 'Customer',
+            ),
+            const SizedBox(height: 8),
+          ],
+        );
+      },
     );
   }
 
@@ -530,6 +628,8 @@ class _OrderHistoryState extends State<OrderHistory> {
       ),
     );
   }
+
+  // TODO: solve the scroll bug in this page
 
   // Helper methods for calendar functionality
   void _showRemoveEventDialog(DateTime date) {
