@@ -131,7 +131,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                         Expanded(
                           child: buildStatCard(
                             icon: Icons.flight_takeoff,
-                            value: controller.completedBookingCount ?? '',
+                            value: controller.inTransitBookingCount ?? '',
                             label: 'In Transit Booking',
                             backgroundColor: const Color(0xFFE8E5FF),
                             iconColor: const Color(0xFF10B981),
@@ -159,7 +159,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                           child: buildStatCard(
                             icon: Icons.cancel,
                             value:
-                                "₹${double.tryParse(controller.completedPaymentAmt ?? '0')?.toStringAsFixed(2)}",
+                                "₹${double.tryParse(controller.cancelledBookingCount ?? '0')?.toStringAsFixed(2)}",
                             label: 'Canceled Booking',
                             backgroundColor: const Color(0xFFE8E5FF),
                             iconColor: const Color(0xFF10B981),
@@ -229,6 +229,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                               onDaySelected: (selectedDay, focusedDay) {
                                 setState(() {
                                   _selectedDate = selectedDay;
+                                  Logger.info(_selectedDate.toString());
                                 });
                                 _showAddTaskDialog(selectedDate: selectedDay);
                               },
@@ -410,7 +411,8 @@ class _OrderHistoryState extends State<OrderHistory> {
                                 DataColumn(label: Text('Action')),
                               ],
                               source: CustOrderHistoryDataSource(
-                                  custOrderHistoryData),
+                                controller.orderHistoryData,
+                              ),
                               rowsPerPage: _rowsPerPage,
                               availableRowsPerPage: const [5, 10, 15, 20, 25],
                               onRowsPerPageChanged: (value) {
@@ -640,9 +642,9 @@ class _OrderHistoryState extends State<OrderHistory> {
     // Implementation for adding tasks
   }
 
-  void _showManualAddEventDialog() {
-    // Implementation for manually adding events
-  }
+  // void _showManualAddEventDialog() {
+  //   // Implementation for manually adding events
+  // }
 
   Color _getEventColor(String type) {
     switch (type.toLowerCase()) {

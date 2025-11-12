@@ -105,6 +105,8 @@ class AppUrls {
 
   static String get getRecentBookings => '$_customers/orders/fetch_events.php';
 
+  static String get getAllTableData => '$_customers/orders/all_table_data.php';
+
   // ==================== TRAVEL CONSULTANT DASHBOARD ENDPOINTS ====================
   static String get getTravelConsultantDashboardCounts =>
       '$_travelConsultant/dashboard/dashboard_count.php';

@@ -11,18 +11,19 @@ class CustOrderHistoryRecentBooking {
   String? customerProfilePic;
   String? packageImage;
 
-  CustOrderHistoryRecentBooking(
-      {this.id,
-      this.orderId,
-      this.packageId,
-      this.date,
-      this.customerId,
-      this.name,
-      this.status,
-      this.taId,
-      this.packageName,
-      this.customerProfilePic,
-      this.packageImage});
+  CustOrderHistoryRecentBooking({
+    this.id,
+    this.orderId,
+    this.packageId,
+    this.date,
+    this.customerId,
+    this.name,
+    this.status,
+    this.taId,
+    this.packageName,
+    this.customerProfilePic,
+    this.packageImage,
+  });
 
   CustOrderHistoryRecentBooking.fromJson(Map<String, dynamic> json) {
     id = json['id'];

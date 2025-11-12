@@ -1,7 +1,8 @@
+import 'package:bizzmirth_app/models/order_history/order_history_model.dart';
 import 'package:flutter/material.dart';
 
 class CustOrderHistoryDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
+  final List<OrderHistoryModel> data;
   CustOrderHistoryDataSource(this.data);
 
   @override
@@ -11,22 +12,72 @@ class CustOrderHistoryDataSource extends DataTableSource {
 
     return DataRow(
       cells: [
-        DataCell(Text(order['srNo'].toString())),
-        DataCell(Text(order['bookingId']?.toString() ?? 'N/A')),
-        DataCell(Text(order['tourDate']?.toString() ?? 'N/A')),
-        DataCell(Text(order['packageName']?.toString() ?? 'N/A')),
-        DataCell(Text(order['customer']?.toString() ?? 'N/A')),
-        DataCell(Text(order['travelConsultant']?.toString() ?? 'N/A')),
-        DataCell(Text(order['paymentStatus']?.toString() ?? 'N/A')),
+        DataCell(Text((index + 1).toString())), // Sr. No.
+        DataCell(Text(order.orderId ?? 'N/A')),
+        DataCell(Text(order.date ?? 'N/A')),
+        DataCell(Text(order.packageName ?? 'N/A')),
+        DataCell(Text(order.customer?.name ?? 'N/A')),
+        DataCell(Text(order.travelAgency?.firstname ?? 'N/A')),
+        DataCell(
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Progress Bar
+              Stack(
+                children: [
+                  Container(
+                    height: 14,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  Container(
+                    height: 14,
+                    width: (order.payment?.percentFill ?? 0) > 100
+                        ? 100
+                        : (order.payment?.percentFill ?? 0).toDouble(),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: Center(
+                      child: Text(
+                        "${order.payment?.percentFill ?? 0}%",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              // Payment Text
+              Text(
+                "Paid Rs.${(double.tryParse(order.payment?.paidAmount ?? '0')?.toInt() ?? 0)} "
+                "of Rs.${(double.tryParse(order.payment?.fullAmount ?? '0')?.toInt() ?? 0)}",
+                style: const TextStyle(fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: _getStatusColor(order['status']?.toString() ?? ''),
+              color: _getStatusColor(order.status ?? ''),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              order['status']?.toString() ?? 'Unknown',
+              order.status ?? 'Unknown',
               style: const TextStyle(color: Colors.white),
             ),
           ),
@@ -38,7 +89,7 @@ class CustOrderHistoryDataSource extends DataTableSource {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'approved':
+      case 'travelling':
         return Colors.blue;
       case 'processing':
         return Colors.purple;
@@ -53,28 +104,27 @@ class CustOrderHistoryDataSource extends DataTableSource {
     }
   }
 
-// Action Menu Widget
   Widget _buildActionMenu() {
     return PopupMenuButton<String>(
       onSelected: (value) {
-        // Handle menu actions
+        // handle actions
       },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
+      itemBuilder: (context) => const [
+        PopupMenuItem(
           value: 'view',
           child: ListTile(
             leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
             title: Text('View'),
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'edit',
           child: ListTile(
-            leading: Icon(Icons.edit, color: Color.fromARGB(255, 0, 105, 190)),
+            leading: Icon(Icons.edit, color: Color(0xFF0069BE)),
             title: Text('Edit'),
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'delete',
           child: ListTile(
             leading: Icon(Icons.delete, color: Colors.red),
