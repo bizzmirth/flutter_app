@@ -29,7 +29,7 @@ class AppData {
     'All',
     'Pending',
     'Booked',
-    'Canceled',
+    'Cancelled',
     'Refund'
   ];
 }

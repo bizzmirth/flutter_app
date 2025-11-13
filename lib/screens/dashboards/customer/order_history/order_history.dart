@@ -31,59 +31,6 @@ class _OrderHistoryState extends State<OrderHistory> {
 
   final List<String> filterOptions = AppData.orderHistoryFilterOptions;
 
-  final List<Map<String, dynamic>> custOrderHistoryData = [
-    {
-      'srNo': 1,
-      'bookingId': '2025400001',
-      'tourDate': '2025-03-12',
-      'packageName': 'Goa 4N5D',
-      'customer': 'Soman M. G.',
-      'travelConsultant': 'TA250007 - Rohit Sharma',
-      'paymentStatus': 'Completed',
-      'status': 'Confirmed',
-    },
-    {
-      'srNo': 2,
-      'bookingId': '2025400002',
-      'tourDate': '2025-04-18',
-      'packageName': 'Shimla Manali Delight',
-      'customer': 'Harbhajan Naik',
-      'travelConsultant': 'TA250010 - Meera Singh',
-      'paymentStatus': 'Pending',
-      'status': 'Confirmed',
-    },
-    {
-      'srNo': 3,
-      'bookingId': '2025400003',
-      'tourDate': '2025-05-02',
-      'packageName': 'Kerala Backwaters',
-      'customer': 'Anjali Desai',
-      'travelConsultant': 'TA250012 - Arjun Patel',
-      'paymentStatus': 'Completed',
-      'status': 'Completed',
-    },
-    {
-      'srNo': 4,
-      'bookingId': '2025400004',
-      'tourDate': '2025-06-21',
-      'packageName': 'Leh-Ladakh Adventure',
-      'customer': 'Ramesh Iyer',
-      'travelConsultant': 'TA250015 - Priya Menon',
-      'paymentStatus': 'Failed',
-      'status': 'Canceled',
-    },
-    {
-      'srNo': 5,
-      'bookingId': '2025400005',
-      'tourDate': '2025-07-10',
-      'packageName': 'Bali Escape',
-      'customer': 'Karan Mehta',
-      'travelConsultant': 'TA250018 - Neha Joshi',
-      'paymentStatus': 'In Progress',
-      'status': 'In Transit',
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -377,8 +324,8 @@ class _OrderHistoryState extends State<OrderHistory> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: filterOptions
                               .map(
-                                (filter) => _buildFilterTab(
-                                    filter, selectedFilter == filter),
+                                (filter) => _buildFilterTab(filter,
+                                    selectedFilter == filter, controller),
                               )
                               .toList(),
                         ),
@@ -439,15 +386,30 @@ class _OrderHistoryState extends State<OrderHistory> {
     );
   }
 
-  Widget _buildFilterTab(String text, bool isSelected) {
+  Widget _buildFilterTab(
+      String text, bool isSelected, CustOrderHistoryController controller) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         setState(() {
           selectedFilter = text;
         });
         Logger.success(text);
-        // Add your filter logic here
-        // _handleFilterChange(text);
+
+        // Convert text to lowercase and decide which API to call
+        final filter = text.toLowerCase();
+
+        if (filter == 'pending') {
+          await controller.apiGetPendingOrderHistoryTableData();
+        } else if (filter == 'booked') {
+          await controller.apiGetBookedOrderHistoryTableData();
+        } else if (filter == 'cancelled') {
+          // await controller.apiGetInTransitOrderHistoryTableData();
+        } else if (filter == 'refund') {
+          // await controller.apiGetCancelledOrderHistoryTableData();
+        } else {
+          // default or "all"
+          await controller.apiGetAllOrderHistoryTableData();
+        }
       },
       child: Container(
         margin: const EdgeInsets.only(right: 16),

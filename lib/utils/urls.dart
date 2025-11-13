@@ -107,6 +107,18 @@ class AppUrls {
 
   static String get getAllTableData => '$_customers/orders/all_table_data.php';
 
+  static String get getPendingTableData =>
+      '$_customers/orders/pending_table_data.php';
+
+  static String get getBookedTableData =>
+      '$_customers/orders/booked_table_data.php';
+
+  static String get getCancelledTableData =>
+      '$_customers/orders/canceled_table_data.php';
+
+  static String get getRefundTableData =>
+      '$_customers/orders/refunded_table_data.php';
+
   // ==================== TRAVEL CONSULTANT DASHBOARD ENDPOINTS ====================
   static String get getTravelConsultantDashboardCounts =>
       '$_travelConsultant/dashboard/dashboard_count.php';
