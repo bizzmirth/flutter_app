@@ -114,7 +114,7 @@ class AppUrls {
       '$_customers/orders/booked_table_data.php';
 
   static String get getCancelledTableData =>
-      '$_customers/orders/canceled_table_data.php';
+      '$_customers/orders/cancelled_table_data.php';
 
   static String get getRefundTableData =>
       '$_customers/orders/refunded_table_data.php';

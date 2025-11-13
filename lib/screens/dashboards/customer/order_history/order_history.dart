@@ -403,7 +403,7 @@ class _OrderHistoryState extends State<OrderHistory> {
         } else if (filter == 'booked') {
           await controller.apiGetBookedOrderHistoryTableData();
         } else if (filter == 'cancelled') {
-          // await controller.apiGetInTransitOrderHistoryTableData();
+          await controller.apiGetCancelledOrderHistoryTableData();
         } else if (filter == 'refund') {
           // await controller.apiGetCancelledOrderHistoryTableData();
         } else {

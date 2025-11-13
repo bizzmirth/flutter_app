@@ -169,7 +169,7 @@ class CustOrderHistoryController extends ChangeNotifier {
       Logger.info(
           'api call made for(get all table data) $url, Body: $encodeBody');
       final response = await http.post(Uri.parse(url), body: encodeBody);
-      Logger.success('response for all data table ${response.body}');
+      // Logger.success('response for all data table ${response.body}');
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         if (jsonData['status'] == 'success' && jsonData['bookings'] != null) {
@@ -218,7 +218,7 @@ class CustOrderHistoryController extends ChangeNotifier {
       Logger.info('api call made for(pending table data) $url, Body: $body');
 
       final response = await http.post(Uri.parse(url), body: encodeBody);
-      Logger.success('respose for pending table data: ${response.body}');
+      // Logger.success('respose for pending table data: ${response.body}');
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         if (jsonData['status'] == 'success' && jsonData['bookings'] != null) {
@@ -264,7 +264,7 @@ class CustOrderHistoryController extends ChangeNotifier {
       Logger.info(
           'api call made for(booked table data) $url, Body: $encodeBody');
       final response = await http.post(Uri.parse(url), body: encodeBody);
-      Logger.success('response for booked table data ${response.body}');
+      // Logger.success('response for booked table data ${response.body}');
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         if (jsonData['status'] == 'success' && jsonData['bookings'] != null) {
@@ -289,11 +289,48 @@ class CustOrderHistoryController extends ChangeNotifier {
     }
   }
 
-  // Future<void> apiGetCancelledOrderHistoryTableData({
-  //   String? startDate, String? endDate
-  // }) async{
-  //   try{
+  Future<void> apiGetCancelledOrderHistoryTableData(
+      {String? startDate, String? endDate}) async {
+    try {
+      _error = null;
+      notifyListeners();
 
-  //   }
-  // }
+      final url = AppUrls.getCancelledTableData;
+      final userId = await _getUserId();
+      final userType = AppData.customerUserType;
+      final Map<String, dynamic> body = {
+        'userId': userId,
+        'userType': userType,
+        'startDate': '',
+        'endDate': ''
+      };
+      final encodeBody = jsonEncode(body);
+      Logger.info('api call made for(cancelled table data)');
+      final response = await http.post(Uri.parse(url), body: encodeBody);
+      // Logger.success('response for booked table data ${response.body}');
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        if (jsonData['status'] == 'success' && jsonData['bookings'] != null) {
+          final List bookings = jsonData['bookings'];
+          _orderHistoryData =
+              bookings.map((item) => OrderHistoryModel.fromJson(item)).toList();
+        } else {
+          Logger.warning('booking table data is empty');
+          _orderHistoryData = [];
+        }
+      } else {
+        _error = 'HTTP error. Please try again later';
+        Logger.error(
+            'Error fetching data, Error: ${response.body}, statuscode: ${response.statusCode}');
+      }
+    } catch (e, s) {
+      _error = 'Error fetching cancelled order hisotry table data. Error: $e';
+      Logger.error(
+          'Error fetching cancelled order history table. Error: $e, Stacktrace: $s');
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  // Future<void> apiGet
 }
