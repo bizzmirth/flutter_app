@@ -1,57 +1,39 @@
 class CustOrderHistoryRecentBooking {
-  String? id;
-  String? orderId;
-  String? packageId;
-  String? date;
-  String? customerId;
-  String? name;
-  String? status;
-  String? taId;
-  String? packageName;
-  String? customerProfilePic;
-  String? packageImage;
+  final String? title;
+  final String? start;
+  final String? orderId;
+  final String? customerName;
+  final String? status;
+  final String? confirmStatus;
+  final String? packageImage;
+  final String? profilePic;
+  final String? packageName;
 
   CustOrderHistoryRecentBooking({
-    this.id,
+    this.title,
+    this.start,
     this.orderId,
-    this.packageId,
-    this.date,
-    this.customerId,
-    this.name,
+    this.customerName,
     this.status,
-    this.taId,
-    this.packageName,
-    this.customerProfilePic,
+    this.confirmStatus,
     this.packageImage,
+    this.profilePic,
+    this.packageName,
   });
 
-  CustOrderHistoryRecentBooking.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    orderId = json['order_id'];
-    packageId = json['package_id'];
-    date = json['date'];
-    customerId = json['customer_id'];
-    name = json['name'];
-    status = json['status'];
-    taId = json['ta_id'];
-    packageName = json['package_name'];
-    customerProfilePic = json['customer_profile_pic'];
-    packageImage = json['package_image'];
-  }
+  factory CustOrderHistoryRecentBooking.fromJson(Map<String, dynamic> json) {
+    final props = json['extendedProps'] ?? {};
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['order_id'] = orderId;
-    data['package_id'] = packageId;
-    data['date'] = date;
-    data['customer_id'] = customerId;
-    data['name'] = name;
-    data['status'] = status;
-    data['ta_id'] = taId;
-    data['package_name'] = packageName;
-    data['customer_profile_pic'] = customerProfilePic;
-    data['package_image'] = packageImage;
-    return data;
+    return CustOrderHistoryRecentBooking(
+      title: json['title'],
+      start: json['start'],
+      orderId: props['order_id'],
+      customerName: props['customer_name'],
+      status: props['status'],
+      confirmStatus: props['confirm_status'],
+      packageImage: props['package_image'],
+      profilePic: props['profile_pic'],
+      packageName: props['package_name'],
+    );
   }
 }

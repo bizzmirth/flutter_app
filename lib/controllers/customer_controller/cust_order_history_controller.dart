@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 
 class CustOrderHistoryController extends ChangeNotifier {
   bool _isLoading = false;
+  bool _isLoadingTableData = false;
   String? _error;
   String? _pendingBookingCount;
   String? _inTransitBookingCount;
@@ -24,6 +25,7 @@ class CustOrderHistoryController extends ChangeNotifier {
   List<OrderHistoryModel> _orderHistoryData = [];
 
   bool get isLoading => _isLoading;
+  bool get isLoadingTableData => _isLoadingTableData;
   String? get error => _error;
   String? get pendingBookingCount => _pendingBookingCount;
   String? get inTransitBookingCount => _inTransitBookingCount;
@@ -103,9 +105,8 @@ class CustOrderHistoryController extends ChangeNotifier {
     }
   }
 
-  Future<void> apiGetRecentBookings() async {
+  Future<void> apiGetRecentBookings({String? selectedDate}) async {
     try {
-      _isLoading = true;
       _error = null;
       notifyListeners();
 
@@ -114,47 +115,57 @@ class CustOrderHistoryController extends ChangeNotifier {
       final userId = await _getUserId();
       final userTypeId = AppData.customerUserType;
 
-      final Map<String, dynamic> body = {
+      final body = {
         'userId': userId,
-        'userType': userTypeId
+        'userType': userTypeId,
+        'selected_date': selectedDate ?? '',
       };
-      final encodeBody = jsonEncode(body);
-      Logger.info(
-          'api call made for(get recent booking) $url, Body: $encodeBody');
-      final response = await http.post(Uri.parse(url), body: encodeBody);
-      Logger.info('response from the recent booking api ${response.body}');
-      if (response.statusCode == 200) {
-        _custOrderHistoryRecentBooking.clear();
-        final jsonData = jsonDecode(response.body);
-        if (jsonData['bookings'] != null) {
-          final List bookings = jsonData['bookings'];
-          _custOrderHistoryRecentBooking = bookings
-              .map((item) => CustOrderHistoryRecentBooking.fromJson(item))
-              .toList();
-          Logger.info(
-              'successfully fetched ${_custOrderHistoryRecentBooking.length}');
-        } else {
-          _custOrderHistoryRecentBooking = [];
-          Logger.info(
-              'recent booking customer returned empty. ${response.body}');
-        }
+
+      Logger.info('API CALL → $url');
+      Logger.info('BODY → ${jsonEncode(body)}');
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'}, // <-- Important
+        body: jsonEncode(body),
+      );
+
+      Logger.info('RESPONSE → ${response.body}');
+
+      if (response.statusCode != 200) {
+        _error = 'HTTP Error ${response.statusCode}';
+        Logger.error('HTTP ERROR ${response.statusCode}');
+        return;
+      }
+
+      final jsonData = jsonDecode(response.body);
+
+      Logger.info('BOOKINGS JSON → ${jsonData['bookings']}');
+
+      _custOrderHistoryRecentBooking.clear();
+
+      if (jsonData['bookings'] != null) {
+        _custOrderHistoryRecentBooking = (jsonData['bookings'] as List)
+            .map((item) => CustOrderHistoryRecentBooking.fromJson(item))
+            .toList();
+
+        Logger.info(
+            'Parsed bookings: ${_custOrderHistoryRecentBooking.length}');
       } else {
-        _error = 'Error in the HTTP method. ${response.statusCode}';
-        Logger.error(
-            'Error in the api call. ${response.statusCode} and ${response.body}');
+        Logger.info('No bookings found.');
       }
     } catch (e, s) {
-      _error = 'Error fetching recent bookings: Error:$e';
-      Logger.error('Error fetching recent bookings: Error: $e, Stacktrace:$s');
+      _error = 'Error fetching recent bookings: $e';
+      Logger.error('Exception → $e\nStacktrace → $s');
     } finally {
-      _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> apiGetAllOrderHistoryTableData() async {
+  Future<void> apiGetAllOrderHistoryTableData(
+      {String? startDate, String? endDate}) async {
     try {
-      // _isLoading = true;
+      _isLoadingTableData = true;
       _error = null;
       notifyListeners();
 
@@ -163,7 +174,9 @@ class CustOrderHistoryController extends ChangeNotifier {
       final userType = AppData.customerUserType;
       final Map<String, dynamic> body = {
         'userId': userId,
-        'userType': userType
+        'userType': userType,
+        'startDate': startDate ?? '',
+        'endDate': endDate ?? ''
       };
       final encodeBody = jsonEncode(body);
       Logger.info(
@@ -193,7 +206,7 @@ class CustOrderHistoryController extends ChangeNotifier {
       Logger.error(
           'Error fethcing all order history table data. Error: $e, Stacktrace: $s');
     } finally {
-      // _isLoading = false;
+      _isLoadingTableData = false;
       notifyListeners();
     }
   }
@@ -201,7 +214,7 @@ class CustOrderHistoryController extends ChangeNotifier {
   Future<void> apiGetPendingOrderHistoryTableData(
       {String? startDate, String? endDate}) async {
     try {
-      // _isLoading = true;
+      _isLoadingTableData = true;
       _error = null;
       notifyListeners();
 
@@ -211,8 +224,8 @@ class CustOrderHistoryController extends ChangeNotifier {
       final Map<String, dynamic> body = {
         'userId': userId,
         'userType': userType,
-        'startDate': '',
-        'endDate': ''
+        'startDate': startDate ?? '',
+        'endDate': endDate ?? ''
       };
       final encodeBody = jsonEncode(body);
       Logger.info('api call made for(pending table data) $url, Body: $body');
@@ -239,7 +252,7 @@ class CustOrderHistoryController extends ChangeNotifier {
       Logger.error(
           'Error fetching pending table data. Error: $e, Stacktrace: $s');
     } finally {
-      // _isLoading = false;
+      _isLoadingTableData = false;
       notifyListeners();
     }
   }
@@ -247,6 +260,7 @@ class CustOrderHistoryController extends ChangeNotifier {
   Future<void> apiGetBookedOrderHistoryTableData(
       {String? startDate, String? endDate}) async {
     try {
+      _isLoadingTableData = true;
       _error = null;
       notifyListeners();
 
@@ -257,8 +271,8 @@ class CustOrderHistoryController extends ChangeNotifier {
       final Map<String, dynamic> body = {
         'userId': userId,
         'userType': userType,
-        'startDate': '',
-        'endDate': ''
+        'startDate': startDate ?? '',
+        'endDate': endDate ?? ''
       };
       final encodeBody = jsonEncode(body);
       Logger.info(
@@ -285,6 +299,7 @@ class CustOrderHistoryController extends ChangeNotifier {
       Logger.error(
           'Error fetching booked order history table data. Error: $e, Stacktrace: $s');
     } finally {
+      _isLoadingTableData = false;
       notifyListeners();
     }
   }
@@ -292,6 +307,7 @@ class CustOrderHistoryController extends ChangeNotifier {
   Future<void> apiGetCancelledOrderHistoryTableData(
       {String? startDate, String? endDate}) async {
     try {
+      _isLoadingTableData = true;
       _error = null;
       notifyListeners();
 
@@ -301,11 +317,12 @@ class CustOrderHistoryController extends ChangeNotifier {
       final Map<String, dynamic> body = {
         'userId': userId,
         'userType': userType,
-        'startDate': '',
-        'endDate': ''
+        'startDate': startDate ?? '',
+        'endDate': endDate ?? ''
       };
       final encodeBody = jsonEncode(body);
-      Logger.info('api call made for(cancelled table data)');
+      Logger.info(
+          'api call made for(cancelled table data) $url, Body: $encodeBody');
       final response = await http.post(Uri.parse(url), body: encodeBody);
       // Logger.success('response for booked table data ${response.body}');
       if (response.statusCode == 200) {
@@ -328,9 +345,55 @@ class CustOrderHistoryController extends ChangeNotifier {
       Logger.error(
           'Error fetching cancelled order history table. Error: $e, Stacktrace: $s');
     } finally {
+      _isLoadingTableData = false;
       notifyListeners();
     }
   }
 
-  // Future<void> apiGet
+  Future<void> apiGetRefundOrderHistoryTableData(
+      {String? startDate, String? endDate}) async {
+    try {
+      _isLoadingTableData = true;
+      _error = null;
+      notifyListeners();
+
+      final url = AppUrls.getRefundTableData;
+      final userId = await _getUserId();
+      final userType = AppData.customerUserType;
+      final Map<String, dynamic> body = {
+        'userId': userId,
+        'userType': userType,
+        'startDate': startDate ?? '',
+        'endDate': endDate ?? ''
+      };
+
+      final encodeBody = jsonEncode(body);
+      Logger.info(
+          'api call made for(refund order history table data) $url, Body: $encodeBody');
+      final response = await http.post(Uri.parse(url), body: encodeBody);
+      Logger.success('response for booked table data ${response.body}');
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        if (jsonData['status'] == 'success' && jsonData['bookings'] != null) {
+          final List bookings = jsonData['bookings'];
+          _orderHistoryData =
+              bookings.map((item) => OrderHistoryModel.fromJson(item)).toList();
+        } else {
+          Logger.warning('booking table data is empty');
+          _orderHistoryData = [];
+        }
+      } else {
+        _error = 'HTTP error. Please try again later';
+        Logger.error(
+            'Error fetching data, Error: ${response.body}, statuscode: ${response.statusCode}');
+      }
+    } catch (e, s) {
+      _error = 'Error fetching refund ordeer history data. Error: $e';
+      Logger.error(
+          'Error fetching refund order hsitory table. Error: $e, Stacktrace: $s');
+    } finally {
+      _isLoadingTableData = false;
+      notifyListeners();
+    }
+  }
 }

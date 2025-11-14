@@ -1,13 +1,15 @@
 import 'package:bizzmirth_app/controllers/customer_controller/cust_order_history_controller.dart';
 import 'package:bizzmirth_app/data_source/customer_data_sources/cust_order_history_data_source.dart';
+import 'package:bizzmirth_app/data_source/empty_data_source.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/widgets/calendar_widget.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class OrderHistory extends StatefulWidget {
   const OrderHistory({super.key});
@@ -20,7 +22,6 @@ class _OrderHistoryState extends State<OrderHistory> {
   String selectedView = 'Month';
   DateTime currentDate = DateTime.now();
   int selectedDay = 28;
-  DateTime _selectedDate = DateTime.now();
   final Map<DateTime, List<Map<String, Object>>> _tasks = {};
 
   String selectedFilter = 'All';
@@ -28,12 +29,95 @@ class _OrderHistoryState extends State<OrderHistory> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+  DateTime? fromDate;
+  DateTime? toDate;
 
   final List<String> filterOptions = AppData.orderHistoryFilterOptions;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  void _handleDateFilter(
+      DateTime? from, DateTime? to, CustOrderHistoryController controller) {
+    final String filter = selectedFilter.toLowerCase();
+
+    // Convert DateTime → API format (YYYY-MM-DD)
+    final String? startDate =
+        from != null ? DateFormat('yyyy-MM-dd').format(from) : null;
+    final String? endDate =
+        to != null ? DateFormat('yyyy-MM-dd').format(to) : null;
+
+    Logger.info(
+        'Date filter updated: start=$startDate, end=$endDate, filter=$filter');
+
+    switch (filter) {
+      case 'pending':
+        controller.apiGetPendingOrderHistoryTableData(
+          startDate: startDate,
+          endDate: endDate,
+        );
+        break;
+
+      case 'booked':
+        controller.apiGetBookedOrderHistoryTableData(
+          startDate: startDate,
+          endDate: endDate,
+        );
+        break;
+
+      case 'cancelled':
+        controller.apiGetCancelledOrderHistoryTableData(
+          startDate: startDate,
+          endDate: endDate,
+        );
+        break;
+
+      case 'refund':
+        controller.apiGetRefundOrderHistoryTableData(
+          startDate: startDate,
+          endDate: endDate,
+        );
+
+        break;
+
+      default:
+        controller.apiGetAllOrderHistoryTableData(
+            startDate: startDate, endDate: endDate);
+    }
+  }
+
+  void _resetFiltersAndReload(CustOrderHistoryController controller) {
+    // Reset your stored local date variables
+    setState(() {
+      fromDate = null;
+      toDate = null;
+    });
+
+    // Reload ORIGINAL TABLE based on current selectedFilter
+    final filter = selectedFilter.toLowerCase();
+
+    switch (filter) {
+      case 'pending':
+        controller.apiGetPendingOrderHistoryTableData();
+        break;
+
+      case 'booked':
+        controller.apiGetBookedOrderHistoryTableData();
+        break;
+
+      case 'cancelled':
+        controller.apiGetCancelledOrderHistoryTableData();
+        break;
+
+      case 'refund':
+        controller.apiGetRefundOrderHistoryTableData();
+        break;
+
+      default:
+        controller.apiGetAllOrderHistoryTableData();
+    }
   }
 
   @override
@@ -148,133 +232,27 @@ class _OrderHistoryState extends State<OrderHistory> {
                   const Divider(thickness: 1, color: Colors.black26),
 
                   // ======= 2. Calendar =======
-                  SizedBox(
-                    height: 420,
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 420,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: const [
-                              BoxShadow(color: Colors.black12, blurRadius: 4)
-                            ],
-                          ),
-                          child: GestureDetector(
-                            onLongPressStart: (details) {
-                              _showRemoveEventDialog(_selectedDate);
-                            },
-                            child: TableCalendar(
-                              focusedDay: _selectedDate,
-                              firstDay: DateTime.utc(2020),
-                              lastDay: DateTime.utc(2030, 12, 31),
-                              availableCalendarFormats: const {
-                                CalendarFormat.month: 'Month',
-                              },
-                              onDaySelected: (selectedDay, focusedDay) {
-                                setState(() {
-                                  _selectedDate = selectedDay;
-                                  Logger.info(_selectedDate.toString());
-                                });
-                                _showAddTaskDialog(selectedDate: selectedDay);
-                              },
-                              selectedDayPredicate: (day) =>
-                                  isSameDay(day, _selectedDate),
-                              eventLoader: (day) {
-                                return (_tasks[DateTime(
-                                            day.year, day.month, day.day)] ??
-                                        [])
-                                    .map((event) {
-                                  return {
-                                    'name': event['name']?.toString() ??
-                                        'Unnamed Event',
-                                    'type':
-                                        event['type']?.toString() ?? 'other',
-                                  };
-                                }).toList();
-                              },
-                              calendarStyle: CalendarStyle(
-                                todayDecoration: BoxDecoration(
-                                  color:
-                                      Colors.blueAccent.withValues(alpha: 0.5),
-                                  shape: BoxShape.circle,
-                                ),
-                                selectedDecoration: const BoxDecoration(
-                                  color: Colors.blueAccent,
-                                  shape: BoxShape.circle,
-                                ),
-                                markersMaxCount: 3,
-                              ),
-                              calendarBuilders: CalendarBuilders(
-                                markerBuilder: (context, date, events) {
-                                  if (events.isNotEmpty) {
-                                    return Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: events.map((event) {
-                                        return Container(
-                                          width: 8,
-                                          height: 8,
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 1),
-                                          decoration: BoxDecoration(
-                                            color: event is Map<String, Object>
-                                                ? _getEventColor(
-                                                    event['type']?.toString() ??
-                                                        'other')
-                                                : Colors.grey,
-                                            shape: BoxShape.circle,
-                                          ),
-                                        );
-                                      }).toList(),
-                                    );
-                                  }
-                                  return const SizedBox.shrink();
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // Today button
-                        Positioned(
-                          top: 20,
-                          right: 70,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                _selectedDate = DateTime.now();
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 1),
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: const Text('Today',
-                                style: TextStyle(color: Colors.white)),
-                          ),
-                        ),
-
-                        // Add event button
-                        // Positioned(
-                        //   bottom: 10,
-                        //   right: 10,
-                        //   child: FloatingActionButton(
-                        //     onPressed: _showManualAddEventDialog,
-                        //     backgroundColor: Colors.blue,
-                        //     mini: true,
-                        //     child: const Icon(Icons.add, color: Colors.white),
-                        //   ),
-                        // ),
-                      ],
-                    ),
+                  CalendarWidget(
+                    initialDate: DateTime.now(),
+                    onDateSelected: (selectedDate) {
+                      final formatted =
+                          DateFormat('yyyy-MM-dd').format(selectedDate);
+                      controller.apiGetRecentBookings(selectedDate: formatted);
+                    },
+                    onTodayPressed: () {
+                      final formatted =
+                          DateFormat('yyyy-MM-dd').format(DateTime.now());
+                      controller.apiGetRecentBookings(selectedDate: formatted);
+                    },
+                    onClearPressed: () {
+                      controller.apiGetRecentBookings(); // without filter
+                    },
+                    eventLoader: (day) {
+                      return _tasks[DateTime(day.year, day.month, day.day)] ??
+                          [];
+                    },
                   ),
+
                   const SizedBox(height: 20),
                   const Divider(thickness: 1, color: Colors.black26),
 
@@ -333,7 +311,16 @@ class _OrderHistoryState extends State<OrderHistory> {
                         // DateFilterWidget(),
                         const SizedBox(height: 8),
                         const Divider(thickness: 1, color: Colors.black26),
-                        const FilterBar(),
+                        FilterBar(
+                          userCount:
+                              controller.orderHistoryData.length.toString(),
+                          onDateRangeChanged: (from, to) {
+                            _handleDateFilter(from, to, controller);
+                          },
+                          onClearFilters: () =>
+                              _resetFiltersAndReload(controller),
+                        ),
+
                         Card(
                           elevation: 5,
                           shape: RoundedRectangleBorder(
@@ -357,9 +344,11 @@ class _OrderHistoryState extends State<OrderHistory> {
                                 DataColumn(label: Text('Status')),
                                 DataColumn(label: Text('Action')),
                               ],
-                              source: CustOrderHistoryDataSource(
-                                controller.orderHistoryData,
-                              ),
+                              source: controller.orderHistoryData.isEmpty
+                                  ? EmptyDataSource(columnCount: 9)
+                                  : CustOrderHistoryDataSource(
+                                      controller.orderHistoryData,
+                                    ),
                               rowsPerPage: _rowsPerPage,
                               availableRowsPerPage: const [5, 10, 15, 20, 25],
                               onRowsPerPageChanged: (value) {
@@ -393,9 +382,10 @@ class _OrderHistoryState extends State<OrderHistory> {
         setState(() {
           selectedFilter = text;
         });
-        Logger.success(text);
 
-        // Convert text to lowercase and decide which API to call
+        Logger.success('Selected Filter: $text');
+
+        // RECALL the API according to the tab (without dates first)
         final filter = text.toLowerCase();
 
         if (filter == 'pending') {
@@ -405,11 +395,13 @@ class _OrderHistoryState extends State<OrderHistory> {
         } else if (filter == 'cancelled') {
           await controller.apiGetCancelledOrderHistoryTableData();
         } else if (filter == 'refund') {
-          // await controller.apiGetCancelledOrderHistoryTableData();
+          await controller.apiGetRefundOrderHistoryTableData();
         } else {
-          // default or "all"
           await controller.apiGetAllOrderHistoryTableData();
         }
+
+        // THEN apply date filter IF user already picked dates
+        _handleDateFilter(fromDate, toDate, controller);
       },
       child: Container(
         margin: const EdgeInsets.only(right: 16),
@@ -457,7 +449,7 @@ class _OrderHistoryState extends State<OrderHistory> {
           children: [
             _buildBookingCard(
               destination: booking.packageName ?? 'Unknown Package',
-              date: booking.date ?? '',
+              date: booking.start ?? '',
               imageUrl: booking.packageImage?.isNotEmpty == true
                   ? 'https://testca.uniqbizz.com/bizzmirth_apis/uploading/${booking.packageImage}'
                   : 'https://via.placeholder.com/150',
@@ -467,7 +459,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                       ? 'Completed'
                       : 'Cancelled',
               bookingId: booking.orderId ?? '',
-              customerName: booking.name ?? 'Customer',
+              customerName: booking.customerName ?? 'Customer',
             ),
             const SizedBox(height: 8),
           ],
@@ -593,33 +585,31 @@ class _OrderHistoryState extends State<OrderHistory> {
     );
   }
 
-  // TODO: solve the scroll bug in this page
-
   // Helper methods for calendar functionality
-  void _showRemoveEventDialog(DateTime date) {
-    // Implementation for removing events
-  }
+  // void _showRemoveEventDialog(DateTime date) {
+  //   // Implementation for removing events
+  // }
 
-  void _showAddTaskDialog({required DateTime selectedDate}) {
-    // Implementation for adding tasks
-  }
+  // void _showAddTaskDialog({required DateTime selectedDate}) {
+  //   // Implementation for adding tasks
+  // }
 
   // void _showManualAddEventDialog() {
   //   // Implementation for manually adding events
   // }
 
-  Color _getEventColor(String type) {
-    switch (type.toLowerCase()) {
-      case 'work':
-        return Colors.blue;
-      case 'personal':
-        return Colors.green;
-      case 'important':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
+  // Color _getEventColor(String type) {
+  //   switch (type.toLowerCase()) {
+  //     case 'work':
+  //       return Colors.blue;
+  //     case 'personal':
+  //       return Colors.green;
+  //     case 'important':
+  //       return Colors.red;
+  //     default:
+  //       return Colors.grey;
+  //   }
+  // }
 
   bool isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
