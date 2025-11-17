@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/data_source/tc_data_sources/tc_top_customers_data_
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/travel_consultant/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_cu_membership_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
@@ -165,6 +166,19 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                           'CU Membership Payout', const TcCuMembershipPayouts(),
                           padding: true),
                     ],
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.history,
+                    ),
+                    title: const Text('Order History'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const OrderHistory()),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(

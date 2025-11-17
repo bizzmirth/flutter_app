@@ -1,9 +1,9 @@
 import 'package:bizzmirth_app/models/order_history/order_history_model.dart';
 import 'package:flutter/material.dart';
 
-class CustOrderHistoryDataSource extends DataTableSource {
+class TcOrderHistoryDataSource extends DataTableSource {
   final List<OrderHistoryModel> data;
-  CustOrderHistoryDataSource(this.data);
+  TcOrderHistoryDataSource(this.data);
 
   @override
   DataRow? getRow(int index) {
