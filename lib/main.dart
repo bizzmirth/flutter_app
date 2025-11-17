@@ -18,6 +18,7 @@ import 'package:bizzmirth_app/controllers/tc_controller/tc_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_cu_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_markup_controller.dart';
+import 'package:bizzmirth_app/controllers/tc_controller/tc_order_history_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_product_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_topup_wallet_controller.dart';
 import 'package:bizzmirth_app/data_source/te_data_sources/te_view_package_data_source.dart';
@@ -145,6 +146,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => TcCuPayoutController()),
         ChangeNotifierProvider(create: (_) => TcTopupWalletController()),
         ChangeNotifierProvider(create: (_) => TcProductPayoutController()),
+        ChangeNotifierProvider(create: (_) => TcOrderHistoryController()),
       ],
       child: ToastificationWrapper(
         child: SessionTimeoutManager(
