@@ -188,4 +188,26 @@ class AppUrls {
 
   static String get getTcTopupRequestList =>
       '$_travelConsultant/wallets/tc_request_list.php';
+
+  // ==================== TRAVEL CONSULTANT ORDER HISTORY ENDPOINTS ====================
+  static String get getTcOrderHistoryStatCount =>
+      '$_travelConsultant/orders/get_counts.php';
+
+  static String get getTcRecentBookings =>
+      '$_travelConsultant/orders/fetch_events.php';
+
+  static String get getTcAllTableData =>
+      '$_travelConsultant/orders/all_table_data.php';
+
+  static String get getTcPendingTableData =>
+      '$_travelConsultant/orders/pending_table_data.php';
+
+  static String get getTcBookingTableData =>
+      '$_travelConsultant/orders/booked_table_data.php';
+
+  static String get getTcCancelledTableData =>
+      '$_travelConsultant/orders/cancelled_table_data.php';
+
+  static String get getTcRefundTableData =>
+      '$_travelConsultant/orders/refunded_table_data.php';
 }
