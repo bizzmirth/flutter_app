@@ -20,13 +20,13 @@ import 'package:bizzmirth_app/widgets/coupons_tracker.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/free_user_type_widget.dart';
-import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:bizzmirth_app/widgets/neo_select_benefits.dart';
 import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
 import 'package:bizzmirth_app/widgets/user_type_widget.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:confetti/confetti.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -62,11 +62,70 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
   List<TopCustomerRefereralModel> filteredCustomers = [];
 
+// charts data send from dashboard
+  String selectedYear = DateTime.now().year.toString();
+  List<String> availableYears = [];
+  bool isLoading = true;
+  bool hasError = false;
+  String? errorMessage;
+  List<FlSpot> chartData = [];
+
+  Future<void> _initData() async {
+    try {
+      // final customerController =
+      //     Provider.of<CustomerController>(context, listen: false);
+
+      // load available years
+      final regDate = await SharedPrefHelper().getCurrentUserRegDate();
+      final years = _generateYearList(regDate);
+      setState(() {
+        availableYears = years;
+        selectedYear = years.last;
+      });
+
+      // load chart data
+      await _loadChartData(selectedYear);
+    } catch (e) {
+      setState(() {
+        hasError = true;
+        errorMessage = e.toString();
+      });
+    }
+  }
+
+  Future<void> _loadChartData(String year) async {
+    final customerController =
+        Provider.of<CustomerController>(context, listen: false);
+    setState(() => isLoading = true);
+
+    await customerController.apiGetChartData(year);
+    final data = customerController.getChartSpots();
+
+    setState(() {
+      chartData = data;
+      isLoading = false;
+    });
+  }
+
+  List<String> _generateYearList(String? regDate) {
+    final currentYear = DateTime.now().year;
+    int startYear = currentYear;
+    if (regDate != null && regDate.isNotEmpty) {
+      final parts = regDate.split('-');
+      if (parts.length == 3) {
+        startYear =
+            parts[0].length == 4 ? int.parse(parts[0]) : int.parse(parts[2]);
+      }
+    }
+    return [for (int y = startYear; y <= currentYear; y++) y.toString()];
+  }
+
   @override
   void initState() {
     super.initState();
     _initializeDashboardData();
     _initializeTopFilteredCustomers();
+    _initData();
     _confettiController =
         ConfettiController(duration: const Duration(seconds: 3));
   }
@@ -341,26 +400,33 @@ class _CDashboardPageState extends State<CDashboardPage> {
       // SizedBox(height: 16),
       buildTripOrRefundNote(userType: type, context: context),
       const SizedBox(height: 20),
-      if (_isDashboardInitialized)
-        ImprovedLineChart(
-          initialYear: _cachedRegDate ?? customerController.userRegDate,
-          key: ValueKey(
-              'chart_${_cachedRegDate ?? customerController.userRegDate}'),
-        )
-      else
-        const SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading chart data...'),
-              ],
-            ),
+      // if (_isDashboardInitialized)
+      //   ImprovedLineChart(
+      //     chartData: chartData,
+      //     availableYears: availableYears,
+      //     selectedYear: selectedYear,
+      //     isLoading: isLoading,
+      //     hasError: hasError,
+      //     errorMessage: errorMessage,
+      //     onYearChanged: (year) async {
+      //       setState(() => selectedYear = year ?? '');
+      //       await _loadChartData(year ?? '');
+      //     },
+      //   )
+      // else
+      const SizedBox(
+        height: 300,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Loading chart data...'),
+            ],
           ),
         ),
+      ),
       const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
@@ -1563,26 +1629,33 @@ class _CDashboardPageState extends State<CDashboardPage> {
       ),
       buildTripOrRefundNote(userType: type, context: context),
       const SizedBox(height: 20),
-      if (_isDashboardInitialized)
-        ImprovedLineChart(
-          initialYear: _cachedRegDate ?? customerController.userRegDate,
-          key: ValueKey(
-              'chart_${_cachedRegDate ?? customerController.userRegDate}'),
-        )
-      else
-        const SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading chart data...'),
-              ],
-            ),
+      // if (_isDashboardInitialized)
+      //   ImprovedLineChart(
+      //     chartData: chartData,
+      //     availableYears: availableYears,
+      //     selectedYear: selectedYear,
+      //     isLoading: isLoading,
+      //     hasError: hasError,
+      //     errorMessage: errorMessage,
+      //     onYearChanged: (year) async {
+      //       setState(() => selectedYear = year ?? '');
+      //       await _loadChartData(year ?? '');
+      //     },
+      //   )
+      // else
+      const SizedBox(
+        height: 300,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Loading chart data...'),
+            ],
           ),
         ),
+      ),
       const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
@@ -1886,26 +1959,33 @@ class _CDashboardPageState extends State<CDashboardPage> {
       const SizedBox(height: 16),
       buildTripOrRefundNote(userType: type, context: context),
       const SizedBox(height: 20),
-      if (_isDashboardInitialized)
-        ImprovedLineChart(
-          initialYear: _cachedRegDate ?? customerController.userRegDate,
-          key: ValueKey(
-              'chart_${_cachedRegDate ?? customerController.userRegDate}'),
-        )
-      else
-        const SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading chart data...'),
-              ],
-            ),
+      // if (_isDashboardInitialized)
+      //   ImprovedLineChart(
+      //     chartData: chartData,
+      //     availableYears: availableYears,
+      //     selectedYear: selectedYear,
+      //     isLoading: isLoading,
+      //     hasError: hasError,
+      //     errorMessage: errorMessage,
+      //     onYearChanged: (year) async {
+      //       setState(() => selectedYear = year ?? '');
+      //       await _loadChartData(year ?? '');
+      //     },
+      //   )
+      // else
+      const SizedBox(
+        height: 300,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Loading chart data...'),
+            ],
           ),
         ),
+      ),
       const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
@@ -2212,26 +2292,33 @@ class _CDashboardPageState extends State<CDashboardPage> {
       const SizedBox(height: 16),
       buildTripOrRefundNote(userType: type, context: context),
       const SizedBox(height: 20),
-      if (_isDashboardInitialized)
-        ImprovedLineChart(
-          initialYear: _cachedRegDate ?? customerController.userRegDate,
-          key: ValueKey(
-              'chart_${_cachedRegDate ?? customerController.userRegDate}'),
-        )
-      else
-        const SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading chart data...'),
-              ],
-            ),
+      // if (_isDashboardInitialized)
+      //   ImprovedLineChart(
+      //     chartData: chartData,
+      //     availableYears: availableYears,
+      //     selectedYear: selectedYear,
+      //     isLoading: isLoading,
+      //     hasError: hasError,
+      //     errorMessage: errorMessage,
+      //     onYearChanged: (year) async {
+      //       setState(() => selectedYear = year ?? '');
+      //       await _loadChartData(year ?? '');
+      //     },
+      //   )
+      // else
+      const SizedBox(
+        height: 300,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Loading chart data...'),
+            ],
           ),
         ),
+      ),
       const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),

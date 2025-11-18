@@ -10,7 +10,6 @@ import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
-import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -210,7 +209,7 @@ class _BDMDashboardPageState extends State<BDMDashboardPage> {
               message: "Keep going! You're doing great!",
             ),
             const SizedBox(height: 20),
-            const ImprovedLineChart(),
+            // const ImprovedLineChart(),
             const SizedBox(height: 20),
             _buildTopPerformersSection(),
             const SizedBox(height: 20),

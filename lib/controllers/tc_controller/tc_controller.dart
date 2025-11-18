@@ -134,8 +134,10 @@ class TcController extends ChangeNotifier {
               dataArray.map((item) => (item as num).toDouble()).toList();
           Logger.success('Line chart data fetched successfully: $_chartData');
           _selectedYear = selectedYear;
+          Logger.info('Chart data: $_chartData');
         } else {
-          _error = 'Unexpected data format for line chart data.';
+          _error = 'Chart Data is empty.';
+          _chartData = List.filled(12, 0.0);
           Logger.error('Unexpected data format for line chart data: $jsonData');
         }
       }
