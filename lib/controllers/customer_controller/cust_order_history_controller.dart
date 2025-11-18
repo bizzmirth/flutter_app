@@ -76,10 +76,12 @@ class CustOrderHistoryController extends ChangeNotifier {
       final encodeBody = jsonEncode(body);
       Logger.info(
           'api called made for(get stat count) $fullUrl and body: $encodeBody');
-      final response = await http.post(Uri.parse(fullUrl),
-          headers: {'Content-Type': 'application/json'}, body: encodeBody);
+      final response = await http.post(
+        Uri.parse(fullUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: encodeBody,
+      );
       if (response.statusCode == 200) {
-        Logger.success('Response from order get count api: ${response.body}');
         final Map<String, dynamic> data = jsonDecode(response.body);
         if (data['status'] == true && data['data'] != null) {
           final dataCount = data['data'];
@@ -92,8 +94,13 @@ class CustOrderHistoryController extends ChangeNotifier {
               dataCount['canceled_booking_count']?.toString();
           _pendingPaymentAmt = dataCount['pending_payment_amt']?.toString();
           _completedPaymentAmt = dataCount['completed_payment_amt']?.toString();
+        } else {
+          _error = 'Cannot fetch stat details. ${response.body}.';
+          Logger.error(
+              'Failed to fetch stat details. body: ${response.body}. statusCode: ${response.statusCode}');
         }
       } else {
+        _error = 'Failed to fetch stat count. ${response.statusCode}';
         Logger.error('Failed with status code: ${response.statusCode}');
       }
     } catch (e, s) {
@@ -332,7 +339,7 @@ class CustOrderHistoryController extends ChangeNotifier {
           _orderHistoryData =
               bookings.map((item) => OrderHistoryModel.fromJson(item)).toList();
         } else {
-          Logger.warning('booking table data is empty');
+          Logger.warning('cancelled table data is empty');
           _orderHistoryData = [];
         }
       } else {
@@ -371,7 +378,7 @@ class CustOrderHistoryController extends ChangeNotifier {
       Logger.info(
           'api call made for(refund order history table data) $url, Body: $encodeBody');
       final response = await http.post(Uri.parse(url), body: encodeBody);
-      Logger.success('response for booked table data ${response.body}');
+      Logger.success('response for refund table data ${response.body}');
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         if (jsonData['status'] == 'success' && jsonData['bookings'] != null) {

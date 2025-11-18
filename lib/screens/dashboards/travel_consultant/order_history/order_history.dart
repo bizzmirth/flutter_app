@@ -1,8 +1,14 @@
 import 'package:bizzmirth_app/controllers/tc_controller/tc_order_history_controller.dart';
+import 'package:bizzmirth_app/data_source/empty_data_source.dart';
+import 'package:bizzmirth_app/data_source/tc_data_sources/tc_order_history_data_source/tc_order_history_data_source.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/widgets/calendar_widget.dart';
+import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class OrderHistory extends StatefulWidget {
@@ -33,6 +39,87 @@ class _OrderHistoryState extends State<OrderHistory> {
     super.initState();
   }
 
+  void _handleDateFilter(
+      DateTime? from, DateTime? to, TcOrderHistoryController controller) {
+    final String filter = selectedFilter.toLowerCase();
+
+    // Convert DateTime → API format (YYYY-MM-DD)
+    final String? startDate =
+        from != null ? DateFormat('yyyy-MM-dd').format(from) : null;
+    final String? endDate =
+        to != null ? DateFormat('yyyy-MM-dd').format(to) : null;
+
+    Logger.info(
+        'Date filter updated: start=$startDate, end=$endDate, filter=$filter');
+
+    switch (filter) {
+      case 'pending':
+        controller.apiGetPendingOrderHisotryTableData(
+          startDate: startDate,
+          endDate: endDate,
+        );
+        break;
+
+      case 'booked':
+        controller.apiGetBookedOrderHistoryTableData(
+          startDate: startDate,
+          endDate: endDate,
+        );
+        break;
+
+      case 'cancelled':
+        controller.apiGetCancelledOrderHistoryTableData(
+          startDate: startDate,
+          endDate: endDate,
+        );
+        break;
+
+      case 'refund':
+        controller.apiGetRefundOrderHistoryTableData(
+          startDate: startDate,
+          endDate: endDate,
+        );
+
+        break;
+
+      default:
+        controller.apiGetAllOrderHistoryTableData(
+            startDate: startDate, endDate: endDate);
+    }
+  }
+
+  void _resetFiltersAndReload(TcOrderHistoryController controller) {
+    // Reset your stored local date variables
+    setState(() {
+      fromDate = null;
+      toDate = null;
+    });
+
+    // Reload ORIGINAL TABLE based on current selectedFilter
+    final filter = selectedFilter.toLowerCase();
+
+    switch (filter) {
+      case 'pending':
+        controller.apiGetPendingOrderHisotryTableData();
+        break;
+
+      case 'booked':
+        controller.apiGetBookedOrderHistoryTableData();
+        break;
+
+      case 'cancelled':
+        controller.apiGetCancelledOrderHistoryTableData();
+        break;
+
+      case 'refund':
+        controller.apiGetRefundOrderHistoryTableData();
+        break;
+
+      default:
+        controller.apiGetAllOrderHistoryTableData();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +134,11 @@ class _OrderHistoryState extends State<OrderHistory> {
       ),
       body: Consumer<TcOrderHistoryController>(
         builder: (context, controller, _) {
+          if (controller.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(10),
@@ -60,7 +152,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                         Expanded(
                           child: buildStatCard(
                             icon: Icons.hourglass_empty,
-                            value: '0',
+                            value: controller.pendingBookingCount ?? '',
                             label: 'Pending Booking',
                             backgroundColor: const Color(0xFFE8E5FF),
                             iconColor: const Color(0xFF6B46C1),
@@ -70,7 +162,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                         Expanded(
                           child: buildStatCard(
                             icon: Icons.flight_takeoff,
-                            value: '0',
+                            value: controller.inTransitBookingCount ?? '',
                             label: 'In Transit Booking',
                             backgroundColor: const Color(0xFFE8E5FF),
                             iconColor: const Color(0xFF10B981),
@@ -86,8 +178,8 @@ class _OrderHistoryState extends State<OrderHistory> {
                         Expanded(
                           child: buildStatCard(
                             icon: Icons.check_circle,
-                            value: '0',
-                            // "₹${double.tryParse(controller.pendingPaymentAmt ?? "0")?.toStringAsFixed(2)}",
+                            value:
+                                "₹${double.tryParse(controller.pendingPaymentAmt ?? "0")?.toStringAsFixed(2)}",
                             label: 'Completed Booking',
                             backgroundColor: const Color(0xFFE8E5FF),
                             iconColor: const Color(0xFF6B46C1),
@@ -97,8 +189,8 @@ class _OrderHistoryState extends State<OrderHistory> {
                         Expanded(
                           child: buildStatCard(
                             icon: Icons.cancel,
-                            value: '0',
-                            // "₹${double.tryParse(controller.cancelledBookingCount ?? '0')?.toStringAsFixed(2)}",
+                            value:
+                                "₹${double.tryParse(controller.cancelledBookingCount ?? '0')?.toStringAsFixed(2)}",
                             label: 'Canceled Booking',
                             backgroundColor: const Color(0xFFE8E5FF),
                             iconColor: const Color(0xFF10B981),
@@ -115,8 +207,8 @@ class _OrderHistoryState extends State<OrderHistory> {
                         Expanded(
                           child: buildStatCard(
                             icon: Icons.hourglass_bottom,
-                            value: '0',
-                            // "₹${double.tryParse(controller.pendingPaymentAmt ?? "0")?.toStringAsFixed(2)}",
+                            value:
+                                "₹${double.tryParse(controller.pendingPaymentAmt ?? "0")?.toStringAsFixed(2)}",
                             label: 'Pending Payment',
                             backgroundColor: const Color(0xFFE8E5FF),
                             iconColor: const Color(0xFF6B46C1),
@@ -126,8 +218,8 @@ class _OrderHistoryState extends State<OrderHistory> {
                         Expanded(
                           child: buildStatCard(
                             icon: Icons.check_circle,
-                            value: '0',
-                            // "₹${double.tryParse(controller.completedPaymentAmt ?? '0')?.toStringAsFixed(2)}",
+                            value:
+                                "₹${double.tryParse(controller.completedPaymentAmt ?? '0')?.toStringAsFixed(2)}",
                             label: 'Completed Payment',
                             backgroundColor: const Color(0xFFE8E5FF),
                             iconColor: const Color(0xFF10B981),
@@ -140,26 +232,26 @@ class _OrderHistoryState extends State<OrderHistory> {
                   const Divider(thickness: 1, color: Colors.black26),
 
                   // ======= 2. Calendar =======
-                  //  CalendarWidget(
-                  //       initialDate: DateTime.now(),
-                  //       onDateSelected: (selectedDate) {
-                  //         final formatted =
-                  //             DateFormat('yyyy-MM-dd').format(selectedDate);
-                  //         controller.apiGetRecentBookings(selectedDate: formatted);
-                  //       },
-                  //       onTodayPressed: () {
-                  //         final formatted =
-                  //             DateFormat('yyyy-MM-dd').format(DateTime.now());
-                  //         controller.apiGetRecentBookings(selectedDate: formatted);
-                  //       },
-                  //       onClearPressed: () {
-                  //         controller.apiGetRecentBookings(); // without filter
-                  //       },
-                  //       eventLoader: (day) {
-                  //         return _tasks[DateTime(day.year, day.month, day.day)] ??
-                  //             [];
-                  //       },
-                  //     ),
+                  CalendarWidget(
+                    initialDate: DateTime.now(),
+                    onDateSelected: (selectedDate) {
+                      final formatted =
+                          DateFormat('yyyy-MM-dd').format(selectedDate);
+                      controller.apiGetRecentBookings(selectedDate: formatted);
+                    },
+                    onTodayPressed: () {
+                      final formatted =
+                          DateFormat('yyyy-MM-dd').format(DateTime.now());
+                      controller.apiGetRecentBookings(selectedDate: formatted);
+                    },
+                    onClearPressed: () {
+                      controller.apiGetRecentBookings(); // without filter
+                    },
+                    eventLoader: (day) {
+                      return _tasks[DateTime(day.year, day.month, day.day)] ??
+                          [];
+                    },
+                  ),
 
                   const SizedBox(height: 20),
                   const Divider(thickness: 1, color: Colors.black26),
@@ -189,11 +281,147 @@ class _OrderHistoryState extends State<OrderHistory> {
                   const SizedBox(height: 20),
 
                   // Bookings Table Section
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withValues(alpha: 0.1),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: filterOptions
+                              .map(
+                                (filter) => _buildFilterTab(filter,
+                                    selectedFilter == filter, controller),
+                              )
+                              .toList(),
+                        ),
+
+                        // DateFilterWidget(),
+                        const SizedBox(height: 8),
+                        const Divider(thickness: 1, color: Colors.black26),
+                        FilterBar(
+                          userCount:
+                              controller.orderHistoryData.length.toString(),
+                          onDateRangeChanged: (from, to) {
+                            _handleDateFilter(from, to, controller);
+                          },
+                          onClearFilters: () =>
+                              _resetFiltersAndReload(controller),
+                        ),
+
+                        Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: SizedBox(
+                            height: (_rowsPerPage * dataRowHeight) +
+                                headerHeight +
+                                paginationHeight,
+                            child: PaginatedDataTable(
+                              columnSpacing: 35,
+                              dataRowMinHeight: 40,
+                              columns: const [
+                                DataColumn(label: Text('Sr. No.')),
+                                DataColumn(label: Text('Booking ID')),
+                                DataColumn(label: Text('Tour Date')),
+                                DataColumn(label: Text('Package Name')),
+                                DataColumn(label: Text('Customer')),
+                                DataColumn(label: Text('Travel Consultant')),
+                                DataColumn(label: Text('Payment Status')),
+                                DataColumn(label: Text('Status')),
+                                DataColumn(label: Text('Action')),
+                              ],
+                              source: controller.orderHistoryData.isEmpty
+                                  ? EmptyDataSource(columnCount: 9)
+                                  : TcOrderHistoryDataSource(
+                                      controller.orderHistoryData,
+                                    ),
+                              rowsPerPage: _rowsPerPage,
+                              availableRowsPerPage: const [5, 10, 15, 20, 25],
+                              onRowsPerPageChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _rowsPerPage = value;
+                                  });
+                                }
+                              },
+                              arrowHeadColor: Colors.blue,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildFilterTab(
+      String text, bool isSelected, TcOrderHistoryController controller) {
+    return GestureDetector(
+      onTap: () async {
+        setState(() {
+          selectedFilter = text;
+        });
+
+        Logger.success('Selected Filter: $text');
+
+        // RECALL the API according to the tab (without dates first)
+        final filter = text.toLowerCase();
+
+        if (filter == 'pending') {
+          await controller.apiGetPendingOrderHisotryTableData();
+        } else if (filter == 'booked') {
+          await controller.apiGetBookedOrderHistoryTableData();
+        } else if (filter == 'cancelled') {
+          await controller.apiGetCancelledOrderHistoryTableData();
+        } else if (filter == 'refund') {
+          await controller.apiGetRefundOrderHistoryTableData();
+        } else {
+          await controller.apiGetAllOrderHistoryTableData();
+        }
+
+        // THEN apply date filter IF user already picked dates
+        _handleDateFilter(fromDate, toDate, controller);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected ? const Color(0xFF6366F1) : Colors.transparent,
+              width: 2,
+            ),
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? const Color(0xFF6366F1) : Colors.grey.shade600,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            fontSize: 14,
+          ),
+        ),
       ),
     );
   }
@@ -357,4 +585,3 @@ class _OrderHistoryState extends State<OrderHistory> {
     );
   }
 }
-// TODO: complete the ui of the tc order history
