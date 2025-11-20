@@ -1,5 +1,5 @@
 import 'package:bizzmirth_app/models/order_history/order_history_model.dart';
-import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_details.dart';
+import 'package:bizzmirth_app/screens/dashboards/travel_consultant/order_history/order_details_screen.dart';
 import 'package:flutter/material.dart';
 
 class TcOrderHistoryDataSource extends DataTableSource {
@@ -114,15 +114,17 @@ class TcOrderHistoryDataSource extends DataTableSource {
         PopupMenuItem(
           value: 'view',
           child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text('View'),
+            leading: const Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
+            title: const Text('View'),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => OrderDetails()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const OrderDetailsScreen()));
             },
           ),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'edit',
           child: ListTile(
             leading: Icon(Icons.edit, color: Color(0xFF0069BE)),
