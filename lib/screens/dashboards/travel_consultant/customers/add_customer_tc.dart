@@ -1300,36 +1300,60 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                                   ),
                                 ),
                                 child: Row(
-                                  children: ['Cash', 'Cheque', 'UPI/NEFT'].map(
-                                    (mode) {
-                                      return Row(
+                                  children: ['Cash', 'Cheque', 'UPI/NEFT']
+                                      .map((package) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedPaymentMode = package;
+                                        });
+                                      },
+                                      child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Radio<String>(
-                                            value: mode,
-                                            groupValue: _selectedPaymentMode,
-                                            activeColor: Colors.white,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                _selectedPaymentMode = value!;
-                                              });
-                                              // Update validation state
-                                              fieldState.didChange(value);
-                                            },
-                                          ),
+                                          // Radio<String>(
+                                          //   value: package,
+                                          //   groupValue:
+                                          //       _selectedPaymentMode,
+                                          //   activeColor: Colors
+                                          //       .white, // Change radio button color
+                                          //   onChanged: (value) {
+                                          //     setState(() {
+                                          //       _selectedPaymentMode =
+                                          //           value!;
+                                          //       Logger.success(
+                                          //           "Selected payment Mode: $_selectedPaymentMode");
+                                          //     });
+                                          //   },
+                                          // ),
+                                          RadioGroup<String>(
+                                              groupValue: _selectedPaymentMode,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _selectedPaymentMode = value!;
+                                                  Logger.success(
+                                                      'Selected payment Mode: $_selectedPaymentMode');
+                                                });
+                                              },
+                                              child: Radio<String>(
+                                                value: package,
+                                              )),
                                           Text(
-                                            mode,
+                                            package,
                                             style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
-                                              color: Colors.white,
+                                              color: Colors
+                                                  .white, // Gray out text if disabled
                                             ),
                                           ),
-                                          const SizedBox(width: 12),
+                                          const SizedBox(
+                                              width:
+                                                  10), // Spacing between radio buttons
                                         ],
-                                      );
-                                    },
-                                  ).toList(),
+                                      ),
+                                    );
+                                  }).toList(),
                                 ),
                               ),
                               if (fieldState.hasError)

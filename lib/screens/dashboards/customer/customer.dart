@@ -50,7 +50,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
   int eligibleCouponsCount = 0;
   late ConfettiController _confettiController;
 
-  bool _isDashboardInitialized = false;
+  // bool _isDashboardInitialized = false;
   bool _isInitializing = false;
   String? _cachedRegDate;
 
@@ -297,7 +297,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
       if (mounted) {
         setState(() {
-          _isDashboardInitialized = true;
+          // _isDashboardInitialized = true;
           _isInitializing = false;
         });
       }
@@ -305,7 +305,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
       Logger.error('Error initializing dashboard: $e');
       if (mounted) {
         setState(() {
-          _isDashboardInitialized = true;
+          // _isDashboardInitialized = true;
           _isInitializing = false;
         });
       }
