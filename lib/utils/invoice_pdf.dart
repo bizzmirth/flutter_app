@@ -16,7 +16,6 @@ class InvoicePdf {
             child: pw.Image(
               image,
               width: PdfPageFormat.a4.width - 40,
-              fit: pw.BoxFit.contain,
             ),
           );
         },

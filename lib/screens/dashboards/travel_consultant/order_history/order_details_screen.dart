@@ -2,13 +2,17 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:bizzmirth_app/controllers/tc_controller/tc_order_history_controller.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/invoice_pdf.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:provider/provider.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   const OrderDetailsScreen({super.key});
@@ -30,6 +34,20 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       return result.isGranted;
     }
     return true;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getOrderHistoryData();
+    });
+  }
+
+  Future<void> getOrderHistoryData() async {
+    final controller =
+        Provider.of<TcOrderHistoryController>(context, listen: false);
+    await controller.apiGetOrderHistoryData();
   }
 
   // Hardcoded Sample Data
@@ -80,11 +98,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       final granted = await requestStoragePermission();
 
       if (!granted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Storage permission required'),
-          ),
-        );
+        ToastHelper.showInfoToast(title: 'Storage permission required');
         setState(() => _saving = false);
         return;
       }
@@ -100,12 +114,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           await _saveFile(pdfBytes, "invoice_${order['bookingNo']}.pdf");
 
       if (file != null) {
-        OpenFilex.open(file.path);
+        await OpenFilex.open(file.path);
       }
     } catch (e) {
-      debugPrint('Error: $e');
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
+      ToastHelper.showErrorToast(title: 'Error: $e');
+      Logger.error('Error: $e');
     }
 
     setState(() => _saving = false);
@@ -167,20 +180,25 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: RepaintBoundary(
-          key: previewContainer,
-          child: _buildInvoiceScreen(customer, amount, members),
-        ),
+      body: Consumer<TcOrderHistoryController>(
+        builder: (context, controller, _) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: RepaintBoundary(
+              key: previewContainer,
+              child: _buildInvoiceScreen(customer, amount, members, controller),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildInvoiceScreen(customer, amount, members) {
+  Widget _buildInvoiceScreen(
+      customer, amount, members, TcOrderHistoryController controller) {
     return Column(
       children: [
-        _buildMainInvoiceCard(order, customer, amount, members),
+        _buildMainInvoiceCard(order, customer, amount, members, controller),
         const SizedBox(height: 12),
         Text('304 - 306, Dempo Towers, Patto Plaza Panjim - Goa - 403001',
             style: TextStyle(color: Colors.grey[700])),
@@ -192,8 +210,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   //  YOUR EXISTING UI METHODS
   // --------------------------
 
-  Widget _buildMainInvoiceCard(
-      Map order, Map customer, Map amount, List members) {
+  Widget _buildMainInvoiceCard(Map order, Map customer, Map amount,
+      List members, TcOrderHistoryController controller) {
     return Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -238,18 +256,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               ],
             ),
             const SizedBox(height: 14),
-            _customerDetailsCard(order),
+            _customerDetailsCard(order, controller),
             const SizedBox(height: 20),
-            _buildTourMembersCard(members),
+            _buildTourMembersCard(members, controller),
             const SizedBox(height: 20),
-            _buildAmountCard(amount),
+            _buildAmountCard(amount, controller),
           ],
         ),
       ),
     );
   }
 
-  Widget _customerDetailsCard(Map order) {
+  Widget _customerDetailsCard(Map order, TcOrderHistoryController controller) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(40),
@@ -309,7 +327,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
   }
 
-  Widget _buildTourMembersCard(List members) {
+  Widget _buildTourMembersCard(
+      List members, TcOrderHistoryController controller) {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
@@ -332,7 +351,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
   }
 
-  Widget _buildAmountCard(Map amount) {
+  Widget _buildAmountCard(Map amount, TcOrderHistoryController controller) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),

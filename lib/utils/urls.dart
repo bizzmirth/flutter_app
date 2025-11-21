@@ -210,4 +210,7 @@ class AppUrls {
 
   static String get getTcRefundTableData =>
       '$_travelConsultant/orders/refunded_table_data.php';
+
+  static String get getTcOrderDetailsData =>
+      '$_travelConsultant/orders/order_details.php';
 }

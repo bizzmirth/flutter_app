@@ -1,5 +1,6 @@
 import 'package:bizzmirth_app/models/order_history/order_history_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/order_history/order_details_screen.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 
 class TcOrderHistoryDataSource extends DataTableSource {
@@ -83,7 +84,7 @@ class TcOrderHistoryDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(_buildActionMenu()),
+        DataCell(_buildActionMenu(order)),
       ],
     );
   }
@@ -105,7 +106,7 @@ class TcOrderHistoryDataSource extends DataTableSource {
     }
   }
 
-  Widget _buildActionMenu() {
+  Widget _buildActionMenu(OrderHistoryModel order) {
     return PopupMenuButton<String>(
       onSelected: (value) {
         // handle actions
@@ -117,6 +118,7 @@ class TcOrderHistoryDataSource extends DataTableSource {
             leading: const Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
             title: const Text('View'),
             onTap: () {
+              Logger.info('selected id: ${order.id}');
               Navigator.push(
                   context,
                   MaterialPageRoute(
