@@ -41,7 +41,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
   // charts data send from dashboard
   String selectedYear = DateTime.now().year.toString();
   List<String> availableYears = [];
-  bool isLoading = true;
+
   bool hasError = false;
   String? errorMessage;
   List<FlSpot> chartData = [];
@@ -72,14 +72,14 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
   Future<void> _loadChartData(String year) async {
     final customerController =
         Provider.of<TcController>(context, listen: false);
-    setState(() => isLoading = true);
+    setState(() {});
 
     await customerController.apiGetChartData(year);
     final data = customerController.getChartSpots();
 
     setState(() {
       chartData = data;
-      isLoading = false;
+      // isLoading = false;
     });
   }
 
@@ -391,7 +391,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                     chartData: chartData,
                     availableYears: availableYears,
                     selectedYear: selectedYear,
-                    isLoading: isLoading,
+                    // isLoading: isLoading,
                     hasError: hasError,
                     errorMessage: errorMessage,
                     onYearChanged: (year) async {

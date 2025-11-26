@@ -278,36 +278,51 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.asset('assets/Bizzmirth.png',
-                width: 200, height: 130, fit: BoxFit.cover),
+            child: Image.asset(
+              'assets/Bizzmirth.png',
+              width: 200,
+              height: 140,
+              fit: BoxFit.cover,
+            ),
           ),
-          const SizedBox(height: 20),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text('Customer Details',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 30),
+          const Padding(
+            padding: EdgeInsets.only(left: 12),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Customer Details',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 14),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Expanded(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Order ID'),
-                      Text('Customer ID'),
-                      Text('Name'),
-                      Text('Email'),
-                      Text('Phone No'),
-                      Text('Package'),
-                      Text('Departure Date'),
-                      Text('Member Count'),
-                    ]),
-              ),
-              Expanded(
-                flex: 2,
-                child: Column(
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Order ID'),
+                        Text('Customer ID'),
+                        Text('Name'),
+                        Text('Email'),
+                        Text('Phone No'),
+                        Text('Package'),
+                        Text('Departure Date'),
+                        Text('Member Count'),
+                      ]),
+                ),
+                const Spacer(),
+                Expanded(
+                  flex: 2,
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(order['customer']['orderId']),
@@ -318,10 +333,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       Text(order['customer']['package']),
                       Text(order['customer']['departure']),
                       Text("Adults: ${order['customer']['members']}"),
-                    ]),
-              ),
-            ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -336,15 +354,55 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       padding: const EdgeInsets.all(12),
       child: Column(
         children: [
-          const Text('Tour Members',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Tour Members',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           const Divider(),
-          ...members.map((m) => ListTile(
-                dense: true,
-                leading: Text("${m['sr']}"),
-                title: Text(m['name']),
-                subtitle: Text(m['gender']),
-                trailing: Text("${m['age']}"),
+
+          // Header Row
+          const Row(
+            children: [
+              SizedBox(width: 24, child: Text('#')),
+              SizedBox(width: 10),
+              Expanded(
+                flex: 3,
+                child: Text('Name'),
+              ),
+              Expanded(
+                flex: 2,
+                child: Text('Gender'),
+              ),
+              Expanded(
+                child: Text('Age'),
+              ),
+            ],
+          ),
+          const Divider(),
+
+          // Data Rows
+          ...members.map((m) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 24,
+                      child: Text("${m['sr']}"),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 3,
+                      child: Text(m['name']),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Text(m['gender']),
+                    ),
+                    Expanded(
+                      child: Text("${m['age']}"),
+                    ),
+                  ],
+                ),
               )),
         ],
       ),

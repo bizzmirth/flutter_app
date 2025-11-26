@@ -119,6 +119,7 @@ class TcOrderHistoryDataSource extends DataTableSource {
             title: const Text('View'),
             onTap: () {
               Logger.info('selected id: ${order.id}');
+              Navigator.pop(context);
               Navigator.push(
                   context,
                   MaterialPageRoute(
