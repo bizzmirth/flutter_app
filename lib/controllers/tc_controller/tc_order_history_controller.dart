@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bizzmirth_app/models/order_history/order_history_details.dart';
 import 'package:bizzmirth_app/models/order_history/order_history_model.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_order_history/tc_order_history_recent_booking.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
@@ -20,6 +21,7 @@ class TcOrderHistoryController extends ChangeNotifier {
   String? _completedPaymentAmt;
   List<OrderHistoryModel> _orderHistoryData = [];
   List<TcOrderHistoryRecentBooking> _tcOrderHistoryRecentBookings = [];
+  OrderHistoryDetails? _orderHistoryDetails;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -32,6 +34,7 @@ class TcOrderHistoryController extends ChangeNotifier {
   List<OrderHistoryModel> get orderHistoryData => _orderHistoryData;
   List<TcOrderHistoryRecentBooking> get tcOrderHistoryRecentBookings =>
       _tcOrderHistoryRecentBookings;
+  OrderHistoryDetails? get orderHistoryDetails => _orderHistoryDetails;
 
   Future<String> _getUserId() async {
     final loginRes = await SharedPrefHelper().getLoginResponse();
@@ -370,6 +373,34 @@ class TcOrderHistoryController extends ChangeNotifier {
       Logger.error(
           'Error fetching refund order hsitory table. Error: $e, Stacktrace: $s');
     } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiGetOrderHistoryData() async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final url = AppUrls.getTcOrderDetailsData;
+      final orderId = '6';
+      final Map<String, dynamic> body = {'id': orderId};
+      final encodeBody = jsonEncode(body);
+      final response = await http.post(Uri.parse(url), body: encodeBody);
+      Logger.success('response from order hisotry data ${response.body}');
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        if (jsonData['status'] == 'success' && jsonData['booking'] != null) {
+          _orderHistoryDetails = OrderHistoryDetails.fromJson(jsonData);
+          Logger.info('details: $_orderHistoryDetails');
+        }
+      }
+    } catch (e, s) {
+      _error = 'Error fetching order details. Error: $e';
+      Logger.error('Error fetching order details. Error: $e, Stacktrace: $s');
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }

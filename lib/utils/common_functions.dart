@@ -173,3 +173,23 @@ String getMonthName(String? monthNumber) {
 
   return monthNames[monthNumber] ?? '';
 }
+
+// takes the input as color as return it to use in the style
+Color convertColor(String? color) {
+  switch (color?.toLowerCase()) {
+    case 'green':
+      return Colors.green;
+    case 'red':
+      return Colors.red;
+    case 'blue':
+      return Colors.blue;
+    case 'orange':
+      return Colors.orange;
+    case 'yellow':
+      return Colors.yellow;
+    case 'purple':
+      return Colors.purple;
+    default:
+      return Colors.grey; // fallback
+  }
+}
