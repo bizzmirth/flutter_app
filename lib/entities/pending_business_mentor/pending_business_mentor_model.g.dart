@@ -245,7 +245,7 @@ const PendingBusinessMentorModelSchema = CollectionSchema(
   getId: _pendingBusinessMentorModelGetId,
   getLinks: _pendingBusinessMentorModelGetLinks,
   attach: _pendingBusinessMentorModelAttach,
-  version: '3.1.0+1',
+  version: '3.3.0',
 );
 
 int _pendingBusinessMentorModelEstimateSize(
