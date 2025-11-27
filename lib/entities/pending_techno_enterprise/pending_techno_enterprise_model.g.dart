@@ -160,7 +160,7 @@ const PendingTechnoEnterpriseModelSchema = CollectionSchema(
   getId: _pendingTechnoEnterpriseModelGetId,
   getLinks: _pendingTechnoEnterpriseModelGetLinks,
   attach: _pendingTechnoEnterpriseModelAttach,
-  version: '3.1.0+1',
+  version: '3.3.0',
 );
 
 int _pendingTechnoEnterpriseModelEstimateSize(
