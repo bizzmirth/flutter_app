@@ -114,15 +114,17 @@ class TcOrderHistoryDataSource extends DataTableSource {
         PopupMenuItem(
           value: 'view',
           child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text('View'),
+            leading: const Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
+            title: const Text('View'),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => OrderDetails()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const OrderDetails()));
             },
           ),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'edit',
           child: ListTile(
             leading: Icon(Icons.edit, color: Color(0xFF0069BE)),
