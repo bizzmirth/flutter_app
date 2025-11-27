@@ -118,12 +118,16 @@ class TcOrderHistoryDataSource extends DataTableSource {
             leading: const Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
             title: const Text('View'),
             onTap: () {
+
               Logger.info('selected id: ${order.id}');
               Navigator.pop(context);
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const OrderDetailsScreen()));
+
+
+
             },
           ),
         ),
