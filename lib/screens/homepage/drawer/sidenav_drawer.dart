@@ -7,6 +7,7 @@ import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterp
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,55 +30,55 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
     getUserType();
   }
 
-  void getUserType() async {
-    final getUserType = await SharedPrefHelper().getUserType();
-    Logger.info("User Type from Shared Preferences: $getUserType");
+  Future<void> getUserType() async {
+    final getUserType = await SharedPrefHelper().getLoginResponse();
+    Logger.info('User Type from Shared Preferences: $userType');
 
     setState(() {
-      userType = getUserType;
+      userType = getUserType?.userType ?? '';
       isLoading = false;
     });
   }
 
   void _navigateToDashboard(BuildContext context, String userType) {
     switch (userType) {
-      case "Admin":
+      case 'Admin':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const AdminDashboard()),
         );
         break;
-      case "Customer":
+      case 'Customer':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const CDashboardPage()),
         );
         break;
-      case "Travel Consultant":
+      case 'Travel Consultant':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const TCDashboardPage()),
         );
         break;
-      case "Techno Enterprise":
+      case 'Techno Enterprise':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const TEDashboardPage()),
         );
         break;
-      case "Business Channel manager":
+      case 'Business Channel manager':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BCHDashboardPage()),
         );
         break;
-      case "Business Development Manager":
+      case 'Business Development Manager':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BDMDashboardPage()),
         );
         break;
-      case "Business Mentor":
+      case 'Business Mentor':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BMDashboardPage()),
@@ -88,22 +89,22 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
 
   String _getDashboardTitle(String userType) {
     switch (userType) {
-      case "Admin":
-        return "My Admin Dashboard";
-      case "Customer":
-        return "My Customer Dashboard";
-      case "Travel Consultant":
-        return "My Travel Consultant Dashboard";
-      case "Techno Enterprise":
-        return "My Techno Enterprise Dashboard";
-      case "Business Channel manager":
-        return "My Business Channel Head Dashboard";
-      case "Business Development Manager":
-        return "My Business Development Manager Dashboard";
-      case "Business Mentor":
-        return "My Business Mentor Dashboard";
+      case 'Admin':
+        return 'My Admin Dashboard';
+      case 'Customer':
+        return 'My Customer Dashboard';
+      case 'Travel Consultant':
+        return 'My Travel Consultant Dashboard';
+      case 'Techno Enterprise':
+        return 'My Techno Enterprise Dashboard';
+      case 'Business Channel manager':
+        return 'My Business Channel Head Dashboard';
+      case 'Business Development Manager':
+        return 'My Business Development Manager Dashboard';
+      case 'Business Mentor':
+        return 'My Business Mentor Dashboard';
       default:
-        return "My Dashboard";
+        return 'My Dashboard';
     }
   }
 
@@ -114,7 +115,7 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
         children: [
           Container(
             width: double.infinity,
-            color: Color.fromARGB(255, 81, 131, 246),
+            color: const Color.fromARGB(255, 81, 131, 246),
             padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -125,9 +126,9 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
                     backgroundImage: AssetImage('assets/user_image.jpg'),
                     radius: 30,
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
-                    "Welcome, Traveler!",
+                    'Welcome, Traveler!',
                     style: GoogleFonts.roboto(
                       fontSize: 18,
                       color: Colors.white,
@@ -135,7 +136,7 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
                     ),
                   ),
                   Text(
-                    "Explore the best trips and deals",
+                    'Explore the best trips and deals',
                     style: GoogleFonts.roboto(
                       fontSize: 14,
                       color: Colors.white70,
@@ -151,28 +152,28 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
               padding: EdgeInsets.zero,
               children: [
                 ListTile(
-                  leading: Icon(Icons.home, color: Colors.blue),
-                  title: Text("Home"),
+                  leading: const Icon(Icons.home, color: Colors.blue),
+                  title: const Text('Home'),
                   onTap: () {
                     Navigator.pop(context);
                   },
                 ),
                 // Show loading indicator while fetching user type
                 if (isLoading)
-                  ListTile(
+                  const ListTile(
                     leading: CircularProgressIndicator(),
-                    title: Text("Loading..."),
+                    title: Text('Loading...'),
                   ),
                 if (!isLoading && userType != null && userType!.isNotEmpty)
                   ListTile(
-                    leading: Icon(Icons.dashboard, color: Colors.orange),
+                    leading: const Icon(Icons.dashboard, color: Colors.orange),
                     title: Text(_getDashboardTitle(userType!)),
                     onTap: () {
                       _navigateToDashboard(context, userType!);
                     },
                   ),
 
-                Divider(),
+                const Divider(),
                 ListTile(
                   leading: Icon(
                     (userType != null && userType!.isNotEmpty)
@@ -181,16 +182,19 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
                     color: Colors.black,
                   ),
                   title: Text((userType != null && userType!.isNotEmpty)
-                      ? "Log out"
-                      : "Log in"),
-                  onTap: () {
+                      ? 'Log out'
+                      : 'Log in'),
+                  onTap: () async {
                     if (userType != null && userType!.isNotEmpty) {
-                      _handleLogout();
+                      await performLogout(context);
+                      userType = '';
+                      setState(() {});
                     } else {
                       // Handle login
-                      Navigator.pushReplacement(
+                      await Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()),
                       );
                     }
                   },
@@ -199,22 +203,14 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Image.asset(
-              "assets/bizz_logo.png",
+              'assets/bizz_logo.png',
               height: 80,
             ),
           ),
         ],
       ),
     );
-  }
-
-  void _handleLogout() async {
-    await SharedPrefHelper().removeDetails();
-    setState(() {
-      userType = '';
-    });
-    Logger.info("User logged out successfully");
   }
 }

@@ -42,7 +42,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
     }
   }
 
-  void _animateProgress() async {
+  Future<void> _animateProgress() async {
     for (int i = displayedStep; i < widget.currentStep; i++) {
       await Future.delayed(const Duration(milliseconds: 800));
       setState(() => displayedStep = i + 1);
@@ -54,7 +54,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    double progress = displayedStep / (widget.totalSteps - 1);
+    final double progress = displayedStep / (widget.totalSteps - 1);
     int totalSteps = 0;
     if (displayedStep == 4) {
       totalSteps = 3;
@@ -95,7 +95,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
               ],
             ),
             child: Text(
-              "Coupons Unlocked: $totalSteps / ${widget.totalSteps - 1}",
+              'Coupons Unlocked: $totalSteps / ${widget.totalSteps - 1}',
               style: TextStyle(
                 fontSize: smallFontSize,
                 fontWeight: FontWeight.bold,
@@ -154,7 +154,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.purpleAccent.withOpacity(0.4),
+                            color: Colors.purpleAccent.withValues(alpha: 0.4),
                             blurRadius: 6 * widget.scaleFactor,
                             spreadRadius: 1 * widget.scaleFactor,
                           ),
@@ -177,9 +177,9 @@ class _CouponProgressBarState extends State<CouponProgressBar>
             padding: EdgeInsets.symmetric(horizontal: scaledPadding),
             itemCount: widget.totalSteps,
             itemBuilder: (context, index) {
-              bool isUnlocked = index < displayedStep;
-              bool isCurrent = index == displayedStep - 1;
-              bool isFinal = index == widget.totalSteps - 1;
+              final bool isUnlocked = index < displayedStep;
+              final bool isCurrent = index == displayedStep - 1;
+              final bool isFinal = index == widget.totalSteps - 1;
 
               return AnimatedSwitcher(
                 duration: const Duration(milliseconds: 400),
@@ -212,7 +212,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
 
   Widget _lockedCard(bool isFinal, double cardWidth, double iconSize) {
     return Container(
-      key: const ValueKey("locked"),
+      key: const ValueKey('locked'),
       margin: EdgeInsets.symmetric(horizontal: 8 * widget.scaleFactor),
       width: cardWidth,
       decoration: BoxDecoration(
@@ -238,7 +238,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
                 sigmaX: 4 * widget.scaleFactor,
                 sigmaY: 4 * widget.scaleFactor,
               ),
-              child: Container(color: Colors.white.withOpacity(0.05)),
+              child: Container(color: Colors.white.withValues(alpha: 0.05)),
             ),
             Center(
               child: Icon(
@@ -255,16 +255,16 @@ class _CouponProgressBarState extends State<CouponProgressBar>
 
   Widget _unlockedCard(int index, bool isFinal, double cardWidth,
       double iconSize, double fontSize) {
-    List<List<Color>> gradients = [
+    final List<List<Color>> gradients = [
       [const Color(0xFF6A8DFF), const Color(0xFF8AB4FF)], // Calm blue
       [const Color(0xFF9B6BFF), const Color(0xFFC29DFF)], // Soft purple
       [const Color(0xFF5ABF8A), const Color(0xFF89E3B6)], // Fresh green
     ];
 
-    List<Color> gradient = gradients[index % 3];
+    final List<Color> gradient = gradients[index % 3];
 
     return Container(
-      key: const ValueKey("unlocked"),
+      key: const ValueKey('unlocked'),
       margin: EdgeInsets.symmetric(horizontal: 8 * widget.scaleFactor),
       width: cardWidth,
       decoration: BoxDecoration(
@@ -292,7 +292,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
           Container(
             padding: EdgeInsets.all(16 * widget.scaleFactor),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -309,7 +309,7 @@ class _CouponProgressBarState extends State<CouponProgressBar>
           ),
           SizedBox(height: 10 * widget.scaleFactor),
           Text(
-            isFinal ? "Unlock your Europe trip" : "Coupon ${index + 1}",
+            isFinal ? 'Unlock your Europe trip' : 'Coupon ${index + 1}',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: fontSize,
@@ -326,11 +326,11 @@ class _CouponProgressBarState extends State<CouponProgressBar>
                   vertical: 4 * widget.scaleFactor,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12 * widget.scaleFactor),
                 ),
                 child: Text(
-                  "Used",
+                  'Used',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,

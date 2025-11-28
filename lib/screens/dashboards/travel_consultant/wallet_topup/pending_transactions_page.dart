@@ -1,109 +1,128 @@
+import 'package:bizzmirth_app/models/tc_models/tc_topup_wallets/tc_topup_request_list_model.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 
-class PendingTransactionsPage extends StatefulWidget {
-  final List<Map<String, String>> pendingTransactions;
+class PendingTransactionsPage extends StatelessWidget {
+  final List<TcTopupRequestList> pendingTransactions;
 
-  PendingTransactionsPage({required this.pendingTransactions});
+  const PendingTransactionsPage({super.key, required this.pendingTransactions});
 
-  @override
-  _PendingTransactionsPageState createState() =>
-      _PendingTransactionsPageState();
-}
-
-class _PendingTransactionsPageState extends State<PendingTransactionsPage> {
-  late List<Map<String, String>> _localPendingTransactions;
-
-  @override
-  void initState() {
-    super.initState();
-    _localPendingTransactions = List.from(widget.pendingTransactions);
+  // ✅ Function to get status color
+  Color _getStatusColor(String statusLabel) {
+    switch (statusLabel.toLowerCase()) {
+      case 'pending':
+        return Colors.orangeAccent;
+      case 'approved':
+        return Colors.green;
+      case 'rejected':
+        return Colors.redAccent;
+      default:
+        return Colors.grey;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // ✅ Filter only pending transactions
+    final filteredPending = pendingTransactions
+        .where((t) => (t.statusLabel ?? '').toLowerCase() == 'pending')
+        .toList();
+
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('Pending Transactions', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Pending Transactions',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
-      body: _localPendingTransactions.isEmpty
-          ? Center(
+
+      // ✅ Show message if none
+      body: filteredPending.isEmpty
+          ? const Center(
               child: Text(
-                "No pending transactions",
+                'No pending transactions found',
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                ),
               ),
             )
-          : Padding(
-              padding: EdgeInsets.all(10),
-              child: ListView.builder(
-                itemCount: _localPendingTransactions.length,
-                itemBuilder: (context, index) {
-                  final transaction = _localPendingTransactions[index];
-                  return _buildTransactionCard(transaction);
-                },
-              ),
-            ),
-    );
-  }
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: filteredPending.length,
+              itemBuilder: (context, index) {
+                final transaction = filteredPending[index];
 
-  Widget _buildTransactionCard(Map<String, String> transaction) {
-    return Card(
-      elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildInfoRow("Transaction ID", transaction["id"]!),
-            _buildInfoRow("Name", transaction["name"]!),
-            _buildInfoRow("Amount", transaction["amount"]!, isBold: true),
-            _buildInfoRow("Payment Mode", transaction["mode"]!),
-            SizedBox(height: 8),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 6),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.orangeAccent.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                "Pending Approval",
-                style: TextStyle(
-                    color: Colors.orange, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Transaction header (ID + Status)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Transaction #${transaction.srNo}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: _getStatusColor(
+                                    transaction.statusLabel ?? ''),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                transaction.statusLabel ?? 'Unknown',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
 
-  Widget _buildInfoRow(String label, String value, {bool isBold = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
-          ),
-        ],
-      ),
+                        // Amount
+                        Text(
+                          'Top-up Amount: ₹${transaction.topUpAmount}',
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                        const SizedBox(height: 4),
+
+                        // Dates
+                        Text(
+                          'Created: ${formatDate(transaction.createdDate)}',
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontSize: 13,
+                          ),
+                        ),
+                        Text(
+                          'Updated: ${formatDate(transaction.updatedDate)}',
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }

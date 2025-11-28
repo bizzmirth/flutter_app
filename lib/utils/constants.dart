@@ -2,13 +2,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/book_now_page/book_now_page.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/add_referral_customer.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/widgets/enquire_now_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -28,8 +28,198 @@ Widget contactInfo(IconData icon, String text) {
 
 // Divider for spacing
 Widget divider() {
-  // ignore: deprecated_member_use
-  return Divider(color: Colors.white.withOpacity(0.5));
+  return Divider(color: Colors.white.withValues(alpha: 0.5));
+}
+
+Widget _customAdultInputField({
+  required IconData icon,
+  required String label,
+  required TextEditingController controller,
+  int maxLines = 1,
+  VoidCallback? onClear, // Function to handle clearing input
+}) {
+  return StatefulBuilder(builder: (context, setState) {
+    return TextField(
+      keyboardType: TextInputType.phone,
+      controller: controller,
+      maxLines: maxLines,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+        prefixIcon: Icon(icon, color: Colors.white),
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: 0.2),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      onChanged: (value) {
+        if (value.isEmpty || value == '0') {
+          setState(() {
+            controller.text = '1'; // Reset to 1 if user enters 0
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('At least 1 adult is a must'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+    );
+  });
+}
+
+Widget _customInputField({
+  required IconData icon,
+  required String label,
+  required TextEditingController controller,
+  int maxLines = 1,
+  VoidCallback? onClear, // Function to handle clearing input
+}) {
+  return TextField(
+    keyboardType: TextInputType.phone,
+    controller: controller,
+    maxLines: maxLines,
+    style: const TextStyle(color: Colors.white),
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+      prefixIcon: Icon(icon, color: Colors.white),
+      suffixIcon: controller.text.isNotEmpty
+          ? IconButton(
+              icon:
+                  Icon(Icons.clear, color: Colors.white.withValues(alpha: 0.8)),
+              onPressed: onClear, // Clear input when tapped
+            )
+          : null,
+      filled: true,
+      fillColor: Colors.white.withValues(alpha: 0.2),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+    ),
+  );
+}
+
+Widget customInputRow({
+  required IconData icon1,
+  required String label1,
+  required TextEditingController controller1,
+  required IconData icon2,
+  required String label2,
+  required TextEditingController controller2,
+  required IconData icon3,
+  required String label3,
+  required TextEditingController controller3,
+  required VoidCallback onUpdate, // Callback to update state
+  double width1 = 0.33,
+  double width2 = 0.33,
+  double width3 = 0.33,
+}) {
+  controller1.text = controller1.text.isEmpty ? '1' : controller1.text;
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          // Adults Input
+          Expanded(
+            flex: (width1 * 10).toInt(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _customAdultInputField(
+                  icon: icon1,
+                  label: label1,
+                  controller: controller1,
+                  onClear: () {
+                    controller1.clear();
+                    onUpdate(); // Update state
+                  },
+                ),
+                const SizedBox(height: 2), // Spacing
+                Center(
+                  child: Text(
+                    '12+ Years',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // Children Input
+          Expanded(
+            flex: (width2 * 10).toInt(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _customInputField(
+                  icon: icon2,
+                  label: label2,
+                  controller: controller2,
+                  onClear: () {
+                    controller2.clear();
+                    onUpdate(); // Update state
+                  },
+                ),
+                const SizedBox(height: 2), // Spacing
+                Center(
+                  child: Text(
+                    '3-11 Years',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // Infants Input
+          Expanded(
+            flex: (width3 * 10).toInt(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _customInputField(
+                  icon: icon3,
+                  label: label3,
+                  controller: controller3,
+                  onClear: () {
+                    controller3.clear();
+                    onUpdate(); // Update state
+                  },
+                ),
+                const SizedBox(height: 2), // Spacing
+                Center(
+                  child: Text(
+                    'Under 2 Years',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
 // Custom Input Field
@@ -41,14 +231,14 @@ Widget customInputField(
   return TextFormField(
     maxLines: maxLines,
     controller: controller,
-    style: TextStyle(color: Colors.white),
+    style: const TextStyle(color: Colors.white),
     key: fieldKey,
     decoration: InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+      labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
       prefixIcon: Icon(icon, color: Colors.white),
       filled: true,
-      fillColor: Colors.white.withOpacity(0.2),
+      fillColor: Colors.white.withValues(alpha: 0.2),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -67,14 +257,14 @@ String normalizeGender(String gender) {
     case 'other':
       return 'Other';
     default:
-      return "---- Select Gender ----";
+      return '---- Select Gender ----';
   }
 }
 
 // Helper function for tab buttons
 Widget buildTabButton(String label) {
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 4),
+    padding: const EdgeInsets.symmetric(horizontal: 4),
     child: ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue,
@@ -91,13 +281,13 @@ Widget buildTabButton(String label) {
 
 Widget buildTile(String title, List<String> subTitles, List<String> values) {
   return Container(
-    padding: EdgeInsets.all(12),
+    padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(8),
       boxShadow: [
         BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withValues(alpha: 0.3),
             blurRadius: 5,
             spreadRadius: 2),
       ],
@@ -108,11 +298,11 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
         // **Title**
         Text(
           title,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        SizedBox(height: 8), // Space between title & content
+        const SizedBox(height: 8), // Space between title & content
 
         // **Subtitles & Values**
         if (subTitles.isNotEmpty)
@@ -122,7 +312,7 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
               return Expanded(
                 child: Text(
                   subTitle,
-                  style: TextStyle(fontSize: 12, color: Colors.black54),
+                  style: const TextStyle(fontSize: 12, color: Colors.black54),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -131,7 +321,7 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
           ),
 
         if (values.isNotEmpty)
-          SizedBox(height: 4), // Space between subtitles & numbers
+          const SizedBox(height: 4), // Space between subtitles & numbers
 
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,7 +329,8 @@ Widget buildTile(String title, List<String> subTitles, List<String> values) {
             return Expanded(
               child: Text(
                 value,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -165,7 +356,7 @@ Widget buildStatCard({
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.1),
+          color: Colors.grey.withValues(alpha: 0.1),
           spreadRadius: 1,
           blurRadius: 4,
           offset: const Offset(0, 2),
@@ -193,7 +384,8 @@ Widget buildStatCard({
         Text(
           label,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
             color: Colors.black54,
           ),
         ),
@@ -223,7 +415,7 @@ class ProgressTrackerCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 3,
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -232,7 +424,7 @@ class ProgressTrackerCard extends StatelessWidget {
               currentStep: currentStep,
               progressColor: progressColor,
             ),
-            SizedBox(height: 10), // Spacing
+            const SizedBox(height: 10), // Spacing
 
             // Custom Message Below Progress Bar
             Center(
@@ -268,7 +460,7 @@ class ProgressTracker extends StatefulWidget {
   });
 
   @override
-  _ProgressTrackerState createState() => _ProgressTrackerState();
+  State<ProgressTracker> createState() => _ProgressTrackerState();
 }
 
 class _ProgressTrackerState extends State<ProgressTracker> {
@@ -288,9 +480,9 @@ class _ProgressTrackerState extends State<ProgressTracker> {
     }
   }
 
-  void _startStepAnimation() async {
+  Future<void> _startStepAnimation() async {
     for (int i = 0; i <= widget.currentStep; i++) {
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
       setState(() {
         animatedStep = i;
       });
@@ -299,7 +491,8 @@ class _ProgressTrackerState extends State<ProgressTracker> {
 
   @override
   Widget build(BuildContext context) {
-    double segmentWidth = MediaQuery.of(context).size.width / widget.totalSteps;
+    final double segmentWidth =
+        MediaQuery.of(context).size.width / widget.totalSteps;
 
     return Row(
       children: List.generate(widget.totalSteps, (index) {
@@ -321,14 +514,14 @@ class _ProgressTrackerState extends State<ProgressTracker> {
                         ),
                         // Animated Filling Line
                         AnimatedContainer(
-                          duration: Duration(milliseconds: 500),
+                          duration: const Duration(milliseconds: 500),
                           width: index < animatedStep ? segmentWidth : 0,
                           height: 5,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
                                 widget.progressColor,
-                                widget.progressColor.withOpacity(0.7)
+                                widget.progressColor.withValues(alpha: 0.7)
                               ],
                             ),
                             borderRadius: BorderRadius.circular(5),
@@ -339,7 +532,7 @@ class _ProgressTrackerState extends State<ProgressTracker> {
                   ),
                   // Animated Check Icon
                   AnimatedOpacity(
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                     opacity: index < animatedStep ? 1.0 : 0.3,
                     child: Icon(
                       Icons.check_circle,
@@ -374,8 +567,9 @@ void showBookingPopup(BuildContext context) {
             title: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.info_outline, size: 40, color: Colors.blueAccent),
-                SizedBox(height: 10),
+                const Icon(Icons.info_outline,
+                    size: 40, color: Colors.blueAccent),
+                const SizedBox(height: 10),
                 Text(
                   'Need More Info or Ready to Book?',
                   textAlign: TextAlign.center,
@@ -401,13 +595,13 @@ void showBookingPopup(BuildContext context) {
                       child: Text('Close',
                           style: GoogleFonts.poppins(color: Colors.red)),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     TextButton(
                       onPressed: () => _handleUserAction(context, 'enquire'),
                       child: Text('Submit Your Query',
                           style: GoogleFonts.poppins(color: Colors.orange)),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     ElevatedButton(
                       onPressed: () => _handleUserAction(context, 'book'),
                       style: ElevatedButton.styleFrom(
@@ -428,10 +622,10 @@ void showBookingPopup(BuildContext context) {
                         onPressed: () => _handleUserAction(context, 'book'),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green),
-                        child: Text('Book Now'),
+                        child: const Text('Book Now'),
                       ),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -465,15 +659,17 @@ Future<void> _handleUserAction(BuildContext context, String action) async {
 
   navigator.pop();
 
-  final userType = await SharedPrefHelper().getUserType();
+  final loginRes = await SharedPrefHelper().getLoginResponse();
+
+  final userType = loginRes!.userType;
 
   if (userType == null || userType.isEmpty) {
     scaffoldMessenger.showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.warning, color: Colors.white),
-            SizedBox(width: 8),
+            const Icon(Icons.warning, color: Colors.white),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
                 'You need to log in to continue',
@@ -487,7 +683,7 @@ Future<void> _handleUserAction(BuildContext context, String action) async {
               onPressed: () {
                 scaffoldMessenger.hideCurrentSnackBar();
                 navigator.push(
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
               },
               child: Text(
@@ -508,7 +704,6 @@ Future<void> _handleUserAction(BuildContext context, String action) async {
           left: 20,
           right: mediaQuery.size.width * 0.3,
         ),
-        duration: Duration(seconds: 4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -516,9 +711,11 @@ Future<void> _handleUserAction(BuildContext context, String action) async {
     );
   } else {
     if (action == 'enquire') {
-      navigator.push(MaterialPageRoute(builder: (context) => EnquireNowPage()));
+      await navigator.push(
+          MaterialPageRoute(builder: (context) => const EnquireNowPage()));
     } else if (action == 'book') {
-      navigator.push(MaterialPageRoute(builder: (context) => BookNowPage()));
+      await navigator
+          .push(MaterialPageRoute(builder: (context) => const BookNowPage()));
     }
   }
 }
@@ -526,14 +723,14 @@ Future<void> _handleUserAction(BuildContext context, String action) async {
 void showBookingPopupAlternative(BuildContext context) {
   showDialog(
     context: context,
-    builder: (BuildContext context) {
+    builder: (context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.info_outline, size: 40, color: Colors.blueAccent),
-            SizedBox(height: 10),
+            const Icon(Icons.info_outline, size: 40, color: Colors.blueAccent),
+            const SizedBox(height: 10),
             Text(
               'Need More Info or Ready to Book?',
               textAlign: TextAlign.center,
@@ -551,7 +748,7 @@ void showBookingPopupAlternative(BuildContext context) {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(width: 65),
+              const SizedBox(width: 65),
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -561,7 +758,7 @@ void showBookingPopupAlternative(BuildContext context) {
                   style: GoogleFonts.poppins(fontSize: 14, color: Colors.red),
                 ),
               ),
-              SizedBox(width: 65),
+              const SizedBox(width: 65),
               TextButton(
                 onPressed: () async {
                   await _handleUserActionWithBanner(context, 'enquire');
@@ -574,7 +771,7 @@ void showBookingPopupAlternative(BuildContext context) {
                       color: Colors.orange),
                 ),
               ),
-              SizedBox(width: 65),
+              const SizedBox(width: 65),
               ElevatedButton(
                 onPressed: () async {
                   await _handleUserActionWithBanner(context, 'book');
@@ -599,12 +796,13 @@ void showBookingPopupAlternative(BuildContext context) {
 
 Future<void> _handleUserActionWithBanner(
     BuildContext context, String action) async {
-  final userType = await SharedPrefHelper().getUserType();
+  final loginRes = await SharedPrefHelper().getLoginResponse();
+  final userType = loginRes!.userType;
 
   if (!context.mounted) return;
 
   if (userType == null || userType.isEmpty) {
-    await Future.delayed(Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 100));
 
     if (!context.mounted) return;
 
@@ -614,7 +812,7 @@ Future<void> _handleUserActionWithBanner(
           'You need to log in to continue with your ${action == 'enquire' ? 'enquiry' : 'booking'}',
           style: GoogleFonts.poppins(fontSize: 14),
         ),
-        leading: Icon(Icons.lock_outline, color: Colors.orange),
+        leading: const Icon(Icons.lock_outline, color: Colors.orange),
         backgroundColor: Colors.orange.shade50,
         actions: [
           TextButton(
@@ -634,7 +832,7 @@ Future<void> _handleUserActionWithBanner(
                 ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
               }
             },
@@ -656,11 +854,13 @@ Future<void> _handleUserActionWithBanner(
       ),
     );
 
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 5), () {
       if (context.mounted) {
         try {
           ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-        } catch (e) {}
+        } catch (e) {
+          Logger.error('error due to technical issue $e');
+        }
       }
     });
   } else {
@@ -669,28 +869,28 @@ Future<void> _handleUserActionWithBanner(
     if (!context.mounted) return;
 
     if (action == 'enquire') {
-      Navigator.push(
+      await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => EnquireNowPage()),
+        MaterialPageRoute(builder: (context) => const EnquireNowPage()),
       );
     } else if (action == 'book') {
-      Navigator.push(
+      await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => BookNowPage()),
+        MaterialPageRoute(builder: (context) => const BookNowPage()),
       );
     }
   }
 }
 
 String extractUserId(String fullUserId) {
-  if (fullUserId.contains(" - ")) {
-    return fullUserId.split(" - ")[0].trim();
+  if (fullUserId.contains(' - ')) {
+    return fullUserId.split(' - ')[0].trim();
   }
   return fullUserId;
 }
 
 String extractPathSegment(String fullPath, String folderPrefix) {
-  int index = fullPath.lastIndexOf(folderPrefix);
+  final int index = fullPath.lastIndexOf(folderPrefix);
   if (index != -1) {
     return fullPath.substring(index);
   }
@@ -744,7 +944,7 @@ Future<String?> getDesignationById(String designationId) async {
       return designationInfo['designation_name']?.toString();
     }
   } catch (e) {
-    Logger.error("Error looking up designation name: $e");
+    Logger.error('Error looking up designation name: $e');
   }
   return null;
 }
@@ -762,9 +962,9 @@ Future<String?> getReportingManagerNameById(String reportingManagerId) async {
     }
 
     // If no match is found, return a default value
-    return "N/A";
+    return 'N/A';
   } catch (e) {
-    Logger.error("Error fetching reporting manager data: $e");
+    Logger.error('Error fetching reporting manager data: $e');
     return null;
   }
 }
@@ -776,15 +976,15 @@ Future<String?> getNameByReferenceNo(String referenceNo) async {
     // Find the user with the matching referenceNo
     for (var user in userList) {
       if (user.regId == referenceNo) {
-        Logger.success("Fetched Name is : ${user.name}");
+        Logger.success('Fetched Name is : ${user.name}');
         return user.name;
       }
     }
 
     // If no match is found, return a default value
-    return "N/A";
+    return 'N/A';
   } catch (e) {
-    Logger.error("Error fetching user data: $e");
+    Logger.error('Error fetching user data: $e');
     return null;
   }
 }
@@ -803,14 +1003,14 @@ Future<String?> getZoneById(String zoneId) async {
       return zoneInfo['zone_name']?.toString();
     }
   } catch (e) {
-    Logger.error("Error looking up zone name : $e");
+    Logger.error('Error looking up zone name : $e');
   }
   return null;
 }
 
 void scrollToFirstFormErrors({
   required BuildContext context,
-  required List<_ValidationTarget> targets,
+  required List<ValidationTarget> targets,
 }) {
   for (final target in targets) {
     if (target.hasError()) {
@@ -827,11 +1027,11 @@ void scrollToFirstFormErrors({
   }
 }
 
-class _ValidationTarget {
+class ValidationTarget {
   final GlobalKey key;
   final bool Function() hasError;
 
-  _ValidationTarget({
+  ValidationTarget({
     required this.key,
     required this.hasError,
   });
@@ -842,8 +1042,7 @@ class FilterBar1 extends StatefulWidget {
   const FilterBar1({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _FilterBar1State createState() => _FilterBar1State();
+  State<FilterBar1> createState() => _FilterBar1State();
 }
 
 class _FilterBar1State extends State<FilterBar1> {
@@ -858,15 +1057,16 @@ class _FilterBar1State extends State<FilterBar1> {
   String? toDateError;
 
   Future<void> _selectDate(BuildContext context, bool isFromDate) async {
-    DateTime initialDate = isFromDate
+    final DateTime initialDate = isFromDate
         ? fromDate ?? DateTime.now()
         : toDate ?? fromDate ?? DateTime.now();
 
-    DateTime firstDate =
+    final DateTime firstDate =
         isFromDate ? DateTime(2000) : fromDate ?? DateTime(2000);
-    DateTime lastDate = isFromDate ? toDate ?? DateTime(2101) : DateTime(2101);
+    final DateTime lastDate =
+        isFromDate ? toDate ?? DateTime(2101) : DateTime(2101);
 
-    DateTime? pickedDate = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: initialDate,
       firstDate: firstDate,
@@ -903,19 +1103,19 @@ class _FilterBar1State extends State<FilterBar1> {
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(10), // Rounded corners
         ),
-        padding:
-            EdgeInsets.symmetric(horizontal: 6, vertical: 6), // Light padding
+        padding: const EdgeInsets.symmetric(
+            horizontal: 6, vertical: 6), // Light padding
 
         child: Row(
           children: [
-            SizedBox(width: 15),
+            const SizedBox(width: 15),
             // Search Bar
             Expanded(
               flex: 2,
               child: TextField(
                 controller: searchController,
                 decoration: InputDecoration(
-                  hintText: "Search...",
+                  hintText: 'Search...',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10), // Rounded corners
                     borderSide: BorderSide.none, // No border line
@@ -923,16 +1123,15 @@ class _FilterBar1State extends State<FilterBar1> {
                   filled: true,
                   fillColor: Colors.white,
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 ),
               ),
             ),
 
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
 
             // From Date Picker
             Expanded(
-              flex: 1,
               child: GestureDetector(
                 onTap: () => _selectDate(context, true),
                 child: Container(
@@ -941,22 +1140,21 @@ class _FilterBar1State extends State<FilterBar1> {
                     borderRadius: BorderRadius.circular(10), // Rounded corners
                   ),
                   alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     fromDate == null
-                        ? "From Date"
+                        ? 'From Date'
                         : DateFormat.yMMMd().format(fromDate!),
-                    style: TextStyle(color: Colors.black54),
+                    style: const TextStyle(color: Colors.black54),
                   ),
                 ),
               ),
             ),
 
-            Text("  --  "),
+            const Text('  --  '),
 
             // To Date Picker
             Expanded(
-              flex: 1,
               child: GestureDetector(
                 onTap: () => _selectDate(context, false),
                 child: Container(
@@ -965,34 +1163,33 @@ class _FilterBar1State extends State<FilterBar1> {
                     borderRadius: BorderRadius.circular(10), // Rounded corners
                   ),
                   alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     toDate == null
-                        ? "To Date"
+                        ? 'To Date'
                         : DateFormat.yMMMd().format(toDate!),
-                    style: TextStyle(color: Colors.black54),
+                    style: const TextStyle(color: Colors.black54),
                   ),
                 ),
               ),
             ),
 
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
 
             // Count Users
             Expanded(
-              flex: 1,
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10), // Rounded corners
                 ),
                 alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Text("Users: $countUsers"),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text('Users: $countUsers'),
               ),
             ),
 
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
 
             // Amount
             Expanded(
@@ -1003,11 +1200,11 @@ class _FilterBar1State extends State<FilterBar1> {
                   borderRadius: BorderRadius.circular(10), // Rounded corners
                 ),
                 alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Text("Amount: ₹${amount.toStringAsFixed(2)}"),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text('Amount: ₹${amount.toStringAsFixed(2)}'),
               ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
           ],
         ),
       ),
@@ -1020,8 +1217,7 @@ class FilterBar2 extends StatefulWidget {
   const FilterBar2({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _FilterBar2State createState() => _FilterBar2State();
+  State<FilterBar2> createState() => _FilterBar2State();
 }
 
 class _FilterBar2State extends State<FilterBar2> {
@@ -1036,15 +1232,16 @@ class _FilterBar2State extends State<FilterBar2> {
   String? toDateError;
 
   Future<void> _selectDate(BuildContext context, bool isFromDate) async {
-    DateTime initialDate = isFromDate
+    final DateTime initialDate = isFromDate
         ? fromDate ?? DateTime.now()
         : toDate ?? fromDate ?? DateTime.now();
 
-    DateTime firstDate =
+    final DateTime firstDate =
         isFromDate ? DateTime(2000) : fromDate ?? DateTime(2000);
-    DateTime lastDate = isFromDate ? toDate ?? DateTime(2101) : DateTime(2101);
+    final DateTime lastDate =
+        isFromDate ? toDate ?? DateTime(2101) : DateTime(2101);
 
-    DateTime? pickedDate = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: initialDate,
       firstDate: firstDate,
@@ -1087,9 +1284,9 @@ class _FilterBar2State extends State<FilterBar2> {
             fillColor: Colors.white,
           ),
           items: [
-            DropdownMenuItem(
-              value: "-- Select --",
-              child: Text("-- Select --", style: TextStyle(color: Colors.grey)),
+            const DropdownMenuItem(
+              value: '-- Select --',
+              child: Text('-- Select --', style: TextStyle(color: Colors.grey)),
             ),
             ...items.map((e) => DropdownMenuItem(value: e, child: Text(e))),
           ],
@@ -1103,7 +1300,6 @@ class _FilterBar2State extends State<FilterBar2> {
 
   Widget _buildDateSelector(String label, bool isFromDate) {
     return Expanded(
-      flex: 1,
       child: GestureDetector(
         onTap: () => _selectDate(context, isFromDate),
         child: Container(
@@ -1141,20 +1337,19 @@ class _FilterBar2State extends State<FilterBar2> {
           children: [
             _buildDropdown('Designation', ['Option 1', 'Option 2', 'Option 3']),
             _buildDropdown('User', ['Active', 'Inactive', 'Pending']),
-            _buildDateSelector("From Date", true),
+            _buildDateSelector('From Date', true),
             const SizedBox(width: 3),
-            const Text("--",
+            const Text('--',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(width: 3),
-            _buildDateSelector("To Date", false),
+            _buildDateSelector('To Date', false),
             Expanded(
-              flex: 1,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5.0),
                 child: TextField(
                   controller: searchController,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.search, color: Colors.grey),
+                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                     filled: true,
@@ -1173,21 +1368,21 @@ class _FilterBar2State extends State<FilterBar2> {
 }
 
 String formatDate(String? date) {
-  if (date == null || date.isEmpty) return "N/A";
+  if (date == null || date.isEmpty) return 'N/A';
   try {
     final parsedDate = DateTime.parse(date);
     return DateFormat('dd-MM-yyyy').format(parsedDate);
   } catch (e) {
-    return "Invalid Date";
+    return 'Invalid Date';
   }
 }
 
 Widget buildTripOrRefundNote(
     {required String userType, required BuildContext context}) {
   // For "premium select" and "neo select", show simple "Refer and earn" message
-  if (userType == "Premium Select" ||
-      userType == "Premium Select Lite" ||
-      userType == "Neo Select") {
+  if (userType == 'Premium Select' ||
+      userType == 'Premium Select Lite' ||
+      userType == 'Neo Select') {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
       child: Container(
@@ -1199,8 +1394,8 @@ Widget buildTripOrRefundNote(
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.blueAccent.withOpacity(0.4)),
-          boxShadow: [
+          border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.4)),
+          boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 8,
@@ -1211,7 +1406,7 @@ Widget buildTripOrRefundNote(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.card_giftcard, color: Colors.blueAccent, size: 28),
+            const Icon(Icons.card_giftcard, color: Colors.blueAccent, size: 28),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -1229,7 +1424,7 @@ Widget buildTripOrRefundNote(
                   Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(
+                        const TextSpan(
                           text:
                               'Share the premium experience with your network and ',
                           style: TextStyle(fontSize: 16, color: Colors.black87),
@@ -1249,7 +1444,7 @@ Widget buildTripOrRefundNote(
                   Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(
+                        const TextSpan(
                           text: '💰 ',
                           style: TextStyle(fontSize: 16),
                         ),
@@ -1261,7 +1456,7 @@ Widget buildTripOrRefundNote(
                             color: Colors.green.shade700,
                           ),
                         ),
-                        TextSpan(
+                        const TextSpan(
                           text:
                               'Receive direct commission in your wallet for each referral that joins our premium community',
                           style: TextStyle(fontSize: 16, color: Colors.black87),
@@ -1273,7 +1468,7 @@ Widget buildTripOrRefundNote(
                   Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(
+                        const TextSpan(
                           text: '✈️ ',
                           style: TextStyle(fontSize: 16),
                         ),
@@ -1285,7 +1480,7 @@ Widget buildTripOrRefundNote(
                             color: Colors.blue.shade800,
                           ),
                         ),
-                        TextSpan(
+                        const TextSpan(
                           text:
                               'Exclusive upgrades, lounge access, and special travel perks',
                           style: TextStyle(fontSize: 16, color: Colors.black87),
@@ -1297,7 +1492,7 @@ Widget buildTripOrRefundNote(
                   Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(
+                        const TextSpan(
                           text: '🎫 ',
                           style: TextStyle(fontSize: 16),
                         ),
@@ -1309,7 +1504,7 @@ Widget buildTripOrRefundNote(
                             color: Colors.blue.shade800,
                           ),
                         ),
-                        TextSpan(
+                        const TextSpan(
                           text:
                               'Earn complimentary travel experiences with every milestone you achieve',
                           style: TextStyle(fontSize: 16, color: Colors.black87),
@@ -1327,29 +1522,29 @@ Widget buildTripOrRefundNote(
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AddReferralCustomer(),
+                            builder: (context) => const AddReferralCustomer(),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
                         foregroundColor: Colors.white,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 14, horizontal: 24),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 4,
-                        shadowColor: Colors.blueAccent.withOpacity(0.3),
+                        shadowColor: Colors.blueAccent.withValues(alpha: 0.3),
                       ),
-                      child: Text(
+                      child: const Text(
                         'Add Referral',
                         style: TextStyle(
                           fontSize: 16,
@@ -1379,8 +1574,8 @@ Widget buildTripOrRefundNote(
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blueAccent.withOpacity(0.4)),
-        boxShadow: [
+        border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.4)),
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -1391,7 +1586,7 @@ Widget buildTripOrRefundNote(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.airplane_ticket, color: Colors.blueAccent, size: 28),
+          const Icon(Icons.airplane_ticket, color: Colors.blueAccent, size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -1409,7 +1604,7 @@ Widget buildTripOrRefundNote(
                 Text.rich(
                   TextSpan(
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text:
                             'Your premium membership comes with exclusive travel opportunities ',
                         style: TextStyle(fontSize: 16, color: Colors.black87),
@@ -1429,7 +1624,7 @@ Widget buildTripOrRefundNote(
                 Text.rich(
                   TextSpan(
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text: '🎯 ',
                         style: TextStyle(fontSize: 16),
                       ),
@@ -1441,7 +1636,7 @@ Widget buildTripOrRefundNote(
                           color: Colors.green.shade700,
                         ),
                       ),
-                      TextSpan(
+                      const TextSpan(
                         text:
                             'Use all 3 coupons to unlock an exclusive Europe Trip experience 🎉',
                         style: TextStyle(fontSize: 16, color: Colors.black87),
@@ -1453,7 +1648,7 @@ Widget buildTripOrRefundNote(
                 Text.rich(
                   TextSpan(
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text: '🛡️ ',
                         style: TextStyle(fontSize: 16),
                       ),
@@ -1465,7 +1660,7 @@ Widget buildTripOrRefundNote(
                           color: Colors.blue.shade800,
                         ),
                       ),
-                      TextSpan(
+                      const TextSpan(
                         text:
                             'If unused within 3 years, receive ₹30,000 refund + ₹10,000 loyalty bonus 💸',
                         style: TextStyle(fontSize: 16, color: Colors.black87),
@@ -1477,7 +1672,7 @@ Widget buildTripOrRefundNote(
                 Text.rich(
                   TextSpan(
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text: '⏰ ',
                         style: TextStyle(fontSize: 16),
                       ),
@@ -1489,7 +1684,7 @@ Widget buildTripOrRefundNote(
                           color: Colors.blue.shade800,
                         ),
                       ),
-                      TextSpan(
+                      const TextSpan(
                         text:
                             '3-year window to utilize your coupons with no pressure',
                         style: TextStyle(fontSize: 16, color: Colors.black87),

@@ -125,7 +125,7 @@ const RegisteredEmployeeModelSchema = CollectionSchema(
   getId: _registeredEmployeeModelGetId,
   getLinks: _registeredEmployeeModelGetLinks,
   attach: _registeredEmployeeModelAttach,
-  version: '3.1.0+1',
+  version: '3.3.0',
 );
 
 int _registeredEmployeeModelEstimateSize(

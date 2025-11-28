@@ -7,7 +7,7 @@ class HeaderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.blue.shade900, Colors.blueAccent.shade200],
@@ -27,7 +27,7 @@ class HeaderSection extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
             'The world\'s best travel spots',
             style: GoogleFonts.roboto(
@@ -35,7 +35,7 @@ class HeaderSection extends StatelessWidget {
               fontSize: 20,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'Bizzmirth Holidays Pvt. Ltd. specializes in selling tailored holiday packages, offering unforgettable travel experiences designed to suit diverse preferences and budgets.',
             style: GoogleFonts.roboto(

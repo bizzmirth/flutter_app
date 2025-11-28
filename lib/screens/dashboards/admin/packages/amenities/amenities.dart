@@ -35,37 +35,37 @@ class _AmenitiesPageState extends State<AmenitiesPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Divider(thickness: 1, color: Colors.black26),
-              Center(
+              const Divider(thickness: 1, color: Colors.black26),
+              const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Manage Star Types:",
+                    'Manage Star Types:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
+              const Divider(thickness: 1, color: Colors.black26),
               Row(
                 children: [
-                  SizedBox(width: 590),
+                  const SizedBox(width: 590),
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 1),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 1),
                         backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text("Add Stay Types",
+                      child: const Text('Add Stay Types',
                           style: TextStyle(color: Colors.white)),
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                 ],
               ),
               Card(
@@ -80,14 +80,14 @@ class _AmenitiesPageState extends State<AmenitiesPage> {
                   child: PaginatedDataTable(
                     columnSpacing: 280,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Name")),
-                      DataColumn(label: Text("Action")),
+                    columns: const [
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Action')),
                     ],
                     source: MyAmenityStarTypeDataSource(aminitiesstay),
                     rowsPerPage: _rowsPerPage,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {
@@ -99,38 +99,38 @@ class _AmenitiesPageState extends State<AmenitiesPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 50),
-              Divider(thickness: 1, color: Colors.black26),
-              Center(
+              const SizedBox(height: 50),
+              const Divider(thickness: 1, color: Colors.black26),
+              const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Manage Meals:",
+                    'Manage Meals:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
+              const Divider(thickness: 1, color: Colors.black26),
               Row(
                 children: [
-                  SizedBox(width: 590),
+                  const SizedBox(width: 590),
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 1),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 1),
                         backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text("Add Meals",
+                      child: const Text('Add Meals',
                           style: TextStyle(color: Colors.white)),
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                 ],
               ),
               Card(
@@ -145,14 +145,14 @@ class _AmenitiesPageState extends State<AmenitiesPage> {
                   child: PaginatedDataTable(
                     columnSpacing: 220,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Name")),
-                      DataColumn(label: Text("Action")),
+                    columns: const [
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Action')),
                     ],
                     source: MyAmenityStarTypeDataSource(aminitiesmeals),
                     rowsPerPage: _rowsPerPage1,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {
@@ -164,38 +164,38 @@ class _AmenitiesPageState extends State<AmenitiesPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 50),
-              Divider(thickness: 1, color: Colors.black26),
-              Center(
+              const SizedBox(height: 50),
+              const Divider(thickness: 1, color: Colors.black26),
+              const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Manage Vehicles:",
+                    'Manage Vehicles:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
+              const Divider(thickness: 1, color: Colors.black26),
               Row(
                 children: [
-                  SizedBox(width: 590),
+                  const SizedBox(width: 590),
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 1),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 1),
                         backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text("Add Vehicles",
+                      child: const Text('Add Vehicles',
                           style: TextStyle(color: Colors.white)),
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                 ],
               ),
               Card(
@@ -210,14 +210,14 @@ class _AmenitiesPageState extends State<AmenitiesPage> {
                   child: PaginatedDataTable(
                     columnSpacing: 280,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Name")),
-                      DataColumn(label: Text("Action")),
+                    columns: const [
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Action')),
                     ],
                     source: MyAmenityVehiclesTypeDataSource(aminitiesvehicles),
                     rowsPerPage: _rowsPerPage2,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {
@@ -229,38 +229,38 @@ class _AmenitiesPageState extends State<AmenitiesPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 50),
-              Divider(thickness: 1, color: Colors.black26),
-              Center(
+              const SizedBox(height: 50),
+              const Divider(thickness: 1, color: Colors.black26),
+              const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Manage Occupancy:",
+                    'Manage Occupancy:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
+              const Divider(thickness: 1, color: Colors.black26),
               Row(
                 children: [
-                  SizedBox(width: 590),
+                  const SizedBox(width: 590),
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 1),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 1),
                         backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text("Add Occupancy",
+                      child: const Text('Add Occupancy',
                           style: TextStyle(color: Colors.white)),
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                 ],
               ),
               Card(
@@ -275,15 +275,15 @@ class _AmenitiesPageState extends State<AmenitiesPage> {
                   child: PaginatedDataTable(
                     columnSpacing: 280,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Name")),
-                      DataColumn(label: Text("Action")),
+                    columns: const [
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Action')),
                     ],
                     source:
                         MyAmenityOccupancyTypeDataSource(aminitiesoccupancy),
                     rowsPerPage: _rowsPerPage3,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {

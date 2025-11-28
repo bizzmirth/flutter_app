@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/controllers/login_controller.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/login_controller.dart';
 import 'package:bizzmirth_app/screens/dashboards/admin/admin_dashboard.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_channel_head/business_channel_head.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_development_manager/business_development_manager.dart';
@@ -7,6 +7,8 @@ import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/loader_widget.dart';
 import 'package:flutter/material.dart';
@@ -17,28 +19,55 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   final _loginFormKey = GlobalKey<FormState>();
   late VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        _controller = VideoPlayerController.asset('assets/videos/sea.mp4')
-          ..initialize().then((_) {
-            _controller.setLooping(true);
-            _controller.setVolume(0); // mute for background
-            _controller.play();
-            setState(() {});
-          });
+    WidgetsBinding.instance.addObserver(this); // Add observer
+
+    _controller = VideoPlayerController.asset('assets/videos/sea.mp4')
+      ..initialize().then((_) {
+        if (mounted) {
+          _controller.setLooping(true);
+          _controller.setVolume(0);
+          _controller.play();
+          setState(() {});
+        }
+      }).catchError((error) {
+        // Handle initialization errors
+        debugPrint('Video initialization error: $error');
+      });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = Provider.of<LoginController>(context, listen: false);
       controller.loadUserTypes();
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // Pause video when app goes to background
+    if (state == AppLifecycleState.paused) {
+      _controller.pause();
+    } else if (state == AppLifecycleState.resumed) {
+      _controller.play();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Remove observer
+    _controller.pause(); // Pause before disposing
+    _controller.dispose();
+    super.dispose();
   }
 
   void navigateWithLoader(BuildContext context, Widget nextPage) {
@@ -49,50 +78,47 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     Future.delayed(const Duration(seconds: 7), () {
-      Navigator.pop(context); // close loader
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => nextPage),
-      );
+      MyNavigator.pop();
+      MyNavigator.pushWidget(nextPage);
     });
   }
 
   void _navigateToDashboard(BuildContext context, String userType) {
     switch (userType) {
-      case "admin":
+      case 'Admin':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const AdminDashboard()),
         );
         break;
-      case "Customer":
+      case 'Customer':
         navigateWithLoader(context, const CDashboardPage());
         break;
-      case "Travel Consultant":
+      case 'Travel Consultant':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const TCDashboardPage()),
         );
         break;
-      case "Techno Enterprise":
+      case 'Techno Enterprise':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const TEDashboardPage()),
         );
         break;
-      case "Business Channel manager":
+      case 'Business Channel manager':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BCHDashboardPage()),
         );
         break;
-      case "Business Development Manager":
+      case 'Business Development Manager':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BDMDashboardPage()),
         );
         break;
-      case "Business Mentor":
+      case 'Business Mentor':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BMDashboardPage()),
@@ -105,21 +131,20 @@ class _LoginPageState extends State<LoginPage> {
     final controller = Provider.of<LoginController>(context, listen: false);
     final result = await controller.loginUser(context);
 
-    if (result["status"] == true) {
+    if (result['status'] == true) {
       ToastHelper.showSuccessToast(
-        context: context,
-        title: "Login Successful",
-        description: "Welcome back!",
+        title: 'Login Successful',
+        description: 'Welcome back!',
       );
 
       if (!context.mounted) return;
-      _navigateToDashboard(context, result["user_type"]);
+      _navigateToDashboard(context, result['user_type']);
     } else {
-      ToastHelper.showErrorToast(
-        context: context,
-        title: "Login Failed",
-        description: result["message"] ?? "An error occurred during login.",
-      );
+      // ToastHelper.showErrorToast(
+      //   title: 'Login Failed',
+      //   description: result['message'] ?? 'An error occurred during login.',
+      // );
+      Logger.error('login failed: ${result['message']}');
     }
   }
 
@@ -128,16 +153,16 @@ class _LoginPageState extends State<LoginPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: controller.selectedUserTypeId, // Default selection
-        hint: Text("Select $label"),
+        initialValue: controller.selectedUserTypeId, // Default selection
+        hint: Text('Select $label'),
         isExpanded: true,
         items: controller.userTypeNames.map((e) {
           return DropdownMenuItem<String>(
-            value: e["id"],
-            child: Text(e["name"]!),
+            value: e['id'],
+            child: Text(e['name']!),
           );
         }).toList(),
-        onChanged: (value) => controller.setSelectedUserType(value),
+        onChanged: controller.setSelectedUserType,
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: const Icon(Icons.person, color: Colors.blue),
@@ -154,16 +179,16 @@ class _LoginPageState extends State<LoginPage> {
     final isPortrait =
         MediaQuery.of(context).orientation == Orientation.portrait;
 
-    return WillPopScope(
-      onWillPop: () async {
-        // When back is pressed, go to ReferralCustomersPage instead of previous page
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => const HomePage(),
           ),
         );
-        return false; // Prevent default back behavior
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -185,8 +210,7 @@ class _LoginPageState extends State<LoginPage> {
 
             // Dark Overlay
             Positioned.fill(
-              // ignore: deprecated_member_use
-              child: Container(color: Colors.black.withOpacity(0.5)),
+              child: Container(color: Colors.black.withValues(alpha: 0.5)),
             ),
 
             // Login Form
@@ -202,7 +226,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       // App Logo
                       Image.asset(
-                        "assets/uniqbizz.png",
+                        'assets/uniqbizz.png',
                         height: 100,
                       ),
                       const SizedBox(height: 1),
@@ -218,8 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(15),
                             boxShadow: [
                               BoxShadow(
-                                // ignore: deprecated_member_use
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withValues(alpha: 0.2),
                                 blurRadius: 10,
                                 offset: const Offset(0, 5),
                               ),
@@ -232,14 +255,14 @@ class _LoginPageState extends State<LoginPage> {
                                 controller.userTypeNames,
                               ),
                               const SizedBox(height: 10),
-                              if (controller.errorMessage != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  child: Text(
-                                    controller.errorMessage!,
-                                    style: const TextStyle(color: Colors.red),
-                                  ),
-                                ),
+                              // if (controller.errorMessage != null)
+                              //   Padding(
+                              //     padding: const EdgeInsets.only(bottom: 10),
+                              //     child: Text(
+                              //       controller.errorMessage!,
+                              //       style: const TextStyle(color: Colors.red),
+                              //     ),
+                              //   ),
                               // Email Input
                               TextFormField(
                                 controller: controller.emailController,
@@ -292,7 +315,7 @@ class _LoginPageState extends State<LoginPage> {
                                         onChanged: (value) =>
                                             controller.toggleRememberMe(value!),
                                       ),
-                                      const Text("Remember Me"),
+                                      const Text('Remember Me'),
                                     ],
                                   ),
 
@@ -343,8 +366,8 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 50),
 
                       // Footer Text
-                      Text(
-                        "© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays",
+                      const Text(
+                        '© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
@@ -352,7 +375,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       Image.asset(
-                        "assets/bizz_logo.png",
+                        'assets/bizz_logo.png',
                         height: 100,
                       ),
                     ],
@@ -367,16 +390,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildPhoneLayout(BuildContext context, LoginController controller) {
-    return WillPopScope(
-      onWillPop: () async {
-        // When back is pressed, go to ReferralCustomersPage instead of previous page
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) result;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => const HomePage(),
           ),
         );
-        return false; // Prevent default back behavior
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -396,7 +419,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             // Dark Overlay
             Positioned.fill(
-              child: Container(color: Colors.black.withOpacity(0.5)),
+              child: Container(color: Colors.black.withValues(alpha: 0.5)),
             ),
 
             // Login Content
@@ -410,13 +433,13 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Column(
                       children: [
-                        SizedBox(height: 160),
+                        const SizedBox(height: 160),
                         // App Logo
                         Image.asset(
-                          "assets/uniqbizz.png",
+                          'assets/uniqbizz.png',
                           height: 40,
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                       ],
                     ),
                     Padding(
@@ -428,7 +451,7 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(15),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black.withValues(alpha: 0.2),
                               blurRadius: 10,
                               offset: const Offset(0, 5),
                             ),
@@ -503,7 +526,7 @@ class _LoginPageState extends State<LoginPage> {
                                         onChanged: (value) =>
                                             controller.toggleRememberMe(value!),
                                       ),
-                                      const Text("Remember Me"),
+                                      const Text('Remember Me'),
                                     ],
                                   ),
 
@@ -560,8 +583,8 @@ class _LoginPageState extends State<LoginPage> {
                       child: Column(
                         children: [
                           // Footer Text
-                          Text(
-                            "© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays",
+                          const Text(
+                            '© 2025 Uniqbizz. Crafted with ♡ by Bizzmirth Holdays',
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
@@ -571,7 +594,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 10),
                           Image.asset(
-                            "assets/bizz_logo.png",
+                            'assets/bizz_logo.png',
                             height: 70,
                           ),
                         ],
@@ -585,12 +608,6 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose(); // very important!
-    super.dispose();
   }
 
   @override

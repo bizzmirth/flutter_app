@@ -1,4 +1,5 @@
 {
   "cmake.sourceDirectory": "C:/flutter/projects/bizzmirth_app/linux/flutter",
-  "dart.flutterSdkPath": ".fvm/versions/3.24.5"
+  "dart.flutterSdkPath": ".fvm/versions/3.35.7",
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

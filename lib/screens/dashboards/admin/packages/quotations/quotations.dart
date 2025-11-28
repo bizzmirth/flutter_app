@@ -33,26 +33,25 @@ class _QuotationsPageState extends State<QuotationsPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Divider(thickness: 1, color: Colors.black26),
-              Center(
+              const Divider(thickness: 1, color: Colors.black26),
+              const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "All Pending Quotations:",
+                    'All Pending Quotations:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
+              const Divider(thickness: 1, color: Colors.black26),
               Row(
                 children: [
-                  SizedBox(width: 530),
+                  const SizedBox(width: 530),
                   Expanded(
                     flex: 2,
                     child: TextField(
-                      controller: null,
                       decoration: InputDecoration(
-                        hintText: "Search...",
+                        hintText: 'Search...',
                         border: OutlineInputBorder(
                           borderRadius:
                               BorderRadius.circular(10), // Rounded corners
@@ -60,12 +59,12 @@ class _QuotationsPageState extends State<QuotationsPage> {
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                 ],
               ),
 
@@ -82,17 +81,17 @@ class _QuotationsPageState extends State<QuotationsPage> {
                   child: PaginatedDataTable(
                     columnSpacing: 30,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Name")),
-                      DataColumn(label: Text("Email")),
-                      DataColumn(label: Text("Destination")),
-                      DataColumn(label: Text("Date")),
-                      DataColumn(label: Text("Action"))
+                    columns: const [
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Email')),
+                      DataColumn(label: Text('Destination')),
+                      DataColumn(label: Text('Date')),
+                      DataColumn(label: Text('Action'))
                     ],
                     source: MyQuotationsDataSource(verQuo),
                     rowsPerPage: _rowsPerPage,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {
@@ -105,27 +104,26 @@ class _QuotationsPageState extends State<QuotationsPage> {
                 ),
               ),
 
-              SizedBox(height: 35),
-              Divider(thickness: 1, color: Colors.black26),
+              const SizedBox(height: 35),
+              const Divider(thickness: 1, color: Colors.black26),
               // Upcoming Events Section
-              Padding(
+              const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  "All Verified Quotations:",
+                  'All Verified Quotations:',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
-              Divider(thickness: 1, color: Colors.black26),
+              const Divider(thickness: 1, color: Colors.black26),
 
               Row(
                 children: [
-                  SizedBox(width: 530),
+                  const SizedBox(width: 530),
                   Expanded(
                     flex: 2,
                     child: TextField(
-                      controller: null,
                       decoration: InputDecoration(
-                        hintText: "Search...",
+                        hintText: 'Search...',
                         border: OutlineInputBorder(
                           borderRadius:
                               BorderRadius.circular(10), // Rounded corners
@@ -133,12 +131,12 @@ class _QuotationsPageState extends State<QuotationsPage> {
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                 ],
               ),
 
@@ -155,17 +153,17 @@ class _QuotationsPageState extends State<QuotationsPage> {
                   child: PaginatedDataTable(
                     columnSpacing: 30,
                     dataRowMinHeight: 40,
-                    columns: [
-                      DataColumn(label: Text("ID")),
-                      DataColumn(label: Text("Name")),
-                      DataColumn(label: Text("Email")),
-                      DataColumn(label: Text("Destination")),
-                      DataColumn(label: Text("Date")),
-                      DataColumn(label: Text("Action"))
+                    columns: const [
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('Email')),
+                      DataColumn(label: Text('Destination')),
+                      DataColumn(label: Text('Date')),
+                      DataColumn(label: Text('Action'))
                     ],
                     source: MyQuotationsApprovedDataSource(verQuo),
                     rowsPerPage: _rowsPerPage1,
-                    availableRowsPerPage: [5, 10, 15, 20, 25],
+                    availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
                       if (value != null) {
                         setState(() {

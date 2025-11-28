@@ -5,7 +5,8 @@ class ApprovePaymentsPage extends StatefulWidget {
   final Function(int) approveTransaction;
   final Function(int) rejectTransaction;
 
-  ApprovePaymentsPage({
+  const ApprovePaymentsPage({
+    super.key,
     required this.pendingTransactions,
     required this.approveTransaction,
     required this.rejectTransaction,
@@ -20,19 +21,19 @@ class _ApprovePaymentsPageState extends State<ApprovePaymentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Payment Approval Page',
+        title: const Text('Payment Approval Page',
             style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
       body: ListView.builder(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         itemCount: widget.pendingTransactions.length,
         itemBuilder: (context, index) {
           final transaction = widget.pendingTransactions[index];
           return Card(
             child: ListTile(
-              title: Text(transaction["name"] ?? "N/A"),
+              title: Text(transaction['name'] ?? 'N/A'),
               subtitle: Text(
                   "Amount: ${transaction["amount"]} | Mode: ${transaction["mode"]}"),
               trailing: Row(
@@ -43,9 +44,9 @@ class _ApprovePaymentsPageState extends State<ApprovePaymentsPage> {
                       widget.approveTransaction(index);
                       Navigator.pop(context);
                     },
-                    child: Text("Approve"),
+                    child: const Text('Approve'),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   ElevatedButton(
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -54,8 +55,8 @@ class _ApprovePaymentsPageState extends State<ApprovePaymentsPage> {
                         widget.pendingTransactions.removeAt(index);
                       });
                     },
-                    child:
-                        Text("Reject", style: TextStyle(color: Colors.white)),
+                    child: const Text('Reject',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),

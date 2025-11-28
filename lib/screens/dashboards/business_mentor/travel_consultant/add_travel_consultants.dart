@@ -8,17 +8,16 @@ class AddViewTEPage extends StatefulWidget {
   const AddViewTEPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _AddViewTEPageState createState() => _AddViewTEPageState();
+  State<AddViewTEPage> createState() => _AddViewTEPageState();
 }
 
 class _AddViewTEPageState extends State<AddViewTEPage> {
   Map<String, String?> selectedFiles = {
-    "Profile Picture": null,
-    "Aadhar Card": null,
-    "Pan Card": null,
-    "Bank Passbook": null,
-    "Voting Card": null,
+    'Profile Picture': null,
+    'Aadhar Card': null,
+    'Pan Card': null,
+    'Bank Passbook': null,
+    'Voting Card': null,
   };
 
   final _formKey = GlobalKey<FormState>();
@@ -26,20 +25,20 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
 
   String _selectedCountryCode = '+91'; // Default country code
 
-  void _pickFile(String fileType) async {
+  Future<void> _pickFile(String fileType) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      final FilePickerResult? result = await FilePicker.platform.pickFiles();
       if (result != null && result.files.isNotEmpty) {
-        PlatformFile file = result.files.first;
+        final PlatformFile file = result.files.first;
 
         setState(() {
           selectedFiles[fileType] = file.name; // 🔥 Save selected file name
         });
 
-        Logger.info("Picked file for $fileType: ${file.name}");
+        Logger.info('Picked file for $fileType: ${file.name}');
       }
     } catch (e) {
-      Logger.error("Error picking file: $e");
+      Logger.error('Error picking file: $e');
     }
   }
 
@@ -52,14 +51,12 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
   Widget _buildTextField(String label, {int maxLines = 1}) {
     return TextField(
       maxLines: maxLines,
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        // ignore: deprecated_member_use
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         filled: true,
-        // ignore: deprecated_member_use
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white.withValues(alpha: 0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -69,16 +66,18 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
   }
 
   Widget _buildDropdown(String label, List<String> items) {
-    String defaultOption = "---- Select $label ----"; // Default placeholder
+    final String defaultOption =
+        '---- Select $label ----'; // Default placeholder
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: defaultOption, // Set default selection
+        initialValue: defaultOption, // Set default selection
         items: [
           DropdownMenuItem(
             value: defaultOption, // Placeholder value
-            child: Text(defaultOption, style: TextStyle(color: Colors.white)),
+            child: Text(defaultOption,
+                style: const TextStyle(color: Colors.white)),
           ),
           ...items.map((e) => DropdownMenuItem(
               value: e,
@@ -93,13 +92,14 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8)),
+              color: const Color.fromARGB(255, 255, 255, 255)
+                  .withValues(alpha: 0.8)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.2),
+          fillColor: Colors.white.withValues(alpha: 0.2),
         ),
         dropdownColor: const Color.fromARGB(255, 129, 129, 129),
       ),
@@ -134,19 +134,19 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildTextField('User Id & Name'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Reference Name'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('First Name*'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Last Name*'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Nominee Name*'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Nominee Relation*'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
@@ -156,18 +156,18 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 3, horizontal: 10.0),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: DropdownButton<String>(
                             value: _selectedCountryCode,
-                            onChanged: (String? newValue) {
+                            onChanged: (newValue) {
                               setState(() {
                                 _selectedCountryCode = newValue!;
                               });
                             },
-                            items: ["+91", "+1", "+44", "+61", "+971"]
-                                .map((String value) {
+                            items: ['+91', '+1', '+44', '+61', '+971']
+                                .map((value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Container(
@@ -175,81 +175,77 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
                                       50, // Adjust this value to reduce the width of each item
                                   alignment: Alignment.center,
                                   child: Text(value,
-                                      style: TextStyle(
-                                          color: const Color.fromARGB(
+                                      style: const TextStyle(
+                                          color: Color.fromARGB(
                                               255, 255, 255, 255))),
                                 ),
                               );
                             }).toList(),
                             dropdownColor:
                                 const Color.fromARGB(255, 83, 83, 83),
-                            isExpanded: false,
                             underline:
-                                SizedBox(), // Hides the default underline
+                                const SizedBox(), // Hides the default underline
                           ),
                         ),
                         // Phone number text field
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: TextField(
                             keyboardType: TextInputType.phone,
                             maxLength:
                                 10, // Limit to typical phone number length
-                            style: TextStyle(
-                                color:
-                                    const Color.fromARGB(255, 255, 255, 255)),
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 255, 255, 255)),
                             decoration: InputDecoration(
-                              labelText: "Phone number",
+                              labelText: 'Phone number',
                               labelStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withValues(alpha: 0.8)),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
                               ),
-                              counterText: "", // Hide character counter
+                              counterText: '', // Hide character counter
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Email *'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildDropdown('Gender *', ['Male', 'Female', 'Other']),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextFormField(
                       controller: _dateController,
                       readOnly: true, // Makes the TextFormField non-editable
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Date of Birth *',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.8)),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: Colors.white.withValues(alpha: 0.2),
                         suffixIcon: _dateController.text.isNotEmpty
                             ? IconButton(
-                                icon: Icon(Icons.close, color: Colors.white),
+                                icon: const Icon(Icons.close,
+                                    color: Colors.white),
                                 onPressed: () {
-                                  setState(() {
-                                    _dateController
-                                        .clear(); // Clears the date when cancel button is pressed
-                                  });
+                                  setState(_dateController.clear);
                                 },
                               )
                             : null, // Only show cancel button if date is selected
                       ),
                       onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
+                        final DateTime? pickedDate = await showDatePicker(
                           context: context,
                           initialDate: _dateController.text.isNotEmpty
                               ? DateFormat('dd-MM-yyyy')
@@ -267,41 +263,41 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
                       },
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown('Country *', ['India', 'Pakistan', 'Other']),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown('State *', ['Goa', 'Delhi', 'Other']),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildDropdown('City *', ['Margao', 'Panjim', 'Other']),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   _buildTextField('Pincode *'),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildTextField('Address *'),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
-                    "Attachments",
+                    'Attachments',
                     style: Appwidget.normalSubTitle(),
                   ),
-                  SizedBox(height: 10),
-                  _buildUploadButton("Profile Picture"),
-                  _buildUploadButton("Aadhar Card"),
-                  _buildUploadButton("Pan Card"),
-                  _buildUploadButton("Bank Passbook"),
-                  _buildUploadButton("Voting Card"),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 10),
+                  _buildUploadButton('Profile Picture'),
+                  _buildUploadButton('Aadhar Card'),
+                  _buildUploadButton('Pan Card'),
+                  _buildUploadButton('Bank Passbook'),
+                  _buildUploadButton('Voting Card'),
+                  const SizedBox(height: 20),
                   Center(
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
                       ),
-                      child: Text(
-                        "Submit",
+                      child: const Text(
+                        'Submit',
                         style:
                             TextStyle(color: Colors.blueAccent, fontSize: 16),
                       ),
@@ -323,17 +319,18 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
         children: [
           ElevatedButton.icon(
             onPressed: () => _pickFile(fileType),
-            icon: Icon(Icons.upload_file),
-            label: Text("Upload $fileType"),
+            icon: const Icon(Icons.upload_file),
+            label: Text('Upload $fileType'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),
               ),
             ),
           ),
-          SizedBox(width: 10), // 🔥 Ensure spacing between button & file name
+          const SizedBox(
+              width: 10), // 🔥 Ensure spacing between button & file name
 
           if (selectedFiles[fileType] !=
               null) // 🔥 Show file name & remove button
@@ -342,12 +339,12 @@ class _AddViewTEPageState extends State<AddViewTEPage> {
               children: [
                 Text(
                   selectedFiles[fileType]!,
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                   overflow: TextOverflow.ellipsis, // 🔥 Avoid overflow issues
                 ),
-                SizedBox(width: 5),
+                const SizedBox(width: 5),
                 IconButton(
-                  icon: Icon(Icons.close, color: Colors.red),
+                  icon: const Icon(Icons.close, color: Colors.red),
                   onPressed: () => _removeFile(fileType), // 🔥 Remove file
                 ),
               ],

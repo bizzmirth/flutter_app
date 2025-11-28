@@ -1,4 +1,5 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
+
 part 'pending_customer_model.g.dart';
 
 @collection

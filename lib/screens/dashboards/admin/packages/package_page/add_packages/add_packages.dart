@@ -10,8 +10,7 @@ class AddpackagesPage extends StatefulWidget {
   const AddpackagesPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _AddpackagesState createState() => _AddpackagesState();
+  State<AddpackagesPage> createState() => _AddpackagesState();
 }
 
 class _AddpackagesState extends State<AddpackagesPage> {
@@ -24,7 +23,7 @@ class _AddpackagesState extends State<AddpackagesPage> {
         _currentStep++;
       });
       _pageController.animateToPage(_currentStep,
-          duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+          duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
     }
   }
 
@@ -34,7 +33,7 @@ class _AddpackagesState extends State<AddpackagesPage> {
         _currentStep--;
       });
       _pageController.animateToPage(_currentStep,
-          duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+          duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
     }
   }
 
@@ -61,14 +60,14 @@ class _AddpackagesState extends State<AddpackagesPage> {
         ),
         child: Column(
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildProgressBar(),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Expanded(
               child: PageView(
                 controller: _pageController,
-                physics: NeverScrollableScrollPhysics(),
-                children: [
+                physics: const NeverScrollableScrollPhysics(),
+                children: const [
                   PackageSelectionScreen(),
                   PackageItenaryDetails(),
                   PackagePricingScreen(),
@@ -77,7 +76,7 @@ class _AddpackagesState extends State<AddpackagesPage> {
               ),
             ),
             _buildNavigationButtons(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -86,19 +85,19 @@ class _AddpackagesState extends State<AddpackagesPage> {
 
   Widget _buildProgressBar() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(4, (index) {
-          bool isActive = index == _currentStep;
-          bool isCompleted = index < _currentStep;
+          final bool isActive = index == _currentStep;
+          final bool isCompleted = index < _currentStep;
           return AnimatedContainer(
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             width: MediaQuery.of(context).size.width / 5,
             height: 20,
             decoration: BoxDecoration(
               gradient: isActive
-                  ? LinearGradient(colors: [Colors.blue, Colors.cyan])
+                  ? const LinearGradient(colors: [Colors.blue, Colors.cyan])
                   : isCompleted
                       ? LinearGradient(colors: [Colors.blue[200]!, Colors.cyan])
                       : LinearGradient(
@@ -107,7 +106,7 @@ class _AddpackagesState extends State<AddpackagesPage> {
               boxShadow: isActive
                   ? [
                       BoxShadow(
-                        color: Colors.blueAccent.withOpacity(0.7),
+                        color: Colors.blueAccent.withValues(alpha: 0.7),
                         blurRadius: 10,
                         spreadRadius: 2,
                       )
@@ -123,7 +122,7 @@ class _AddpackagesState extends State<AddpackagesPage> {
   Widget _buildNavigationButtons() {
     return Column(
       children: [
-        SizedBox(height: 30),
+        const SizedBox(height: 30),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -132,7 +131,7 @@ class _AddpackagesState extends State<AddpackagesPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
               ),
-              child: Text("Back"),
+              child: const Text('Back'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -144,7 +143,7 @@ class _AddpackagesState extends State<AddpackagesPage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            PackagePage()), // Change this to your desired page
+                            const PackagePage()), // Change this to your desired page
                   );
                 }
               },
@@ -152,7 +151,7 @@ class _AddpackagesState extends State<AddpackagesPage> {
                 backgroundColor: Colors.white,
               ),
               child: Text(
-                  _currentStep == 3 ? "Submit" : "Next"), // Change button text
+                  _currentStep == 3 ? 'Submit' : 'Next'), // Change button text
             ),
           ],
         ),

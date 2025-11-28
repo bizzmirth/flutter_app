@@ -1,5 +1,5 @@
-import 'package:bizzmirth_app/controllers/profile_controller.dart';
-import 'package:bizzmirth_app/models/coupons_data_model.dart';
+import 'package:bizzmirth_app/controllers/common_controllers/profile_controller.dart';
+import 'package:bizzmirth_app/models/profile_models/coupons_data_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -16,26 +16,37 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  String custtype = "";
+  TabController? _tabController;
+
+  String? currUserTypeId;
+  String custtype = '';
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getPersonalDetails();
+      _getSharedPrefData();
     });
 
     // Run async work separately
     _initializeData();
   }
 
+  Future<void> _getSharedPrefData() async {
+    final userTypeId = await SharedPrefHelper().getSavedUserTypeId();
+    if (!mounted) return;
+    setState(() {
+      currUserTypeId = userTypeId;
+    });
+    _setupTabController(); // ✅ setup tab controller after loading
+  }
+
   Future<void> _initializeData() async {
+    final profileController = context.read<ProfileController>();
     try {
       await getCustomerType();
-      final profileController = context.read<ProfileController>();
 
       if (profileController.customerType != null &&
           profileController.customerType!.isNotEmpty) {
@@ -43,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage>
         custtype = profileController.customerType!;
         // Save it to SharedPreferences for future use
         await SharedPrefHelper().saveCustomerType(custtype);
-        Logger.success("Using customer_type from API: $custtype");
+        Logger.success('Using customer_type from API: $custtype');
       }
     } catch (e) {
       Logger.error('Error initializing dashboard: $e');
@@ -53,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage>
   Future<void> getCustomerType() async {
     try {
       custtype = await SharedPrefHelper().getCustomerType() ?? '';
-      Logger.success("customer type: $custtype");
+      Logger.success('customer type: $custtype');
       if (mounted) {
         setState(() {});
       }
@@ -62,63 +73,37 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
-  void getPersonalDetails() async {
+  Future<void> getPersonalDetails() async {
     final controller = Provider.of<ProfileController>(context, listen: false);
-    controller.apiGetPersonalDetails();
-    controller.getCouponDetails();
+    await controller.apiGetPersonalDetails();
+    await controller.getCouponDetails();
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _tabController.dispose();
+  //   super.dispose();
+  // }
 
-  List<CouponData> sampleCoupons = [
-    CouponData(
-      id: "94",
-      userId: "CU250044",
-      paymentId: "PAID20250620110449",
-      code: "20250311BA7790E",
-      couponAmt: "3000",
-      usageStatus: "1",
-      confirmStatus: "1",
-      createdDate: "2025-06-20 16:34:49",
-      usedDate: null,
-      expiryDate: "2035-06-20 16:34:49",
-    ),
-    CouponData(
-      id: "95",
-      userId: "CU250045",
-      paymentId: "PAID20250721125530",
-      code: "20250412CD8891F",
-      couponAmt: "1500",
-      usageStatus: "0",
-      confirmStatus: "1",
-      createdDate: "2025-07-21 18:25:30",
-      usedDate: "2025-07-25 14:20:15",
-      expiryDate: "2025-12-21 18:25:30",
-    ),
-    CouponData(
-      id: "96",
-      userId: "CU250046",
-      paymentId: "PAID20250815093025",
-      code: "20250513EF9902G",
-      couponAmt: "5000",
-      usageStatus: "1",
-      confirmStatus: "1",
-      createdDate: "2025-08-15 14:50:25",
-      usedDate: null,
-      expiryDate: "2026-02-15 14:50:25",
-    ),
-  ];
+  void _setupTabController() {
+    final int tabCount = currUserTypeId == '10' ? 2 : 1;
+
+    // Dispose old controller to avoid leaks
+    _tabController?.dispose();
+
+    _tabController = TabController(length: tabCount, vsync: this);
+    setState(() {}); // rebuild widgets depending on it
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<ProfileController>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
     final isMobile = !isTablet;
+    Logger.warning('');
+    if (_tabController == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -131,62 +116,65 @@ class _ProfilePageState extends State<ProfilePage>
         elevation: 0,
       ),
       backgroundColor: Colors.grey[100],
-      body: controller.isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : SafeArea(
-              child: Padding(
-                padding: EdgeInsets.all(isTablet ? 24.0 : 12.0),
-                child: isTablet
-                    ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Left Sidebar (Tablet only)
-                          SizedBox(
-                            width: 180,
-                            child: _buildSidebar(isTablet, controller),
-                          ),
-                          SizedBox(width: 32),
-                          // Main Content Area (Tablet only)
-                          Expanded(
-                            child: _buildMainContent(
-                                isTablet, isMobile, controller),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        // Mobile layout - single column
-                        children: [
-                          // Profile Section (Mobile)
-                          _buildMobileProfileSection(controller),
-                          SizedBox(height: 16),
-                          // Document Cards (Mobile - horizontal scroll)
-                          _buildMobileDocumentsSection(controller),
-                          SizedBox(height: 16),
-                          // Main Content (Mobile)
-                          Expanded(
-                            child: _buildMainContent(
-                                isTablet, isMobile, controller),
-                          ),
-                        ],
-                      ),
-              ),
+      body: Consumer<ProfileController>(
+        builder: (context, controller, _) {
+          if (controller.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(isTablet ? 24.0 : 12.0),
+              child: isTablet
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left Sidebar (Tablet only)
+                        SizedBox(
+                          width: 180,
+                          child: _buildSidebar(isTablet, controller),
+                        ),
+                        const SizedBox(width: 32),
+                        // Main Content Area (Tablet only)
+                        Expanded(
+                          child:
+                              _buildMainContent(isTablet, isMobile, controller),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      // Mobile layout - single column
+                      children: [
+                        // Profile Section (Mobile)
+                        _buildMobileProfileSection(controller),
+                        const SizedBox(height: 16),
+                        // Document Cards (Mobile - horizontal scroll)
+                        _buildMobileDocumentsSection(controller),
+                        const SizedBox(height: 16),
+                        // Main Content (Mobile)
+                        Expanded(
+                          child:
+                              _buildMainContent(isTablet, isMobile, controller),
+                        ),
+                      ],
+                    ),
             ),
+          );
+        },
+      ),
     );
   }
 
   Widget _buildMobileProfileSection(ProfileController controller) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -202,31 +190,32 @@ class _ProfilePageState extends State<ProfilePage>
                     width: 60,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.person, size: 60, color: Colors.grey);
+                      return const Icon(Icons.person,
+                          size: 60, color: Colors.grey);
                     },
                   )
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      "https://testca.uniqbizz.com/uploading/not_uploaded.png",
+                      'https://testca.uniqbizz.com/uploading/not_uploaded.png',
                       fit: BoxFit.cover,
                     ),
                   ),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   '${controller.firstName} ${controller.lastName}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   controller.email ?? '',
                   style: TextStyle(
@@ -235,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   controller.phone ?? '',
                   style: TextStyle(
@@ -261,25 +250,27 @@ class _ProfilePageState extends State<ProfilePage>
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           _buildDocumentCard('Pan Card', controller.panCard, false,
               isMobile: true),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           _buildDocumentCard('Pass Book', controller.bankPassbook, false,
               isMobile: true),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           _buildDocumentCard('Aadhar Card', controller.aadharCard, false,
               isMobile: true),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           _buildDocumentCard('Voting Card', controller.votingCard, false,
               isMobile: true),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
         ],
       ),
     );
   }
 
   Widget _buildSidebar(bool isTablet, ProfileController controller) {
+    Logger.warning(
+        'profile picccccc: ${controller.profilePic}, Pan card: ${controller.panCard}');
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -291,9 +282,9 @@ class _ProfilePageState extends State<ProfilePage>
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -306,7 +297,7 @@ class _ProfilePageState extends State<ProfilePage>
                       color: Colors.grey[400],
                       size: isTablet ? 20 : 18,
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
                       'user-profile',
                       style: TextStyle(
@@ -314,7 +305,7 @@ class _ProfilePageState extends State<ProfilePage>
                         fontSize: isTablet ? 14 : 12,
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Icon(
                       Icons.camera_alt_outlined,
                       color: Colors.grey[400],
@@ -343,7 +334,7 @@ class _ProfilePageState extends State<ProfilePage>
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Image.network(
-                              "https://testca.uniqbizz.com/uploading/not_uploaded.png",
+                              'https://testca.uniqbizz.com/uploading/not_uploaded.png',
                               fit: BoxFit.cover,
                             );
                           },
@@ -351,12 +342,12 @@ class _ProfilePageState extends State<ProfilePage>
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
-                            "https://testca.uniqbizz.com/uploading/not_uploaded.png",
+                            'https://testca.uniqbizz.com/uploading/not_uploaded.png',
                             fit: BoxFit.cover,
                           ),
                         ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   'Profile Pic',
                   style: TextStyle(
@@ -397,9 +388,9 @@ class _ProfilePageState extends State<ProfilePage>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -421,7 +412,7 @@ class _ProfilePageState extends State<ProfilePage>
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Image.network(
-                          "https://testca.uniqbizz.com/uploading/not_uploaded.png",
+                          'https://testca.uniqbizz.com/uploading/not_uploaded.png',
                           fit: BoxFit.cover,
                         );
                       },
@@ -430,7 +421,7 @@ class _ProfilePageState extends State<ProfilePage>
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      "https://testca.uniqbizz.com/uploading/not_uploaded.png",
+                      'https://testca.uniqbizz.com/uploading/not_uploaded.png',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -452,15 +443,17 @@ class _ProfilePageState extends State<ProfilePage>
 
   Widget _buildMainContent(
       bool isTablet, bool isMobile, ProfileController controller) {
+    final bool showCoupons = currUserTypeId == '10';
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -488,11 +481,12 @@ class _ProfilePageState extends State<ProfilePage>
                   icon: Icon(Icons.home_outlined, size: isTablet ? 24 : 20),
                   text: isTablet ? 'Personal Details' : 'Personal',
                 ),
-                Tab(
-                  icon: Icon(Icons.local_offer_outlined,
-                      size: isTablet ? 24 : 20),
-                  text: 'Coupons',
-                ),
+                if (showCoupons)
+                  Tab(
+                    icon: Icon(Icons.local_offer_outlined,
+                        size: isTablet ? 24 : 20),
+                    text: 'Coupons',
+                  ),
               ],
             ),
           ),
@@ -502,7 +496,7 @@ class _ProfilePageState extends State<ProfilePage>
               controller: _tabController,
               children: [
                 _buildPersonalDetailsTab(isTablet, isMobile, controller),
-                _buildCouponsTab(isTablet, controller),
+                if (showCoupons) _buildCouponsTab(isTablet, controller),
               ],
             ),
           ),
@@ -528,17 +522,17 @@ class _ProfilePageState extends State<ProfilePage>
       bool isTablet, bool isMobile, ProfileController controller) {
     return Column(
       children: [
-        if (controller.compCheck == "1")
+        if (controller.compCheck == '1')
           Container(
-            padding: EdgeInsets.all(8),
-            margin: EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(8),
+            margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
               border: Border.all(color: Colors.blue.shade200),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
-              "Complimentary Membership",
+              'Complimentary Membership',
               style: TextStyle(
                 color: Colors.blue.shade900,
                 fontWeight: FontWeight.bold,
@@ -548,50 +542,50 @@ class _ProfilePageState extends State<ProfilePage>
         // Name Fields
         Column(
           children: [
-            _buildFormField('First Name', controller.firstName ?? "", isTablet),
-            SizedBox(height: 16),
-            _buildFormField('Last Name', controller.lastName ?? "", isTablet),
+            _buildFormField('First Name', controller.firstName ?? '', isTablet),
+            const SizedBox(height: 16),
+            _buildFormField('Last Name', controller.lastName ?? '', isTablet),
           ],
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         // Contact Fields
         Column(
           children: [
-            _buildFormField('Phone Number', controller.phone ?? "", isTablet),
-            SizedBox(height: 16),
-            _buildFormField('Email Address', controller.email ?? "", isTablet),
+            _buildFormField('Phone Number', controller.phone ?? '', isTablet),
+            const SizedBox(height: 16),
+            _buildFormField('Email Address', controller.email ?? '', isTablet),
           ],
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         // Gender and DOB
         Column(
           children: [
             _buildGenderSection(isTablet, controller),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildFormField(
                 'Date of Birth', formatDate(controller.dob), isTablet,
                 isDate: true),
           ],
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         // Location Fields
         Column(
           children: [
-            _buildDropdownField('Country', controller.country ?? "", isTablet),
-            SizedBox(height: 16),
-            _buildDropdownField('State', controller.state ?? "", isTablet),
+            _buildDropdownField('Country', controller.country ?? '', isTablet),
+            const SizedBox(height: 16),
+            _buildDropdownField('State', controller.state ?? '', isTablet),
           ],
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         // City and Zip
         Column(
           children: [
-            _buildDropdownField('City', controller.city ?? "", isTablet),
-            SizedBox(height: 16),
+            _buildDropdownField('City', controller.city ?? '', isTablet),
+            const SizedBox(height: 16),
             _buildFormField('Zip Code', controller.zipCode ?? '', isTablet),
           ],
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         // Full Address
         _buildFormField('Full Address', controller.fullAddress ?? '', isTablet,
             maxLines: 3),
@@ -612,7 +606,7 @@ class _ProfilePageState extends State<ProfilePage>
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Container(
           padding: EdgeInsets.all(isTablet ? 16 : 12),
           decoration: BoxDecoration(
@@ -657,7 +651,7 @@ class _ProfilePageState extends State<ProfilePage>
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Container(
           padding: EdgeInsets.all(isTablet ? 16 : 12),
           decoration: BoxDecoration(
@@ -702,7 +696,7 @@ class _ProfilePageState extends State<ProfilePage>
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Wrap(
           spacing: isTablet ? 24 : 12,
           runSpacing: 8,
@@ -720,12 +714,18 @@ class _ProfilePageState extends State<ProfilePage>
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Radio<bool>(
-          value: true,
+        RadioGroup<bool>(
           groupValue: isSelected,
-          onChanged: (value) {},
-          activeColor: Colors.blue[600],
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          onChanged: (value) {
+            setState(() {
+              isSelected = value ?? false;
+            });
+          },
+          child: Radio<bool>(
+            value: true,
+            activeColor: Colors.blue[600],
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
         ),
         Text(
           label,
@@ -757,14 +757,13 @@ class _ProfilePageState extends State<ProfilePage>
           // Coupon list with horizontal scrolling
           Expanded(
             child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
                   columnSpacing: isTablet ? 20 : 12,
                   horizontalMargin: isTablet ? 24 : 12,
                   headingRowHeight: isTablet ? 48 : 40,
-                  dataRowHeight: isTablet ? 48 : 40,
+                  dataRowMinHeight: isTablet ? 48 : 40,
                   columns: [
                     DataColumn(
                       label: Text(
@@ -856,10 +855,11 @@ class _ProfilePageState extends State<ProfilePage>
                         )),
                         DataCell(
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: _getStatusColor(coupon).withOpacity(0.1),
+                              color: _getStatusColor(coupon)
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -886,7 +886,7 @@ class _ProfilePageState extends State<ProfilePage>
 
   String _formatDate(String dateString) {
     try {
-      DateTime date = DateTime.parse(dateString);
+      final DateTime date = DateTime.parse(dateString);
       return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
     } catch (e) {
       return dateString;
@@ -894,23 +894,23 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   String _getStatus(CouponData coupon) {
-    if (coupon.usageStatus == "1") return "Used";
+    if (coupon.usageStatus == '1') return 'Used';
 
-    DateTime expiryDate = DateTime.parse(coupon.expiryDate);
-    DateTime now = DateTime.now();
+    final DateTime expiryDate = DateTime.parse(coupon.expiryDate);
+    final DateTime now = DateTime.now();
 
-    if (expiryDate.isBefore(now)) return "Expired";
-    return "Unused";
+    if (expiryDate.isBefore(now)) return 'Expired';
+    return 'Unused';
   }
 
   Color _getStatusColor(CouponData coupon) {
-    String status = _getStatus(coupon);
+    final String status = _getStatus(coupon);
     switch (status) {
-      case "Unused":
+      case 'Unused':
         return Colors.green;
-      case "Expired":
+      case 'Expired':
         return Colors.orange;
-      case "Used":
+      case 'Used':
         return Colors.red;
       default:
         return Colors.grey;

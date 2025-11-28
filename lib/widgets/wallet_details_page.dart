@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:bizzmirth_app/controllers/cust_wallet_controller.dart';
-import 'package:bizzmirth_app/data_source/cust_booking_points_data_source.dart';
-import 'package:bizzmirth_app/data_source/cust_redeemable_table_data_source.dart';
-import 'package:bizzmirth_app/models/cust_booking_wallet_history_model.dart';
-import 'package:bizzmirth_app/models/cust_redeemable_wallet_history_model.dart';
+import 'package:bizzmirth_app/controllers/customer_controller/cust_wallet_controller.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_booking_points_data_source.dart';
+import 'package:bizzmirth_app/data_source/customer_data_sources/cust_redeemable_table_data_source.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_booking_wallet_history_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_redeemable_wallet_history_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
@@ -17,7 +17,7 @@ class WalletDetailsPage extends StatefulWidget {
   const WalletDetailsPage({super.key});
 
   @override
-  _WalletDetailsPageState createState() => _WalletDetailsPageState();
+  State<WalletDetailsPage> createState() => _WalletDetailsPageState();
 }
 
 class _WalletDetailsPageState extends State<WalletDetailsPage> {
@@ -47,7 +47,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
   void initState() {
     super.initState();
     getCustomerWalletDetails();
-    _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       if (mounted) {
         setState(() {
           _currentColorIndex = (_currentColorIndex + 1) % colors.length;
@@ -74,16 +74,19 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
   }
 
   Future<void> _onRefresh() async {
-    getCustomerWalletDetails();
+    await getCustomerWalletDetails();
     _initializeFilterRedeemableHistory();
     _initializeFilterBookingHistory();
   }
 
-  void getCustomerWalletDetails() async {
+  Future<void> getCustomerWalletDetails() async {
     final controller =
         Provider.of<CustWalletController>(context, listen: false);
-    _customerType = await SharedPrefHelper().getCurrentUserCustId();
-    controller.apiGetWalletDetails().then((_) {
+
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+
+    _customerType = loginRes?.userId ?? '';
+    await controller.apiGetWalletDetails().then((_) {
       _initializeFilterRedeemableHistory();
       _initializeFilterBookingHistory();
     });
@@ -154,7 +157,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
 
         // Search filter - check multiple fields
         if (searchTerm != null && searchTerm.isNotEmpty) {
-          String searchTermLower = searchTerm.toLowerCase();
+          final String searchTermLower = searchTerm.toLowerCase();
           matchesSearch = (walletHistory.message
                       ?.toLowerCase()
                       .contains(searchTermLower) ??
@@ -171,15 +174,16 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
             try {
               // Adjust the date format according to your data format
               // Common formats: "dd-MM-yyyy", "yyyy-MM-dd", "MM/dd/yyyy"
-              DateFormat inputFormat =
-                  DateFormat("dd-MM-yyyy"); // Adjust this format as needed
-              DateTime? walletDate = inputFormat.parse(walletHistory.date!);
+              final DateFormat inputFormat =
+                  DateFormat('dd-MM-yyyy'); // Adjust this format as needed
+              final DateTime walletDate =
+                  inputFormat.parse(walletHistory.date!);
 
               if (fromDate != null && walletDate.isBefore(fromDate)) {
                 matchesDateRange = false;
               }
               if (toDate != null &&
-                  walletDate.isAfter(toDate.add(Duration(days: 1)))) {
+                  walletDate.isAfter(toDate.add(const Duration(days: 1)))) {
                 matchesDateRange = false;
               }
             } catch (e) {
@@ -221,7 +225,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
 
         // 🔎 Search filter - check multiple fields
         if (searchTerm != null && searchTerm.isNotEmpty) {
-          String searchTermLower = searchTerm.toLowerCase();
+          final String searchTermLower = searchTerm.toLowerCase();
           matchesSearch = (walletHistory.message
                       ?.toLowerCase()
                       .contains(searchTermLower) ??
@@ -237,14 +241,15 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
           if (walletHistory.date != null && walletHistory.date!.isNotEmpty) {
             try {
               // Adjust the date format according to your API
-              DateFormat inputFormat = DateFormat("dd-MM-yyyy");
-              DateTime walletDate = inputFormat.parse(walletHistory.date!);
+              final DateFormat inputFormat = DateFormat('dd-MM-yyyy');
+              final DateTime walletDate =
+                  inputFormat.parse(walletHistory.date!);
 
               if (fromDate != null && walletDate.isBefore(fromDate)) {
                 matchesDateRange = false;
               }
               if (toDate != null &&
-                  walletDate.isAfter(toDate.add(Duration(days: 1)))) {
+                  walletDate.isAfter(toDate.add(const Duration(days: 1)))) {
                 matchesDateRange = false;
               }
             } catch (e) {
@@ -296,11 +301,11 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
     }
 
     if (walletHistory.isEmpty) {
-      return SizedBox(
+      return const SizedBox(
         height: 100,
         child: Center(
           child: Text(
-            "No redeemable wallet history found",
+            'No redeemable wallet history found',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
@@ -323,7 +328,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.grey.withValues(alpha: 0.2),
                 spreadRadius: 1,
                 blurRadius: 4,
                 offset: const Offset(0, 2),
@@ -338,7 +343,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                 onTap: () {
                   // Add tap functionality if needed
                 },
-                splashColor: Colors.blue.withOpacity(0.1),
+                splashColor: Colors.blue.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -367,7 +372,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                             ),
                           ),
                           Text(
-                            "     Date \n${payout.date!}",
+                            '     Date \n${payout.date!}',
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 12,
@@ -381,7 +386,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
 
                       // Payout Message
                       Text(
-                        "Points Message",
+                        'Points Message',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
@@ -410,7 +415,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Points Value",
+                                'Points Value',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],
@@ -432,7 +437,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                "Status      ",
+                                'Status      ',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],
@@ -490,11 +495,11 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
     }
 
     if (controller.custBookingWalletHistory.isEmpty) {
-      return SizedBox(
+      return const SizedBox(
         height: 100,
         child: Center(
           child: Text(
-            "No booking points wallet history found",
+            'No booking points wallet history found',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
@@ -517,7 +522,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.grey.withValues(alpha: 0.2),
                 spreadRadius: 1,
                 blurRadius: 4,
                 offset: const Offset(0, 2),
@@ -530,7 +535,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
               color: index.isEven ? Colors.grey[50] : Colors.white,
               child: InkWell(
                 onTap: () {},
-                splashColor: Colors.blue.withOpacity(0.1),
+                splashColor: Colors.blue.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -558,7 +563,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                             ),
                           ),
                           Text(
-                            "     Date \n${payout.date!}",
+                            '     Date \n${payout.date!}',
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 12,
@@ -572,7 +577,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
 
                       // Payout Message
                       Text(
-                        "Points Message",
+                        'Points Message',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
@@ -601,7 +606,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Points Value",
+                                'Points Value',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],
@@ -623,7 +628,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                "Status      ",
+                                'Status      ',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],
@@ -669,7 +674,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
     final isTablet = MediaQuery.of(context).size.width > 600; // breakpoint
     return Consumer<CustWalletController>(
         builder: (context, controller, child) {
-      String userCount = filteredRedeemableHistory.isEmpty &&
+      final String userCount = filteredRedeemableHistory.isEmpty &&
               (searchController.text.isEmpty &&
                   fromDate == null &&
                   toDate == null)
@@ -687,30 +692,30 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
           elevation: 0,
         ),
         body: controller.isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : RefreshIndicator(
                 onRefresh: _onRefresh,
                 child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Divider(thickness: 1, color: Colors.black26),
-                        Center(
+                        const Divider(thickness: 1, color: Colors.black26),
+                        const Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
-                              "Wallet Options",
+                              'Wallet Options',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
-                        Divider(thickness: 1, color: Colors.black26),
+                        const Divider(thickness: 1, color: Colors.black26),
 
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
                         // Wallet Options
                         Row(
@@ -720,16 +725,17 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                               Expanded(
                                 child: _buildWalletOptionCard(
                                   title: 'Redeemable Count',
-                                  amount: controller.referenceCountTotal ?? "",
+                                  amount: controller.referenceCountTotal ?? '',
                                   thisMonthAmount:
-                                      controller.referenceCountThisMonth ?? "",
+                                      controller.referenceCountThisMonth ?? '',
                                   icon: Icons.person_outline,
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => TopUpWalletPage(
-                                                title: "Top Up Wallet",
+                                          builder: (context) =>
+                                              const TopUpWalletPage(
+                                                title: 'Top Up Wallet',
                                               )),
                                     );
                                   },
@@ -740,38 +746,40 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                               Expanded(
                                 child: _buildWalletOptionCard(
                                   title: 'Redeemable Count',
-                                  amount: controller.referenceCountTotal ?? "",
+                                  amount: controller.referenceCountTotal ?? '',
                                   thisMonthAmount:
-                                      controller.referenceCountThisMonth ?? "",
+                                      controller.referenceCountThisMonth ?? '',
                                   icon: Icons.person_outline,
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => TopUpWalletPage(
-                                                title: "Top Up Wallet",
+                                          builder: (context) =>
+                                              const TopUpWalletPage(
+                                                title: 'Top Up Wallet',
                                               )),
                                     );
                                   },
                                   isClickable: false,
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               Expanded(
                                 child: _buildWalletOptionCard(
                                   title: 'Bookings Wallet',
                                   amount:
-                                      controller.bookingPointsCountTotal ?? "",
+                                      controller.bookingPointsCountTotal ?? '',
                                   icon: Icons.people_outline,
                                   thisMonthAmount:
                                       controller.bookingPointsCountThisMonth ??
-                                          "",
+                                          '',
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => TopUpWalletPage(
-                                                title: "Referral Wallet",
+                                          builder: (context) =>
+                                              const TopUpWalletPage(
+                                                title: 'Referral Wallet',
                                               )),
                                     );
                                   },
@@ -782,26 +790,28 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                           ],
                         ),
 
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         if (_customerType == 'Prime' &&
                             _customerType == 'Premium')
                           Padding(
                             padding: const EdgeInsets.all(16),
                             child: Column(
                               children: [
-                                Divider(thickness: 1, color: Colors.black26),
-                                Center(
+                                const Divider(
+                                    thickness: 1, color: Colors.black26),
+                                const Center(
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(vertical: 10),
                                     child: Text(
-                                      "Redeemable Wallet History",
+                                      'Redeemable Wallet History',
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                 ),
-                                Divider(thickness: 1, color: Colors.black26),
+                                const Divider(
+                                    thickness: 1, color: Colors.black26),
                                 FilterBar(
                                   userCount: userCount,
                                   onSearchChanged: _onRedeemableSearchChanged,
@@ -822,16 +832,16 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                                                   headerHeight +
                                                   paginationHeight,
                                           child: PaginatedDataTable(
-                                            columns: [
-                                              DataColumn(label: Text("SR No.")),
+                                            columns: const [
+                                              DataColumn(label: Text('SR No.')),
                                               DataColumn(
                                                   label:
-                                                      Text("Payout Message")),
+                                                      Text('Payout Message')),
                                               DataColumn(
-                                                  label: Text("Payout Amount")),
+                                                  label: Text('Payout Amount')),
                                               DataColumn(
-                                                  label: Text("Earned ON")),
-                                              DataColumn(label: Text("Status")),
+                                                  label: Text('Earned ON')),
+                                              DataColumn(label: Text('Status')),
                                             ],
                                             source: CustRedeemableTableDataSource(
                                                 filteredRedeemableHistory
@@ -844,7 +854,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                                                         .custRedeemableWalletHistory
                                                     : filteredRedeemableHistory),
                                             rowsPerPage: _rowsPerPage,
-                                            availableRowsPerPage: [
+                                            availableRowsPerPage: const [
                                               5,
                                               10,
                                               15,
@@ -871,19 +881,21 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                             padding: const EdgeInsets.all(16),
                             child: Column(
                               children: [
-                                Divider(thickness: 1, color: Colors.black26),
-                                Center(
+                                const Divider(
+                                    thickness: 1, color: Colors.black26),
+                                const Center(
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(vertical: 10),
                                     child: Text(
-                                      "Redeemable Wallet History",
+                                      'Redeemable Wallet History',
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                 ),
-                                Divider(thickness: 1, color: Colors.black26),
+                                const Divider(
+                                    thickness: 1, color: Colors.black26),
                                 FilterBar(
                                   userCount: userCount,
                                   onSearchChanged: _onRedeemableSearchChanged,
@@ -904,16 +916,16 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                                                   headerHeight +
                                                   paginationHeight,
                                           child: PaginatedDataTable(
-                                            columns: [
-                                              DataColumn(label: Text("SR No.")),
+                                            columns: const [
+                                              DataColumn(label: Text('SR No.')),
                                               DataColumn(
                                                   label:
-                                                      Text("Payout Message")),
+                                                      Text('Payout Message')),
                                               DataColumn(
-                                                  label: Text("Payout Amount")),
+                                                  label: Text('Payout Amount')),
                                               DataColumn(
-                                                  label: Text("Earned ON")),
-                                              DataColumn(label: Text("Status")),
+                                                  label: Text('Earned ON')),
+                                              DataColumn(label: Text('Status')),
                                             ],
                                             source: CustRedeemableTableDataSource(
                                                 filteredRedeemableHistory
@@ -926,7 +938,7 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                                                         .custRedeemableWalletHistory
                                                     : filteredRedeemableHistory),
                                             rowsPerPage: _rowsPerPage,
-                                            availableRowsPerPage: [
+                                            availableRowsPerPage: const [
                                               5,
                                               10,
                                               15,
@@ -948,24 +960,26 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Padding(
                             padding: const EdgeInsets.all(16),
                             child: Column(
                               children: [
-                                Divider(thickness: 1, color: Colors.black26),
-                                Center(
+                                const Divider(
+                                    thickness: 1, color: Colors.black26),
+                                const Center(
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(vertical: 10),
                                     child: Text(
-                                      "Booking Points Wallet History",
+                                      'Booking Points Wallet History',
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                 ),
-                                Divider(thickness: 1, color: Colors.black26),
+                                const Divider(
+                                    thickness: 1, color: Colors.black26),
                                 FilterBar(
                                   userCount: controller
                                       .custBookingWalletHistory.length
@@ -988,22 +1002,22 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                                                   headerHeight +
                                                   paginationHeight,
                                           child: PaginatedDataTable(
-                                            columns: [
-                                              DataColumn(label: Text("SR No.")),
+                                            columns: const [
+                                              DataColumn(label: Text('SR No.')),
                                               DataColumn(
                                                   label:
-                                                      Text("Points Message")),
+                                                      Text('Points Message')),
                                               DataColumn(
-                                                  label: Text("Points Value")),
+                                                  label: Text('Points Value')),
                                               DataColumn(
-                                                  label: Text("Added On")),
-                                              DataColumn(label: Text("Status")),
+                                                  label: Text('Added On')),
+                                              DataColumn(label: Text('Status')),
                                             ],
                                             source: CustBookingPointsDataSource(
                                                 controller
                                                     .custBookingWalletHistory),
                                             rowsPerPage: _rowsPerPage,
-                                            availableRowsPerPage: [
+                                            availableRowsPerPage: const [
                                               5,
                                               10,
                                               15,
@@ -1097,29 +1111,30 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
     return GestureDetector(
       onTap: isClickable ? onTap : null,
       child: AnimatedContainer(
-        duration: Duration(seconds: 1),
+        duration: const Duration(seconds: 1),
         curve: Curves.easeInOut,
         height: 140,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(
             colors: [
-              colors[_currentColorIndex].withOpacity(0.8),
-              colors[(_currentColorIndex + 1) % colors.length].withOpacity(0.8),
+              colors[_currentColorIndex].withValues(alpha: 0.8),
+              colors[(_currentColorIndex + 1) % colors.length]
+                  .withValues(alpha: 0.8),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 8,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1128,31 +1143,31 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       height: 1.2,
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   if (isClickable)
                     Icon(
                       Icons.arrow_forward_ios,
                       size: 16,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                     ),
                 ],
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               // Second row - Icon and main amount
               Row(
                 children: [
                   Icon(icon, size: 28, color: Colors.white),
-                  Spacer(),
+                  const Spacer(),
                   Text(
                     amount,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -1160,21 +1175,21 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
                   ),
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               // Third row - "This Month" text and amount
               Row(
                 children: [
                   Text(
-                    "This Month",
+                    'This Month',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Text(
                     thisMonthAmount,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.white,
                     ),

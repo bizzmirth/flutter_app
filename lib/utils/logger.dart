@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 class Logger {
   static const isEnabled = true;
   static void success(String message) {
@@ -20,7 +22,7 @@ class Logger {
 
   static void info(String message) {
     if (isEnabled) {
-      print('\x1B[34mℹ️  $message\x1B[0m'); // Blue
+      print('\x1B[37mℹ️  $message\x1B[0m'); // White text
     }
   }
 }

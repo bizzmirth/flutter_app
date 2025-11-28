@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:bizzmirth_app/controllers/package_details_controller.dart';
+import 'package:bizzmirth_app/controllers/all_packages_controllers/package_details_controller.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class PackageDetailsPage extends StatefulWidget {
@@ -27,19 +26,20 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
   int currentIndex = 0;
   String? customerType;
 
-  void getShredPrefData() async {
-    customerType = await SharedPrefHelper().getUserType();
+  Future<void> getShredPrefData() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    customerType = loginRes?.userType ?? '';
     setState(() {});
   }
 
-  void _openWhatsApp(String phone, String message) async {
+  Future<void> _openWhatsApp(String phone, String message) async {
     final encodedMessage = Uri.encodeComponent(message);
-    final whatsappUrl = "whatsapp://send?phone=$phone&text=$encodedMessage";
+    final whatsappUrl = 'whatsapp://send?phone=$phone&text=$encodedMessage';
 
     if (await canLaunchUrlString(whatsappUrl)) {
       await launchUrlString(whatsappUrl, mode: LaunchMode.externalApplication);
     } else {
-      final fallbackUrl = "https://wa.me/$phone?text=$encodedMessage";
+      final fallbackUrl = 'https://wa.me/$phone?text=$encodedMessage';
       if (await canLaunchUrlString(fallbackUrl)) {
         await launchUrlString(
           fallbackUrl,
@@ -47,7 +47,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
         );
       } else {
         ToastHelper.showErrorToast(
-            context: context, title: "Could not detect WhatsApp on device.");
+            title: 'Could not detect WhatsApp on device.');
       }
     }
   }
@@ -61,17 +61,20 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
     });
   }
 
-  void getPackageDetails() async {
+  Future<void> getPackageDetails() async {
     final controller =
         Provider.of<PackageDetailsController>(context, listen: false);
-    controller.getPackageDetails(packageId: widget.id);
+
+    await controller.getPackageDetails(packageId: widget.id);
+
+    if (!mounted) return; // 👈 correct guard for State.context
 
     // Precache images after data is loaded
     if (controller.packageResponse != null) {
       final pictures = controller.packageResponse!.packagePictures;
       for (var picture in pictures) {
         final url = picture.getFullImageUrl();
-        precacheImage(NetworkImage(url), context);
+        await precacheImage(NetworkImage(url), context);
       }
     }
   }
@@ -113,7 +116,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
       if (controller.isLoading || controller.packageResponse == null) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text("Package Details"),
+            title: const Text('Package Details'),
             backgroundColor: const Color.fromARGB(255, 81, 131, 246),
             centerTitle: true,
           ),
@@ -123,7 +126,10 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
 
       final pictures = controller.packageResponse!.packagePictures;
       final itemCount = pictures.length;
-      final itinerarys = controller.packageResponse?.packageItinerary.first;
+      final packageItinerary =
+          controller.packageResponse?.packageItinerary ?? [];
+      final itinerarys =
+          packageItinerary.isNotEmpty ? packageItinerary.first : null;
 
       return Scaffold(
         appBar: AppBar(
@@ -149,9 +155,10 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                     carousel_slider.CarouselSlider.builder(
                       itemCount: itemCount,
                       itemBuilder: (context, index, realIndex) {
-                        bool isActive = index == currentIndex;
+                        final bool isActive = index == currentIndex;
                         final picture = pictures[index];
                         final imageUrl = picture.getFullImageUrl();
+                        // Logger.warning("Image URL: $imageUrl");
 
                         return ClipRRect(
                           borderRadius:
@@ -185,7 +192,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                                   filter: ImageFilter.blur(
                                       sigmaX: 5.0, sigmaY: 5.0),
                                   child: Container(
-                                    color: Colors.black.withOpacity(0.3),
+                                    color: Colors.black.withValues(alpha: 0.3),
                                   ),
                                 ),
                             ],
@@ -196,7 +203,6 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                         autoPlay: itemCount > 1,
                         autoPlayInterval: const Duration(seconds: 5),
                         enlargeCenterPage: itemCount > 1,
-                        aspectRatio: 16 / 9,
                         viewportFraction: itemCount > 1 ? 0.7 : 1.0,
                         enableInfiniteScroll: itemCount > 1,
                         onPageChanged: (index, reason) {
@@ -214,7 +220,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  controller.packageDetails?.name ?? "",
+                  controller.packageDetails?.name ?? '',
                   style: GoogleFonts.poppins(
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
@@ -233,51 +239,44 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                     // Left side (Info Items)
                     Expanded(
                       child: Wrap(
-                        alignment:
-                            WrapAlignment.start, // ✅ keeps items left aligned
                         spacing: 16, // horizontal space between items
                         runSpacing: 8, // vertical space when wrapped
                         children: [
                           InfoRow(
                             icon: Icons.location_on,
-                            iconColor: Colors.teal,
-                            text: controller.packageDetails!.name,
+                            text: controller.packageDetails?.name ?? '',
                           ),
                           InfoRow(
                             icon: Icons.timer,
-                            iconColor: Colors.teal,
                             text: formatTourDuration(
-                                controller.packageDetails!.tourDays),
+                                controller.packageDetails?.tourDays ?? ''),
                           ),
                           InfoRow(
                             icon: Icons.landscape,
-                            iconColor: Colors.teal,
-                            text: controller.packageDetails!.sightseeingType,
+                            text: controller.packageDetails?.sightseeingType ??
+                                '',
                           ),
                           InfoRow(
                             icon: Icons.directions_car,
-                            iconColor: Colors.teal,
                             text:
                                 (controller.packageResponse?.packageVehicles ??
                                         [])
-                                    .join(", "),
+                                    .join(', '),
                           ),
                           InfoRow(
                             icon: Icons.hotel,
-                            iconColor: Colors.teal,
                             text: (controller.packageResponse
                                         ?.packageOccupancyType ??
                                     [])
-                                .join(", "),
+                                .join(', '),
                           ),
                           InfoRow(
                             icon: Icons.restaurant,
-                            iconColor: Colors.teal,
                             text:
                                 (controller.packageResponse?.packageMeals ?? [])
                                     .where((meal) => !meal.contains(
                                         '+')) // Filter out items containing '+'
-                                    .join(", "),
+                                    .join(', '),
                           ),
                         ],
                       ),
@@ -297,12 +296,12 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   PriceRow(
                       label: 'Per Adult Price:',
                       price:
-                          '₹${controller.packagePrice!.totalPackagePricePerAdult}/-',
+                          '₹${controller.packagePrice?.totalPackagePricePerAdult ?? ""}/-',
                       icon: Icons.person),
                   PriceRow(
                       label: 'Per Child Price:',
                       price:
-                          '₹${controller.packagePrice!.totalPackagePricePerChild}/-',
+                          '₹${controller.packagePrice?.totalPackagePricePerChild ?? ""}/-',
                       icon: Icons.child_care),
                 ],
               ),
@@ -323,7 +322,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      controller.packageDetails!.description,
+                      controller.packageDetails?.description ?? '',
                       style: GoogleFonts.poppins(fontSize: 14),
                     ),
                   ],
@@ -334,7 +333,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    bool isSmallScreen =
+                    final bool isSmallScreen =
                         constraints.maxWidth < 600; // breakpoint
 
                     if (isSmallScreen) {
@@ -346,7 +345,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                               title: 'Included',
                               content:
                                   formatItineraryText(itinerarys?.inclusion)
-                                      .join("\n"),
+                                      .join('\n'),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -356,7 +355,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                               title: 'Excluded',
                               content:
                                   formatItineraryText(itinerarys?.exclusion)
-                                      .join("\n"),
+                                      .join('\n'),
                             ),
                           ),
                         ],
@@ -370,7 +369,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                               title: 'Included',
                               content:
                                   formatItineraryText(itinerarys?.inclusion)
-                                      .join("\n"),
+                                      .join('\n'),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -379,7 +378,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                               title: 'Excluded',
                               content:
                                   formatItineraryText(itinerarys?.exclusion)
-                                      .join("\n"),
+                                      .join('\n'),
                             ),
                           ),
                         ],
@@ -427,14 +426,14 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                           tilePadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),
                           title: Text(
-                            "${item.day} : ${item.title}",
+                            '${item.day} : ${item.title}',
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                           leading: CircleAvatar(
                             backgroundColor: Colors.blueAccent,
                             child: Text(
-                              "${index + 1}",
+                              '${index + 1}',
                               style: const TextStyle(color: Colors.white),
                             ),
                           ),
@@ -459,15 +458,14 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   RichText(
                                     text: TextSpan(
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.black, fontSize: 14),
                                       children: [
                                         const TextSpan(
-                                          text: "Meal: ",
+                                          text: 'Meal: ',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
@@ -477,11 +475,11 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                                   ),
                                   RichText(
                                     text: TextSpan(
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.black, fontSize: 14),
                                       children: [
                                         const TextSpan(
-                                          text: "Transport: ",
+                                          text: 'Transport: ',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
@@ -518,7 +516,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      formatItineraryText(itinerarys?.remark).join("\n"),
+                      formatItineraryText(itinerarys?.remark).join('\n'),
                       style: GoogleFonts.poppins(fontSize: 14),
                     ),
                   ],
@@ -536,15 +534,15 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 FloatingActionButton(
-                  tooltip: "Whatsapp",
+                  tooltip: 'Whatsapp',
                   onPressed: () {
                     _openWhatsApp(
-                      "919168376463",
+                      '919168376463',
                       'Hi, I wanna inquire more about the *"${controller.packageDetails?.name}"* package.',
                     );
                   },
                   backgroundColor: Colors.green,
-                  heroTag: "whatsapp",
+                  heroTag: 'whatsapp',
                   child: const FaIcon(FontAwesomeIcons.whatsapp,
                       color: Colors.white),
                 ),
@@ -567,11 +565,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               left: MediaQuery.of(context).size.width * 0.25,
               right: MediaQuery.of(context).size.width * 0.25,
               child: ElevatedButton(
-                onPressed: () {
-                  ToastHelper.showContactToast(
-                    context: context,
-                  );
-                },
+                onPressed: ToastHelper.showContactToast,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: const Color.fromARGB(
@@ -581,7 +575,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   ),
                 ),
                 child: const Text(
-                  "Inquire Now For Best Deals",
+                  'Inquire Now For Best Deals',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
@@ -594,9 +588,8 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
               child: ElevatedButton(
                 onPressed: () {
                   ToastHelper.showInfoToast(
-                      context: context,
                       title:
-                          "Kindly Contact Your Travel Consultant to request Quotation Details");
+                          'Kindly Contact Your Travel Consultant to request Quotation Details');
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -607,7 +600,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage> {
                   ),
                 ),
                 child: const Text(
-                  "Request Quotation",
+                  'Request Quotation',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
