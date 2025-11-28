@@ -206,13 +206,13 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     }
   }
 
-  Future<void> _loadStates(selectedCountryId) async {
+  Future<void> _loadStates(String? selectedCountryId) async {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
 
       final List<dynamic> states =
-          await controller.apiGetStates(selectedCountryId);
+          await controller.apiGetStates(selectedCountryId!);
       _states = states;
 
       final List<String> stateNames = states
@@ -228,11 +228,12 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     }
   }
 
-  Future<void> _loadCities(selectedStateId) async {
+  Future<void> _loadCities(String? selectedStateId) async {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
-      final List<dynamic> cities = await controller.apiGetCity(selectedStateId);
+      final List<dynamic> cities =
+          await controller.apiGetCity(selectedStateId!);
       _cities = cities;
 
       final List<String> citiesNames = cities
@@ -248,11 +249,11 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     }
   }
 
-  Future<void> getPincode(selectedCity) async {
+  Future<void> getPincode(String? selectedCity) async {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
-      final pincode = await controller.apiGetPincode(selectedCity);
+      final pincode = await controller.apiGetPincode(selectedCity!);
       setState(() {
         _pincodeController.text = pincode;
       });

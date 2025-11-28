@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
 import 'package:bizzmirth_app/controllers/tc_controller/tc_order_history_controller.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/invoice_pdf.dart';
@@ -194,8 +193,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
   }
 
-  Widget _buildInvoiceScreen(
-      customer, amount, members, TcOrderHistoryController controller) {
+  Widget _buildInvoiceScreen(Map<String, dynamic> customer, amount, members,
+      TcOrderHistoryController controller) {
     return Column(
       children: [
         _buildMainInvoiceCard(order, customer, amount, members, controller),

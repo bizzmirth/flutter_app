@@ -6,6 +6,7 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:isar_community/isar.dart';
 
 class BchPendingTcDataSource extends DataTableSource {
   final BuildContext context;
@@ -14,7 +15,7 @@ class BchPendingTcDataSource extends DataTableSource {
 
   final IsarService isarService = IsarService();
 
-  Future<void> deleteTechnoEnterprise(idToDelete,
+  Future<void> deleteTechnoEnterprise(Id idToDelete,
       {bool showToast = true}) async {
     try {
       // await isarService.delete<PendingEmployeeModel>(idToDelete);
@@ -32,7 +33,7 @@ class BchPendingTcDataSource extends DataTableSource {
   }
 
   Future<void> restoreTechnoEnterprise(
-    idToRestore,
+    Id idToRestore,
   ) async {
     try {
       await isarService.updateStatus<PendingTechnoEnterpriseModel>(
@@ -206,7 +207,7 @@ class BchPendingTcDataSource extends DataTableSource {
                 onTap: () {
                   Logger.warning(
                       '------------ Delete ${technoEnterprise.name}------------');
-                  deleteTechnoEnterprise(technoEnterprise.id);
+                  deleteTechnoEnterprise(technoEnterprise.id!);
                 },
               ),
             ),
@@ -239,7 +240,7 @@ class BchPendingTcDataSource extends DataTableSource {
                   // restoreEmployee(technoEnterprise.id);
                   // Implement your restore logic here
                   // You can change the technoEnterprise's status back to 1 or another status value
-                  restoreTechnoEnterprise(technoEnterprise.id);
+                  restoreTechnoEnterprise(technoEnterprise.id!);
                 },
               ),
             ),

@@ -909,7 +909,8 @@ class CustomerController extends ChangeNotifier {
     }
   }
 
-  Future<void> apiRestoreCustomer(context, RegisteredCustomer customer) async {
+  Future<void> apiRestoreCustomer(
+      BuildContext context, RegisteredCustomer customer) async {
     try {
       _isLoading = true;
       _error = null;

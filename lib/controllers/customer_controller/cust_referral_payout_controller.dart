@@ -39,7 +39,7 @@ class CustReferralPayoutController extends ChangeNotifier {
   final List<CustReferralPayoutModel> _totalAllPayouts = [];
   List<CustReferralPayoutModel> get totalAllPayouts => _totalAllPayouts;
 
-  Future<void> getAllPayouts(userId) async {
+  Future<void> getAllPayouts(String? userId) async {
     _isLoading = true;
     _error = null;
     notifyListeners();

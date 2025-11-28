@@ -10,6 +10,7 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
+import 'package:isar_community/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminEmployeeController extends ChangeNotifier {
@@ -476,7 +477,8 @@ class AdminEmployeeController extends ChangeNotifier {
     }
   }
 
-  Future<bool> apiUpdateEmployeeStatus(context, id, email) async {
+  Future<bool> apiUpdateEmployeeStatus(
+      BuildContext context, Id? id, String? email) async {
     try {
       final fullUrl = '$baseUrl/confirm_employee.php';
       final Map<String, dynamic> requestBody = {

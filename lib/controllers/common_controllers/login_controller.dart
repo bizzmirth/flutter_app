@@ -74,7 +74,7 @@ class LoginController extends ChangeNotifier {
   }
 
   // Toggle password visibility
-  togglePasswordVisibility() {
+  void togglePasswordVisibility() {
     obscurePassword = !obscurePassword;
     notifyListeners();
   }

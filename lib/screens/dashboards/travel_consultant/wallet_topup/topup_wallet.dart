@@ -282,7 +282,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage>
     );
   }
 
-  Widget _buildTopUpFields(context) {
+  Widget _buildTopUpFields(BuildContext context) {
     // final controller = Provider.of<CustomerController>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
