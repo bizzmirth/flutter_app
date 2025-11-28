@@ -33,6 +33,17 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Generated plugin registrants (avoid platform noise in git)
+**/GeneratedPluginRegistrant.*
+**/generated_plugin_registrant.*
+**/generated_plugins.*
+
+# Platform-specific generated/ephemeral (optional but useful)
+macos/Flutter/ephemeral/
+/linux/ephemeral/
+windows/ephemeral/
+
+
 # Symbolication related
 app.*.symbols
 
