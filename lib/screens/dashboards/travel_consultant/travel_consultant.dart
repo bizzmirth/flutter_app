@@ -391,10 +391,11 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                   //   progressColor: Colors.purpleAccent,
                   // ),
                   BookingTrackerCard(
-                      title: 'Booking tracker',
-                      bookingCount: int.tryParse(
-                              tcController.totalCompletedTours ?? '0') ??
-                          0),
+                    title: 'Booking tracker',
+                    bookingCount:
+                        int.tryParse(tcController.totalCompletedTours ?? '0') ??
+                            0,
+                  ),
                   const SizedBox(height: 20),
                   ImprovedLineChart(
                     chartData: chartData,
