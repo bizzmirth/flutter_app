@@ -1,4 +1,5 @@
-import 'package:bizzmirth_app/data_source/franchise/franchise_top_tc_data_source.dart';
+import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_popular_candidates_data_source.dart';
+import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_top_tc_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
@@ -287,7 +288,52 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                   arrowHeadColor: Colors.blue,
                 ),
               ),
-            )
+            ),
+
+            const SizedBox(height: 20),
+            const Divider(thickness: 1, color: Colors.black26),
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Popular Candidate's List:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const Divider(thickness: 1, color: Colors.black26),
+            Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: SizedBox(
+                height: (_rowsPerPage * dataRowHeight) +
+                    headerHeight +
+                    paginationHeight,
+                child: PaginatedDataTable(
+                  columns: const [
+                    DataColumn(label: Text('Type')),
+                    DataColumn(label: Text('Pending')),
+                    DataColumn(label: Text('Registered')),
+                    DataColumn(label: Text('Deleted')),
+                  ],
+                  source: FranchisePopularCandidatesDataSource(
+                    data: orderstechno,
+                  ),
+                  rowsPerPage: _rowsPerPage,
+                  availableRowsPerPage: AppData.availableRowsPerPage,
+                  onRowsPerPageChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _rowsPerPage = value;
+                      });
+                    }
+                  },
+                  arrowHeadColor: Colors.blue,
+                ),
+              ),
+            ),
           ],
         ),
       ),
