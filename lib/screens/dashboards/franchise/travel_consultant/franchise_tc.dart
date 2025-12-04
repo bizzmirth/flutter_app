@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_pending_tc_data_source.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_registered_tc_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/screens/dashboards/franchise/travel_consultant/add_franchise_tc.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,7 @@ class _FranchiseTcState extends State<FranchiseTc> {
                       headerHeight +
                       paginationHeight,
                   child: PaginatedDataTable(
-                    columnSpacing: 20,
+                    columnSpacing: 40,
                     dataRowMinHeight: 40,
                     columns: const [
                       DataColumn(label: Text('Sr. No.')),
@@ -107,7 +108,7 @@ class _FranchiseTcState extends State<FranchiseTc> {
                       headerHeight +
                       paginationHeight,
                   child: PaginatedDataTable(
-                    columnSpacing: 20,
+                    columnSpacing: 40,
                     dataRowMinHeight: 40,
                     columns: const [
                       DataColumn(label: Text('TC ID & Name')),
@@ -134,6 +135,18 @@ class _FranchiseTcState extends State<FranchiseTc> {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const AddFranchiseTc()));
+        },
+        backgroundColor: const Color.fromARGB(255, 153, 198, 250),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50),
+        ),
+        tooltip: 'Add New TC',
+        child: const Icon(Icons.add, size: 30),
       ),
     );
   }
