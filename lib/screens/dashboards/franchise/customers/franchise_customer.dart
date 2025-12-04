@@ -1,5 +1,5 @@
 import 'package:bizzmirth_app/data_source/franchise_data_sources/fanchise_pending_customer_data_source.dart';
-import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_pending_customer_data_source.dart';
+import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_registered_customer_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -124,7 +124,7 @@ class _ViewCustomersPageState1 extends State<FranchiseCustomer> {
                       DataColumn(label: Text('Joining Date')),
                       DataColumn(label: Text('Status')),
                     ],
-                    source: FranchisePendingCustomerDataSource(
+                    source: FranchiseRegisteredCustomerDataSource(
                       orders1,
                       this.context,
                     ),

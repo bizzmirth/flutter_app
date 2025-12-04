@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class FranchisePendingCustomerDataSource extends DataTableSource {
+class FranchiseRegisteredCustomerDataSource extends DataTableSource {
   final List<Map<String, dynamic>> data;
-  FranchisePendingCustomerDataSource(this.data, this.context);
+  FranchiseRegisteredCustomerDataSource(this.data, this.context);
   final BuildContext context; // Pass context from parent widget
 
   @override
