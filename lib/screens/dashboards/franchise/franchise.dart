@@ -266,7 +266,7 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                     headerHeight +
                     paginationHeight,
                 child: PaginatedDataTable(
-                  columnSpacing: 60,
+                  columnSpacing: 85,
                   dataRowMinHeight: 40,
                   columns: const [
                     DataColumn(label: Text('ID')),
@@ -312,6 +312,8 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                     headerHeight +
                     paginationHeight,
                 child: PaginatedDataTable(
+                  columnSpacing: 150,
+                  dataRowMinHeight: 40,
                   columns: const [
                     DataColumn(label: Text('Type')),
                     DataColumn(label: Text('Pending')),
