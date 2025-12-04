@@ -245,6 +245,16 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
             // ImprovedLineChart() TODO: Chart to be added later
             const SizedBox(height: 20),
             const Divider(thickness: 1, color: Colors.black26),
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  'Top Travel Consultants',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const Divider(thickness: 1, color: Colors.black26),
             Card(
               elevation: 5,
               shape: RoundedRectangleBorder(
