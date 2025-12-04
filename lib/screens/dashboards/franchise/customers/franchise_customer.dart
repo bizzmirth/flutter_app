@@ -1,4 +1,5 @@
 import 'package:bizzmirth_app/data_source/franchise_data_sources/fanchise_pending_customer_data_source.dart';
+import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_registered_customer_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -116,16 +117,17 @@ class _ViewCustomersPageState1 extends State<FranchiseCustomer> {
                     columnSpacing: 36,
                     dataRowMinHeight: 40,
                     columns: const [
-                      DataColumn(label: Text('           ')),
-                      DataColumn(label: Text('ID')),
-                      DataColumn(label: Text('Full Name')),
-                      DataColumn(label: Text('Reg. ID')),
-                      DataColumn(label: Text('Reg. Name')),
+                      DataColumn(label: Text('Customer ID and Name')),
+                      DataColumn(label: Text('Reference ID and Name')),
+                      DataColumn(label: Text('Type/Complementory')),
+                      DataColumn(label: Text('Phone')),
                       DataColumn(label: Text('Joining Date')),
                       DataColumn(label: Text('Status')),
-                      DataColumn(label: Text('Action'))
                     ],
-                    source: MyBMCustRegDataSource(orders1, this.context),
+                    source: FranchiseRegisteredCustomerDataSource(
+                      orders1,
+                      this.context,
+                    ),
                     rowsPerPage: _rowsPerPage1,
                     availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
