@@ -9,10 +9,10 @@ class FranchiseTc extends StatefulWidget {
   const FranchiseTc({super.key});
 
   @override
-  State<FranchiseTc> createState() => _ViewTCPageState1();
+  State<FranchiseTc> createState() => _FranchiseTcState();
 }
 
-class _ViewTCPageState1 extends State<FranchiseTc> {
+class _FranchiseTcState extends State<FranchiseTc> {
   int _rowsPerPage = 5;
   int _rowsPerPage1 = 5;
   static const double dataRowHeight = 50.0;
