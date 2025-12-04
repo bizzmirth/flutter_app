@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_pending_tc_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -60,16 +61,14 @@ class _ViewTCPageState1 extends State<FranchiseTc> {
                     columnSpacing: 20,
                     dataRowMinHeight: 40,
                     columns: const [
-                      DataColumn(label: Text('           ')),
-                      DataColumn(label: Text('ID')),
-                      DataColumn(label: Text('Full Name')),
-                      DataColumn(label: Text('Ref. ID')),
-                      DataColumn(label: Text('Ref. Name')),
+                      DataColumn(label: Text('Sr. No.')),
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('BM Ref ID & Name')),
+                      DataColumn(label: Text('Phone')),
                       DataColumn(label: Text('Joining Date')),
                       DataColumn(label: Text('Status')),
-                      DataColumn(label: Text('Action'))
                     ],
-                    source: MyViewTCDataSource(tcorders),
+                    source: FranchisePendingTcDataSource(tcorders),
                     rowsPerPage: _rowsPerPage,
                     availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {
