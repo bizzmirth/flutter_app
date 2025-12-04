@@ -1709,3 +1709,17 @@ Widget buildTripOrRefundNote(
     ),
   );
 }
+
+Widget drawerItem(BuildContext context, IconData icon, String text, Widget page,
+    {bool padding = false}) {
+  return Padding(
+    padding: padding ? const EdgeInsets.only(left: 16.0) : EdgeInsets.zero,
+    child: ListTile(
+      leading: Icon(icon),
+      title: Text(text),
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+      },
+    ),
+  );
+}
