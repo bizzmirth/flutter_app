@@ -110,7 +110,7 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                   ),
                   // TODO: packages shall be added later
                   ListTile(
-                    leading: const Icon(Icons.home),
+                    leading: const Icon(Icons.support_agent),
                     title: const Text('Travel Consultant'),
                     onTap: () {
                       Navigator.push(
@@ -121,7 +121,7 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                     },
                   ),
                   ListTile(
-                    leading: const Icon(Icons.home),
+                    leading: const Icon(Icons.people_alt),
                     title: const Text('Customer'),
                     onTap: () {
                       Navigator.push(
