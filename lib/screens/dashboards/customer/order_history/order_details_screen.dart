@@ -143,7 +143,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
       return file;
     } catch (e) {
-      debugPrint('Save file error: $e');
+      Logger.error('Save file error: $e');
       return null;
     }
   }

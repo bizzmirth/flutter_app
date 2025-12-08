@@ -31,7 +31,8 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this); // Add observer
 
-    _controller = VideoPlayerController.asset('assets/videos/sea.mp4')
+    _controller = VideoPlayerController.networkUrl(Uri.parse(
+        'https://testca.uniqbizz.com/bizzmirth_apis/assets/video/sea.mp4'))
       ..initialize().then((_) {
         if (mounted) {
           _controller.setLooping(true);
@@ -41,7 +42,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         }
       }).catchError((error) {
         // Handle initialization errors
-        debugPrint('Video initialization error: $error');
+        Logger.error('Video initialization error: $error');
       });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {

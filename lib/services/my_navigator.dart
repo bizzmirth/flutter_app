@@ -12,7 +12,7 @@ class MyNavigator {
     if (navigator != null && navigator.canPop()) {
       navigator.pop(result);
     } else {
-      debugPrint('MyNavigator: Cannot pop - no navigator or nothing to pop');
+      Logger.error('MyNavigator: Cannot pop - no navigator or nothing to pop');
     }
   }
 
