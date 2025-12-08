@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class FranchiseAllPayoutDataSource extends DataTableSource {
+class FranchiseAllProductPayoutDataSource extends DataTableSource {
   final List<Map<String, dynamic>> data;
-  FranchiseAllPayoutDataSource(this.data);
+  FranchiseAllProductPayoutDataSource(this.data);
 
   @override
   DataRow? getRow(int index) {
