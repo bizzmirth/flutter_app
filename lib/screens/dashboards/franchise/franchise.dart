@@ -144,14 +144,14 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                       ),
                       drawerItem(
                         context,
-                        Icons.account_balance_wallet,
+                        Icons.card_membership,
                         'CU Membership Payouts',
                         const CuMembershipPayouts(),
                         padding: true,
                       ),
                       drawerItem(
                         context,
-                        Icons.account_balance_wallet,
+                        Icons.person_add,
                         'TC Recruitment Payouts',
                         const TcRecruitmentPayouts(),
                         padding: true,
