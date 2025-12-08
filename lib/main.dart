@@ -177,8 +177,7 @@ class _MyAppState extends State<MyApp> {
                 child: child!,
               );
             },
-            home:
-                const FranchiseDashboardPage(), // TODO: Change to Homepage() later
+            home: const HomePage(), // TODO: Change to Homepage() later
             debugShowCheckedModeBanner: false,
             // showPerformanceOverlay: true,
           ),

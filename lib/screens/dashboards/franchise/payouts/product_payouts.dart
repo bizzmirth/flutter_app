@@ -248,11 +248,16 @@ class _ProductPayoutsState extends State<ProductPayouts> {
                     Text(
                       selectedDate,
                       style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w500),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(width: 5),
-                    const Icon(Icons.calendar_today,
-                        size: 18, color: Colors.black54),
+                    const Icon(
+                      Icons.calendar_today,
+                      size: 18,
+                      color: Colors.black54,
+                    ),
                   ],
                 ),
               ),
