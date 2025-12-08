@@ -10,6 +10,6 @@ class CuMembershipPayouts extends StatefulWidget {
 class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold();
   }
 }
