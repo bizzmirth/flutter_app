@@ -110,7 +110,7 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                   ),
                   // TODO: packages shall be added later
                   ListTile(
-                    leading: const Icon(Icons.home),
+                    leading: const Icon(Icons.support_agent),
                     title: const Text('Travel Consultant'),
                     onTap: () {
                       Navigator.push(
@@ -121,7 +121,7 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                     },
                   ),
                   ListTile(
-                    leading: const Icon(Icons.home),
+                    leading: const Icon(Icons.people_alt),
                     title: const Text('Customer'),
                     onTap: () {
                       Navigator.push(
@@ -144,14 +144,14 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                       ),
                       drawerItem(
                         context,
-                        Icons.account_balance_wallet,
+                        Icons.card_membership,
                         'CU Membership Payouts',
                         const CuMembershipPayouts(),
                         padding: true,
                       ),
                       drawerItem(
                         context,
-                        Icons.account_balance_wallet,
+                        Icons.person_add,
                         'TC Recruitment Payouts',
                         const TcRecruitmentPayouts(),
                         padding: true,
