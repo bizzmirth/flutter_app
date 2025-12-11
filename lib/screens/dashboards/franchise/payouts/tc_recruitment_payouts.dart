@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_all_product_payout_data_source.dart';
+import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_all_tc_recruiment_payouts.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -112,7 +112,7 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
                         DataColumn(label: Text('Total Payable')),
                         DataColumn(label: Text('Remarks')),
                       ],
-                      source: FranchiseAllProductPayoutDataSource(orders1BM),
+                      source: FranchiseAllTcRecruimentPayouts(orders1BM),
                       rowsPerPage: _rowsPerPage,
                       availableRowsPerPage: const [5, 10, 15, 20, 25],
                       onRowsPerPageChanged: (value) {
