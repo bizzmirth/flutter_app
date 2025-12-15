@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/screens/dashboards/business_channel_head/business_
 import 'package:bizzmirth_app/screens/dashboards/business_development_manager/business_development_manager.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_mentor/business_mentor.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/franchise/franchise.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
@@ -123,6 +124,13 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BMDashboardPage()),
+        );
+        break;
+      case 'Franchisee':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const FranchiseDashboardPage()),
         );
         break;
     }
