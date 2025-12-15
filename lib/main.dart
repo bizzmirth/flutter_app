@@ -23,7 +23,6 @@ import 'package:bizzmirth_app/controllers/tc_controller/tc_product_payout_contro
 import 'package:bizzmirth_app/controllers/tc_controller/tc_topup_wallet_controller.dart';
 import 'package:bizzmirth_app/data_source/te_data_sources/te_view_package_data_source.dart';
 import 'package:bizzmirth_app/models/customer_models/cust_referral_payout_model.dart';
-import 'package:bizzmirth_app/screens/dashboards/franchise/franchise.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
@@ -177,8 +176,7 @@ class _MyAppState extends State<MyApp> {
                 child: child!,
               );
             },
-            home:
-                const FranchiseDashboardPage(), // TODO: Change to Homepage() later
+            home: const HomePage(),
             debugShowCheckedModeBanner: false,
             // showPerformanceOverlay: true,
           ),
