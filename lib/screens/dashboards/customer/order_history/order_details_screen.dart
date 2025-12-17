@@ -584,46 +584,4 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       ),
     );
   }
-
-  Widget _buildAmountCard(Map amount, TcOrderHistoryController controller) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.grey.shade400),
-      ),
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        children: [
-          const Text('Amount', style: TextStyle(fontWeight: FontWeight.bold)),
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Price:'),
-                    Text('Coupon Applied:'),
-                  ]),
-              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Text("₹ ${amount['price']}"),
-                Text("- ₹ ${amount['couponAmount']}"),
-              ]),
-            ],
-          ),
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('TOTAL',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("₹ ${amount['total']}",
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }
