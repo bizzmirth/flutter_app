@@ -40,7 +40,7 @@ class CustProductPayoutController extends ChangeNotifier {
   final List<CustProductPayoutModel> _totalAllPayouts = [];
   List<CustProductPayoutModel> get totalAllPayouts => _totalAllPayouts;
 
-  Future<void> getAllPayouts(userId) async {
+  Future<void> getAllPayouts(String userId) async {
     _isLoading = true;
     _error = null;
     notifyListeners();

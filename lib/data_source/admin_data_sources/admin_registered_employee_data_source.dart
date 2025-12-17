@@ -8,6 +8,7 @@ import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:isar_community/isar.dart';
 
 class AdminRegisteredEmployeeDataSource extends DataTableSource {
   final BuildContext context;
@@ -17,7 +18,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
   final IsarService isarService = IsarService();
   final AdminEmployeeController employeeController = AdminEmployeeController();
 
-  Future<void> deleteEmployee(idToDelete, {bool showToast = true}) async {
+  Future<void> deleteEmployee(Id idToDelete, {bool showToast = true}) async {
     try {
       Logger.warning('Delete process started $idToDelete ------');
       // await isarService.delete<RegisteredEmployeeModel>(idToDelete);
@@ -54,7 +55,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
         ..bankDetails = empRegister.bankDetails;
 
       await isarService.save<PendingEmployeeModel>(unRegisterEmployee);
-      await removeEmployeeFromTable(empRegister.id, showToast: false);
+      await removeEmployeeFromTable(empRegister.id!, showToast: false);
       ToastHelper.showSuccessToast(title: 'Employee Un-Registered.');
       Logger.success('----------- Employee Un-Regisered ${empRegister.name}');
     } catch (e) {
@@ -62,7 +63,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
     }
   }
 
-  Future<void> removeEmployeeFromTable(idToRemove,
+  Future<void> removeEmployeeFromTable(Id idToRemove,
       {bool showToast = true}) async {
     try {
       Logger.warning('Removing employee from table $idToRemove');
@@ -76,7 +77,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
     }
   }
 
-  Future<void> restoreEmployee(idToRestore) async {
+  Future<void> restoreEmployee(Id idToRestore) async {
     try {
       await isarService.updateStatus<RegisteredEmployeeModel>(idToRestore, 1);
       Logger.success('Employee $idToRestore restored successfully');
@@ -145,7 +146,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
                 title: const Text('Delete'),
                 onTap: () {
                   Logger.error('Deleting..... ${employee.name} ${employee.id}');
-                  deleteEmployee(employee.id);
+                  deleteEmployee(employee.id!);
                 },
               ),
             ),
@@ -172,7 +173,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
                 onTap: () {
                   Logger.warning(
                       '------------ Restore ${employee.name}------------');
-                  restoreEmployee(employee.id);
+                  restoreEmployee(employee.id!);
                   // Implement your restore logic here
                   // You can change the employee's status back to 1 or another status value
                   // restoreEmployee(employee);

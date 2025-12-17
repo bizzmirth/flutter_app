@@ -136,7 +136,8 @@ class MyrefCustRegDataSource extends DataTableSource {
   }
 
   // Action Menu Widget
-  Widget _buildActionMenu(context, RegisteredCustomer regCustomer) {
+  Widget _buildActionMenu(
+      BuildContext context, RegisteredCustomer regCustomer) {
     final customerController =
         Provider.of<CustomerController>(context, listen: false);
     return Consumer<CustomerController>(builder: (context, controller, child) {

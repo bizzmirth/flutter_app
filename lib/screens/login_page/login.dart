@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/screens/dashboards/business_channel_head/business_
 import 'package:bizzmirth_app/screens/dashboards/business_development_manager/business_development_manager.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_mentor/business_mentor.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/franchise/franchise.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
@@ -31,7 +32,8 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this); // Add observer
 
-    _controller = VideoPlayerController.asset('assets/videos/sea.mp4')
+    _controller = VideoPlayerController.networkUrl(Uri.parse(
+        'https://testca.uniqbizz.com/bizzmirth_apis/assets/video/sea.mp4'))
       ..initialize().then((_) {
         if (mounted) {
           _controller.setLooping(true);
@@ -41,7 +43,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         }
       }).catchError((error) {
         // Handle initialization errors
-        debugPrint('Video initialization error: $error');
+        Logger.error('Video initialization error: $error');
       });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -122,6 +124,13 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const BMDashboardPage()),
+        );
+        break;
+      case 'Franchisee':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const FranchiseDashboardPage()),
         );
         break;
     }

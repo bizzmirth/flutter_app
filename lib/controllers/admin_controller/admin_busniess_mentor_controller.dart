@@ -5,6 +5,7 @@ import 'package:bizzmirth_app/services/isar_servies.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -125,7 +126,7 @@ class AdminBusniessMentorController extends ChangeNotifier {
   }
 
   Future<void> uploadImage(
-      context, String folder, String savedImagePath) async {
+      BuildContext context, String folder, String savedImagePath) async {
     try {
       final fullUrl = 'http://testca.uniqbizz.com/api/upload_mobile.php';
       final request = http.MultipartRequest('POST', Uri.parse(fullUrl));
@@ -140,20 +141,17 @@ class AdminBusniessMentorController extends ChangeNotifier {
       Logger.info('this is reuest $request');
 
       if (responseBody == '1') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Upload Failed  $responseBody')));
+        ToastHelper.showErrorToast(title: 'Upload Failed $responseBody');
       } else if (responseBody == '2') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Invalid File Extension  $responseBody')));
+        ToastHelper.showInfoToast(
+            title: 'Invalid File Extension  $responseBody');
       } else if (responseBody == '3') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('No File Selected  $responseBody')));
+        ToastHelper.showInfoToast(title: 'No file selected  $responseBody');
       } else if (responseBody == '4') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('File Size Exceeds 2MB  $responseBody')));
+        ToastHelper.showInfoToast(
+            title: 'File Size Exceeds 2MB  $responseBody');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Upload Successful: $responseBody')));
+        ToastHelper.showSuccessToast(title: 'Upload Successful  $responseBody');
       }
     } catch (e) {
       Logger.error('Error uploading image: $e');

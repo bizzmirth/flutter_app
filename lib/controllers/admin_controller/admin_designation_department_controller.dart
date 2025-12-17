@@ -93,7 +93,8 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
     }
   }
 
-  Future<void> apiEditDepartment(id, departmentName, status) async {
+  Future<void> apiEditDepartment(
+      String? id, String departmentName, String? status) async {
     _isLoading = true;
     _errorMessage = '';
     notifyListeners();
@@ -122,7 +123,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
     }
   }
 
-  Future<void> apiAddDepartment(name) async {
+  Future<void> apiAddDepartment(String name) async {
     _isLoading = true;
     _errorMessage = '';
     notifyListeners();
@@ -152,7 +153,8 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
     }
   }
 
-  Future<void> apiEditDesignation(id, name, deptID, status) async {
+  Future<void> apiEditDesignation(
+      String? id, String name, String? deptID, String? status) async {
     _isLoading = true;
     _errorMessage = '';
     notifyListeners();
@@ -187,7 +189,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
     }
   }
 
-  Future<void> apiAddDesignation(desgname, id) async {
+  Future<void> apiAddDesignation(String desgname, String? id) async {
     _isLoading = true;
     _errorMessage = '';
     notifyListeners();
