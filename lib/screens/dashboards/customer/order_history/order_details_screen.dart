@@ -222,12 +222,26 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           children: [
             Row(
               children: [
-                Image.asset('assets/uniqbizz.png', width: 120, height: 40),
+                Image.asset('assets/Bizzmirth.png', width: 110, height: 70),
                 const Spacer(),
-                Image.asset('assets/Bizzmirth.png', width: 110, height: 50),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Text('Invoice No: BH20250920170912',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text('Date: 20-Sep-2025',
+                        style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontWeight: FontWeight.bold)),
+                  ],
+                )
               ],
             ),
             const SizedBox(height: 10),
+            const Divider(),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -235,34 +249,198 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Invoice No. ${order['invoiceNo']}"),
-                      Text("Booking No. ${order['bookingNo']}"),
-                      Text("Payment: ${order['paymentStatus']}"),
-                      Text("Transaction ID:\n${order['transactionId']}"),
-                      Text("Invoice Date: ${order['invoiceDate']}"),
+                      const Text('Invoice To:',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text("${order['invoiceNo']}"),
+                      Text('${order['customer']['email']}'),
+                      Text("${order['customer']['phone']}"),
+                      const Text('H.no. 100 Vodelim Bhati, Near Grand Hyat,'),
+                      const Text('Ponda, Goa'),
+                      Text("Customer ID: ${order['customer']['customerId']}"),
                     ],
                   ),
                 ),
-                Column(
+                const Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text("₹ ${amount['total']}",
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
-                    const Text('Total Amount'),
+                    Text('Bizzmirth Holidays Pvt Ltd:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('H.no. 100 Vodelim Bhati, Near Grand Hyat.'),
+                    Text('403401'),
+                    Text('support@bizzmirth.com'),
+                    Text('0987654321'),
                   ],
-                )
+                ),
               ],
             ),
+            const SizedBox(height: 10),
+            const Divider(),
+            _buildBookingSection(order),
             const SizedBox(height: 14),
             _customerDetailsCard(order, controller),
             const SizedBox(height: 20),
             _buildTourMembersCard(members, controller),
             const SizedBox(height: 20),
-            _buildAmountCard(amount, controller),
+            // _buildAmountCard(amount, controller),
+            _buildInvoiceFooter(amount),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInvoiceFooter(Map amount) {
+    return Column(
+      children: [
+        // const Divider(),
+        const SizedBox(height: 10),
+
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // LEFT SIDE — THANK YOU
+            const Expanded(
+              child: Text(
+                'Thank You For Your Business',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+
+            // RIGHT SIDE — AMOUNT DETAILS
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _amountRow(
+                  'Sub Total:',
+                  '₹${amount['price']}',
+                ),
+                const SizedBox(height: 6),
+                _amountRow(
+                  'Coupon Applied:',
+                  '- ₹${amount['couponAmount']}',
+                ),
+                Text(
+                  '(${amount['coupon']})',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Divider(thickness: 1),
+                _amountRow(
+                  'Total:',
+                  '₹${amount['total']}',
+                  isBold: true,
+                ),
+              ],
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 20),
+
+        // FOOTER TEXT
+        Column(
+          children: [
+            const Text(
+              'This invoice is computer-generated.',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'www.bizzmirth.com',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                ),
+                Text(
+                  'support@bizzmirth.com',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                ),
+                Text(
+                  '8080785714 / 8010892265',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _amountRow(String title, String value, {bool isBold = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,
+          ),
+        ),
+        const SizedBox(width: 30),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBookingSection(Map order) {
+    return Column(
+      children: [
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            const Text('Booking No:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              ' ${order['bookingNo']}',
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            const Text('Payment:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                )),
+            Text(' ${order['paymentStatus']}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.green,
+                )),
+          ],
+        ),
+        Row(
+          children: [
+            const Text('Transaction ID:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              ' ${order['transactionId']}',
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -285,20 +463,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             ),
           ),
           const SizedBox(height: 30),
-          const Padding(
-            padding: EdgeInsets.only(left: 12),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Customer Details',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
           Padding(
             padding: const EdgeInsets.only(left: 15.0),
             child: Row(
@@ -308,17 +472,33 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Order ID'),
-                        Text('Customer ID'),
-                        Text('Name'),
-                        Text('Email'),
-                        Text('Phone No'),
-                        Text('Package'),
-                        Text('Departure Date'),
-                        Text('Member Count'),
+                        Text('Order ID: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            )),
+                        Text('Package: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            )),
+                        Text('Destination: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            )),
+                        Text('Departure Date: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            )),
+                        Text('Member count: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            )),
                       ]),
                 ),
-                const Spacer(),
                 Expanded(
                   flex: 2,
                   child: Column(
@@ -329,9 +509,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       Text(order['customer']['name']),
                       Text(order['customer']['email']),
                       Text(order['customer']['phone']),
-                      Text(order['customer']['package']),
-                      Text(order['customer']['departure']),
-                      Text("Adults: ${order['customer']['members']}"),
                     ],
                   ),
                 ),
@@ -403,48 +580,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   ],
                 ),
               )),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAmountCard(Map amount, TcOrderHistoryController controller) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.grey.shade400),
-      ),
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        children: [
-          const Text('Amount', style: TextStyle(fontWeight: FontWeight.bold)),
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Price:'),
-                    Text('Coupon Applied:'),
-                  ]),
-              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Text("₹ ${amount['price']}"),
-                Text("- ₹ ${amount['couponAmount']}"),
-              ]),
-            ],
-          ),
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('TOTAL',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("₹ ${amount['total']}",
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold)),
-            ],
-          ),
         ],
       ),
     );
