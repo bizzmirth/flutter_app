@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/services/api_service.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:flutter/material.dart';
 import 'package:bizzmirth_app/utils/failure.dart';
@@ -58,12 +59,6 @@ class FranchiseeController extends ChangeNotifier {
     return loginRes?.userId ?? '';
   }
 
-  // ─────────────────────────────────────
-  // API
-  // ─────────────────────────────────────
-  static const String _dashboardCountUrl =
-      'https://testca.uniqbizz.com/bizzmirth_apis/users/franchise/dashboard/dashboard_counts.php';
-
   Future<void> fetchDashboardCounts() async {
     _state = ViewState.loading;
     _failure = null;
@@ -71,7 +66,7 @@ class FranchiseeController extends ChangeNotifier {
 
     try {
       final response = await _apiService.post(
-        _dashboardCountUrl,
+        AppUrls.getFranchiseeDashboardCounts,
         {'userId': await _getUserId()},
       );
 
