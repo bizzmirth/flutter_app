@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_controller.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_popular_candidates_data_source.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_top_tc_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
@@ -14,10 +15,13 @@ import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class FranchiseDashboardPage extends StatefulWidget {
   const FranchiseDashboardPage({super.key});
@@ -31,6 +35,18 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller = context.read<FranchiseeController>();
+
+      controller.fetchDashboardCounts();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -208,136 +224,162 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
       // ---------------- Side nav ends here ----------------
 
       // ---------------- Body starts here ----------------
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            CustomAnimatedSummaryCards(
-              cardData: [
-                SummaryCardData(
-                  title: 'TRAVEL CONSULTANT',
-                  value: '0',
-                  thisMonthValue: '0',
-                  icon: Icons.people,
+      body: Consumer<FranchiseeController>(
+        builder: (context, controller, _) {
+          final isLoading = controller.state == ViewState.loading;
+
+          if (isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          // 2️⃣ Error
+          if (controller.state == ViewState.error) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+                ToastHelper.showErrorToast(
+                    title:
+                        controller.failure?.message ?? 'Something went wrong');
+              },
+            );
+          }
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                CustomAnimatedSummaryCards(
+                  cardData: [
+                    SummaryCardData(
+                      title: 'TRAVEL CONSULTANT',
+                      value: controller.totalTravelConsultants.toString(),
+                      thisMonthValue:
+                          controller.newCustomersThisMonth.toString(),
+                      icon: Icons.people,
+                    ),
+                    SummaryCardData(
+                      title: 'CUSTOMERS',
+                      value: controller.totalCustomers.toString(),
+                      thisMonthValue:
+                          controller.newCustomersThisMonth.toString(),
+                      icon: Icons.people,
+                    ),
+                    SummaryCardData(
+                      title: 'Commision Earned',
+                      value: controller.confirmedCommission.toString(),
+                      thisMonthValue: controller.pendingCommission.toString(),
+                      icon: Icons.people,
+                    ),
+                  ],
                 ),
-                SummaryCardData(
-                  title: 'CUSTOMERS',
-                  value: '0',
-                  thisMonthValue: '0',
-                  icon: Icons.people,
+                const SizedBox(height: 20),
+                const ReferralTrackerCard(
+                  totalSteps: 10,
+                  currentStep: 3,
+                  progressColor: Colors.green,
                 ),
-                SummaryCardData(
-                  title: 'COMMISSION EARNED',
-                  value: '0',
-                  thisMonthValue: '0',
-                  icon: Icons.people,
+                const SizedBox(height: 20),
+                // ImprovedLineChart() TODO: Chart to be added later
+                const SizedBox(height: 20),
+                const Divider(thickness: 1, color: Colors.black26),
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      'Top Travel Consultants',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const Divider(thickness: 1, color: Colors.black26),
+                Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: SizedBox(
+                    height: (_rowsPerPage * dataRowHeight) +
+                        headerHeight +
+                        paginationHeight,
+                    child: PaginatedDataTable(
+                      columnSpacing: 85,
+                      dataRowMinHeight: 40,
+                      columns: const [
+                        DataColumn(label: Text('ID')),
+                        DataColumn(label: Text('Full Name')),
+                        DataColumn(label: Text('Date Reg.')),
+                        DataColumn(label: Text('Total TC Ref')),
+                        DataColumn(label: Text('Active/Inactive')),
+                      ],
+                      source: FranchiseTopTcDataSource(data: orderstechno),
+                      rowsPerPage: _rowsPerPage,
+                      availableRowsPerPage: AppData.availableRowsPerPage,
+                      onRowsPerPageChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _rowsPerPage = value;
+                          });
+                        }
+                      },
+                      arrowHeadColor: Colors.blue,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                const Divider(thickness: 1, color: Colors.black26),
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      "Popular Candidate's List:",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const Divider(thickness: 1, color: Colors.black26),
+                Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: SizedBox(
+                    height: (_rowsPerPage * dataRowHeight) +
+                        headerHeight +
+                        paginationHeight,
+                    child: PaginatedDataTable(
+                      columnSpacing: 150,
+                      dataRowMinHeight: 40,
+                      columns: const [
+                        DataColumn(label: Text('Type')),
+                        DataColumn(label: Text('Pending')),
+                        DataColumn(label: Text('Registered')),
+                        DataColumn(label: Text('Deleted')),
+                      ],
+                      source: FranchisePopularCandidatesDataSource(
+                        data: orderstechno,
+                      ),
+                      rowsPerPage: _rowsPerPage,
+                      availableRowsPerPage: AppData.availableRowsPerPage,
+                      onRowsPerPageChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _rowsPerPage = value;
+                          });
+                        }
+                      },
+                      arrowHeadColor: Colors.blue,
+                    ),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            const ReferralTrackerCard(
-              totalSteps: 10,
-              currentStep: 3,
-              progressColor: Colors.green,
-            ),
-            const SizedBox(height: 20),
-            // ImprovedLineChart() TODO: Chart to be added later
-            const SizedBox(height: 20),
-            const Divider(thickness: 1, color: Colors.black26),
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  'Top Travel Consultants',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            const Divider(thickness: 1, color: Colors.black26),
-            Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: SizedBox(
-                height: (_rowsPerPage * dataRowHeight) +
-                    headerHeight +
-                    paginationHeight,
-                child: PaginatedDataTable(
-                  columnSpacing: 85,
-                  dataRowMinHeight: 40,
-                  columns: const [
-                    DataColumn(label: Text('ID')),
-                    DataColumn(label: Text('Full Name')),
-                    DataColumn(label: Text('Date Reg.')),
-                    DataColumn(label: Text('Total TC Ref')),
-                    DataColumn(label: Text('Active/Inactive')),
-                  ],
-                  source: FranchiseTopTcDataSource(data: orderstechno),
-                  rowsPerPage: _rowsPerPage,
-                  availableRowsPerPage: AppData.availableRowsPerPage,
-                  onRowsPerPageChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _rowsPerPage = value;
-                      });
-                    }
-                  },
-                  arrowHeadColor: Colors.blue,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-            const Divider(thickness: 1, color: Colors.black26),
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  "Popular Candidate's List:",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            const Divider(thickness: 1, color: Colors.black26),
-            Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: SizedBox(
-                height: (_rowsPerPage * dataRowHeight) +
-                    headerHeight +
-                    paginationHeight,
-                child: PaginatedDataTable(
-                  columnSpacing: 150,
-                  dataRowMinHeight: 40,
-                  columns: const [
-                    DataColumn(label: Text('Type')),
-                    DataColumn(label: Text('Pending')),
-                    DataColumn(label: Text('Registered')),
-                    DataColumn(label: Text('Deleted')),
-                  ],
-                  source: FranchisePopularCandidatesDataSource(
-                    data: orderstechno,
-                  ),
-                  rowsPerPage: _rowsPerPage,
-                  availableRowsPerPage: AppData.availableRowsPerPage,
-                  onRowsPerPageChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _rowsPerPage = value;
-                      });
-                    }
-                  },
-                  arrowHeadColor: Colors.blue,
-                ),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

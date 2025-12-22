@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/screens/dashboards/business_channel_head/business_
 import 'package:bizzmirth_app/screens/dashboards/business_development_manager/business_development_manager.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_mentor/business_mentor.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/franchise/franchise.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
@@ -84,6 +85,13 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
           MaterialPageRoute(builder: (context) => const BMDashboardPage()),
         );
         break;
+      case 'Franchisee':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const FranchiseDashboardPage()),
+        );
+        break;
     }
   }
 
@@ -103,6 +111,9 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
         return 'My Business Development Manager Dashboard';
       case 'Business Mentor':
         return 'My Business Mentor Dashboard';
+      case 'Franchisee':
+        return 'My Franchisee Dashboard';
+
       default:
         return 'My Dashboard';
     }
