@@ -126,6 +126,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<ApiService>(create: (_) => ApiService()),
         ChangeNotifierProvider(create: (_) => HomePageController()),
         ChangeNotifierProvider(create: (_) => LoginController()),
         ChangeNotifierProvider(create: (_) => CustomerController()),
@@ -150,7 +151,11 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => TcProductPayoutController()),
         ChangeNotifierProvider(create: (_) => TcOrderHistoryController()),
         ChangeNotifierProvider(
-            create: (_) => FranchiseeController(apiService: ApiService())),
+          create: (context) {
+            final apiService = context.read<ApiService>();
+            return FranchiseeController(apiService: apiService);
+          },
+        ),
       ],
       child: ToastificationWrapper(
         child: SessionTimeoutManager(
