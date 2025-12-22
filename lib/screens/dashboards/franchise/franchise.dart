@@ -12,13 +12,16 @@ import 'package:bizzmirth_app/screens/dashboards/franchise/payouts/tc_recruitmen
 import 'package:bizzmirth_app/screens/dashboards/franchise/travel_consultant/franchise_tc.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
+import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -35,10 +38,67 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+  String selectedYear = DateTime.now().year.toString();
+  List<String> availableYears = [];
+
+  bool hasError = false;
+  String? errorMessage;
+  List<FlSpot> chartData = [];
+
+  Future<void> _initData() async {
+    try {
+      // final customerController =
+      //     Provider.of<CustomerController>(context, listen: false);
+
+      // load available years
+      final regDate = await SharedPrefHelper().getCurrentUserRegDate();
+      final years = _generateYearList(regDate);
+      setState(() {
+        availableYears = years;
+        selectedYear = years.last;
+      });
+
+      // load chart data
+      await _loadChartData(selectedYear);
+    } catch (e) {
+      setState(() {
+        hasError = true;
+        errorMessage = e.toString();
+      });
+    }
+  }
+
+  List<String> _generateYearList(String? regDate) {
+    final currentYear = DateTime.now().year;
+    int startYear = currentYear;
+    if (regDate != null && regDate.isNotEmpty) {
+      final parts = regDate.split('-');
+      if (parts.length == 3) {
+        startYear =
+            parts[0].length == 4 ? int.parse(parts[0]) : int.parse(parts[2]);
+      }
+    }
+    return [for (int y = startYear; y <= currentYear; y++) y.toString()];
+  }
+
+  Future<void> _loadChartData(String year) async {
+    final customerController =
+        Provider.of<FranchiseeController>(context, listen: false);
+    setState(() {});
+
+    await customerController.apiGetChartData(year);
+    final data = customerController.getChartSpots();
+
+    setState(() {
+      chartData = data;
+      // isLoading = false;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _initData();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = context.read<FranchiseeController>();
@@ -281,7 +341,18 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                   progressColor: Colors.green,
                 ),
                 const SizedBox(height: 20),
-                // ImprovedLineChart() TODO: Chart to be added later
+                ImprovedLineChart(
+                  chartData: chartData,
+                  availableYears: availableYears,
+                  selectedYear: selectedYear,
+                  // isLoading: isLoading,
+                  hasError: hasError,
+                  errorMessage: errorMessage,
+                  onYearChanged: (year) async {
+                    setState(() => selectedYear = year ?? '');
+                    await _loadChartData(year ?? '');
+                  },
+                ),
                 const SizedBox(height: 20),
                 const Divider(thickness: 1, color: Colors.black26),
                 const Center(
@@ -328,7 +399,6 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
                 const Divider(thickness: 1, color: Colors.black26),
                 const Center(

@@ -16,10 +16,12 @@ class ApiService {
       };
 
   Future<Map<String, dynamic>> get(String url) async {
-    return _request(() => _client.get(
-          Uri.parse(url),
-          headers: _headers,
-        ));
+    return _request(
+      () => _client.get(
+        Uri.parse(url),
+        headers: _headers,
+      ),
+    );
   }
 
   Future<Map<String, dynamic>> post(
@@ -49,6 +51,34 @@ class ApiService {
           Uri.parse(url),
           headers: _headers,
         ));
+  }
+
+  Future<dynamic> postRaw(
+    String url,
+    Map<String, dynamic> body,
+  ) async {
+    try {
+      final response = await _client
+          .post(
+            Uri.parse(url),
+            headers: _headers,
+            body: jsonEncode(body),
+          )
+          .timeout(_timeout);
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Failure('HTTP error ${response.statusCode}');
+      }
+
+      return jsonDecode(response.body);
+    } on SocketException {
+      throw Failure('No internet connection');
+    } on FormatException {
+      throw Failure('Invalid JSON response');
+    } catch (e) {
+      if (e is Failure) rethrow;
+      throw Failure('Unexpected error');
+    }
   }
 
   // 🔥 SINGLE place for all validation & decoding
