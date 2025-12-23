@@ -139,7 +139,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                         },
                         child: TableCalendar(
                           focusedDay: _selectedDate,
-                          firstDay: DateTime.utc(2020, 1, 1),
+                          firstDay: DateTime.utc(2020),
                           lastDay: DateTime.utc(2030, 12, 31),
                           availableCalendarFormats: const {
                             CalendarFormat.month: 'Month',
@@ -277,7 +277,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha:0.1),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),
