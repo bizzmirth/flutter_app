@@ -15,6 +15,7 @@ class AppUrls {
   static String get _users => '$baseUrl/users';
   static String get _customers => '$_users/customers';
   static String get _travelConsultant => '$_users/travel_consultant';
+  static String get _franchisee => '$_users/franchise';
 
   // ==================== HOMEPAGE TOUR PACKAGE DETAILS ====================
   static String get getTourPackages =>
@@ -58,7 +59,7 @@ class AppUrls {
       '$_customers/dashboard/chartData.php';
 
   static String get topCustomerReferrals =>
-      '$_customers/dashboard/top_customer_refereral.php';
+      '$_customers/dashboard/top_customer_referral.php';
 
   static String get uploadImage => '$baseUrl/uploading/upload_mobile.php';
 
@@ -213,4 +214,15 @@ class AppUrls {
 
   static String get getTcOrderDetailsData =>
       '$_travelConsultant/orders/order_details.php';
+
+  // ==================== Franchisee DASHBOARD ENDPOINTS ====================
+  static String get getFranchiseeDashboardCounts =>
+      '$_franchisee/dashboard/dashboard_counts.php';
+
+  static String get getFranchiseLineChartData =>
+      '$_franchisee/dashboard/chartData.php';
+
+  static String get getFranchiseeTopTravelConsultants => '$_franchisee/dashboard/top_travel_consultants_referral.php';
+
+  static String get getFranchiseeCandidates => '$_franchisee/dashboard/candidate_count.php';
 }

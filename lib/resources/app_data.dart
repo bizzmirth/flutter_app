@@ -1,6 +1,7 @@
 class AppData {
   static const String customerUserType = '10';
   static const String tcUserType = '11';
+  static const String franchiseeUserType = '29';
   static const List<String> paymentFeeOptions = [
     'Free',
     'Prime: ₹ 10,000',
