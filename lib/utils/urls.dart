@@ -59,7 +59,7 @@ class AppUrls {
       '$_customers/dashboard/chartData.php';
 
   static String get topCustomerReferrals =>
-      '$_customers/dashboard/top_customer_refereral.php';
+      '$_customers/dashboard/top_customer_referral.php';
 
   static String get uploadImage => '$baseUrl/uploading/upload_mobile.php';
 
