@@ -221,4 +221,8 @@ class AppUrls {
 
   static String get getFranchiseLineChartData =>
       '$_franchisee/dashboard/chartData.php';
+
+  static String get getFranchiseeTopTravelConsultants => '$_franchisee/dashboard/top_travel_consultants_referral.php';
+
+  static String get getFranchiseeCandidates => '$_franchisee/dashboard/candidate_count.php';
 }
