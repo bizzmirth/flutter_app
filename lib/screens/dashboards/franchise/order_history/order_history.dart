@@ -1,5 +1,6 @@
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_top_tc_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_top_tc.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -318,7 +319,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                             DataColumn(label: Text('Ref. ID')),
                             DataColumn(label: Text('Ref. Name')),
                           ],
-                          source: FranchiseTopTcDataSource(data: ordersBM),
+                          source: FranchiseTopTcDataSource(data: ordersBM as List<FranchiseeTopTc>),
                           rowsPerPage: _rowsPerPage,
                           availableRowsPerPage: AppData.availableRowsPerPage,
                           onRowsPerPageChanged: (value) {

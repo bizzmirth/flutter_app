@@ -1,7 +1,6 @@
 import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_controller.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_popular_candidates_data_source.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_top_tc_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/screens/dashboards/franchise/customers/franchise_customer.dart';
@@ -105,6 +104,7 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
 
       controller.fetchDashboardCounts();
       controller.fetchCandidateCounts();
+      controller.fetchTopTcs();
     });
   }
 
@@ -386,7 +386,7 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                         DataColumn(label: Text('Total TC Ref')),
                         DataColumn(label: Text('Active/Inactive')),
                       ],
-                      source: FranchiseTopTcDataSource(data: orderstechno),
+                      source: FranchiseTopTcDataSource(data: controller.topTcs),
                       rowsPerPage: _rowsPerPage,
                       availableRowsPerPage: AppData.availableRowsPerPage,
                       onRowsPerPageChanged: (value) {

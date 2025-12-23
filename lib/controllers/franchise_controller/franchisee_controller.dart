@@ -1,4 +1,5 @@
 import 'package:bizzmirth_app/models/franchise_models/franchisee_candidate_count.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_top_tc.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/api_service.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
@@ -39,6 +40,7 @@ class FranchiseeController extends ChangeNotifier {
   String? get selectedYear => _selectedYear;
 
   List<FranchiseeCandidateCount> _candidateCount = [];
+  List<FranchiseeTopTc> _topTcs = [];
 
   // ─────────────────────────────────────
   // Clean UI Getters (VERY IMPORTANT)
@@ -65,6 +67,7 @@ class FranchiseeController extends ChangeNotifier {
   String get pendingCommission => commission?.pending ?? '0';
 
   List<FranchiseeCandidateCount> get candidateCount => _candidateCount;
+  List<FranchiseeTopTc> get topTcs => _topTcs;
 
   Future<String> _getUserId() async {
     final loginRes = await SharedPrefHelper().getLoginResponse();
@@ -165,33 +168,64 @@ class FranchiseeController extends ChangeNotifier {
     return spots;
   }
 
-  Future<void> fetchCandidateCounts() async{
+  Future<void> fetchCandidateCounts() async {
     _state = ViewState.loading;
     _failure = null;
     notifyListeners();
 
-    try{
+    try {
       final Map<String, dynamic> body = {
         'userId': await _getUserId(),
         'userType': AppData.franchiseeUserType,
       };
 
-      final response = await _apiService.post(AppUrls.getFranchiseeCandidates, body);
+      final response =
+          await _apiService.post(AppUrls.getFranchiseeCandidates, body);
 
-      if(response['success'] != true){
+      if (response['success'] != true) {
         throw Failure(response['message'] ?? 'Failed to load candidate counts');
       }
       Logger.info('Franchisee Candidate counts: $response');
 
       final List data = response['data'] ?? [];
 
-      _candidateCount = data.map((item) => FranchiseeCandidateCount.fromJson(item)).toList();
-      
+      _candidateCount =
+          data.map((item) => FranchiseeCandidateCount.fromJson(item)).toList();
+
       _state = ViewState.success;
-    }catch(e){
+    } catch (e) {
       _failure = e is Failure ? e : Failure('Something went wrong');
       _state = ViewState.error;
-    }finally{
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchTopTcs() async {
+    _state = ViewState.loading;
+    _failure = null;
+    notifyListeners();
+
+    try {
+      final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+        'userType': AppData.franchiseeUserType,
+      };
+      final response = await _apiService.post(
+          AppUrls.getFranchiseeTopTravelConsultants, body);
+
+      if (response['success'] != true) {
+        throw Failure(
+            response['message'] ?? 'Failed to load top travel consultants');
+      }
+      Logger.info('Franchisee Top TCs: $response');
+      final List data = response['data'] ?? [];
+      _topTcs = data.map((item) => FranchiseeTopTc.fromJson(item)).toList();
+      _state = ViewState.success;
+    } catch (e) {
+      _failure = e is Failure ? e : Failure('Something went wrong');
+      _state = ViewState.error;
+    } finally {
       notifyListeners();
     }
   }
