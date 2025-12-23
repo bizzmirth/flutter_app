@@ -1,5 +1,6 @@
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_top_tc_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_top_tc.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -139,7 +140,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                         },
                         child: TableCalendar(
                           focusedDay: _selectedDate,
-                          firstDay: DateTime.utc(2020, 1, 1),
+                          firstDay: DateTime.utc(2020),
                           lastDay: DateTime.utc(2030, 12, 31),
                           availableCalendarFormats: const {
                             CalendarFormat.month: 'Month',
@@ -277,7 +278,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha:0.1),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),
@@ -318,7 +319,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                             DataColumn(label: Text('Ref. ID')),
                             DataColumn(label: Text('Ref. Name')),
                           ],
-                          source: FranchiseTopTcDataSource(data: ordersBM),
+                          source: FranchiseTopTcDataSource(data: ordersBM as List<FranchiseeTopTc>),
                           rowsPerPage: _rowsPerPage,
                           availableRowsPerPage: AppData.availableRowsPerPage,
                           onRowsPerPageChanged: (value) {

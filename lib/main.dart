@@ -14,6 +14,7 @@ import 'package:bizzmirth_app/controllers/customer_controller/cust_product_payou
 import 'package:bizzmirth_app/controllers/customer_controller/cust_referral_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller/cust_wallet_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
+import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_cu_payout_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
@@ -25,6 +26,7 @@ import 'package:bizzmirth_app/data_source/te_data_sources/te_view_package_data_s
 import 'package:bizzmirth_app/models/customer_models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
+import 'package:bizzmirth_app/services/api_service.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/http_overrides.dart';
@@ -124,6 +126,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<ApiService>(create: (_) => ApiService()),
         ChangeNotifierProvider(create: (_) => HomePageController()),
         ChangeNotifierProvider(create: (_) => LoginController()),
         ChangeNotifierProvider(create: (_) => CustomerController()),
@@ -147,6 +150,12 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => TcTopupWalletController()),
         ChangeNotifierProvider(create: (_) => TcProductPayoutController()),
         ChangeNotifierProvider(create: (_) => TcOrderHistoryController()),
+        ChangeNotifierProvider(
+          create: (context) {
+            final apiService = context.read<ApiService>();
+            return FranchiseeController(apiService: apiService);
+          },
+        ),
       ],
       child: ToastificationWrapper(
         child: SessionTimeoutManager(

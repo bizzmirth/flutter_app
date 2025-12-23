@@ -557,29 +557,31 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           const Divider(),
 
           // Data Rows
-          ...members.map((m) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 24,
-                      child: Text("${m['sr']}"),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 3,
-                      child: Text(m['name']),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Text(m['gender']),
-                    ),
-                    Expanded(
-                      child: Text("${m['age']}"),
-                    ),
-                  ],
-                ),
-              )),
+          ...members.map(
+            (m) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 24,
+                    child: Text("${m['sr']}"),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 3,
+                    child: Text(m['name']),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(m['gender']),
+                  ),
+                  Expanded(
+                    child: Text("${m['age']}"),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
