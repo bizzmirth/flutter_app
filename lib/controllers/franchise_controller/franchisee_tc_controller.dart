@@ -1,4 +1,5 @@
 import 'package:bizzmirth_app/models/franchise_models/franchisee_pending_tc.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_registered_tc.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/api_service.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
@@ -26,7 +27,9 @@ class FranchiseeTcController extends ChangeNotifier {
   // Data (Single Source of Truth)
   // ─────────────────────────────────────
   List<FranchiseePendingTc> _pendingTcs = [];
+  List<FranchiseeRegisteredTc> _registeredTcs = [];
   List<FranchiseePendingTc> get pendingTcs => _pendingTcs;
+  List<FranchiseeRegisteredTc> get registeredTcs => _registeredTcs;
 
   Future<String> _getUserId() async {
     final loginRes = await SharedPrefHelper().getLoginResponse();
@@ -64,5 +67,32 @@ class FranchiseeTcController extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchRegisteredTcs() async{}
+  Future<void> fetchRegisteredTcs() async{
+    _state = ViewState.loading;
+    _failure = null;
+    notifyListeners();
+    try{
+      final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+        'userType': AppData.franchiseeUserType
+      };
+      Logger.info(
+          'fetchRegisteredTcs body: $body, url: ${AppUrls.getFranchiseeRegisteredTc}');
+      final response = await _apiService.post(AppUrls.getFranchiseeRegisteredTc, body);
+      if (response['success'] != true) {
+        throw Failure(
+            response['message'] ?? 'Failed to load registered travel consultants');
+      }
+      Logger.info('Franchisee Registered TCs: $response');
+      final List data = response['data'] ?? [];
+      _registeredTcs =
+          data.map((item) => FranchiseeRegisteredTc.fromJson(item)).toList();
+      _state = ViewState.success; 
+
+    }catch (e) {
+      _failure = e is Failure ? e : Failure('Something went wrong');
+      Logger.error('FranchiseeTcController.fetchPendingTcs: $e');
+      _state = ViewState.error;
+    }
+  }
 }

@@ -1,7 +1,6 @@
 import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_tc_controller.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_pending_tc_data_source.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_registered_tc_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/screens/dashboards/franchise/travel_consultant/add_franchise_tc.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
@@ -29,6 +28,8 @@ class _FranchiseTcState extends State<FranchiseTc> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<FranchiseeTcController>(context, listen: false)
           .fetchPendingTcs();
+      Provider.of<FranchiseeTcController>(context, listen: false)
+          .fetchRegisteredTcs();
     });
   }
 
@@ -132,7 +133,7 @@ class _FranchiseTcState extends State<FranchiseTc> {
                         DataColumn(label: Text('Status')),
                         DataColumn(label: Text('Action')),
                       ],
-                      source: FranchiseRegisteredTcDataSource(tcvieworders1),
+                      source: FranchiseRegisteredTcDataSource(controller.registeredTcs),
                       rowsPerPage: _rowsPerPage1,
                       availableRowsPerPage: AppData.availableRowsPerPage,
                       onRowsPerPageChanged: (value) {
