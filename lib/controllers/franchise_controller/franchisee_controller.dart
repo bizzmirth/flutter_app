@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/models/franchise_models/franchisee_candidate_count.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/api_service.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
@@ -37,6 +38,8 @@ class FranchiseeController extends ChangeNotifier {
 
   String? get selectedYear => _selectedYear;
 
+  List<FranchiseeCandidateCount> _candidateCount = [];
+
   // ─────────────────────────────────────
   // Clean UI Getters (VERY IMPORTANT)
   // ─────────────────────────────────────
@@ -60,6 +63,8 @@ class FranchiseeController extends ChangeNotifier {
   String get confirmedCommission => commission?.confirmed ?? '0';
 
   String get pendingCommission => commission?.pending ?? '0';
+
+  List<FranchiseeCandidateCount> get candidateCount => _candidateCount;
 
   Future<String> _getUserId() async {
     final loginRes = await SharedPrefHelper().getLoginResponse();
@@ -158,6 +163,37 @@ class FranchiseeController extends ChangeNotifier {
     }
 
     return spots;
+  }
+
+  Future<void> fetchCandidateCounts() async{
+    _state = ViewState.loading;
+    _failure = null;
+    notifyListeners();
+
+    try{
+      final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+        'userType': AppData.franchiseeUserType,
+      };
+
+      final response = await _apiService.post(AppUrls.getFranchiseeCandidates, body);
+
+      if(response['success'] != true){
+        throw Failure(response['message'] ?? 'Failed to load candidate counts');
+      }
+      Logger.info('Franchisee Candidate counts: $response');
+
+      final List data = response['data'] ?? [];
+
+      _candidateCount = data.map((item) => FranchiseeCandidateCount.fromJson(item)).toList();
+      
+      _state = ViewState.success;
+    }catch(e){
+      _failure = e is Failure ? e : Failure('Something went wrong');
+      _state = ViewState.error;
+    }finally{
+      notifyListeners();
+    }
   }
 
   // ─────────────────────────────────────

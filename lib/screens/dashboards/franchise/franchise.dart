@@ -104,6 +104,7 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
       final controller = context.read<FranchiseeController>();
 
       controller.fetchDashboardCounts();
+      controller.fetchCandidateCounts();
     });
   }
 
@@ -431,7 +432,7 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                         DataColumn(label: Text('Deleted')),
                       ],
                       source: FranchisePopularCandidatesDataSource(
-                        data: orderstechno,
+                        data: controller.candidateCount,
                       ),
                       rowsPerPage: _rowsPerPage,
                       availableRowsPerPage: AppData.availableRowsPerPage,

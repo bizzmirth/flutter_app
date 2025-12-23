@@ -1,7 +1,8 @@
+import 'package:bizzmirth_app/models/franchise_models/franchisee_candidate_count.dart';
 import 'package:flutter/material.dart';
 
 class FranchisePopularCandidatesDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
+  final List<FranchiseeCandidateCount> data;
   FranchisePopularCandidatesDataSource({required this.data});
 
   @override
@@ -9,10 +10,10 @@ class FranchisePopularCandidatesDataSource extends DataTableSource {
     if (index >= data.length) return null;
     final customers = data[index];
     return DataRow(cells: [
-      DataCell(Text(customers['type'] ?? 'N/A')),
-      DataCell(Text(customers['pending'] ?? 'N/A')),
-      DataCell(Text(customers['registered'] ?? 'N/A')),
-      DataCell(Text(customers['deleted'] ?? 'N/A')),
+      DataCell(Text(customers.type ?? 'N/A')),
+      DataCell(Text(customers.pending.toString())),
+      DataCell(Text(customers.registered.toString())),
+      DataCell(Text(customers.deleted.toString())),
     ]);
   }
 
