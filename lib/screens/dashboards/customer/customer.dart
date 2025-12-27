@@ -278,22 +278,11 @@ class _CDashboardPageState extends State<CDashboardPage> {
         eligibleCouponsCount = 4;
       }
 
-      if (profileController.customerType != null &&
-          profileController.customerType!.isNotEmpty) {
-        custtype = profileController.customerType!;
-        await SharedPrefHelper().saveCustomerType(custtype);
-        Logger.success('Using customer_type from API: $custtype');
-      } else {
-        // 🔁 Fallback: try to get from SharedPrefs (in case API delayed)
-        final savedType = await SharedPrefHelper().getCustomerType();
-        if (savedType != null && savedType.isNotEmpty) {
-          custtype = savedType;
-          Logger.success(
-              'Loaded customer_type from SharedPrefs fallback: $custtype');
-        } else {
-          Logger.warning('Customer type still null after API — using freeuser');
-        }
-      }
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      custtype = loginRes?.custType ?? '';
+      Logger.info('Customer type at initialization: $custtype');
+
+
 
       if (mounted) {
         setState(() {

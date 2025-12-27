@@ -47,10 +47,10 @@ class AppUrls {
 
   // ==================== CUSTOMER DASHBOARD ENDPOINTS ====================
   static String get registeredCustomers =>
-      '$_customers/referral_customers/customers.php?action=registered_cust';
+      '$_customers/referral_customers/customer_registered.php';
 
   static String get pendingCustomers =>
-      '$_customers/referral_customers/customers.php?action=pending_cust';
+      '$_customers/referral_customers/customer_pending.php';
 
   static String get dashboardCounts =>
       '$_customers/dashboard/dashboard_counts.php';
