@@ -222,11 +222,15 @@ class AppUrls {
   static String get getFranchiseLineChartData =>
       '$_franchisee/dashboard/chartData.php';
 
-  static String get getFranchiseeTopTravelConsultants => '$_franchisee/dashboard/top_travel_consultants_referral.php';
+  static String get getFranchiseeTopTravelConsultants =>
+      '$_franchisee/dashboard/top_travel_consultants_referral.php';
 
-  static String get getFranchiseeCandidates => '$_franchisee/dashboard/candidate_count.php';
+  static String get getFranchiseeCandidates =>
+      '$_franchisee/dashboard/candidate_count.php';
 
-  static String get getFranchiseePendingTc => '$_franchisee/travel_consultants/travel_consultants_pending.php';
+  static String get getFranchiseePendingTc =>
+      '$_franchisee/travel_consultants/travel_consultants_pending.php';
 
-  static String get getFranchiseeRegisteredTc => '$_franchisee/travel_consultants/travel_consultants_registered.php';
+  static String get getFranchiseeRegisteredTc =>
+      '$_franchisee/travel_consultants/travel_consultants_registered.php';
 }
