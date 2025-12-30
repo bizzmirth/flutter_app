@@ -3,6 +3,7 @@ class TcPendingCustomerModel {
   String? caCustomerId;
   String? firstname;
   String? lastname;
+  String? name;
   String? nomineeName;
   String? nomineeRelation;
   String? email;
@@ -33,6 +34,7 @@ class TcPendingCustomerModel {
   String? referenceNo;
   String? taReferenceNo;
   String? taReferenceName;
+  String? taReference;
   String? registerBy;
   String? paidAmount;
   String? customerType;
@@ -42,56 +44,62 @@ class TcPendingCustomerModel {
   String? deletedDate;
   String? paymentLabel;
   String? status;
+  String? statusCode;
 
-  TcPendingCustomerModel(
-      {this.id,
-      this.caCustomerId,
-      this.firstname,
-      this.lastname,
-      this.nomineeName,
-      this.nomineeRelation,
-      this.email,
-      this.countryCode,
-      this.contactNo,
-      this.dateOfBirth,
-      this.age,
-      this.gender,
-      this.country,
-      this.state,
-      this.city,
-      this.pincode,
-      this.address,
-      this.note,
-      this.profilePic,
-      this.panCard,
-      this.aadharCard,
-      this.votingCard,
-      this.passbook,
-      this.paymentProof,
-      this.paymentMode,
-      this.chequeNo,
-      this.chequeDate,
-      this.bankName,
-      this.transactionNo,
-      this.userType,
-      this.registrant,
-      this.referenceNo,
-      this.taReferenceNo,
-      this.taReferenceName,
-      this.registerBy,
-      this.paidAmount,
-      this.customerType,
-      this.compChek,
-      this.addedOn,
-      this.registerDate,
-      this.deletedDate,
-      this.status});
+  TcPendingCustomerModel({
+    this.id,
+    this.caCustomerId,
+    this.firstname,
+    this.lastname,
+    this.name,
+    this.nomineeName,
+    this.nomineeRelation,
+    this.email,
+    this.countryCode,
+    this.contactNo,
+    this.dateOfBirth,
+    this.age,
+    this.gender,
+    this.country,
+    this.state,
+    this.city,
+    this.pincode,
+    this.address,
+    this.note,
+    this.profilePic,
+    this.panCard,
+    this.aadharCard,
+    this.votingCard,
+    this.passbook,
+    this.paymentProof,
+    this.paymentMode,
+    this.chequeNo,
+    this.chequeDate,
+    this.bankName,
+    this.transactionNo,
+    this.userType,
+    this.registrant,
+    this.referenceNo,
+    this.taReferenceNo,
+    this.taReferenceName,
+    this.taReference,
+    this.registerBy,
+    this.paidAmount,
+    this.customerType,
+    this.compChek,
+    this.addedOn,
+    this.registerDate,
+    this.deletedDate,
+    this.status,
+    this.statusCode,
+  });
 
   TcPendingCustomerModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     caCustomerId = json['ca_customer_id'];
     firstname = json['firstname'];
     lastname = json['lastname'];
+    name = json['name'];
     nomineeName = json['nominee_name'];
     nomineeRelation = json['nominee_relation'];
     email = json['email'];
@@ -122,6 +130,7 @@ class TcPendingCustomerModel {
     referenceNo = json['reference_no'];
     taReferenceNo = json['ta_reference_no'];
     taReferenceName = json['ta_reference_name'];
+    taReference = json['ta_reference'];
     registerBy = json['register_by'];
     paidAmount = json['paid_amount'];
     customerType = json['customer_type'];
@@ -130,6 +139,7 @@ class TcPendingCustomerModel {
     registerDate = json['register_date'];
     deletedDate = json['deleted_date'];
     status = json['status'];
+    statusCode = json['status_code'];
   }
 
   Map<String, dynamic> toJson() {

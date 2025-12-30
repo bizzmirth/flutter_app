@@ -17,7 +17,7 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
     final regCus = data[index];
-    final fullName = '${regCus.firstname} ${regCus.lastname}';
+    final parts = (regCus.taReference ?? '').split(' ');
 
     Widget getProfileImage(String? profilePicture) {
       const double imageSize = 40;
@@ -70,19 +70,19 @@ class TcRegisteredCustomerDataSource extends DataTableSource {
       cells: [
         DataCell(getProfileImage(regCus.profilePic)),
         DataCell(Text(regCus.caCustomerId ?? 'N/A')),
-        DataCell(Text(fullName)),
-        DataCell(Text(regCus.taReferenceNo ?? 'N/A')),
-        DataCell(Text(regCus.taReferenceName ?? 'N/A')),
-        DataCell(Text(formatDate(regCus.addedOn))),
+        DataCell(Text(regCus.name ?? 'N/A')),
+        DataCell(Text(parts.isNotEmpty ? parts.first : 'N/A')), // TA Code
+        DataCell(Text(parts.length > 1 ? parts.sublist(1).join(' ') : 'N/A')),
+        DataCell(Text(formatDate(regCus.registerDate ?? ''))),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: getStatusColor(regCus.status ?? ''),
+              color: getStatusColor(regCus.statusCode ?? ''),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              getStatusText(regCus.status!),
+              regCus.status!,
               style: const TextStyle(color: Colors.white),
             ),
           ),
