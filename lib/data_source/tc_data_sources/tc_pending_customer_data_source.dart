@@ -12,8 +12,7 @@ class TcPendingCustomerDataSource extends DataTableSource {
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
     final pendingCus = data[index];
-    final String fullName =
-        '${pendingCus.firstname ?? ''} ${pendingCus.lastname ?? ''}';
+    final parts = (pendingCus.taReference ?? '').split(' ');
     // Logger.success('name: $fullName tarefid: ${pendingCus.taReferenceNo}');
 
     Widget getProfileImage(String? profilePicture) {
@@ -68,20 +67,20 @@ class TcPendingCustomerDataSource extends DataTableSource {
       cells: [
         DataCell(getProfileImage(pendingCus.profilePic)),
         DataCell(Text(pendingCus.id ?? 'N/A')),
-        DataCell(Text(fullName)),
-        DataCell(Text(pendingCus.taReferenceNo ?? 'N/A')),
+        DataCell(Text(pendingCus.name ?? 'N/A')),
+        DataCell(Text(parts.isNotEmpty ? parts[0] : 'N/A')),
+        DataCell(Text(parts.length > 1 ? parts.sublist(1).join(' ') : 'N/A')),
 
-        DataCell(Text(pendingCus.taReferenceName ?? 'N/A')),
-        DataCell(Text(formatDate(pendingCus.addedOn))),
+        DataCell(Text(pendingCus.registerDate ?? 'N/A')),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: getStatusColor(pendingCus.status ?? ''),
+              color: getStatusColor(pendingCus.statusCode ?? ''),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              getStatusText(pendingCus.status!),
+              pendingCus.status!,
               style: const TextStyle(color: Colors.white),
             ),
           ),

@@ -1,7 +1,8 @@
+import 'package:bizzmirth_app/models/franchise_models/franchisee_pending_tc.dart';
 import 'package:flutter/material.dart';
 
 class FranchisePendingTcDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
+  final List<FranchiseePendingTc> data;
   FranchisePendingTcDataSource(this.data);
 
   @override
@@ -11,20 +12,20 @@ class FranchisePendingTcDataSource extends DataTableSource {
 
     return DataRow(
       cells: [
-        DataCell(Text(order['srNo']?.toString() ?? 'N/A')),
-        DataCell(Text(order['name']?.toString() ?? 'N/A')),
-        DataCell(Text(order['refId']?.toString() ?? 'N/A')),
-        DataCell(Text(order['phone']?.toString() ?? 'N/A')),
-        DataCell(Text(order['jd']?.toString() ?? 'N/A')),
+        DataCell(Text(order.id ?? 'N/A')),
+        DataCell(Text(order.name ?? 'N/A')),
+        DataCell(Text('${order.refId ?? 'N/A'} - ${order.refName ?? 'N/A'}')),
+        DataCell(Text(order.phone ?? 'N/A')),
+        DataCell(Text(order.joiningDate ?? 'N/A')),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: _getStatusColor(order['status']?.toString() ?? ''),
+              color: _getStatusColor(order.statusBadge ?? ''),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              order['status']?.toString() ?? 'Unknown',
+              order.status ?? 'Unknown',
               style: const TextStyle(color: Colors.white),
             ),
           ),
@@ -43,7 +44,7 @@ class FranchisePendingTcDataSource extends DataTableSource {
         return Colors.orange;
       case 'completed':
         return Colors.green;
-      case 'cancelled':
+      case 'warning':
         return Colors.red;
       default:
         return Colors.grey;

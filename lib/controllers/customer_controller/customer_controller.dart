@@ -2,6 +2,7 @@
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -405,7 +406,12 @@ class CustomerController extends ChangeNotifier {
       final userId = loginRes?.userId ?? '';
       final String url = AppUrls.registeredCustomers;
 
-      final response = await http.get(Uri.parse(url));
+      final Map<String, dynamic> body = {
+        'userId': userId,
+        'userType': AppData.customerUserType,
+      };
+
+      final response = await http.post(Uri.parse(url), body: jsonEncode(body));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -416,16 +422,10 @@ class CustomerController extends ChangeNotifier {
           final List<dynamic> dataList = jsonData['data'];
           final List<RegisteredCustomer> allCustomers =
               dataList.map((e) => RegisteredCustomer.fromJson(e)).toList();
-          final List<RegisteredCustomer> filteredCustomers = allCustomers
-              .where((customer) => customer.referenceNo == userId)
-              .toList();
+    
+          _registeredCustomers.addAll(allCustomers);
 
-          _registeredCustomers.addAll(filteredCustomers);
-
-          for (var x in _registeredCustomers) {
-            Logger.success(
-                'Customer: ${x.name}, Reference No: ${x.referenceNo}');
-          }
+       
           Logger.success('Registered customer URL: $url');
         } else {
           _error = 'No data found';
@@ -454,7 +454,13 @@ class CustomerController extends ChangeNotifier {
       final userId = loginRes?.userId ?? '';
       final String url = AppUrls.pendingCustomers;
 
-      final response = await http.get(Uri.parse(url));
+      
+      final Map<String, dynamic> body = {
+        'userId': userId,
+        'userType': AppData.customerUserType,
+      };
+
+      final response = await http.post(Uri.parse(url), body: jsonEncode(body));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -466,16 +472,11 @@ class CustomerController extends ChangeNotifier {
           final List<dynamic> dataList = jsonData['data'];
           final List<PendingCustomer> allCustomers =
               dataList.map((e) => PendingCustomer.fromJson(e)).toList();
-          final List<PendingCustomer> filteredCustomers = allCustomers
-              .where((customer) => customer.referenceNo == userId)
-              .toList();
+          
 
-          _pendingCustomers.addAll(filteredCustomers);
+          _pendingCustomers.addAll(allCustomers);
 
-          for (var x in _pendingCustomers) {
-            Logger.success(
-                'Pending Customer: ${x.name}, Reference No: ${x.referenceNo}');
-          }
+         
           Logger.success('Pending Customer URL: $url');
         } else {
           _error = 'No data found';

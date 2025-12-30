@@ -1,7 +1,8 @@
+import 'package:bizzmirth_app/models/franchise_models/franchisee_registered_tc.dart';
 import 'package:flutter/material.dart';
 
 class FranchiseRegisteredTcDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
+  final List<FranchiseeRegisteredTc> data;
   FranchiseRegisteredTcDataSource(this.data);
 
   @override
@@ -11,19 +12,19 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
 
     return DataRow(
       cells: [
-        DataCell(Text(order['tcId']?.toString() ?? 'N/A')),
-        DataCell(Text(order['name']?.toString() ?? 'N/A')),
-        DataCell(Text(order['phone']?.toString() ?? 'N/A')),
-        DataCell(Text(order['jd']?.toString() ?? 'N/A')),
+        DataCell(Text('${order.tcId} - ${order.tcName}')),
+        DataCell(Text('${order.refId} - ${order.refName}')),
+        DataCell(Text(order.phone ?? 'N/A')),
+        DataCell(Text(order.joiningDate ?? 'N/A')),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: _getStatusColor(order['status']?.toString() ?? ''),
+              color: _getStatusColor(order.status ?? ''),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              order['status']?.toString() ?? 'Unknown',
+              order.status ?? 'Unknown',
               style: const TextStyle(color: Colors.white),
             ),
           ),
@@ -41,7 +42,7 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
         return Colors.purple;
       case 'pending':
         return Colors.orange;
-      case 'completed':
+      case 'active':
         return Colors.green;
       case 'cancelled':
         return Colors.red;

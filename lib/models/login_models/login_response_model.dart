@@ -4,19 +4,21 @@ class LoginResponseModel {
   final int? status;
   final String? message;
   final String? userType;
-  final String? userTypeId; // ✅ Added
+  final String? custType;
+  final String? userTypeId; 
   final String? userId;
   final String? userFname;
   final String? userLname;
-  final String? name; // ✅ Combined full name
+  final String? name; 
   final String? email;
   final String? token;
-  final Map<String, dynamic>? extra; // store any extra unknown keys
+  final Map<String, dynamic>? extra; 
 
   const LoginResponseModel({
     this.status,
     this.message,
     this.userType,
+    this.custType,
     this.userTypeId,
     this.userId,
     this.userFname,
@@ -37,7 +39,7 @@ class LoginResponseModel {
           'status',
           'message',
           'user_type',
-          'user_type_id', // ✅ include in cleanup
+          'user_type_id', 
           'user_id',
           'user_fname',
           'user_lname',
@@ -53,6 +55,7 @@ class LoginResponseModel {
       status: json['status'],
       message: json['message'],
       userType: json['user_type'],
+      custType: json['customer_type'],
       userTypeId:
           json['user_type_id']?.toString() ?? userTypeId, // ✅ safe fallback
       userId: json['user_id'],

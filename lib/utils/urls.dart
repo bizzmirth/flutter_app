@@ -47,10 +47,10 @@ class AppUrls {
 
   // ==================== CUSTOMER DASHBOARD ENDPOINTS ====================
   static String get registeredCustomers =>
-      '$_customers/referral_customers/customers.php?action=registered_cust';
+      '$_customers/referral_customers/customer_registered.php';
 
   static String get pendingCustomers =>
-      '$_customers/referral_customers/customers.php?action=pending_cust';
+      '$_customers/referral_customers/customer_pending.php';
 
   static String get dashboardCounts =>
       '$_customers/dashboard/dashboard_counts.php';
@@ -135,10 +135,10 @@ class AppUrls {
 
   // ==================== TRAVEL CONSULTANT CUSTOMER ENDPOINTS ====================
   static String get getTcPendingCustomers =>
-      '$_travelConsultant/referral_customers/customers.php?action=pending_cust';
+      '$_travelConsultant/referral_customers/customer_pending.php';
 
   static String get getTcRegisteredCustomers =>
-      '$_travelConsultant/referral_customers/customers.php?action=registered_cust';
+      '$_travelConsultant/referral_customers/customer_registered.php';
 
   static String get addTcCustomer =>
       '$_travelConsultant/referral_customers/add_customers.php';
@@ -225,4 +225,8 @@ class AppUrls {
   static String get getFranchiseeTopTravelConsultants => '$_franchisee/dashboard/top_travel_consultants_referral.php';
 
   static String get getFranchiseeCandidates => '$_franchisee/dashboard/candidate_count.php';
+
+  static String get getFranchiseePendingTc => '$_franchisee/travel_consultants/travel_consultants_pending.php';
+
+  static String get getFranchiseeRegisteredTc => '$_franchisee/travel_consultants/travel_consultants_registered.php';
 }
