@@ -97,6 +97,7 @@ class FranchiseeController extends ChangeNotifier {
       _state = ViewState.success;
     } catch (e) {
       _failure = e is Failure ? e : Failure('Something went wrong');
+      Logger.error('FranchiseeController.fetchDashboardCounts: $e');
       _state = ViewState.error;
     } finally {
       notifyListeners();
@@ -146,6 +147,7 @@ class FranchiseeController extends ChangeNotifier {
       _state = ViewState.success;
     } catch (e) {
       _failure = e is Failure ? e : Failure('Chart load failed');
+      Logger.error('FranchiseeController.apiGetChartData: $e');
       _state = ViewState.error;
     } finally {
       notifyListeners();
@@ -195,6 +197,7 @@ class FranchiseeController extends ChangeNotifier {
       _state = ViewState.success;
     } catch (e) {
       _failure = e is Failure ? e : Failure('Something went wrong');
+      Logger.error('FranchiseeController.fetchCandidateCounts: $e');
       _state = ViewState.error;
     } finally {
       notifyListeners();
@@ -224,6 +227,7 @@ class FranchiseeController extends ChangeNotifier {
       _state = ViewState.success;
     } catch (e) {
       _failure = e is Failure ? e : Failure('Something went wrong');
+      Logger.error('FranchiseeController.fetchTopTcs: $e');
       _state = ViewState.error;
     } finally {
       notifyListeners();

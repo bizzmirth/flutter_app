@@ -49,6 +49,7 @@ class PendingCustomer {
   String? userType;
   String? registrant;
   String? referenceNo;
+  String? taReference;
   String? taReferenceNo;
   String? taReferenceName;
   String? registerBy;
@@ -74,7 +75,7 @@ class PendingCustomer {
       ..cuRefName = json['cu_ref_name']
       ..firstname = json['firstname']
       ..lastname = json['lastname']
-      ..name = "${json['firstname'] ?? ''} ${json['lastname'] ?? ''}".trim()
+      ..name = json['name']
       ..nomineeName = json['nominee_name']
       ..nomineeRelation = json['nominee_relation']
       ..email = json['email']
@@ -105,6 +106,7 @@ class PendingCustomer {
       ..referenceNo = json['reference_no']
       ..taReferenceNo = json['ta_reference_no']
       ..taReferenceName = json['ta_reference_name']
+      ..taReference = json['ta_reference']
       ..registerBy = json['register_by']
       ..paidAmount = json['paid_amount']
       ..customerType = json['customer_type']

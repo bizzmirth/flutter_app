@@ -19,6 +19,7 @@ class MyrefCustRegDataSource extends DataTableSource {
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
     final regCustomer = data[index];
+    final parts = (regCustomer.taReference ?? '').split(' ');
 
     Widget getProfileImage(String? profilePicture) {
       const double imageSize = 40;
@@ -106,24 +107,25 @@ class MyrefCustRegDataSource extends DataTableSource {
         ),
         DataCell(Text(regCustomer.caCustomerId!)),
         DataCell(Text(regCustomer.name ?? 'N/A')),
-        DataCell(Text(regCustomer.taReferenceNo ?? 'N/A')),
-        DataCell(Text(regCustomer.taReferenceName ?? 'N/A')),
+        DataCell(Text(parts.isNotEmpty ? parts[0] : 'N/A')),
+        DataCell(Text(parts.length > 1 ? parts.sublist(1).join(' ') : 'N/A')),
         DataCell(Text(regCustomer.registerDate ?? 'N/A')),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: getStatusColor(regCustomer.status!).withValues(alpha: 0.1),
+              color: getStatusColor(regCustomer.statusCode!)
+                  .withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color:
-                    getStatusColor(regCustomer.status!).withValues(alpha: 0.3),
+                color: getStatusColor(regCustomer.statusCode!)
+                    .withValues(alpha: 0.3),
               ),
             ),
             child: Text(
-              getStatusText(regCustomer.status!),
+              getStatusText(regCustomer.statusCode!),
               style: TextStyle(
-                color: getStatusColor(regCustomer.status!),
+                color: getStatusColor(regCustomer.statusCode!),
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),
