@@ -20,6 +20,7 @@ import 'package:bizzmirth_app/widgets/coupons_tracker.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:bizzmirth_app/widgets/free_user_type_widget.dart';
+import 'package:bizzmirth_app/widgets/improved_line_chart.dart';
 import 'package:bizzmirth_app/widgets/neo_select_benefits.dart';
 import 'package:bizzmirth_app/widgets/referral_tracker_card.dart';
 import 'package:bizzmirth_app/widgets/user_type_widget.dart';
@@ -2281,33 +2282,21 @@ class _CDashboardPageState extends State<CDashboardPage> {
       const SizedBox(height: 16),
       buildTripOrRefundNote(userType: type, context: context),
       const SizedBox(height: 20),
-      // if (_isDashboardInitialized)
-      //   ImprovedLineChart(
-      //     chartData: chartData,
-      //     availableYears: availableYears,
-      //     selectedYear: selectedYear,
-      //     isLoading: isLoading,
-      //     hasError: hasError,
-      //     errorMessage: errorMessage,
-      //     onYearChanged: (year) async {
-      //       setState(() => selectedYear = year ?? '');
-      //       await _loadChartData(year ?? '');
-      //     },
-      //   )
-      // else
-      const SizedBox(
-        height: 300,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Loading chart data...'),
-            ],
-          ),
+
+        ImprovedLineChart(
+          chartData: chartData,
+          availableYears: availableYears,
+          selectedYear: selectedYear,
+          isLoading: isLoading,
+          hasError: hasError,
+          errorMessage: errorMessage,
+          onYearChanged: (year) async {
+            setState(() => selectedYear = year ?? '');
+            await _loadChartData(year ?? '');
+          },
         ),
-      ),
+     
+   
       const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),

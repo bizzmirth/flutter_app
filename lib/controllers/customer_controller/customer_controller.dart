@@ -454,7 +454,13 @@ class CustomerController extends ChangeNotifier {
       final userId = loginRes?.userId ?? '';
       final String url = AppUrls.pendingCustomers;
 
-      final response = await http.get(Uri.parse(url));
+      
+      final Map<String, dynamic> body = {
+        'userId': userId,
+        'userType': AppData.customerUserType,
+      };
+
+      final response = await http.post(Uri.parse(url), body: jsonEncode(body));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -466,16 +472,11 @@ class CustomerController extends ChangeNotifier {
           final List<dynamic> dataList = jsonData['data'];
           final List<PendingCustomer> allCustomers =
               dataList.map((e) => PendingCustomer.fromJson(e)).toList();
-          final List<PendingCustomer> filteredCustomers = allCustomers
-              .where((customer) => customer.referenceNo == userId)
-              .toList();
+          
 
-          _pendingCustomers.addAll(filteredCustomers);
+          _pendingCustomers.addAll(allCustomers);
 
-          for (var x in _pendingCustomers) {
-            Logger.success(
-                'Pending Customer: ${x.name}, Reference No: ${x.referenceNo}');
-          }
+         
           Logger.success('Pending Customer URL: $url');
         } else {
           _error = 'No data found';
