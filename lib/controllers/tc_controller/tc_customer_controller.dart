@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:bizzmirth_app/models/tc_models/tc_customer/tc_pending_customer_model.dart';
 import 'package:bizzmirth_app/models/tc_models/tc_customer/tc_registered_customer_model.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
@@ -30,6 +32,11 @@ class TcCustomerController extends ChangeNotifier {
     initialize();
   }
 
+  Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
+
   Future<void> initialize() async {
     await apiGetTcPendingCustomers();
     await apiGetTcRegisteredCustomers();
@@ -42,7 +49,11 @@ class TcCustomerController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcPendingCustomers;
-      final response = await http.get(Uri.parse(url));
+      final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+        'userType': AppData.tcUserType,
+      };
+      final response = await http.post(Uri.parse(url), body: jsonEncode(body));
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
 
@@ -82,7 +93,11 @@ class TcCustomerController extends ChangeNotifier {
       notifyListeners();
 
       final url = AppUrls.getTcRegisteredCustomers;
-      final response = await http.get(Uri.parse(url));
+         final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+        'userType': AppData.tcUserType,
+      };
+      final response = await http.post(Uri.parse(url), body: jsonEncode(body));
 
       if (response.statusCode == 200) {
         _registeredCustomers.clear();
