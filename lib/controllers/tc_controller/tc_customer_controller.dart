@@ -108,6 +108,8 @@ class TcCustomerController extends ChangeNotifier {
           _registeredCustomers = data
               .map((item) => TcRegisteredCustomerModel.fromJson(item))
               .toList();
+               Logger.success(
+              'response to the registered customer URL: $url, Response: ${response.body}');
           Logger.success(
               'Fetched total ${_registeredCustomers.length} registered customers successfully.');
         } else {

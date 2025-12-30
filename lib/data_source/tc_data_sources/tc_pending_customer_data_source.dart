@@ -76,11 +76,11 @@ class TcPendingCustomerDataSource extends DataTableSource {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: getStatusColor(pendingCus.status ?? ''),
+              color: getStatusColor(pendingCus.statusCode ?? ''),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              getStatusText(pendingCus.status!),
+              pendingCus.status!,
               style: const TextStyle(color: Colors.white),
             ),
           ),

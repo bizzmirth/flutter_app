@@ -44,6 +44,7 @@ class TcPendingCustomerModel {
   String? deletedDate;
   String? paymentLabel;
   String? status;
+  String? statusCode;
 
   TcPendingCustomerModel({
     this.id,
@@ -90,6 +91,7 @@ class TcPendingCustomerModel {
     this.registerDate,
     this.deletedDate,
     this.status,
+    this.statusCode,
   });
 
   TcPendingCustomerModel.fromJson(Map<String, dynamic> json) {
@@ -137,6 +139,7 @@ class TcPendingCustomerModel {
     registerDate = json['register_date'];
     deletedDate = json['deleted_date'];
     status = json['status'];
+    statusCode = json['status_code'];
   }
 
   Map<String, dynamic> toJson() {
