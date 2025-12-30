@@ -135,10 +135,10 @@ class AppUrls {
 
   // ==================== TRAVEL CONSULTANT CUSTOMER ENDPOINTS ====================
   static String get getTcPendingCustomers =>
-      '$_travelConsultant/referral_customers/customers.php?action=pending_cust';
+      '$_travelConsultant/referral_customers/customer_pending.php';
 
   static String get getTcRegisteredCustomers =>
-      '$_travelConsultant/referral_customers/customers.php?action=registered_cust';
+      '$_travelConsultant/referral_customers/customer_registered.php';
 
   static String get addTcCustomer =>
       '$_travelConsultant/referral_customers/add_customers.php';
