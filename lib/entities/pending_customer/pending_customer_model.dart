@@ -4,7 +4,9 @@ part 'pending_customer_model.g.dart';
 
 @collection
 class PendingCustomer {
-  Id? id = Isar.autoIncrement;
+   Id isarId = Isar.autoIncrement; // ✅ REQUIRED
+
+  String? id; // backend ID (string, web-safe)
 
   String? caCustomerId;
   String? caCustomerRefName;
@@ -69,7 +71,7 @@ class PendingCustomer {
   // ✅ fromJson
   factory PendingCustomer.fromJson(Map<String, dynamic> json) {
     return PendingCustomer()
-      ..id = int.tryParse(json['id']?.toString() ?? '')
+      ..id = int.tryParse(json['id']?.toString() ?? '') as String?
       ..caCustomerId = json['ca_customer_id']
       ..cuRefId = json['cu_ref_id']
       ..cuRefName = json['cu_ref_name']

@@ -4,7 +4,9 @@ part 'registered_employee_model.g.dart';
 
 @collection
 class RegisteredEmployeeModel {
-  Id? id = Isar.autoIncrement;
+    Id isarId = Isar.autoIncrement; // ✅ REQUIRED
+
+  String? id; // backend ID (string, web-safe)
   String? regId;
   String? name;
   String? mobileNumber;

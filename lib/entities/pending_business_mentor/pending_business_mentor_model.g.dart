@@ -118,118 +118,123 @@ const PendingBusinessMentorModelSchema = CollectionSchema(
       name: r'gstNo',
       type: IsarType.string,
     ),
-    r'kyc': PropertySchema(
+    r'id': PropertySchema(
       id: 20,
+      name: r'id',
+      type: IsarType.string,
+    ),
+    r'kyc': PropertySchema(
+      id: 21,
       name: r'kyc',
       type: IsarType.string,
     ),
     r'lastName': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'lastName',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'name',
       type: IsarType.string,
     ),
     r'nomineeName': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'nomineeName',
       type: IsarType.string,
     ),
     r'nomineeRelation': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'nomineeRelation',
       type: IsarType.string,
     ),
     r'panCard': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'panCard',
       type: IsarType.string,
     ),
     r'paymentMode': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'paymentMode',
       type: IsarType.string,
     ),
     r'paymentProof': PropertySchema(
-      id: 27,
+      id: 28,
       name: r'paymentProof',
       type: IsarType.string,
     ),
     r'phoneNumber': PropertySchema(
-      id: 28,
+      id: 29,
       name: r'phoneNumber',
       type: IsarType.string,
     ),
     r'pincode': PropertySchema(
-      id: 29,
+      id: 30,
       name: r'pincode',
       type: IsarType.string,
     ),
     r'profilePicture': PropertySchema(
-      id: 30,
+      id: 31,
       name: r'profilePicture',
       type: IsarType.string,
     ),
     r'refName': PropertySchema(
-      id: 31,
+      id: 32,
       name: r'refName',
       type: IsarType.string,
     ),
     r'referenceNo': PropertySchema(
-      id: 32,
+      id: 33,
       name: r'referenceNo',
       type: IsarType.string,
     ),
     r'registerBy': PropertySchema(
-      id: 33,
+      id: 34,
       name: r'registerBy',
       type: IsarType.long,
     ),
     r'registerDate': PropertySchema(
-      id: 34,
+      id: 35,
       name: r'registerDate',
       type: IsarType.string,
     ),
     r'registrant': PropertySchema(
-      id: 35,
+      id: 36,
       name: r'registrant',
       type: IsarType.string,
     ),
     r'state': PropertySchema(
-      id: 36,
+      id: 37,
       name: r'state',
       type: IsarType.string,
     ),
     r'status': PropertySchema(
-      id: 37,
+      id: 38,
       name: r'status',
       type: IsarType.long,
     ),
     r'transactionNo': PropertySchema(
-      id: 38,
+      id: 39,
       name: r'transactionNo',
       type: IsarType.string,
     ),
     r'userId': PropertySchema(
-      id: 39,
+      id: 40,
       name: r'userId',
       type: IsarType.string,
     ),
     r'userType': PropertySchema(
-      id: 40,
+      id: 41,
       name: r'userType',
       type: IsarType.long,
     ),
     r'votingCard': PropertySchema(
-      id: 41,
+      id: 42,
       name: r'votingCard',
       type: IsarType.string,
     ),
     r'zone': PropertySchema(
-      id: 42,
+      id: 43,
       name: r'zone',
       type: IsarType.string,
     )
@@ -238,7 +243,7 @@ const PendingBusinessMentorModelSchema = CollectionSchema(
   serialize: _pendingBusinessMentorModelSerialize,
   deserialize: _pendingBusinessMentorModelDeserialize,
   deserializeProp: _pendingBusinessMentorModelDeserializeProp,
-  idName: r'id',
+  idName: r'isarId',
   indexes: {},
   links: {},
   embeddedSchemas: {},
@@ -358,6 +363,12 @@ int _pendingBusinessMentorModelEstimateSize(
   }
   {
     final value = object.gstNo;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.id;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -511,29 +522,30 @@ void _pendingBusinessMentorModelSerialize(
   writer.writeString(offsets[17], object.firstName);
   writer.writeString(offsets[18], object.gender);
   writer.writeString(offsets[19], object.gstNo);
-  writer.writeString(offsets[20], object.kyc);
-  writer.writeString(offsets[21], object.lastName);
-  writer.writeString(offsets[22], object.name);
-  writer.writeString(offsets[23], object.nomineeName);
-  writer.writeString(offsets[24], object.nomineeRelation);
-  writer.writeString(offsets[25], object.panCard);
-  writer.writeString(offsets[26], object.paymentMode);
-  writer.writeString(offsets[27], object.paymentProof);
-  writer.writeString(offsets[28], object.phoneNumber);
-  writer.writeString(offsets[29], object.pincode);
-  writer.writeString(offsets[30], object.profilePicture);
-  writer.writeString(offsets[31], object.refName);
-  writer.writeString(offsets[32], object.referenceNo);
-  writer.writeLong(offsets[33], object.registerBy);
-  writer.writeString(offsets[34], object.registerDate);
-  writer.writeString(offsets[35], object.registrant);
-  writer.writeString(offsets[36], object.state);
-  writer.writeLong(offsets[37], object.status);
-  writer.writeString(offsets[38], object.transactionNo);
-  writer.writeString(offsets[39], object.userId);
-  writer.writeLong(offsets[40], object.userType);
-  writer.writeString(offsets[41], object.votingCard);
-  writer.writeString(offsets[42], object.zone);
+  writer.writeString(offsets[20], object.id);
+  writer.writeString(offsets[21], object.kyc);
+  writer.writeString(offsets[22], object.lastName);
+  writer.writeString(offsets[23], object.name);
+  writer.writeString(offsets[24], object.nomineeName);
+  writer.writeString(offsets[25], object.nomineeRelation);
+  writer.writeString(offsets[26], object.panCard);
+  writer.writeString(offsets[27], object.paymentMode);
+  writer.writeString(offsets[28], object.paymentProof);
+  writer.writeString(offsets[29], object.phoneNumber);
+  writer.writeString(offsets[30], object.pincode);
+  writer.writeString(offsets[31], object.profilePicture);
+  writer.writeString(offsets[32], object.refName);
+  writer.writeString(offsets[33], object.referenceNo);
+  writer.writeLong(offsets[34], object.registerBy);
+  writer.writeString(offsets[35], object.registerDate);
+  writer.writeString(offsets[36], object.registrant);
+  writer.writeString(offsets[37], object.state);
+  writer.writeLong(offsets[38], object.status);
+  writer.writeString(offsets[39], object.transactionNo);
+  writer.writeString(offsets[40], object.userId);
+  writer.writeLong(offsets[41], object.userType);
+  writer.writeString(offsets[42], object.votingCard);
+  writer.writeString(offsets[43], object.zone);
 }
 
 PendingBusinessMentorModel _pendingBusinessMentorModelDeserialize(
@@ -563,30 +575,31 @@ PendingBusinessMentorModel _pendingBusinessMentorModelDeserialize(
   object.firstName = reader.readStringOrNull(offsets[17]);
   object.gender = reader.readStringOrNull(offsets[18]);
   object.gstNo = reader.readStringOrNull(offsets[19]);
-  object.id = id;
-  object.kyc = reader.readStringOrNull(offsets[20]);
-  object.lastName = reader.readStringOrNull(offsets[21]);
-  object.name = reader.readStringOrNull(offsets[22]);
-  object.nomineeName = reader.readStringOrNull(offsets[23]);
-  object.nomineeRelation = reader.readStringOrNull(offsets[24]);
-  object.panCard = reader.readStringOrNull(offsets[25]);
-  object.paymentMode = reader.readStringOrNull(offsets[26]);
-  object.paymentProof = reader.readStringOrNull(offsets[27]);
-  object.phoneNumber = reader.readStringOrNull(offsets[28]);
-  object.pincode = reader.readStringOrNull(offsets[29]);
-  object.profilePicture = reader.readStringOrNull(offsets[30]);
-  object.refName = reader.readStringOrNull(offsets[31]);
-  object.referenceNo = reader.readStringOrNull(offsets[32]);
-  object.registerBy = reader.readLongOrNull(offsets[33]);
-  object.registerDate = reader.readStringOrNull(offsets[34]);
-  object.registrant = reader.readStringOrNull(offsets[35]);
-  object.state = reader.readStringOrNull(offsets[36]);
-  object.status = reader.readLongOrNull(offsets[37]);
-  object.transactionNo = reader.readStringOrNull(offsets[38]);
-  object.userId = reader.readStringOrNull(offsets[39]);
-  object.userType = reader.readLongOrNull(offsets[40]);
-  object.votingCard = reader.readStringOrNull(offsets[41]);
-  object.zone = reader.readStringOrNull(offsets[42]);
+  object.id = reader.readStringOrNull(offsets[20]);
+  object.isarId = id;
+  object.kyc = reader.readStringOrNull(offsets[21]);
+  object.lastName = reader.readStringOrNull(offsets[22]);
+  object.name = reader.readStringOrNull(offsets[23]);
+  object.nomineeName = reader.readStringOrNull(offsets[24]);
+  object.nomineeRelation = reader.readStringOrNull(offsets[25]);
+  object.panCard = reader.readStringOrNull(offsets[26]);
+  object.paymentMode = reader.readStringOrNull(offsets[27]);
+  object.paymentProof = reader.readStringOrNull(offsets[28]);
+  object.phoneNumber = reader.readStringOrNull(offsets[29]);
+  object.pincode = reader.readStringOrNull(offsets[30]);
+  object.profilePicture = reader.readStringOrNull(offsets[31]);
+  object.refName = reader.readStringOrNull(offsets[32]);
+  object.referenceNo = reader.readStringOrNull(offsets[33]);
+  object.registerBy = reader.readLongOrNull(offsets[34]);
+  object.registerDate = reader.readStringOrNull(offsets[35]);
+  object.registrant = reader.readStringOrNull(offsets[36]);
+  object.state = reader.readStringOrNull(offsets[37]);
+  object.status = reader.readLongOrNull(offsets[38]);
+  object.transactionNo = reader.readStringOrNull(offsets[39]);
+  object.userId = reader.readStringOrNull(offsets[40]);
+  object.userType = reader.readLongOrNull(offsets[41]);
+  object.votingCard = reader.readStringOrNull(offsets[42]);
+  object.zone = reader.readStringOrNull(offsets[43]);
   return object;
 }
 
@@ -664,24 +677,26 @@ P _pendingBusinessMentorModelDeserializeProp<P>(
     case 32:
       return (reader.readStringOrNull(offset)) as P;
     case 33:
-      return (reader.readLongOrNull(offset)) as P;
-    case 34:
       return (reader.readStringOrNull(offset)) as P;
+    case 34:
+      return (reader.readLongOrNull(offset)) as P;
     case 35:
       return (reader.readStringOrNull(offset)) as P;
     case 36:
       return (reader.readStringOrNull(offset)) as P;
     case 37:
-      return (reader.readLongOrNull(offset)) as P;
-    case 38:
       return (reader.readStringOrNull(offset)) as P;
+    case 38:
+      return (reader.readLongOrNull(offset)) as P;
     case 39:
       return (reader.readStringOrNull(offset)) as P;
     case 40:
-      return (reader.readLongOrNull(offset)) as P;
-    case 41:
       return (reader.readStringOrNull(offset)) as P;
+    case 41:
+      return (reader.readLongOrNull(offset)) as P;
     case 42:
+      return (reader.readStringOrNull(offset)) as P;
+    case 43:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -689,7 +704,7 @@ P _pendingBusinessMentorModelDeserializeProp<P>(
 }
 
 Id _pendingBusinessMentorModelGetId(PendingBusinessMentorModel object) {
-  return object.id ?? Isar.autoIncrement;
+  return object.isarId;
 }
 
 List<IsarLinkBase<dynamic>> _pendingBusinessMentorModelGetLinks(
@@ -699,13 +714,13 @@ List<IsarLinkBase<dynamic>> _pendingBusinessMentorModelGetLinks(
 
 void _pendingBusinessMentorModelAttach(
     IsarCollection<dynamic> col, Id id, PendingBusinessMentorModel object) {
-  object.id = id;
+  object.isarId = id;
 }
 
 extension PendingBusinessMentorModelQueryWhereSort on QueryBuilder<
     PendingBusinessMentorModel, PendingBusinessMentorModel, QWhere> {
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QAfterWhere> anyId() {
+      QAfterWhere> anyIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
@@ -715,68 +730,68 @@ extension PendingBusinessMentorModelQueryWhereSort on QueryBuilder<
 extension PendingBusinessMentorModelQueryWhere on QueryBuilder<
     PendingBusinessMentorModel, PendingBusinessMentorModel, QWhereClause> {
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QAfterWhereClause> idEqualTo(Id id) {
+      QAfterWhereClause> isarIdEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
+        lower: isarId,
+        upper: isarId,
       ));
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QAfterWhereClause> idNotEqualTo(Id id) {
+      QAfterWhereClause> isarIdNotEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
+              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
             )
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
+              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
             );
       } else {
         return query
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
+              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
             )
             .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
+              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
             );
       }
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
+      QAfterWhereClause> isarIdGreaterThan(Id isarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
+        IdWhereClause.greaterThan(lower: isarId, includeLower: include),
       );
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
+      QAfterWhereClause> isarIdLessThan(Id isarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
+        IdWhereClause.lessThan(upper: isarId, includeUpper: include),
       );
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QAfterWhereClause> idBetween(
-    Id lowerId,
-    Id upperId, {
+      QAfterWhereClause> isarIdBetween(
+    Id lowerIsarId,
+    Id upperIsarId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
+        lower: lowerIsarId,
         includeLower: includeLower,
-        upper: upperId,
+        upper: upperIsarId,
         includeUpper: includeUpper,
       ));
     });
@@ -3760,53 +3775,191 @@ extension PendingBusinessMentorModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
-      QAfterFilterCondition> idEqualTo(Id? value) {
+      QAfterFilterCondition> idEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> idGreaterThan(
-    Id? value, {
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> idLessThan(
-    Id? value, {
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterFilterCondition> idBetween(
-    Id? lower,
-    Id? upper, {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> idStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> idEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      idContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+          QAfterFilterCondition>
+      idMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'id',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> idIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> idIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'id',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> isarIdEqualTo(Id value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> isarIdGreaterThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> isarIdLessThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterFilterCondition> isarIdBetween(
+    Id lower,
+    Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
+        property: r'isarId',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -7447,6 +7600,20 @@ extension PendingBusinessMentorModelQuerySortBy on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> sortByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterSortBy> sortByKyc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'kyc', Sort.asc);
@@ -8066,6 +8233,20 @@ extension PendingBusinessMentorModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByIsarId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isarId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QAfterSortBy> thenByIsarIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isarId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QAfterSortBy> thenByKyc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'kyc', Sort.asc);
@@ -8531,6 +8712,13 @@ extension PendingBusinessMentorModelQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
+      QDistinct> distinctById({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'id', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, PendingBusinessMentorModel,
       QDistinct> distinctByKyc({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'kyc', caseSensitive: caseSensitive);
@@ -8697,9 +8885,10 @@ extension PendingBusinessMentorModelQueryWhereDistinct on QueryBuilder<
 
 extension PendingBusinessMentorModelQueryProperty on QueryBuilder<
     PendingBusinessMentorModel, PendingBusinessMentorModel, QQueryProperty> {
-  QueryBuilder<PendingBusinessMentorModel, int, QQueryOperations> idProperty() {
+  QueryBuilder<PendingBusinessMentorModel, int, QQueryOperations>
+      isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
+      return query.addPropertyName(r'isarId');
     });
   }
 
@@ -8840,6 +9029,13 @@ extension PendingBusinessMentorModelQueryProperty on QueryBuilder<
       gstNoProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'gstNo');
+    });
+  }
+
+  QueryBuilder<PendingBusinessMentorModel, String?, QQueryOperations>
+      idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
     });
   }
 

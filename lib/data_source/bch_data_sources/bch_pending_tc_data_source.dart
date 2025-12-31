@@ -207,7 +207,7 @@ class BchPendingTcDataSource extends DataTableSource {
                 onTap: () {
                   Logger.warning(
                       '------------ Delete ${technoEnterprise.name}------------');
-                  deleteTechnoEnterprise(technoEnterprise.id!);
+                  deleteTechnoEnterprise(technoEnterprise.id! as Id);
                 },
               ),
             ),
@@ -240,7 +240,7 @@ class BchPendingTcDataSource extends DataTableSource {
                   // restoreEmployee(technoEnterprise.id);
                   // Implement your restore logic here
                   // You can change the technoEnterprise's status back to 1 or another status value
-                  restoreTechnoEnterprise(technoEnterprise.id!);
+                  restoreTechnoEnterprise(technoEnterprise.id! as Id);
                 },
               ),
             ),

@@ -63,53 +63,58 @@ const RegisteredEmployeeModelSchema = CollectionSchema(
       name: r'gender',
       type: IsarType.string,
     ),
-    r'idProof': PropertySchema(
+    r'id': PropertySchema(
       id: 9,
+      name: r'id',
+      type: IsarType.string,
+    ),
+    r'idProof': PropertySchema(
+      id: 10,
       name: r'idProof',
       type: IsarType.string,
     ),
     r'mobileNumber': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'mobileNumber',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'name',
       type: IsarType.string,
     ),
     r'profilePicture': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'profilePicture',
       type: IsarType.string,
     ),
     r'regId': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'regId',
       type: IsarType.string,
     ),
     r'reportingManager': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'reportingManager',
       type: IsarType.string,
     ),
     r'reportingManagerName': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'reportingManagerName',
       type: IsarType.string,
     ),
     r'status': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'status',
       type: IsarType.long,
     ),
     r'userType': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'userType',
       type: IsarType.string,
     ),
     r'zone': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'zone',
       type: IsarType.string,
     )
@@ -118,7 +123,7 @@ const RegisteredEmployeeModelSchema = CollectionSchema(
   serialize: _registeredEmployeeModelSerialize,
   deserialize: _registeredEmployeeModelDeserialize,
   deserializeProp: _registeredEmployeeModelDeserializeProp,
-  idName: r'id',
+  idName: r'isarId',
   indexes: {},
   links: {},
   embeddedSchemas: {},
@@ -184,6 +189,12 @@ int _registeredEmployeeModelEstimateSize(
   }
   {
     final value = object.gender;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.id;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -260,16 +271,17 @@ void _registeredEmployeeModelSerialize(
   writer.writeString(offsets[6], object.designation);
   writer.writeString(offsets[7], object.email);
   writer.writeString(offsets[8], object.gender);
-  writer.writeString(offsets[9], object.idProof);
-  writer.writeString(offsets[10], object.mobileNumber);
-  writer.writeString(offsets[11], object.name);
-  writer.writeString(offsets[12], object.profilePicture);
-  writer.writeString(offsets[13], object.regId);
-  writer.writeString(offsets[14], object.reportingManager);
-  writer.writeString(offsets[15], object.reportingManagerName);
-  writer.writeLong(offsets[16], object.status);
-  writer.writeString(offsets[17], object.userType);
-  writer.writeString(offsets[18], object.zone);
+  writer.writeString(offsets[9], object.id);
+  writer.writeString(offsets[10], object.idProof);
+  writer.writeString(offsets[11], object.mobileNumber);
+  writer.writeString(offsets[12], object.name);
+  writer.writeString(offsets[13], object.profilePicture);
+  writer.writeString(offsets[14], object.regId);
+  writer.writeString(offsets[15], object.reportingManager);
+  writer.writeString(offsets[16], object.reportingManagerName);
+  writer.writeLong(offsets[17], object.status);
+  writer.writeString(offsets[18], object.userType);
+  writer.writeString(offsets[19], object.zone);
 }
 
 RegisteredEmployeeModel _registeredEmployeeModelDeserialize(
@@ -288,17 +300,18 @@ RegisteredEmployeeModel _registeredEmployeeModelDeserialize(
   object.designation = reader.readStringOrNull(offsets[6]);
   object.email = reader.readStringOrNull(offsets[7]);
   object.gender = reader.readStringOrNull(offsets[8]);
-  object.id = id;
-  object.idProof = reader.readStringOrNull(offsets[9]);
-  object.mobileNumber = reader.readStringOrNull(offsets[10]);
-  object.name = reader.readStringOrNull(offsets[11]);
-  object.profilePicture = reader.readStringOrNull(offsets[12]);
-  object.regId = reader.readStringOrNull(offsets[13]);
-  object.reportingManager = reader.readStringOrNull(offsets[14]);
-  object.reportingManagerName = reader.readStringOrNull(offsets[15]);
-  object.status = reader.readLongOrNull(offsets[16]);
-  object.userType = reader.readStringOrNull(offsets[17]);
-  object.zone = reader.readStringOrNull(offsets[18]);
+  object.id = reader.readStringOrNull(offsets[9]);
+  object.idProof = reader.readStringOrNull(offsets[10]);
+  object.isarId = id;
+  object.mobileNumber = reader.readStringOrNull(offsets[11]);
+  object.name = reader.readStringOrNull(offsets[12]);
+  object.profilePicture = reader.readStringOrNull(offsets[13]);
+  object.regId = reader.readStringOrNull(offsets[14]);
+  object.reportingManager = reader.readStringOrNull(offsets[15]);
+  object.reportingManagerName = reader.readStringOrNull(offsets[16]);
+  object.status = reader.readLongOrNull(offsets[17]);
+  object.userType = reader.readStringOrNull(offsets[18]);
+  object.zone = reader.readStringOrNull(offsets[19]);
   return object;
 }
 
@@ -342,10 +355,12 @@ P _registeredEmployeeModelDeserializeProp<P>(
     case 15:
       return (reader.readStringOrNull(offset)) as P;
     case 16:
-      return (reader.readLongOrNull(offset)) as P;
-    case 17:
       return (reader.readStringOrNull(offset)) as P;
+    case 17:
+      return (reader.readLongOrNull(offset)) as P;
     case 18:
+      return (reader.readStringOrNull(offset)) as P;
+    case 19:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -353,7 +368,7 @@ P _registeredEmployeeModelDeserializeProp<P>(
 }
 
 Id _registeredEmployeeModelGetId(RegisteredEmployeeModel object) {
-  return object.id ?? Isar.autoIncrement;
+  return object.isarId;
 }
 
 List<IsarLinkBase<dynamic>> _registeredEmployeeModelGetLinks(
@@ -363,13 +378,13 @@ List<IsarLinkBase<dynamic>> _registeredEmployeeModelGetLinks(
 
 void _registeredEmployeeModelAttach(
     IsarCollection<dynamic> col, Id id, RegisteredEmployeeModel object) {
-  object.id = id;
+  object.isarId = id;
 }
 
 extension RegisteredEmployeeModelQueryWhereSort
     on QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QWhere> {
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterWhere>
-      anyId() {
+      anyIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
@@ -379,68 +394,68 @@ extension RegisteredEmployeeModelQueryWhereSort
 extension RegisteredEmployeeModelQueryWhere on QueryBuilder<
     RegisteredEmployeeModel, RegisteredEmployeeModel, QWhereClause> {
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
-      QAfterWhereClause> idEqualTo(Id id) {
+      QAfterWhereClause> isarIdEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
+        lower: isarId,
+        upper: isarId,
       ));
     });
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
-      QAfterWhereClause> idNotEqualTo(Id id) {
+      QAfterWhereClause> isarIdNotEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
+              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
             )
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
+              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
             );
       } else {
         return query
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
+              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
             )
             .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
+              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
             );
       }
     });
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
-      QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
+      QAfterWhereClause> isarIdGreaterThan(Id isarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
+        IdWhereClause.greaterThan(lower: isarId, includeLower: include),
       );
     });
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
-      QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
+      QAfterWhereClause> isarIdLessThan(Id isarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
+        IdWhereClause.lessThan(upper: isarId, includeUpper: include),
       );
     });
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
-      QAfterWhereClause> idBetween(
-    Id lowerId,
-    Id upperId, {
+      QAfterWhereClause> isarIdBetween(
+    Id lowerIsarId,
+    Id upperIsarId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
+        lower: lowerIsarId,
         includeLower: includeLower,
-        upper: upperId,
+        upper: upperIsarId,
         includeUpper: includeUpper,
       ));
     });
@@ -1872,49 +1887,58 @@ extension RegisteredEmployeeModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
-      QAfterFilterCondition> idEqualTo(Id? value) {
+      QAfterFilterCondition> idEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
       QAfterFilterCondition> idGreaterThan(
-    Id? value, {
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
       QAfterFilterCondition> idLessThan(
-    Id? value, {
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
       QAfterFilterCondition> idBetween(
-    Id? lower,
-    Id? upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -1923,6 +1947,79 @@ extension RegisteredEmployeeModelQueryFilter on QueryBuilder<
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> idStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> idEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+          QAfterFilterCondition>
+      idContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+          QAfterFilterCondition>
+      idMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'id',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> idIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> idIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'id',
+        value: '',
       ));
     });
   }
@@ -2079,6 +2176,62 @@ extension RegisteredEmployeeModelQueryFilter on QueryBuilder<
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'idProof',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> isarIdEqualTo(Id value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> isarIdGreaterThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> isarIdLessThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel,
+      QAfterFilterCondition> isarIdBetween(
+    Id lower,
+    Id upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'isarId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -3541,6 +3694,20 @@ extension RegisteredEmployeeModelQuerySortBy
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      sortById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      sortByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
       sortByIdProof() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'idProof', Sort.asc);
@@ -3838,6 +4005,20 @@ extension RegisteredEmployeeModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      thenByIsarId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isarId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
+      thenByIsarIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isarId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QAfterSortBy>
       thenByMobileNumber() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'mobileNumber', Sort.asc);
@@ -4031,6 +4212,13 @@ extension RegisteredEmployeeModelQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QDistinct>
+      distinctById({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'id', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, RegisteredEmployeeModel, QDistinct>
       distinctByIdProof({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'idProof', caseSensitive: caseSensitive);
@@ -4106,9 +4294,10 @@ extension RegisteredEmployeeModelQueryWhereDistinct on QueryBuilder<
 
 extension RegisteredEmployeeModelQueryProperty on QueryBuilder<
     RegisteredEmployeeModel, RegisteredEmployeeModel, QQueryProperty> {
-  QueryBuilder<RegisteredEmployeeModel, int, QQueryOperations> idProperty() {
+  QueryBuilder<RegisteredEmployeeModel, int, QQueryOperations>
+      isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
+      return query.addPropertyName(r'isarId');
     });
   }
 
@@ -4172,6 +4361,13 @@ extension RegisteredEmployeeModelQueryProperty on QueryBuilder<
       genderProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'gender');
+    });
+  }
+
+  QueryBuilder<RegisteredEmployeeModel, String?, QQueryOperations>
+      idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
     });
   }
 

@@ -398,7 +398,7 @@ class AdminBusniessMentorController extends ChangeNotifier {
       Map<String, dynamic> json) {
     try {
       final businessMentor = PendingBusinessMentorModel()
-        ..id = parseIntSafely(json['id'])
+        ..id = parseIntSafely(json['id']) as String?
         ..designation = json['designation']
         ..name = '${json['firstname'] ?? ''} ${json['lastname'] ?? ''}'.trim()
         ..firstName = json['firstname']

@@ -501,7 +501,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         paidAmount = '35,000';
       }
 
-      final int id = widget.pendingCustomer!.id!;
+      final String id = widget.pendingCustomer!.id!;
       final updatedCustomer = PendingCustomer()
         ..id = id
         ..taReferenceNo = _taRefrenceIdController.text

@@ -4,7 +4,9 @@ part 'pending_business_mentor_model.g.dart';
 
 @collection
 class PendingBusinessMentorModel {
-  Id? id = Isar.autoIncrement;
+  Id isarId = Isar.autoIncrement; // ✅ REQUIRED
+
+  String? id; // backend ID (string, web-safe)
   String? designation;
   String? userId;
   String? refName;

@@ -102,7 +102,7 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
         DateFormat('dd-MM-yyyy').parse(_dateController.text),
       );
       Logger.success('formatted date:: $formattedDate');
-      final int? id = widget.pendingTechnoEnterprise!.id;
+      final String? id = widget.pendingTechnoEnterprise!.id;
       final PendingTechnoEnterpriseModel updateTechnoEnterprise =
           PendingTechnoEnterpriseModel()
             ..id = id
@@ -133,7 +133,7 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
             ..votingCard = documentPaths['votingCard']
             ..paymentProof = documentPaths['paymentProof'];
 
-      final updated = await _isarService.update(updateTechnoEnterprise, id!);
+      final updated = await _isarService.update(updateTechnoEnterprise, id! as int);
       Logger.success('Updating the techno enterprise was : $updated');
     } catch (e) {
       Logger.error('Error updating pending techno enterprise: $e');

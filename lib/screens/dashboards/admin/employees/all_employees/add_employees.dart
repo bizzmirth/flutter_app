@@ -504,7 +504,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         Logger.success(
             'Images Path: $profilePicturePath :: $idProofPath :: $bankDetailsPath');
 
-        final int? id = widget.pendingEmployee!.id;
+        final String? id = widget.pendingEmployee!.id;
         final PendingEmployeeModel updatePendingEmployee =
             PendingEmployeeModel()
               ..id = id
@@ -526,7 +526,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               ..bankDetails = bankDetailsPath;
 
         final updated = await _isarService.update<PendingEmployeeModel>(
-            updatePendingEmployee, id!);
+            updatePendingEmployee, id! as int);
         if (updated) {
           final apiUpdate = await employeeController
               .updatePendingEmployees(updatePendingEmployee);
@@ -569,7 +569,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               'passbook', selectedFiles['Bank Details']!.path);
           bankDetailsPath = selectedFiles['Bank Details']!.path;
         }
-        final int? id = widget.registerEmployee!.id;
+        final String? id = widget.registerEmployee!.id;
         Logger.success(
             'Date of joining and date of birth $dobForApi $dojForApi');
         final RegisteredEmployeeModel updateRegisteredEmployee =
@@ -594,7 +594,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               ..bankDetails = bankDetailsPath;
 
         final updated = await _isarService.update<RegisteredEmployeeModel>(
-            updateRegisteredEmployee, id!);
+            updateRegisteredEmployee, id! as int);
 
         Logger.warning(':::::$updated');
         if (updated) {

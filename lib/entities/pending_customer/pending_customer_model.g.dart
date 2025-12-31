@@ -127,118 +127,128 @@ const PendingCustomerSchema = CollectionSchema(
       name: r'gender',
       type: IsarType.string,
     ),
-    r'lastname': PropertySchema(
+    r'id': PropertySchema(
       id: 22,
+      name: r'id',
+      type: IsarType.string,
+    ),
+    r'lastname': PropertySchema(
+      id: 23,
       name: r'lastname',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'name',
       type: IsarType.string,
     ),
     r'nomineeName': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'nomineeName',
       type: IsarType.string,
     ),
     r'nomineeRelation': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'nomineeRelation',
       type: IsarType.string,
     ),
     r'note': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'note',
       type: IsarType.string,
     ),
     r'paidAmount': PropertySchema(
-      id: 27,
+      id: 28,
       name: r'paidAmount',
       type: IsarType.string,
     ),
     r'panCard': PropertySchema(
-      id: 28,
+      id: 29,
       name: r'panCard',
       type: IsarType.string,
     ),
     r'paymentMode': PropertySchema(
-      id: 29,
+      id: 30,
       name: r'paymentMode',
       type: IsarType.string,
     ),
     r'paymentProof': PropertySchema(
-      id: 30,
+      id: 31,
       name: r'paymentProof',
       type: IsarType.string,
     ),
     r'phoneNumber': PropertySchema(
-      id: 31,
+      id: 32,
       name: r'phoneNumber',
       type: IsarType.string,
     ),
     r'pincode': PropertySchema(
-      id: 32,
+      id: 33,
       name: r'pincode',
       type: IsarType.string,
     ),
     r'profilePicture': PropertySchema(
-      id: 33,
+      id: 34,
       name: r'profilePicture',
       type: IsarType.string,
     ),
     r'referenceNo': PropertySchema(
-      id: 34,
+      id: 35,
       name: r'referenceNo',
       type: IsarType.string,
     ),
     r'registerBy': PropertySchema(
-      id: 35,
+      id: 36,
       name: r'registerBy',
       type: IsarType.string,
     ),
     r'registerDate': PropertySchema(
-      id: 36,
+      id: 37,
       name: r'registerDate',
       type: IsarType.string,
     ),
     r'registrant': PropertySchema(
-      id: 37,
+      id: 38,
       name: r'registrant',
       type: IsarType.string,
     ),
     r'state': PropertySchema(
-      id: 38,
+      id: 39,
       name: r'state',
       type: IsarType.string,
     ),
     r'status': PropertySchema(
-      id: 39,
+      id: 40,
       name: r'status',
       type: IsarType.string,
     ),
+    r'taReference': PropertySchema(
+      id: 41,
+      name: r'taReference',
+      type: IsarType.string,
+    ),
     r'taReferenceName': PropertySchema(
-      id: 40,
+      id: 42,
       name: r'taReferenceName',
       type: IsarType.string,
     ),
     r'taReferenceNo': PropertySchema(
-      id: 41,
+      id: 43,
       name: r'taReferenceNo',
       type: IsarType.string,
     ),
     r'transactionNo': PropertySchema(
-      id: 42,
+      id: 44,
       name: r'transactionNo',
       type: IsarType.string,
     ),
     r'userType': PropertySchema(
-      id: 43,
+      id: 45,
       name: r'userType',
       type: IsarType.string,
     ),
     r'votingCard': PropertySchema(
-      id: 44,
+      id: 46,
       name: r'votingCard',
       type: IsarType.string,
     )
@@ -247,7 +257,7 @@ const PendingCustomerSchema = CollectionSchema(
   serialize: _pendingCustomerSerialize,
   deserialize: _pendingCustomerDeserialize,
   deserializeProp: _pendingCustomerDeserializeProp,
-  idName: r'id',
+  idName: r'isarId',
   indexes: {},
   links: {},
   embeddedSchemas: {},
@@ -396,6 +406,12 @@ int _pendingCustomerEstimateSize(
     }
   }
   {
+    final value = object.id;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.lastname;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -504,6 +520,12 @@ int _pendingCustomerEstimateSize(
     }
   }
   {
+    final value = object.taReference;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.taReferenceName;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -564,29 +586,31 @@ void _pendingCustomerSerialize(
   writer.writeString(offsets[19], object.email);
   writer.writeString(offsets[20], object.firstname);
   writer.writeString(offsets[21], object.gender);
-  writer.writeString(offsets[22], object.lastname);
-  writer.writeString(offsets[23], object.name);
-  writer.writeString(offsets[24], object.nomineeName);
-  writer.writeString(offsets[25], object.nomineeRelation);
-  writer.writeString(offsets[26], object.note);
-  writer.writeString(offsets[27], object.paidAmount);
-  writer.writeString(offsets[28], object.panCard);
-  writer.writeString(offsets[29], object.paymentMode);
-  writer.writeString(offsets[30], object.paymentProof);
-  writer.writeString(offsets[31], object.phoneNumber);
-  writer.writeString(offsets[32], object.pincode);
-  writer.writeString(offsets[33], object.profilePicture);
-  writer.writeString(offsets[34], object.referenceNo);
-  writer.writeString(offsets[35], object.registerBy);
-  writer.writeString(offsets[36], object.registerDate);
-  writer.writeString(offsets[37], object.registrant);
-  writer.writeString(offsets[38], object.state);
-  writer.writeString(offsets[39], object.status);
-  writer.writeString(offsets[40], object.taReferenceName);
-  writer.writeString(offsets[41], object.taReferenceNo);
-  writer.writeString(offsets[42], object.transactionNo);
-  writer.writeString(offsets[43], object.userType);
-  writer.writeString(offsets[44], object.votingCard);
+  writer.writeString(offsets[22], object.id);
+  writer.writeString(offsets[23], object.lastname);
+  writer.writeString(offsets[24], object.name);
+  writer.writeString(offsets[25], object.nomineeName);
+  writer.writeString(offsets[26], object.nomineeRelation);
+  writer.writeString(offsets[27], object.note);
+  writer.writeString(offsets[28], object.paidAmount);
+  writer.writeString(offsets[29], object.panCard);
+  writer.writeString(offsets[30], object.paymentMode);
+  writer.writeString(offsets[31], object.paymentProof);
+  writer.writeString(offsets[32], object.phoneNumber);
+  writer.writeString(offsets[33], object.pincode);
+  writer.writeString(offsets[34], object.profilePicture);
+  writer.writeString(offsets[35], object.referenceNo);
+  writer.writeString(offsets[36], object.registerBy);
+  writer.writeString(offsets[37], object.registerDate);
+  writer.writeString(offsets[38], object.registrant);
+  writer.writeString(offsets[39], object.state);
+  writer.writeString(offsets[40], object.status);
+  writer.writeString(offsets[41], object.taReference);
+  writer.writeString(offsets[42], object.taReferenceName);
+  writer.writeString(offsets[43], object.taReferenceNo);
+  writer.writeString(offsets[44], object.transactionNo);
+  writer.writeString(offsets[45], object.userType);
+  writer.writeString(offsets[46], object.votingCard);
 }
 
 PendingCustomer _pendingCustomerDeserialize(
@@ -618,30 +642,32 @@ PendingCustomer _pendingCustomerDeserialize(
   object.email = reader.readStringOrNull(offsets[19]);
   object.firstname = reader.readStringOrNull(offsets[20]);
   object.gender = reader.readStringOrNull(offsets[21]);
-  object.id = id;
-  object.lastname = reader.readStringOrNull(offsets[22]);
-  object.name = reader.readStringOrNull(offsets[23]);
-  object.nomineeName = reader.readStringOrNull(offsets[24]);
-  object.nomineeRelation = reader.readStringOrNull(offsets[25]);
-  object.note = reader.readStringOrNull(offsets[26]);
-  object.paidAmount = reader.readStringOrNull(offsets[27]);
-  object.panCard = reader.readStringOrNull(offsets[28]);
-  object.paymentMode = reader.readStringOrNull(offsets[29]);
-  object.paymentProof = reader.readStringOrNull(offsets[30]);
-  object.phoneNumber = reader.readStringOrNull(offsets[31]);
-  object.pincode = reader.readStringOrNull(offsets[32]);
-  object.profilePicture = reader.readStringOrNull(offsets[33]);
-  object.referenceNo = reader.readStringOrNull(offsets[34]);
-  object.registerBy = reader.readStringOrNull(offsets[35]);
-  object.registerDate = reader.readStringOrNull(offsets[36]);
-  object.registrant = reader.readStringOrNull(offsets[37]);
-  object.state = reader.readStringOrNull(offsets[38]);
-  object.status = reader.readStringOrNull(offsets[39]);
-  object.taReferenceName = reader.readStringOrNull(offsets[40]);
-  object.taReferenceNo = reader.readStringOrNull(offsets[41]);
-  object.transactionNo = reader.readStringOrNull(offsets[42]);
-  object.userType = reader.readStringOrNull(offsets[43]);
-  object.votingCard = reader.readStringOrNull(offsets[44]);
+  object.id = reader.readStringOrNull(offsets[22]);
+  object.isarId = id;
+  object.lastname = reader.readStringOrNull(offsets[23]);
+  object.name = reader.readStringOrNull(offsets[24]);
+  object.nomineeName = reader.readStringOrNull(offsets[25]);
+  object.nomineeRelation = reader.readStringOrNull(offsets[26]);
+  object.note = reader.readStringOrNull(offsets[27]);
+  object.paidAmount = reader.readStringOrNull(offsets[28]);
+  object.panCard = reader.readStringOrNull(offsets[29]);
+  object.paymentMode = reader.readStringOrNull(offsets[30]);
+  object.paymentProof = reader.readStringOrNull(offsets[31]);
+  object.phoneNumber = reader.readStringOrNull(offsets[32]);
+  object.pincode = reader.readStringOrNull(offsets[33]);
+  object.profilePicture = reader.readStringOrNull(offsets[34]);
+  object.referenceNo = reader.readStringOrNull(offsets[35]);
+  object.registerBy = reader.readStringOrNull(offsets[36]);
+  object.registerDate = reader.readStringOrNull(offsets[37]);
+  object.registrant = reader.readStringOrNull(offsets[38]);
+  object.state = reader.readStringOrNull(offsets[39]);
+  object.status = reader.readStringOrNull(offsets[40]);
+  object.taReference = reader.readStringOrNull(offsets[41]);
+  object.taReferenceName = reader.readStringOrNull(offsets[42]);
+  object.taReferenceNo = reader.readStringOrNull(offsets[43]);
+  object.transactionNo = reader.readStringOrNull(offsets[44]);
+  object.userType = reader.readStringOrNull(offsets[45]);
+  object.votingCard = reader.readStringOrNull(offsets[46]);
   return object;
 }
 
@@ -742,13 +768,17 @@ P _pendingCustomerDeserializeProp<P>(
       return (reader.readStringOrNull(offset)) as P;
     case 44:
       return (reader.readStringOrNull(offset)) as P;
+    case 45:
+      return (reader.readStringOrNull(offset)) as P;
+    case 46:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
 Id _pendingCustomerGetId(PendingCustomer object) {
-  return object.id ?? Isar.autoIncrement;
+  return object.isarId;
 }
 
 List<IsarLinkBase<dynamic>> _pendingCustomerGetLinks(PendingCustomer object) {
@@ -757,12 +787,12 @@ List<IsarLinkBase<dynamic>> _pendingCustomerGetLinks(PendingCustomer object) {
 
 void _pendingCustomerAttach(
     IsarCollection<dynamic> col, Id id, PendingCustomer object) {
-  object.id = id;
+  object.isarId = id;
 }
 
 extension PendingCustomerQueryWhereSort
     on QueryBuilder<PendingCustomer, PendingCustomer, QWhere> {
-  QueryBuilder<PendingCustomer, PendingCustomer, QAfterWhere> anyId() {
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterWhere> anyIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
@@ -771,69 +801,69 @@ extension PendingCustomerQueryWhereSort
 
 extension PendingCustomerQueryWhere
     on QueryBuilder<PendingCustomer, PendingCustomer, QWhereClause> {
-  QueryBuilder<PendingCustomer, PendingCustomer, QAfterWhereClause> idEqualTo(
-      Id id) {
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterWhereClause>
+      isarIdEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
+        lower: isarId,
+        upper: isarId,
       ));
     });
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterWhereClause>
-      idNotEqualTo(Id id) {
+      isarIdNotEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
+              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
             )
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
+              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
             );
       } else {
         return query
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
+              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
             )
             .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
+              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
             );
       }
     });
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterWhereClause>
-      idGreaterThan(Id id, {bool include = false}) {
+      isarIdGreaterThan(Id isarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
+        IdWhereClause.greaterThan(lower: isarId, includeLower: include),
       );
     });
   }
 
-  QueryBuilder<PendingCustomer, PendingCustomer, QAfterWhereClause> idLessThan(
-      Id id,
-      {bool include = false}) {
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterWhereClause>
+      isarIdLessThan(Id isarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
+        IdWhereClause.lessThan(upper: isarId, includeUpper: include),
       );
     });
   }
 
-  QueryBuilder<PendingCustomer, PendingCustomer, QAfterWhereClause> idBetween(
-    Id lowerId,
-    Id upperId, {
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterWhereClause>
+      isarIdBetween(
+    Id lowerIsarId,
+    Id upperIsarId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
+        lower: lowerIsarId,
         includeLower: includeLower,
-        upper: upperId,
+        upper: upperIsarId,
         includeUpper: includeUpper,
       ));
     });
@@ -4249,53 +4279,189 @@ extension PendingCustomerQueryFilter
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
-      idEqualTo(Id? value) {
+      idEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
       idGreaterThan(
-    Id? value, {
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
       idLessThan(
-    Id? value, {
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'id',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
       idBetween(
-    Id? lower,
-    Id? upper, {
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      idStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      idEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      idContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      idMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'id',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      idIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      idIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'id',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      isarIdEqualTo(Id value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      isarIdGreaterThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      isarIdLessThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'isarId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      isarIdBetween(
+    Id lower,
+    Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
+        property: r'isarId',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -7077,6 +7243,160 @@ extension PendingCustomerQueryFilter
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'taReference',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'taReference',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'taReference',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'taReference',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'taReference',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'taReference',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
       taReferenceNameIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -8152,6 +8472,18 @@ extension PendingCustomerQuerySortBy
     });
   }
 
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy> sortById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy> sortByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
       sortByLastname() {
     return QueryBuilder.apply(this, (query) {
@@ -8395,6 +8727,20 @@ extension PendingCustomerQuerySortBy
       sortByStatusDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'status', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
+      sortByTaReference() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taReference', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
+      sortByTaReferenceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taReference', Sort.desc);
     });
   }
 
@@ -8780,6 +9126,19 @@ extension PendingCustomerQuerySortThenBy
     });
   }
 
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy> thenByIsarId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isarId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
+      thenByIsarIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isarId', Sort.desc);
+    });
+  }
+
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
       thenByLastname() {
     return QueryBuilder.apply(this, (query) {
@@ -9027,6 +9386,20 @@ extension PendingCustomerQuerySortThenBy
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
+      thenByTaReference() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taReference', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
+      thenByTaReferenceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taReference', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
       thenByTaReferenceName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'taReferenceName', Sort.asc);
@@ -9254,6 +9627,13 @@ extension PendingCustomerQueryWhereDistinct
     });
   }
 
+  QueryBuilder<PendingCustomer, PendingCustomer, QDistinct> distinctById(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'id', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<PendingCustomer, PendingCustomer, QDistinct> distinctByLastname(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -9383,6 +9763,13 @@ extension PendingCustomerQueryWhereDistinct
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QDistinct>
+      distinctByTaReference({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'taReference', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QDistinct>
       distinctByTaReferenceName({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'taReferenceName',
@@ -9423,9 +9810,9 @@ extension PendingCustomerQueryWhereDistinct
 
 extension PendingCustomerQueryProperty
     on QueryBuilder<PendingCustomer, PendingCustomer, QQueryProperty> {
-  QueryBuilder<PendingCustomer, int, QQueryOperations> idProperty() {
+  QueryBuilder<PendingCustomer, int, QQueryOperations> isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
+      return query.addPropertyName(r'isarId');
     });
   }
 
@@ -9567,6 +9954,12 @@ extension PendingCustomerQueryProperty
     });
   }
 
+  QueryBuilder<PendingCustomer, String?, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
+  }
+
   QueryBuilder<PendingCustomer, String?, QQueryOperations> lastnameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lastname');
@@ -9683,6 +10076,13 @@ extension PendingCustomerQueryProperty
   QueryBuilder<PendingCustomer, String?, QQueryOperations> statusProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'status');
+    });
+  }
+
+  QueryBuilder<PendingCustomer, String?, QQueryOperations>
+      taReferenceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'taReference');
     });
   }
 

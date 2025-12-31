@@ -575,7 +575,7 @@ class AdminEmployeeController extends ChangeNotifier {
   PendingEmployeeModel _pendingEmployeeFromJson(Map<String, dynamic> json) {
     try {
       final employee = PendingEmployeeModel()
-        ..id = parseIntSafely(json['id']) // Use auto-increment for local ID
+        ..id = parseIntSafely(json['id']) as String? // Use auto-increment for local ID
         ..regId = json['employee_id'] ?? ''
         ..name = json['name'] ?? ''
         ..mobileNumber = json['contact'] ?? ''
@@ -606,7 +606,7 @@ class AdminEmployeeController extends ChangeNotifier {
       Map<String, dynamic> json) {
     try {
       final employee = RegisteredEmployeeModel()
-        ..id = parseIntSafely(json['id']) // Use auto-increment for local ID
+        ..id = parseIntSafely(json['id']) as String? // Use auto-increment for local ID
         ..regId = json['employee_id']
         ..name = json['name'] ?? ''
         ..mobileNumber = json['contact'] ?? ''
