@@ -4,9 +4,7 @@ part 'pending_techno_enterprise_model.g.dart';
 
 @collection
 class PendingTechnoEnterpriseModel {
-   Id isarId = Isar.autoIncrement; // ✅ REQUIRED
-
-  String? id; // backend ID (string, web-safe)
+  Id? id = Isar.autoIncrement;
   String? userId;
   String? refName;
   String? name;

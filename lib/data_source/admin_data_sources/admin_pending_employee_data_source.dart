@@ -89,10 +89,10 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
 
       await isarService.save<RegisteredEmployeeModel>(registerEmployee);
 
-      await removeEmployeeFromTable(empRegister.id! as Id, showToast: false);
+      await removeEmployeeFromTable(empRegister.id!, showToast: false);
       if (!context.mounted) return;
       await employeeController.apiUpdateEmployeeStatus(
-          context, empRegister.id as Id?, empRegister.email);
+          context, empRegister.id, empRegister.email);
 
       ToastHelper.showSuccessToast(title: 'Employee Registered.');
       isLoading = false;
@@ -194,7 +194,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
                   Logger.warning(
                       '------------ Delete ${employee.name}------------');
 
-                  deleteEmployee(employee.id! as Id);
+                  deleteEmployee(employee.id!);
                   // Navigator.pop(context);
                 },
               ),
@@ -226,7 +226,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
                 onTap: () {
                   Logger.warning(
                       '------------ Restore ${employee.name}------------');
-                  restoreEmployee(employee.id! as Id);
+                  restoreEmployee(employee.id!);
                   // Implement your restore logic here
                   // You can change the employee's status back to 1 or another status value
                   // restoreEmployee(employee);

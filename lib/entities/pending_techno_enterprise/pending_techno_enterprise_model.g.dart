@@ -78,78 +78,73 @@ const PendingTechnoEnterpriseModelSchema = CollectionSchema(
       name: r'gstNo',
       type: IsarType.string,
     ),
-    r'id': PropertySchema(
-      id: 12,
-      name: r'id',
-      type: IsarType.string,
-    ),
     r'name': PropertySchema(
-      id: 13,
+      id: 12,
       name: r'name',
       type: IsarType.string,
     ),
     r'nomineeName': PropertySchema(
-      id: 14,
+      id: 13,
       name: r'nomineeName',
       type: IsarType.string,
     ),
     r'nomineeRelation': PropertySchema(
-      id: 15,
+      id: 14,
       name: r'nomineeRelation',
       type: IsarType.string,
     ),
     r'packageFor': PropertySchema(
-      id: 16,
+      id: 15,
       name: r'packageFor',
       type: IsarType.string,
     ),
     r'panCard': PropertySchema(
-      id: 17,
+      id: 16,
       name: r'panCard',
       type: IsarType.string,
     ),
     r'paymentProof': PropertySchema(
-      id: 18,
+      id: 17,
       name: r'paymentProof',
       type: IsarType.string,
     ),
     r'phoneNumber': PropertySchema(
-      id: 19,
+      id: 18,
       name: r'phoneNumber',
       type: IsarType.string,
     ),
     r'pincode': PropertySchema(
-      id: 20,
+      id: 19,
       name: r'pincode',
       type: IsarType.string,
     ),
     r'profilePicture': PropertySchema(
-      id: 21,
+      id: 20,
       name: r'profilePicture',
       type: IsarType.string,
     ),
     r'refName': PropertySchema(
-      id: 22,
+      id: 21,
       name: r'refName',
       type: IsarType.string,
     ),
     r'state': PropertySchema(
-      id: 23,
+      id: 22,
       name: r'state',
       type: IsarType.string,
     ),
     r'status': PropertySchema(
-      id: 24,
+      id: 23,
       name: r'status',
       type: IsarType.long,
     ),
     r'userId': PropertySchema(
-      id: 25,
+      id: 24,
       name: r'userId',
       type: IsarType.string,
     ),
     r'votingCard': PropertySchema(
-      id: 26,
+      id: 25,
       name: r'votingCard',
       type: IsarType.string,
     )
@@ -158,7 +153,7 @@ const PendingTechnoEnterpriseModelSchema = CollectionSchema(
   serialize: _pendingTechnoEnterpriseModelSerialize,
   deserialize: _pendingTechnoEnterpriseModelDeserialize,
   deserializeProp: _pendingTechnoEnterpriseModelDeserializeProp,
-  idName: r'isarId',
+  idName: r'id',
   indexes: {},
   links: {},
   embeddedSchemas: {},
@@ -242,12 +237,6 @@ int _pendingTechnoEnterpriseModelEstimateSize(
   }
   {
     final value = object.gstNo;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
-  {
-    final value = object.id;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -351,21 +340,20 @@ void _pendingTechnoEnterpriseModelSerialize(
   writer.writeString(offsets[9], object.email);
   writer.writeString(offsets[10], object.gender);
   writer.writeString(offsets[11], object.gstNo);
-  writer.writeString(offsets[12], object.id);
-  writer.writeString(offsets[13], object.name);
-  writer.writeString(offsets[14], object.nomineeName);
-  writer.writeString(offsets[15], object.nomineeRelation);
-  writer.writeString(offsets[16], object.packageFor);
-  writer.writeString(offsets[17], object.panCard);
-  writer.writeString(offsets[18], object.paymentProof);
-  writer.writeString(offsets[19], object.phoneNumber);
-  writer.writeString(offsets[20], object.pincode);
-  writer.writeString(offsets[21], object.profilePicture);
-  writer.writeString(offsets[22], object.refName);
-  writer.writeString(offsets[23], object.state);
-  writer.writeLong(offsets[24], object.status);
-  writer.writeString(offsets[25], object.userId);
-  writer.writeString(offsets[26], object.votingCard);
+  writer.writeString(offsets[12], object.name);
+  writer.writeString(offsets[13], object.nomineeName);
+  writer.writeString(offsets[14], object.nomineeRelation);
+  writer.writeString(offsets[15], object.packageFor);
+  writer.writeString(offsets[16], object.panCard);
+  writer.writeString(offsets[17], object.paymentProof);
+  writer.writeString(offsets[18], object.phoneNumber);
+  writer.writeString(offsets[19], object.pincode);
+  writer.writeString(offsets[20], object.profilePicture);
+  writer.writeString(offsets[21], object.refName);
+  writer.writeString(offsets[22], object.state);
+  writer.writeLong(offsets[23], object.status);
+  writer.writeString(offsets[24], object.userId);
+  writer.writeString(offsets[25], object.votingCard);
 }
 
 PendingTechnoEnterpriseModel _pendingTechnoEnterpriseModelDeserialize(
@@ -387,22 +375,21 @@ PendingTechnoEnterpriseModel _pendingTechnoEnterpriseModelDeserialize(
   object.email = reader.readStringOrNull(offsets[9]);
   object.gender = reader.readStringOrNull(offsets[10]);
   object.gstNo = reader.readStringOrNull(offsets[11]);
-  object.id = reader.readStringOrNull(offsets[12]);
-  object.isarId = id;
-  object.name = reader.readStringOrNull(offsets[13]);
-  object.nomineeName = reader.readStringOrNull(offsets[14]);
-  object.nomineeRelation = reader.readStringOrNull(offsets[15]);
-  object.packageFor = reader.readStringOrNull(offsets[16]);
-  object.panCard = reader.readStringOrNull(offsets[17]);
-  object.paymentProof = reader.readStringOrNull(offsets[18]);
-  object.phoneNumber = reader.readStringOrNull(offsets[19]);
-  object.pincode = reader.readStringOrNull(offsets[20]);
-  object.profilePicture = reader.readStringOrNull(offsets[21]);
-  object.refName = reader.readStringOrNull(offsets[22]);
-  object.state = reader.readStringOrNull(offsets[23]);
-  object.status = reader.readLongOrNull(offsets[24]);
-  object.userId = reader.readStringOrNull(offsets[25]);
-  object.votingCard = reader.readStringOrNull(offsets[26]);
+  object.id = id;
+  object.name = reader.readStringOrNull(offsets[12]);
+  object.nomineeName = reader.readStringOrNull(offsets[13]);
+  object.nomineeRelation = reader.readStringOrNull(offsets[14]);
+  object.packageFor = reader.readStringOrNull(offsets[15]);
+  object.panCard = reader.readStringOrNull(offsets[16]);
+  object.paymentProof = reader.readStringOrNull(offsets[17]);
+  object.phoneNumber = reader.readStringOrNull(offsets[18]);
+  object.pincode = reader.readStringOrNull(offsets[19]);
+  object.profilePicture = reader.readStringOrNull(offsets[20]);
+  object.refName = reader.readStringOrNull(offsets[21]);
+  object.state = reader.readStringOrNull(offsets[22]);
+  object.status = reader.readLongOrNull(offsets[23]);
+  object.userId = reader.readStringOrNull(offsets[24]);
+  object.votingCard = reader.readStringOrNull(offsets[25]);
   return object;
 }
 
@@ -460,12 +447,10 @@ P _pendingTechnoEnterpriseModelDeserializeProp<P>(
     case 22:
       return (reader.readStringOrNull(offset)) as P;
     case 23:
-      return (reader.readStringOrNull(offset)) as P;
-    case 24:
       return (reader.readLongOrNull(offset)) as P;
-    case 25:
+    case 24:
       return (reader.readStringOrNull(offset)) as P;
-    case 26:
+    case 25:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -473,7 +458,7 @@ P _pendingTechnoEnterpriseModelDeserializeProp<P>(
 }
 
 Id _pendingTechnoEnterpriseModelGetId(PendingTechnoEnterpriseModel object) {
-  return object.isarId;
+  return object.id ?? Isar.autoIncrement;
 }
 
 List<IsarLinkBase<dynamic>> _pendingTechnoEnterpriseModelGetLinks(
@@ -483,13 +468,13 @@ List<IsarLinkBase<dynamic>> _pendingTechnoEnterpriseModelGetLinks(
 
 void _pendingTechnoEnterpriseModelAttach(
     IsarCollection<dynamic> col, Id id, PendingTechnoEnterpriseModel object) {
-  object.isarId = id;
+  object.id = id;
 }
 
 extension PendingTechnoEnterpriseModelQueryWhereSort on QueryBuilder<
     PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel, QWhere> {
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterWhere> anyIsarId() {
+      QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
@@ -499,68 +484,68 @@ extension PendingTechnoEnterpriseModelQueryWhereSort on QueryBuilder<
 extension PendingTechnoEnterpriseModelQueryWhere on QueryBuilder<
     PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel, QWhereClause> {
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterWhereClause> isarIdEqualTo(Id isarId) {
+      QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
-        lower: isarId,
-        upper: isarId,
+        lower: id,
+        upper: id,
       ));
     });
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterWhereClause> isarIdNotEqualTo(Id isarId) {
+      QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
             )
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
             );
       } else {
         return query
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
             )
             .addWhereClause(
-              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
             );
       }
     });
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterWhereClause> isarIdGreaterThan(Id isarId, {bool include = false}) {
+      QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: isarId, includeLower: include),
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
       );
     });
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterWhereClause> isarIdLessThan(Id isarId, {bool include = false}) {
+      QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IdWhereClause.lessThan(upper: isarId, includeUpper: include),
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
       );
     });
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterWhereClause> isarIdBetween(
-    Id lowerIsarId,
-    Id upperIsarId, {
+      QAfterWhereClause> idBetween(
+    Id lowerId,
+    Id upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
-        lower: lowerIsarId,
+        lower: lowerId,
         includeLower: includeLower,
-        upper: upperIsarId,
+        upper: upperId,
         includeUpper: includeUpper,
       ));
     });
@@ -2462,191 +2447,53 @@ extension PendingTechnoEnterpriseModelQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterFilterCondition> idEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+      QAfterFilterCondition> idEqualTo(Id? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
       QAfterFilterCondition> idGreaterThan(
-    String? value, {
+    Id? value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'id',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
       QAfterFilterCondition> idLessThan(
-    String? value, {
+    Id? value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'id',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
       QAfterFilterCondition> idBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterFilterCondition> idStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterFilterCondition> idEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-          QAfterFilterCondition>
-      idContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-          QAfterFilterCondition>
-      idMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'id',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterFilterCondition> idIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterFilterCondition> idIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'id',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterFilterCondition> isarIdEqualTo(Id value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isarId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterFilterCondition> isarIdGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'isarId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterFilterCondition> isarIdLessThan(
-    Id value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'isarId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterFilterCondition> isarIdBetween(
-    Id lower,
-    Id upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'isarId',
+        property: r'id',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -4939,20 +4786,6 @@ extension PendingTechnoEnterpriseModelQuerySortBy on QueryBuilder<
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterSortBy> sortById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.asc);
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterSortBy> sortByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.desc);
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
       QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -5334,20 +5167,6 @@ extension PendingTechnoEnterpriseModelQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterSortBy> thenByIsarId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isarId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QAfterSortBy> thenByIsarIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isarId', Sort.desc);
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
       QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -5632,13 +5451,6 @@ extension PendingTechnoEnterpriseModelQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
-      QDistinct> distinctById({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'id', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, PendingTechnoEnterpriseModel,
       QDistinct> distinctByName({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
@@ -5744,9 +5556,9 @@ extension PendingTechnoEnterpriseModelQueryProperty on QueryBuilder<
     PendingTechnoEnterpriseModel,
     QQueryProperty> {
   QueryBuilder<PendingTechnoEnterpriseModel, int, QQueryOperations>
-      isarIdProperty() {
+      idProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'isarId');
+      return query.addPropertyName(r'id');
     });
   }
 
@@ -5831,13 +5643,6 @@ extension PendingTechnoEnterpriseModelQueryProperty on QueryBuilder<
       gstNoProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'gstNo');
-    });
-  }
-
-  QueryBuilder<PendingTechnoEnterpriseModel, String?, QQueryOperations>
-      idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
     });
   }
 

@@ -55,7 +55,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
         ..bankDetails = empRegister.bankDetails;
 
       await isarService.save<PendingEmployeeModel>(unRegisterEmployee);
-      await removeEmployeeFromTable(empRegister.id! as Id, showToast: false);
+      await removeEmployeeFromTable(empRegister.id!, showToast: false);
       ToastHelper.showSuccessToast(title: 'Employee Un-Registered.');
       Logger.success('----------- Employee Un-Regisered ${empRegister.name}');
     } catch (e) {
@@ -146,7 +146,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
                 title: const Text('Delete'),
                 onTap: () {
                   Logger.error('Deleting..... ${employee.name} ${employee.id}');
-                  deleteEmployee(employee.id! as Id);
+                  deleteEmployee(employee.id!);
                 },
               ),
             ),
@@ -173,7 +173,7 @@ class AdminRegisteredEmployeeDataSource extends DataTableSource {
                 onTap: () {
                   Logger.warning(
                       '------------ Restore ${employee.name}------------');
-                  restoreEmployee(employee.id! as Id);
+                  restoreEmployee(employee.id!);
                   // Implement your restore logic here
                   // You can change the employee's status back to 1 or another status value
                   // restoreEmployee(employee);

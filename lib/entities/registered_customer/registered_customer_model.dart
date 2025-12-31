@@ -62,7 +62,7 @@ class RegisteredCustomer {
       ..caCustomerName = json['ca_customer_name']
     ..name = json['name']
       ..nomineeName = json['nominee_name']
-      ..nomineeRelation = json['nominee_relation'] 
+      ..nomineeRelation = json['nominee_relation'] // TODO: reg id and reg name comes as single field
       ..email = json['email']
       ..countryCd = json['country_code']
       ..phoneNumber = json['contact_no']

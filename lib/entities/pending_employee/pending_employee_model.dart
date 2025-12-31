@@ -4,9 +4,7 @@ part 'pending_employee_model.g.dart';
 
 @collection
 class PendingEmployeeModel {
-    Id isarId = Isar.autoIncrement; // ✅ REQUIRED
-
-  String? id; // backend ID (string, web-safe)
+  Id? id = Isar.autoIncrement;
   String? regId;
   String? name;
   String? mobileNumber;
