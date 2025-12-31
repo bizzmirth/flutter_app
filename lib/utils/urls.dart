@@ -233,4 +233,10 @@ class AppUrls {
 
   static String get getFranchiseeRegisteredTc =>
       '$_franchisee/travel_consultants/travel_consultants_registered.php';
+
+  static String get franchiseeAddTc =>
+      '$_franchisee/travel_consultants/add_travel_consultants.php';
+
+  static String get franchiseeEditTc =>
+      '$_franchisee/travel_consultants/edit_travel_consultants.php';
 }

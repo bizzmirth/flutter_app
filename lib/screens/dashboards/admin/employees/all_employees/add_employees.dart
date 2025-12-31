@@ -595,7 +595,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               ..bankDetails = bankDetailsPath;
 
         final updated = await _isarService.update<RegisteredEmployeeModel>(
-            updateRegisteredEmployee, id! as int);
+            updateRegisteredEmployee, id!);
 
         Logger.warning(':::::$updated');
         if (updated) {
