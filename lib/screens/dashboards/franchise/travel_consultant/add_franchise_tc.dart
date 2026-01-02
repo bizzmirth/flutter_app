@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bizzmirth_app/controllers/admin_controller/admin_customer_controller.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
@@ -8,6 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 
 class AddFranchiseTc extends StatefulWidget {
   const AddFranchiseTc({super.key});
@@ -115,9 +117,31 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
   @override
   void initState() {
     super.initState();
+    _loadCountry();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getSharedPrefData();
     });
+  }
+
+  Future<void> _loadCountry() async {
+    try {
+      final controller =
+          Provider.of<AdminCustomerController>(context, listen: false);
+      final List<dynamic> countries = await controller.apiGetCountry();
+
+      _countries = countries;
+
+      final List<String> countryNames = countries
+          .map<String>(
+              (country) => country['country_name'] ?? 'No Country Available')
+          .toList();
+      setState(() {
+        _countryNames = countryNames;
+        Logger.success('Countries: $_countryNames');
+      });
+    } catch (e, s) {
+      Logger.error('Error fetching countries, Error: $e, Stacktrace: $s');
+    }
   }
 
   void clearFormFields() {

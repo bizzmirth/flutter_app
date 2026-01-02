@@ -60,7 +60,7 @@ class FranchiseeTcController extends ChangeNotifier {
       _state = ViewState.success;
     } catch (e) {
       _failure = e is Failure ? e : Failure('Something went wrong');
-      Logger.error('FranchiseeTcController.fetchPendingTcs: $e');
+      Logger.error('FranchiseeTcController.fetchPendingTcs: ${e.toString()}');
       _state = ViewState.error;
     } finally {
       notifyListeners();

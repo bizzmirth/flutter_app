@@ -17,6 +17,13 @@ class AppUrls {
   static String get _travelConsultant => '$_users/travel_consultant';
   static String get _franchisee => '$_users/franchise';
 
+  // ===================== COMMON ENDPOINTS =====================
+  static String get getCountries => '$baseUrl/country.php';
+
+  static String get getStates => '$baseUrl/state_city.php';
+
+  static String get getPincode => '$baseUrl/pincode.php';
+
   // ==================== HOMEPAGE TOUR PACKAGE DETAILS ====================
   static String get getTourPackages =>
       '$_homepage/packages/best_destinations.php';
