@@ -144,6 +144,63 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
     }
   }
 
+  Future<void> _loadStates(String? selectedCountryId) async {
+    try {
+      final controller =
+          Provider.of<AdminCustomerController>(context, listen: false);
+
+      final List<dynamic> states =
+          await controller.apiGetStates(selectedCountryId!);
+      _states = states;
+
+      final List<String> stateNames = states
+          .map<String>((state) => state['state_name'] ?? 'No State Available')
+          .toList();
+
+      setState(() {
+        _stateNames = stateNames;
+      });
+      Logger.success('Fetched states from the api $states');
+    } catch (e, s) {
+      Logger.success('Error fetching states, Error: $e, Stacktrace $s');
+    }
+  }
+
+  Future<void> _loadCities(String? selectedStateId) async {
+    try {
+      final controller =
+          Provider.of<AdminCustomerController>(context, listen: false);
+      final List<dynamic> cities =
+          await controller.apiGetCity(selectedStateId!);
+      _cities = cities;
+
+      final List<String> citiesNames = cities
+          .map<String>((city) => city['city_name'] ?? 'No cities available')
+          .toList();
+
+      setState(() {
+        _cityNames = citiesNames;
+      });
+      Logger.success('Fetched cities from the api $cities');
+    } catch (e, s) {
+      Logger.error('Error fetching cities, Error: $e, StackTrace: $s');
+    }
+  }
+
+  Future<void> getPincode(String? selectedCity) async {
+    try {
+      final controller =
+          Provider.of<AdminCustomerController>(context, listen: false);
+      final pincode = await controller.apiGetPincode(selectedCity!);
+      setState(() {
+        _pincodeController.text = pincode;
+      });
+      Logger.success('Pincode fetched from the $pincode');
+    } catch (e, s) {
+      Logger.error('Error fetching pincode, Error: $e, Stacktrace: $s');
+    }
+  }
+
   void clearFormFields() {
     // 🧹 Clear all text controllers
     _taReferenceIdController.clear();
@@ -593,7 +650,7 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
                           Logger.success(
                               'selected country is $_selectedCountry ID : $_selectedCountryId');
                         }
-                        // _loadStates(_selectedCountryId);
+                        _loadStates(_selectedCountryId);
                       },
                     ),
                     fieldKey: _countryKey,
@@ -615,7 +672,7 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
                               selectedStateObject['id'].toString();
                           Logger.success(
                               'selected state is $_selectedState ID : $_selectedStateId');
-                          // _loadCities(_selectedStateId);
+                          _loadCities(_selectedStateId);
                         }
                       },
                     ),
@@ -638,7 +695,7 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
                           Logger.success(
                               'selected city is $_selectedCity ID : $_selectedCityId');
                         }
-                        // getPincode(_selectedCityId);
+                        getPincode(_selectedCityId);
                       },
                     ),
                     emptyMessage: 'Please select a state first',
