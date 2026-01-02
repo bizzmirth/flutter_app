@@ -12,6 +12,12 @@ class AppData {
     'Neo Select: ₹ 11,000',
   ];
 
+  static const List<String> paymentFeeFranchiseOptions = [
+    'Free',
+    '₹ 3,000/-',
+    '₹ 10,000/-',
+  ];
+
   static const List<String> genderOptions = ['Male', 'Female', 'Other'];
 
   static const List<String> countryCodeOptions = [

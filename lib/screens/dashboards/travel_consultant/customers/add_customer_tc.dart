@@ -1459,9 +1459,11 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                     uploadKey: _votingCardKey,
                   ),
                   if (_selectedPaymentFee != 'Free')
-                    _buildUploadButton('Payment Proof',
-                        showError: _showImageValidationErrors,
-                        uploadKey: _paymentProofKey),
+                    _buildUploadButton(
+                      'Payment Proof',
+                      showError: _showImageValidationErrors,
+                      uploadKey: _paymentProofKey,
+                    ),
                   const SizedBox(height: 20),
                   if (widget.isEditMode) ...[
                     Center(
