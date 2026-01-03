@@ -1,4 +1,5 @@
 import 'package:bizzmirth_app/models/franchise_models/franchisee_registered_tc.dart';
+import 'package:bizzmirth_app/screens/dashboards/franchise/travel_consultant/add_franchise_tc.dart';
 import 'package:flutter/material.dart';
 
 class FranchiseRegisteredTcDataSource extends DataTableSource {
@@ -58,18 +59,35 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
         // Handle menu actions
       },
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'view',
           child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text('View'),
+            leading: const Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
+            title: const Text('View'),
+            onTap: () {
+              Navigator.pop(context);
+              // Navigate to view details page
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddFranchiseTc()));
+            },
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'edit',
           child: ListTile(
-            leading: Icon(Icons.edit, color: Color.fromARGB(255, 0, 105, 190)),
-            title: Text('Edit'),
+            leading:
+                const Icon(Icons.edit, color: Color.fromARGB(255, 0, 105, 190)),
+            title: const Text('Edit'),
+            onTap: () {
+              Navigator.pop(context);
+              // Navigate to view details page
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddFranchiseTc()));
+            },
           ),
         ),
         const PopupMenuItem(
