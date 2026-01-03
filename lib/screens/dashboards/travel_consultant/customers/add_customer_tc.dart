@@ -475,31 +475,33 @@ class _AddCustomerTc extends State<AddCustomerTc> {
         return;
       }
 
-      selectedFiles.forEach((key, value) {
-        if (value != null) {
-          final String filePath = value.path;
+      selectedFiles.forEach(
+        (key, value) {
+          if (value != null) {
+            final String filePath = value.path;
 
-          switch (key) {
-            case 'Profile Picture':
-              documentPaths['profilePicture'] = filePath;
-              break;
-            case 'Aadhar Card':
-              documentPaths['adharCard'] = filePath;
-              break;
-            case 'Pan Card':
-              documentPaths['panCard'] = filePath;
-              break;
-            case 'Bank Passbook':
-              documentPaths['bankPassbook'] = filePath;
-              break;
-            case 'Voting Card':
-              documentPaths['votingCard'] = filePath;
-              break;
-            case 'Payment Proof':
-              documentPaths['paymentProof'] = filePath;
+            switch (key) {
+              case 'Profile Picture':
+                documentPaths['profilePicture'] = filePath;
+                break;
+              case 'Aadhar Card':
+                documentPaths['adharCard'] = filePath;
+                break;
+              case 'Pan Card':
+                documentPaths['panCard'] = filePath;
+                break;
+              case 'Bank Passbook':
+                documentPaths['bankPassbook'] = filePath;
+                break;
+              case 'Voting Card':
+                documentPaths['votingCard'] = filePath;
+                break;
+              case 'Payment Proof':
+                documentPaths['paymentProof'] = filePath;
+            }
           }
-        }
-      });
+        },
+      );
 
 // -------------------------------- upload the selected image ------------------------------------
       if (selectedFiles['Profile Picture'] != null) {

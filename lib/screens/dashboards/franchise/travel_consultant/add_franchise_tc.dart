@@ -1,10 +1,16 @@
 import 'dart:io';
 
 import 'package:bizzmirth_app/controllers/admin_controller/admin_customer_controller.dart';
+import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_tc_controller.dart';
+import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_pending_tc.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +18,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddFranchiseTc extends StatefulWidget {
-  const AddFranchiseTc({super.key});
+  final bool isViewMode;
+  final bool isEditMode;
+  const AddFranchiseTc({
+    super.key,
+    this.isViewMode = false,
+    this.isEditMode = false,
+  });
 
   @override
   State<AddFranchiseTc> createState() => _AddFranchiseTcState();
@@ -436,12 +448,305 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
     );
   }
 
+  bool _validateImages() {
+    final List<String> requiredImages = [
+      'Profile Picture',
+      'Aadhar Card',
+      'Pan Card',
+      'Bank Passbook',
+      'Voting Card'
+    ];
+
+    if (_selectedPaymentFee != 'Free') {
+      requiredImages.add('Payment Proof');
+    }
+
+    for (String imageType in requiredImages) {
+      if (selectedFiles[imageType] == null) {
+        Logger.error('Missing required image: $imageType');
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  Future<void> _submitForm() async {
+    try {
+      setState(() {
+        _showImageValidationErrors = false;
+      });
+
+      final controller =
+          Provider.of<FranchiseeTcController>(context, listen: false);
+      final formState = _formKey.currentState;
+      final String customerType;
+      final String paidAmount;
+      final Map<String, String> documentPaths = {};
+      final bool isFormValid = formState != null && formState.validate();
+      final bool areImagesValid = _validateImages();
+
+      if (!isFormValid || !areImagesValid) {
+        if (!areImagesValid) {
+          setState(() {
+            _showImageValidationErrors = true;
+          });
+        }
+
+        _scrollToFirstError();
+        ToastHelper.showErrorToast(
+            title:
+                'Please fill all the required fields and upload required documents');
+        return;
+      }
+
+      selectedFiles.forEach(
+        (key, value) {
+          if (value != null) {
+            final String filePath = value.path;
+
+            switch (key) {
+              case 'Profile Picture':
+                documentPaths['profilePicture'] = filePath;
+                break;
+              case 'Aadhar Card':
+                documentPaths['adharCard'] = filePath;
+                break;
+              case 'Pan Card':
+                documentPaths['panCard'] = filePath;
+                break;
+              case 'Bank Passbook':
+                documentPaths['bankPassbook'] = filePath;
+                break;
+              case 'Voting Card':
+                documentPaths['votingCard'] = filePath;
+                break;
+              case 'Payment Proof':
+                documentPaths['paymentProof'] = filePath;
+            }
+          }
+        },
+      );
+
+      // -------------------------------- upload the selected image ------------------------------------
+      if (selectedFiles['Profile Picture'] != null) {
+        await controller.uploadImage(
+            'profile_pic', selectedFiles['Profile Picture']!.path);
+      }
+      if (selectedFiles['Aadhar Card'] != null) {
+        await controller.uploadImage(
+            'aadhar_card', selectedFiles['Aadhar Card']!.path);
+      }
+      if (selectedFiles['Pan Card'] != null) {
+        await controller.uploadImage(
+            'pan_card', selectedFiles['Pan Card']!.path);
+      }
+      if (selectedFiles['Voting Card'] != null) {
+        await controller.uploadImage(
+            'voting_card', selectedFiles['Voting Card']!.path);
+      }
+      if (selectedFiles['Bank Passbook'] != null) {
+        await controller.uploadImage(
+            'passbook', selectedFiles['Bank Passbook']!.path);
+      }
+      if (selectedFiles['Payment Proof'] != null) {
+        await controller.uploadImage(
+            'payment_proof', selectedFiles['Payment Proof']!.path);
+      }
+      if (_selectedPaymentMode == 'Cheque') {
+        chequeNo = _chequeNoController.text;
+        chequeDate = _chequeDateController.text;
+        bankName = _bankNameController.text;
+      } else if (_selectedPaymentMode == 'UPI/NEFT') {
+        transactionId = _transactionIDController.text;
+      }
+
+      if (_selectedPaymentFee == 'Free') {
+        customerType = 'Free';
+        paidAmount = 'Free';
+      } else if (_selectedPaymentFee == 'Prime: ₹ 10,000') {
+        customerType = 'Prime';
+        paidAmount = '10,000';
+      } else if (_selectedPaymentFee == 'Premium: ₹ 30,000') {
+        customerType = 'Premium';
+        paidAmount = '30,000';
+      } else {
+        customerType = 'Premium Plus';
+        paidAmount = '35,000';
+      }
+
+      final newTc = FranchiseePendingTc()
+        ..userId = _taReferenceIdController.text
+        ..userType = '11'
+        ..userIdName = _taReferenceIdController.text
+        ..refName = _taReferenceNameController.text
+        ..firstName = _fNameController.text
+        ..lastName = _lNameController.text
+        ..nomineeName = _nomineeNameController.text
+        ..nomineeRelation = _nomineeRelationController.text
+        ..email = _emailController.text
+        ..gender = formatGender(_selectedGender)
+        ..countryCode = sanitizeCountryCode(_selectedCountryId)
+        ..phone = _phoneController.text
+        ..dob = _dateController.text
+        ..aadharCard = documentPaths['adharCard']
+        ..profilePic = documentPaths['profilePicture']
+        ..panCard = documentPaths['panCard']
+        ..passbook = documentPaths['bankPassbook']
+        ..votingCard = documentPaths['votingCard']
+        ..paymentProof = documentPaths['paymentProof']
+        ..paymentFee = _selectedPaymentFee
+        ..paymentMode = _selectedPaymentMode
+        ..chequeNo = chequeNo
+        ..chequeDate = chequeDate
+        ..bankName = bankName
+        ..transactionNo = transactionId
+        ..address = _addressController.text
+        ..pincode = _pincodeController.text
+        ..country = _selectedCountryId
+        ..state = _selectedStateId
+        ..city = _selectedCityId;
+      await controller.apiAddTc(newTc);
+      clearFormFields();
+      MyNavigator.pop(true);
+    } catch (e, s) {
+      Logger.error('Error submitting form: $e, Stacktrace: $s');
+    }
+  }
+
+  void _scrollToFirstError() {
+    final Map<String, GlobalKey<FormFieldState>> fieldKeys = {
+      'firstName': _fNameKey,
+      'lastName': _lNameKey,
+      'phoneNumber': _mobileKey,
+      'pincode': _pincodeKey,
+      'dateOfBirth': _dobKey,
+      'address': _addressKey
+    };
+
+    if (_selectedPaymentMode == 'Cheque') {
+      fieldKeys.addAll({
+        'chequeNo': _chequeNoKey,
+        'chequeDate': _chequeDateKey,
+        'bankName': _bankNameKey,
+      });
+    } else if (_selectedPaymentMode == 'UPI/NEFT') {
+      fieldKeys.addAll({
+        'transactionNo': _transactionNoKey,
+      });
+    }
+
+    for (final entry in fieldKeys.entries) {
+      final fieldState = entry.value.currentState;
+      if (fieldState != null && fieldState.hasError) {
+        Logger.error('Found error in field: ${entry.key}');
+        Scrollable.ensureVisible(
+          entry.value.currentContext!,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+        return;
+      }
+    }
+
+    if (_selectedGender == '---- Select Gender ----') {
+      final RenderObject? renderObject =
+          _genderKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _genderKey.currentContext!,
+          duration: const Duration(milliseconds: 500),
+        );
+        return;
+      }
+    }
+
+    if (_selectedCountry == '---- Select Country ----') {
+      final RenderObject? renderObject =
+          _countryKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _countryKey.currentContext!,
+          duration: const Duration(milliseconds: 500),
+        );
+        return;
+      }
+    }
+    if (_selectedState == '---- Select State ----') {
+      final RenderObject? renderObject =
+          _stateKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _stateKey.currentContext!,
+          duration: const Duration(milliseconds: 500),
+        );
+        return;
+      }
+    }
+
+    if (_selectedCity == '---- Select City ----') {
+      final RenderObject? renderObject =
+          _cityKey.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        Scrollable.ensureVisible(
+          _cityKey.currentContext!,
+          duration: const Duration(milliseconds: 500),
+        );
+        return;
+      }
+    }
+
+    final Map<String, GlobalKey> imageKeys = {
+      'Profile Picture': _profilePicKey,
+      'Aadhar Card': _aadharCardKey,
+      'Pan Card': _panCardKey,
+      'Bank Passbook': _bankPassbookKey,
+      'Voting Card': _votingCardKey,
+    };
+
+    if (_selectedPaymentFee != 'Free') {
+      imageKeys['Payment Proof'] = _paymentProofKey;
+    }
+
+    for (final entry in imageKeys.entries) {
+      final String imageType = entry.key;
+      final GlobalKey imageKey = entry.value;
+
+      if (selectedFiles[imageType] == null) {
+        Logger.error('Missing required image: $imageType');
+
+        // Show validation errors
+        setState(() {
+          _showImageValidationErrors = true;
+        });
+
+        // Scroll to the missing image upload button
+        final RenderObject? renderObject =
+            imageKey.currentContext?.findRenderObject();
+        if (renderObject != null) {
+          Scrollable.ensureVisible(
+            imageKey.currentContext!,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+          return;
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+     String appBarTitle = 'Add Referral Customer';
+    if (widget.isViewMode) {
+      appBarTitle = 'View Referral Customer';
+    } else if (widget.isEditMode) {
+      appBarTitle = 'Edit Referral Customer';
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add Travel Consultant',
+          appBarTitle,
           style: Appwidget.poppinsAppBarTitle(),
         ),
         centerTitle: true,
@@ -919,24 +1224,58 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
                       uploadKey: _paymentProofKey,
                     ),
                   const SizedBox(height: 20),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                 if (widget.isEditMode) ...[
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: (){},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
+                        child: const Text(
+                          'Save Changes',
+                          style:
+                              TextStyle(color: Colors.blueAccent, fontSize: 16),
                         ),
                       ),
-                      child: const Text(
-                        'Submit',
-                        style:
-                            TextStyle(color: Colors.blueAccent, fontSize: 16),
+                    ),
+                  ] else if (!widget.isViewMode) ...[
+                    Center(
+                      child: Consumer<TcCustomerController>(
+                        builder: (context, controller, child) {
+                          return ElevatedButton(
+                            onPressed:_submitForm, // disable while loading
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
+                            child: controller.isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.blueAccent,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Submit',
+                                    style: TextStyle(
+                                        color: Colors.blueAccent, fontSize: 16),
+                                  ),
+                          );
+                        },
                       ),
                     ),
-                  ),
+                  ]
                 ],
               ),
             ),
