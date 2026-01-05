@@ -1,5 +1,6 @@
 import 'package:bizzmirth_app/models/franchise_models/franchisee_registered_tc.dart';
 import 'package:bizzmirth_app/screens/dashboards/franchise/travel_consultant/add_franchise_tc.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 
 class FranchiseRegisteredTcDataSource extends DataTableSource {
@@ -30,7 +31,7 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(_buildActionMenu()),
+        DataCell(_buildActionMenu(order)),
       ],
     );
   }
@@ -53,7 +54,7 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
   }
 
 // Action Menu Widget
-  Widget _buildActionMenu() {
+  Widget _buildActionMenu(FranchiseeRegisteredTc registeredTc) {
     return PopupMenuButton<String>(
       onSelected: (value) {
         // Handle menu actions
@@ -65,12 +66,19 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
             leading: const Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
             title: const Text('View'),
             onTap: () {
+              Logger.info(
+                  'View action for TC ID: ${registeredTc.tcId} and Name: ${registeredTc.tcName}');
               Navigator.pop(context);
               // Navigate to view details page
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AddFranchiseTc()));
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddFranchiseTc(
+                    isViewMode: true,
+                    franchiseeRegisteredTc: registeredTc,
+                  ),
+                ),
+              );
             },
           ),
         ),

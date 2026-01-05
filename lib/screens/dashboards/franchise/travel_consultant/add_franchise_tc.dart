@@ -1,16 +1,17 @@
 import 'dart:io';
-
 import 'package:bizzmirth_app/controllers/admin_controller/admin_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_tc_controller.dart';
-import 'package:bizzmirth_app/controllers/tc_controller/tc_customer_controller.dart';
 import 'package:bizzmirth_app/models/franchise_models/franchisee_pending_tc.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_registered_tc.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -18,10 +19,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddFranchiseTc extends StatefulWidget {
+  final FranchiseeRegisteredTc? franchiseeRegisteredTc;
   final bool isViewMode;
   final bool isEditMode;
   const AddFranchiseTc({
     super.key,
+    this.franchiseeRegisteredTc,
     this.isViewMode = false,
     this.isEditMode = false,
   });
@@ -130,6 +133,9 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
   void initState() {
     super.initState();
     _loadCountry();
+    if (widget.franchiseeRegisteredTc != null) {
+      populateRegisteredTcData(widget.franchiseeRegisteredTc!);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getSharedPrefData();
     });
@@ -344,8 +350,7 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
       void Function(String)? onChanged}) {
     return TextFormField(
       key: fieldKey,
-      readOnly: forceReadOnly ?? false,
-      //  ?? widget.isViewMode, TODO: to be handled later
+      readOnly: forceReadOnly ?? widget.isViewMode,
       maxLines: maxLines,
       validator: validator,
       controller: controller,
@@ -577,9 +582,11 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
 
       final newTc = FranchiseePendingTc()
         ..userId = _taReferenceIdController.text
+        ..registrant = _taReferenceNameController.text
         ..userType = '11'
         ..userIdName = _taReferenceIdController.text
-        ..refName = _taReferenceNameController.text
+        ..referenceName = _taReferenceNameController.text
+        ..name = '${_fNameController.text} ${_lNameController.text}'
         ..firstName = _fNameController.text
         ..lastName = _lNameController.text
         ..nomineeName = _nomineeNameController.text
@@ -735,13 +742,122 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
     }
   }
 
+  Future<void> populateRegisteredTcData(
+      FranchiseeRegisteredTc franchiseeRegisteredTc) async {
+    try {
+      _fNameController.text = franchiseeRegisteredTc.firstname ?? '';
+      _lNameController.text = franchiseeRegisteredTc.lastname ?? '';
+      _nomineeNameController.text = franchiseeRegisteredTc.nomineeName ?? '';
+      _nomineeRelationController.text =
+          franchiseeRegisteredTc.nomineeRelation ?? '';
+      String countryCode = franchiseeRegisteredTc.countryCode!;
+      if (!countryCode.startsWith('+')) {
+        countryCode = '+$countryCode';
+      }
+      final allowedCodes = ['+91', '+1', '+44', '+61', '+971'];
+      if (allowedCodes.contains(countryCode)) {
+        _selectedCountryCode = countryCode;
+      } else {
+        _selectedCountryCode = '+91';
+      }
+      _phoneController.text = franchiseeRegisteredTc.phone ?? '';
+      _emailController.text = franchiseeRegisteredTc.email ?? '';
+      _dateController.text = franchiseeRegisteredTc.dob ?? '';
+      _selectedGender = normalizeGender(franchiseeRegisteredTc.gender!);
+      _addressController.text = franchiseeRegisteredTc.address ?? '';
+      _pincodeController.text = franchiseeRegisteredTc.pincode ?? '';
+      _chequeNoController.text = franchiseeRegisteredTc.chequeNo ?? '';
+      _chequeDateController.text = franchiseeRegisteredTc.chequeDate ?? '';
+      _bankNameController.text = franchiseeRegisteredTc.bankName ?? '';
+      _transactionIDController.text =
+          franchiseeRegisteredTc.transactionNo ?? '';
+      _selectedPaymentMode =
+          franchiseeRegisteredTc.paymentMode![0].toUpperCase() +
+              franchiseeRegisteredTc.paymentMode!.substring(1);
+
+      if (franchiseeRegisteredTc.paymentMode == 'Free') {
+        _selectedPaymentFee = 'Free';
+      } else if (franchiseeRegisteredTc.paymentMode == '10000') {
+        _selectedPaymentFee = 'Prime: ₹ 10,000';
+      } else if (franchiseeRegisteredTc.paymentMode == '30000') {
+        _selectedPaymentFee = 'Premium: ₹ 30,000';
+      } else {
+        _selectedPaymentFee = 'Premium Plus: ₹ 35000';
+      }
+      handleFile(
+          selectedFiles, 'Profile Picture', franchiseeRegisteredTc.profilePic);
+      handleFile(
+          selectedFiles, 'Aadhar Card', franchiseeRegisteredTc.aadharCard);
+      handleFile(selectedFiles, 'Pan Card', franchiseeRegisteredTc.panCard);
+      handleFile(
+          selectedFiles, 'Bank Passbook', franchiseeRegisteredTc.passbook);
+      handleFile(
+          selectedFiles, 'Voting Card', franchiseeRegisteredTc.votingCard);
+      handleFile(
+          selectedFiles, 'Payment Proof', franchiseeRegisteredTc.paymentProof);
+
+      if (_countries.isEmpty) {
+        await _loadCountry();
+      }
+
+      final String countryId = franchiseeRegisteredTc.country!;
+      _selectedCountryId = countryId;
+
+      final countryObject = _countries.firstWhere(
+        (country) => country['id'].toString() == countryId,
+        orElse: () => {'country_name': '---- Select Country ----'},
+      );
+
+      setState(() {
+        _selectedCountry =
+            countryObject['country_name'] ?? '---- Select Country ----';
+        Logger.success(
+            'Set selected country to: $_selectedCountry with ID: $_selectedCountryId');
+      });
+
+      await _loadStates(_selectedCountryId);
+      final String stateId = franchiseeRegisteredTc.state!;
+      _selectedStateId = stateId;
+
+      final stateObject = _states.firstWhere(
+        (state) => state['id'].toString() == stateId,
+        orElse: () => {'state_name': '---- Select State ----'},
+      );
+
+      setState(() {
+        _selectedState = stateObject['state_name'] ?? '---- Select State ----';
+        Logger.success(
+            'Set selected state to: $_selectedState with ID: $_selectedStateId');
+      });
+
+      await _loadCities(_selectedStateId);
+      final String cityId = franchiseeRegisteredTc.city!;
+      _selectedCityId = cityId;
+
+      final cityObject = _cities.firstWhere(
+        (city) => city['id'].toString() == cityId,
+        orElse: () => {'city_name': '---- Select City -----'},
+      );
+
+      setState(() {
+        _selectedCity = cityObject['city_name'] ?? '---- Select City -----';
+        Logger.success(
+            'Set selected city $_selectedCity with ID: $_selectedCityId');
+      });
+    } catch (e, s) {
+      Logger.error('Error populating registered customer: $e, Stacktrace: $s');
+      ToastHelper.showErrorToast(
+          title: 'Error displaying registered customer. $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-     String appBarTitle = 'Add Referral Customer';
+    String appBarTitle = 'Add Travel Consultant';
     if (widget.isViewMode) {
-      appBarTitle = 'View Referral Customer';
+      appBarTitle = 'View Travel Consultant';
     } else if (widget.isEditMode) {
-      appBarTitle = 'Edit Referral Customer';
+      appBarTitle = 'Edit Travel Consultant';
     }
     return Scaffold(
       appBar: AppBar(
@@ -1224,10 +1340,10 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
                       uploadKey: _paymentProofKey,
                     ),
                   const SizedBox(height: 20),
-                 if (widget.isEditMode) ...[
+                  if (widget.isEditMode) ...[
                     Center(
                       child: ElevatedButton(
-                        onPressed: (){},
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
@@ -1245,10 +1361,10 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
                     ),
                   ] else if (!widget.isViewMode) ...[
                     Center(
-                      child: Consumer<TcCustomerController>(
+                      child: Consumer<FranchiseeTcController>(
                         builder: (context, controller, child) {
                           return ElevatedButton(
-                            onPressed:_submitForm, // disable while loading
+                            onPressed: _submitForm, // disable while loading
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
@@ -1257,7 +1373,7 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
                                 borderRadius: BorderRadius.circular(25),
                               ),
                             ),
-                            child: controller.isLoading
+                            child: controller.state == ViewState.loading
                                 ? const SizedBox(
                                     height: 20,
                                     width: 20,

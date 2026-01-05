@@ -65,6 +65,8 @@ class FranchiseeTcController extends ChangeNotifier {
           data.map((item) => FranchiseePendingTc.fromJson(item)).toList();
       _state = ViewState.success;
     } catch (e) {
+
+      Logger.error('Error in fetchPendingTcs: ${e.toString()}');
       _failure = e is Failure ? e : Failure('Something went wrong');
       Logger.error('FranchiseeTcController.fetchPendingTcs: ${e.toString()}');
       _state = ViewState.error;

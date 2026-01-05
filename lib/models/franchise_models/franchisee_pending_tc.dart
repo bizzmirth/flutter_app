@@ -14,6 +14,7 @@ class FranchiseePendingTc {
   String? userType;
   String? userIdName;
   String? referenceName;
+  String? registrant;
 
   String? firstName;
   String? lastName;
@@ -51,6 +52,7 @@ class FranchiseePendingTc {
     this.name,
     this.refId,
     this.refName,
+    this.registrant,
     this.phone,
     this.joiningDate,
     this.status,
@@ -93,6 +95,7 @@ class FranchiseePendingTc {
     name = json['name'];
     refId = json['ref_id'];
     refName = json['ref_name'];
+    registrant = json['registrant'];
     phone = json['phone'];
     joiningDate = json['joining_date'];
     status = json['status'];
@@ -138,6 +141,7 @@ class FranchiseePendingTc {
     data['name'] = name;
     data['ref_id'] = refId;
     data['ref_name'] = refName;
+    data['registrant'] = registrant;
     data['phone'] = phone;
     data['joining_date'] = joiningDate;
     data['status'] = status;
