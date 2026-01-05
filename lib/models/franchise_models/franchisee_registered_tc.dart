@@ -1,5 +1,5 @@
-
 class FranchiseeRegisteredTc {
+  /// ---------- EXISTING FIELDS (UNCHANGED) ----------
   String? tcId;
   String? tcName;
   String? refId;
@@ -19,9 +19,84 @@ class FranchiseeRegisteredTc {
   String? tableName;
   String? listType;
 
-  FranchiseeRegisteredTc({this.tcId, this.tcName, this.refId, this.refName, this.phone, this.joiningDate, this.status, this.statusBadge, this.hasActions, this.canEdit, this.canDelete, this.tcIdForAction, this.referenceNoForAction, this.country, this.state, this.city, this.tableName, this.listType});
+  /// ---------- NEW FIELDS (ADDED) ----------
+  String? firstname;
+  String? lastname;
+  String? nomineeName;
+  String? nomineeRelation;
+  String? email;
+  String? gender;
+  String? countryCode; // backend key is `county_code`
+  String? dob;
+  String? profilePic;
+  String? panCard;
+  String? aadharCard;
+  String? votingCard;
+  String? passbook;
+  String? paymentProof;
+  String? paymentMode;
+  String? chequeNo;
+  String? chequeDate;
+  String? bankName;
+  String? transactionNo;
+  String? address;
+  String? pincode;
+  String? editFor;
+  String? registerBy;
+  String? userType;
+  String? userId;
+  String? userIdName;
+  String? id; // local use only, not in toJson/fromJson
+
+  FranchiseeRegisteredTc({
+    this.tcId,
+    this.tcName,
+    this.refId,
+    this.refName,
+    this.phone,
+    this.joiningDate,
+    this.status,
+    this.statusBadge,
+    this.hasActions,
+    this.canEdit,
+    this.canDelete,
+    this.tcIdForAction,
+    this.referenceNoForAction,
+    this.country,
+    this.state,
+    this.city,
+    this.tableName,
+    this.listType,
+    this.firstname,
+    this.lastname,
+    this.nomineeName,
+    this.nomineeRelation,
+    this.email,
+    this.gender,
+    this.countryCode,
+    this.dob,
+    this.profilePic,
+    this.panCard,
+    this.aadharCard,
+    this.votingCard,
+    this.passbook,
+    this.paymentProof,
+    this.paymentMode,
+    this.chequeNo,
+    this.chequeDate,
+    this.bankName,
+    this.transactionNo,
+    this.address,
+    this.pincode,
+    this.editFor,
+    this.registerBy,
+    this.userType,
+    this.userIdName,
+    this.id,
+  });
 
   FranchiseeRegisteredTc.fromJson(Map<String, dynamic> json) {
+    /// existing
     tcId = json['tc_id'];
     tcName = json['tc_name'];
     refId = json['ref_id'];
@@ -40,10 +115,41 @@ class FranchiseeRegisteredTc {
     city = json['city'];
     tableName = json['table_name'];
     listType = json['list_type'];
+
+    /// new
+    firstname = json['firstname'];
+    lastname = json['lastname'];
+    nomineeName = json['nominee_name'];
+    nomineeRelation = json['nominee_relation'];
+    email = json['email'];
+    gender = json['gender'];
+    countryCode = json['country_code'];
+    dob = json['dob'];
+    profilePic = json['profile_pic'];
+    panCard = json['pan_card'];
+    aadharCard = json['aadhar_card'];
+    votingCard = json['voting_card'];
+    passbook = json['passbook'];
+    paymentProof = json['payment_proof'];
+    paymentMode = json['paymentMode'];
+    chequeNo = json['cheque_no'];
+    chequeDate = json['cheque_date'];
+    bankName = json['bank_name'];
+    transactionNo = json['transaction_no'];
+    address = json['address'];
+    pincode = json['pincode'];
+    editFor = json['editfor'];
+    registerBy = json['register_by'];
+    userType = json['userType'];
+    userIdName = json['user_id_name'];
+    id = json['id'];
+  
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+
+    /// existing
     data['tc_id'] = tcId;
     data['tc_name'] = tcName;
     data['ref_id'] = refId;
@@ -62,6 +168,35 @@ class FranchiseeRegisteredTc {
     data['city'] = city;
     data['table_name'] = tableName;
     data['list_type'] = listType;
+
+    /// new
+    data['firstname'] = firstname;
+    data['lastname'] = lastname;
+    data['nominee_name'] = nomineeName;
+    data['nominee_relation'] = nomineeRelation;
+    data['email'] = email;
+    data['gender'] = gender;
+    data['country_code'] = countryCode;
+    data['dob'] = dob;
+    data['profile_pic'] = profilePic;
+    data['pan_card'] = panCard;
+    data['aadhar_card'] = aadharCard;
+    data['voting_card'] = votingCard;
+    data['passbook'] = passbook;
+    data['payment_proof'] = paymentProof;
+    data['paymentMode'] = paymentMode;
+    data['cheque_no'] = chequeNo;
+    data['cheque_date'] = chequeDate;
+    data['bank_name'] = bankName;
+    data['transaction_no'] = transactionNo;
+    data['address'] = address;
+    data['pincode'] = pincode;
+    data['editfor'] = editFor;
+    data['register_by'] = registerBy;
+    data['userType'] = userType;
+    data['user_id_name'] = userIdName;
+    data['id'] = id;
+
     return data;
   }
 }

@@ -45,7 +45,7 @@ class FranchisePendingTcDataSource extends DataTableSource {
       case 'completed':
         return Colors.green;
       case 'warning':
-        return Colors.red;
+        return Colors.orange;
       default:
         return Colors.grey;
     }

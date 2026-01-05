@@ -217,28 +217,33 @@ const PendingCustomerSchema = CollectionSchema(
       name: r'status',
       type: IsarType.string,
     ),
-    r'taReferenceName': PropertySchema(
+    r'taReference': PropertySchema(
       id: 40,
+      name: r'taReference',
+      type: IsarType.string,
+    ),
+    r'taReferenceName': PropertySchema(
+      id: 41,
       name: r'taReferenceName',
       type: IsarType.string,
     ),
     r'taReferenceNo': PropertySchema(
-      id: 41,
+      id: 42,
       name: r'taReferenceNo',
       type: IsarType.string,
     ),
     r'transactionNo': PropertySchema(
-      id: 42,
+      id: 43,
       name: r'transactionNo',
       type: IsarType.string,
     ),
     r'userType': PropertySchema(
-      id: 43,
+      id: 44,
       name: r'userType',
       type: IsarType.string,
     ),
     r'votingCard': PropertySchema(
-      id: 44,
+      id: 45,
       name: r'votingCard',
       type: IsarType.string,
     )
@@ -504,6 +509,12 @@ int _pendingCustomerEstimateSize(
     }
   }
   {
+    final value = object.taReference;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.taReferenceName;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -582,11 +593,12 @@ void _pendingCustomerSerialize(
   writer.writeString(offsets[37], object.registrant);
   writer.writeString(offsets[38], object.state);
   writer.writeString(offsets[39], object.status);
-  writer.writeString(offsets[40], object.taReferenceName);
-  writer.writeString(offsets[41], object.taReferenceNo);
-  writer.writeString(offsets[42], object.transactionNo);
-  writer.writeString(offsets[43], object.userType);
-  writer.writeString(offsets[44], object.votingCard);
+  writer.writeString(offsets[40], object.taReference);
+  writer.writeString(offsets[41], object.taReferenceName);
+  writer.writeString(offsets[42], object.taReferenceNo);
+  writer.writeString(offsets[43], object.transactionNo);
+  writer.writeString(offsets[44], object.userType);
+  writer.writeString(offsets[45], object.votingCard);
 }
 
 PendingCustomer _pendingCustomerDeserialize(
@@ -637,11 +649,12 @@ PendingCustomer _pendingCustomerDeserialize(
   object.registrant = reader.readStringOrNull(offsets[37]);
   object.state = reader.readStringOrNull(offsets[38]);
   object.status = reader.readStringOrNull(offsets[39]);
-  object.taReferenceName = reader.readStringOrNull(offsets[40]);
-  object.taReferenceNo = reader.readStringOrNull(offsets[41]);
-  object.transactionNo = reader.readStringOrNull(offsets[42]);
-  object.userType = reader.readStringOrNull(offsets[43]);
-  object.votingCard = reader.readStringOrNull(offsets[44]);
+  object.taReference = reader.readStringOrNull(offsets[40]);
+  object.taReferenceName = reader.readStringOrNull(offsets[41]);
+  object.taReferenceNo = reader.readStringOrNull(offsets[42]);
+  object.transactionNo = reader.readStringOrNull(offsets[43]);
+  object.userType = reader.readStringOrNull(offsets[44]);
+  object.votingCard = reader.readStringOrNull(offsets[45]);
   return object;
 }
 
@@ -741,6 +754,8 @@ P _pendingCustomerDeserializeProp<P>(
     case 43:
       return (reader.readStringOrNull(offset)) as P;
     case 44:
+      return (reader.readStringOrNull(offset)) as P;
+    case 45:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -7077,6 +7092,160 @@ extension PendingCustomerQueryFilter
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'taReference',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'taReference',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'taReference',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'taReference',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'taReference',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'taReference',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
+      taReferenceIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'taReference',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterFilterCondition>
       taReferenceNameIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -8399,6 +8568,20 @@ extension PendingCustomerQuerySortBy
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
+      sortByTaReference() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taReference', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
+      sortByTaReferenceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taReference', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
       sortByTaReferenceName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'taReferenceName', Sort.asc);
@@ -9027,6 +9210,20 @@ extension PendingCustomerQuerySortThenBy
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
+      thenByTaReference() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taReference', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
+      thenByTaReferenceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taReference', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QAfterSortBy>
       thenByTaReferenceName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'taReferenceName', Sort.asc);
@@ -9383,6 +9580,13 @@ extension PendingCustomerQueryWhereDistinct
   }
 
   QueryBuilder<PendingCustomer, PendingCustomer, QDistinct>
+      distinctByTaReference({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'taReference', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PendingCustomer, PendingCustomer, QDistinct>
       distinctByTaReferenceName({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'taReferenceName',
@@ -9683,6 +9887,13 @@ extension PendingCustomerQueryProperty
   QueryBuilder<PendingCustomer, String?, QQueryOperations> statusProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'status');
+    });
+  }
+
+  QueryBuilder<PendingCustomer, String?, QQueryOperations>
+      taReferenceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'taReference');
     });
   }
 

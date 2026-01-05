@@ -1,4 +1,6 @@
 import 'package:bizzmirth_app/models/franchise_models/franchisee_registered_tc.dart';
+import 'package:bizzmirth_app/screens/dashboards/franchise/travel_consultant/add_franchise_tc.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 
 class FranchiseRegisteredTcDataSource extends DataTableSource {
@@ -12,7 +14,7 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
 
     return DataRow(
       cells: [
-        DataCell(Text('${order.tcId} - ${order.tcName}')),
+        DataCell(Text('${order.tcId} - ${order.firstname} ${order.lastname}')),
         DataCell(Text('${order.refId} - ${order.refName}')),
         DataCell(Text(order.phone ?? 'N/A')),
         DataCell(Text(order.joiningDate ?? 'N/A')),
@@ -29,7 +31,7 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(_buildActionMenu()),
+        DataCell(_buildActionMenu(order)),
       ],
     );
   }
@@ -52,24 +54,53 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
   }
 
 // Action Menu Widget
-  Widget _buildActionMenu() {
+  Widget _buildActionMenu(FranchiseeRegisteredTc registeredTc) {
     return PopupMenuButton<String>(
       onSelected: (value) {
         // Handle menu actions
       },
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'view',
           child: ListTile(
-            leading: Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
-            title: Text('View'),
+            leading: const Icon(Icons.remove_red_eye_sharp, color: Colors.blue),
+            title: const Text('View'),
+            onTap: () {
+              Logger.info(
+                  'View action for TC ID: ${registeredTc.tcId} and Name: ${registeredTc.tcName}');
+              Navigator.pop(context);
+              // Navigate to view details page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddFranchiseTc(
+                    isViewMode: true,
+                    franchiseeRegisteredTc: registeredTc,
+                  ),
+                ),
+              );
+            },
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'edit',
           child: ListTile(
-            leading: Icon(Icons.edit, color: Color.fromARGB(255, 0, 105, 190)),
-            title: Text('Edit'),
+            leading:
+                const Icon(Icons.edit, color: Color.fromARGB(255, 0, 105, 190)),
+            title: const Text('Edit'),
+            onTap: () {
+              Navigator.pop(context);
+              // Navigate to view details page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddFranchiseTc(
+                    isEditMode: true,
+                    franchiseeRegisteredTc: registeredTc,
+                  ),
+                ),
+              );
+            },
           ),
         ),
         const PopupMenuItem(

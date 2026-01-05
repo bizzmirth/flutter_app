@@ -9,6 +9,7 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AddViewTechnoPage extends StatefulWidget {
@@ -102,7 +103,7 @@ class _AddViewTechnoPageState extends State<AddViewTechnoPage> {
         DateFormat('dd-MM-yyyy').parse(_dateController.text),
       );
       Logger.success('formatted date:: $formattedDate');
-      final int? id = widget.pendingTechnoEnterprise!.id;
+      final Id? id = widget.pendingTechnoEnterprise!.id;
       final PendingTechnoEnterpriseModel updateTechnoEnterprise =
           PendingTechnoEnterpriseModel()
             ..id = id
