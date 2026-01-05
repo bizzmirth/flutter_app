@@ -14,7 +14,7 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
 
     return DataRow(
       cells: [
-        DataCell(Text('${order.tcId} - ${order.tcName}')),
+        DataCell(Text('${order.tcId} - ${order.firstname} ${order.lastname}')),
         DataCell(Text('${order.refId} - ${order.refName}')),
         DataCell(Text(order.phone ?? 'N/A')),
         DataCell(Text(order.joiningDate ?? 'N/A')),
@@ -92,9 +92,14 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
               Navigator.pop(context);
               // Navigate to view details page
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AddFranchiseTc()));
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddFranchiseTc(
+                    isEditMode: true,
+                    franchiseeRegisteredTc: registeredTc,
+                  ),
+                ),
+              );
             },
           ),
         ),

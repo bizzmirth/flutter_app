@@ -45,6 +45,7 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
 
   final _formKey = GlobalKey<FormState>();
   final SharedPrefHelper _sharedPrefHelper = SharedPrefHelper();
+  bool _isLoading = false;
 
   // ------------------------------- text controller for the form fields ---------------------------------------
   final TextEditingController _taReferenceIdController =
@@ -745,6 +746,7 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
   Future<void> populateRegisteredTcData(
       FranchiseeRegisteredTc franchiseeRegisteredTc) async {
     try {
+      _isLoading = true;
       _fNameController.text = franchiseeRegisteredTc.firstname ?? '';
       _lNameController.text = franchiseeRegisteredTc.lastname ?? '';
       _nomineeNameController.text = franchiseeRegisteredTc.nomineeName ?? '';
@@ -848,6 +850,144 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
       Logger.error('Error populating registered customer: $e, Stacktrace: $s');
       ToastHelper.showErrorToast(
           title: 'Error displaying registered customer. $e');
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  Future<void> updateRegisteredTc() async {
+    try {
+      final controller =
+          Provider.of<FranchiseeTcController>(context, listen: false);
+      final Map<String, String> documentPaths = {};
+      Logger.info(
+          'Updating registered TC form data ${widget.franchiseeRegisteredTc}');
+
+      // Helper function to extract relative path from full URL or return as-is
+      String getRelativePath(dynamic value) {
+        if (value == null) return '';
+
+        String filePath;
+        if (value is File) {
+          filePath = value.path;
+        } else {
+          filePath = value.toString();
+        }
+
+        // If it's a full URL from existing data, extract just the filename part
+        if (filePath.startsWith('https://testca.uniqbizz.com/uploading/')) {
+          // Extract everything after "/uploading/"
+          return filePath.split('/uploading/').last;
+        }
+
+        return filePath;
+      }
+
+      selectedFiles.forEach(
+        (key, value) {
+          if (value != null) {
+            final String relativePath = getRelativePath(value);
+
+            switch (key) {
+              case 'Profile Picture':
+                documentPaths['profilePicture'] = relativePath;
+                break;
+              case 'Aadhar Card':
+                documentPaths['adharCard'] = relativePath;
+                break;
+              case 'Pan Card':
+                documentPaths['panCard'] = relativePath;
+                break;
+              case 'Bank Passbook':
+                documentPaths['bankPassbook'] = relativePath;
+                break;
+              case 'Voting Card':
+                documentPaths['votingCard'] = relativePath;
+                break;
+              case 'Payment Proof':
+                documentPaths['paymentProof'] = relativePath;
+            }
+          }
+        },
+      );
+      if (selectedFiles['Profile Picture'] != null &&
+          selectedFiles['Profile Picture'] is File) {
+        await controller.uploadImage(
+            'profile_pic', selectedFiles['Profile Picture']!.path);
+      }
+      if (selectedFiles['Aadhar Card'] != null &&
+          selectedFiles['Aadhar Card'] is File) {
+        await controller.uploadImage(
+            'aadhar_card', selectedFiles['Aadhar Card']!.path);
+      }
+      if (selectedFiles['Pan Card'] != null &&
+          selectedFiles['Pan Card'] is File) {
+        await controller.uploadImage(
+            'pan_card', selectedFiles['Pan Card']!.path);
+      }
+      if (selectedFiles['Voting Card'] != null &&
+          selectedFiles['Voting Card'] is File) {
+        await controller.uploadImage(
+            'voting_card', selectedFiles['Voting Card']!.path);
+      }
+      if (selectedFiles['Bank Passbook'] != null &&
+          selectedFiles['Bank Passbook'] is File) {
+        await controller.uploadImage(
+            'passbook', selectedFiles['Bank Passbook']!.path);
+      }
+      if (selectedFiles['Payment Proof'] != null &&
+          selectedFiles['Payment Proof'] is File) {
+        await controller.uploadImage(
+            'payment_proof', selectedFiles['Payment Proof']!.path);
+      }
+      if (_selectedPaymentMode == 'Cheque') {
+        chequeNo = _chequeNoController.text;
+        chequeDate = _chequeDateController.text;
+        bankName = _bankNameController.text;
+      } else if (_selectedPaymentMode == 'UPI/NEFT') {
+        transactionId = _transactionIDController.text;
+      }
+      final String id = widget.franchiseeRegisteredTc!.tcId!;
+      Logger.success('Updating registered TC with ID: $id');
+
+      final updatedTc = FranchiseeRegisteredTc()
+        ..editFor = 'registered'
+        ..refId = _taReferenceIdController.text
+        ..tcId = id
+        ..firstname = _fNameController.text
+        ..lastname = _lNameController.text
+        ..nomineeName = _nomineeNameController.text
+        ..nomineeRelation = _nomineeRelationController.text
+        ..email = _emailController.text
+        ..dob = _dateController.text
+        ..gender = formatGender(_selectedGender)
+        ..countryCode = sanitizeCountryCode(_selectedCountryId)
+        ..phone = _phoneController.text
+        ..country = _selectedCountryId
+        ..state = _selectedStateId
+        ..city = _selectedCityId
+        ..pincode = _pincodeController.text
+        ..address = _addressController.text
+        ..profilePic = documentPaths['profilePicture']
+        ..aadharCard = documentPaths['adharCard']
+        ..panCard = documentPaths['panCard']
+        ..passbook = documentPaths['bankPassbook']
+        ..votingCard = documentPaths['votingCard']
+        ..paymentProof = documentPaths['paymentProof']
+        ..paymentMode = _selectedPaymentMode
+        ..chequeDate = chequeDate
+        ..chequeNo = chequeNo
+        ..bankName = bankName
+        ..transactionNo = transactionId
+        ..registerBy = AppData.franchiseeUserType
+        ..userType = '29'
+        ..userIdName = id
+        ..id = id;
+      await controller.apiUpdateRegisteredTc(updatedTc);
+      clearFormFields();
+      MyNavigator.pop(true);
+    } catch (e, s) {
+      Logger.error('Error updating form: $e, Stacktrace: $s');
     }
   }
 
@@ -869,535 +1009,600 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
         backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blue.shade900, Colors.blueAccent.shade200],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 10),
-                  _buildTextField(
-                    'User Id & Name',
-                    _taReferenceIdController,
-                    fieldKey: _taRefIdKey,
-                    forceReadOnly: true,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    'Reference Name',
-                    _taReferenceNameController,
-                    fieldKey: _taRefNameKey,
-                    forceReadOnly: true,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    'First Name*',
-                    _fNameController,
-                    fieldKey: _fNameKey,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    'Last Name*',
-                    _lNameController,
-                    fieldKey: _lNameKey,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    'Nominee Name*',
-                    _nomineeNameController,
-                    fieldKey: _nomineeName,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    'Nominee Relation*',
-                    _nomineeRelationController,
-                    fieldKey: _nomineeRelation,
-                  ),
-                  const SizedBox(height: 15),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        // Country code dropdown
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 3, horizontal: 10.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: DropdownButton<String>(
-                            value: _selectedCountryCode,
-                            onChanged: (newValue) {
-                              setState(() {
-                                _selectedCountryCode = newValue!;
-                              });
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue.shade900, Colors.blueAccent.shade200],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKey,
+                  child: SingleChildScrollView(
+                    child: Consumer<FranchiseeTcController>(
+                      builder: (context, controller, _) {
+                        final isLoading = controller.state == ViewState.loading;
+                        if (isLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        // 2️⃣ Error
+                        if (controller.state == ViewState.error) {
+                          WidgetsBinding.instance.addPostFrameCallback(
+                            (_) {
+                              ToastHelper.showErrorToast(
+                                  title: controller.failure?.message ??
+                                      'Something went wrong');
                             },
-                            items: AppData.countryCodeOptions.map((value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Container(
-                                  width:
-                                      50, // Adjust this value to reduce the width of each item
-                                  alignment: Alignment.center,
-                                  child: Text(value,
+                          );
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            _buildTextField(
+                              'User Id & Name',
+                              _taReferenceIdController,
+                              fieldKey: _taRefIdKey,
+                              forceReadOnly: true,
+                            ),
+                            const SizedBox(height: 15),
+                            _buildTextField(
+                              'Reference Name',
+                              _taReferenceNameController,
+                              fieldKey: _taRefNameKey,
+                              forceReadOnly: true,
+                            ),
+                            const SizedBox(height: 15),
+                            _buildTextField(
+                              'First Name*',
+                              _fNameController,
+                              fieldKey: _fNameKey,
+                            ),
+                            const SizedBox(height: 15),
+                            _buildTextField(
+                              'Last Name*',
+                              _lNameController,
+                              fieldKey: _lNameKey,
+                            ),
+                            const SizedBox(height: 15),
+                            _buildTextField(
+                              'Nominee Name*',
+                              _nomineeNameController,
+                              fieldKey: _nomineeName,
+                            ),
+                            const SizedBox(height: 15),
+                            _buildTextField(
+                              'Nominee Relation*',
+                              _nomineeRelationController,
+                              fieldKey: _nomineeRelation,
+                            ),
+                            const SizedBox(height: 15),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Row(
+                                children: [
+                                  // Country code dropdown
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 3, horizontal: 10.0),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: DropdownButton<String>(
+                                      value: _selectedCountryCode,
+                                      onChanged: (newValue) {
+                                        setState(
+                                          () {
+                                            _selectedCountryCode = newValue!;
+                                          },
+                                        );
+                                      },
+                                      items: AppData.countryCodeOptions
+                                          .map((value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Container(
+                                            width:
+                                                50, // Adjust this value to reduce the width of each item
+                                            alignment: Alignment.center,
+                                            child: Text(value,
+                                                style: const TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 255, 255, 255))),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      dropdownColor:
+                                          const Color.fromARGB(255, 83, 83, 83),
+                                      underline:
+                                          const SizedBox(), // Hides the default underline
+                                    ),
+                                  ),
+                                  // Phone number text field
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _phoneController,
+                                      key: _mobileKey,
+                                      keyboardType: TextInputType.phone,
+                                      maxLength:
+                                          10, // Limit to typical phone number length
                                       style: const TextStyle(
                                           color: Color.fromARGB(
-                                              255, 255, 255, 255))),
-                                ),
-                              );
-                            }).toList(),
-                            dropdownColor:
-                                const Color.fromARGB(255, 83, 83, 83),
-                            underline:
-                                const SizedBox(), // Hides the default underline
-                          ),
-                        ),
-                        // Phone number text field
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            controller: _phoneController,
-                            key: _mobileKey,
-                            keyboardType: TextInputType.phone,
-                            maxLength:
-                                10, // Limit to typical phone number length
-                            style: const TextStyle(
-                                color: Color.fromARGB(255, 255, 255, 255)),
-                            decoration: InputDecoration(
-                              labelText: 'Phone number',
-                              labelStyle: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.8)),
-                              filled: true,
-                              fillColor: Colors.white.withValues(alpha: 0.2),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              counterText: '', // Hide character counter
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    'Email *',
-                    _emailController,
-                    fieldKey: _emailKey,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildDropdown(
-                    'Gender *',
-                    AppData.genderOptions,
-                    _selectedGender,
-                    (value) => setState(() {
-                      _selectedGender = value!;
-                    }),
-                    fieldKey: _genderKey,
-                  ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      controller: _dateController,
-                      key: _dobKey,
-                      readOnly: true, // Makes the TextFormField non-editable
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: 'Date of Birth *',
-                        labelStyle: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.8)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white.withValues(alpha: 0.2),
-                        suffixIcon: _dateController.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.close,
-                                    color: Colors.white),
-                                onPressed: () {
-                                  setState(_dateController.clear);
-                                },
-                              )
-                            : null, // Only show cancel button if date is selected
-                      ),
-                      onTap: () async {
-                        final DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: _dateController.text.isNotEmpty
-                              ? DateFormat('dd-MM-yyyy')
-                                  .parse(_dateController.text)
-                              : DateTime.now(),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime(2100),
-                        );
-                        if (pickedDate != null) {
-                          setState(() {
-                            _dateController.text =
-                                DateFormat('dd-MM-yyyy').format(pickedDate);
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  _buildDropdown(
-                    'Country *',
-                    _countryNames,
-                    _selectedCountry,
-                    (value) => setState(
-                      () {
-                        _selectedCountry = value!;
-                        final selectedCountryObject = _countries.firstWhere(
-                            (country) => country['country_name'] == value,
-                            orElse: () => null);
-                        if (selectedCountryObject != null) {
-                          _selectedCountryId =
-                              selectedCountryObject['id'].toString();
-                          Logger.success(
-                              'selected country is $_selectedCountry ID : $_selectedCountryId');
-                        }
-                        _loadStates(_selectedCountryId);
-                      },
-                    ),
-                    fieldKey: _countryKey,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildDropdown(
-                    'State *',
-                    _stateNames,
-                    _selectedState,
-                    (value) => setState(
-                      () {
-                        _selectedState = value!;
-
-                        final selectedStateObject = _states.firstWhere(
-                            (state) => state['state_name'] == value,
-                            orElse: () => null);
-                        if (selectedStateObject != null) {
-                          _selectedStateId =
-                              selectedStateObject['id'].toString();
-                          Logger.success(
-                              'selected state is $_selectedState ID : $_selectedStateId');
-                          _loadCities(_selectedStateId);
-                        }
-                      },
-                    ),
-                    emptyMessage: 'Please select a country first.',
-                    fieldKey: _stateKey,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildDropdown(
-                    'City *',
-                    _cityNames,
-                    _selectedCity,
-                    (value) => setState(
-                      () {
-                        _selectedCity = value!;
-                        final selectedCityObject = _cities.firstWhere(
-                            (city) => city['city_name'] == value,
-                            orElse: () => null);
-                        if (selectedCityObject != null) {
-                          _selectedCityId = selectedCityObject['id'].toString();
-                          Logger.success(
-                              'selected city is $_selectedCity ID : $_selectedCityId');
-                        }
-                        getPincode(_selectedCityId);
-                      },
-                    ),
-                    emptyMessage: 'Please select a state first',
-                    fieldKey: _cityKey,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildTextField(
-                    'Pincode *',
-                    _pincodeController,
-                    fieldKey: _pincodeKey,
-                    forceReadOnly: true,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    'Address *',
-                    _addressController,
-                    fieldKey: _addressKey,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildDropdown(
-                    'Payment Fee *',
-                    AppData.paymentFeeFranchiseOptions,
-                    _selectedPaymentFee,
-                    (value) => setState(() {
-                      _selectedPaymentFee = value!;
-                    }),
-                    fieldKey: _paymentFeeKey,
-                  ),
-                  const SizedBox(height: 10),
-                  if (_selectedPaymentFee != 'Free')
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 2),
-                        FormField<String>(
-                          key: _paymentModeKey,
-                          validator: (value) {
-                            if (_selectedPaymentMode.isEmpty) {
-                              return 'Please select a payment mode';
-                            }
-                            return null;
-                          },
-                          builder: (fieldState) => Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              RichText(
-                                text: const TextSpan(
-                                  text: 'Payment Mode * ',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.white),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 4),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.2),
+                                              255, 255, 255, 255)),
+                                      decoration: InputDecoration(
+                                        labelText: 'Phone number',
+                                        labelStyle: TextStyle(
+                                            color: Colors.white
+                                                .withValues(alpha: 0.8)),
+                                        filled: true,
+                                        fillColor:
+                                            Colors.white.withValues(alpha: 0.2),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        counterText:
+                                            '', // Hide character counter
+                                      ),
+                                    ),
                                   ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            _buildTextField(
+                              'Email *',
+                              _emailController,
+                              fieldKey: _emailKey,
+                            ),
+                            const SizedBox(height: 15),
+                            _buildDropdown(
+                              'Gender *',
+                              AppData.genderOptions,
+                              _selectedGender,
+                              (value) => setState(() {
+                                _selectedGender = value!;
+                              }),
+                              fieldKey: _genderKey,
+                            ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: TextFormField(
+                                controller: _dateController,
+                                key: _dobKey,
+                                readOnly:
+                                    true, // Makes the TextFormField non-editable
+                                style: const TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                  labelText: 'Date of Birth *',
+                                  labelStyle: TextStyle(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.8)),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  filled: true,
+                                  fillColor:
+                                      Colors.white.withValues(alpha: 0.2),
+                                  suffixIcon: _dateController.text.isNotEmpty
+                                      ? IconButton(
+                                          icon: const Icon(Icons.close,
+                                              color: Colors.white),
+                                          onPressed: () {
+                                            setState(_dateController.clear);
+                                          },
+                                        )
+                                      : null, // Only show cancel button if date is selected
                                 ),
-                                child: Row(
-                                  children: ['Cash', 'Cheque', 'UPI/NEFT']
-                                      .map((package) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _selectedPaymentMode = package;
-                                        });
-                                      },
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          // Radio<String>(
-                                          //   value: package,
-                                          //   groupValue:
-                                          //       _selectedPaymentMode,
-                                          //   activeColor: Colors
-                                          //       .white, // Change radio button color
-                                          //   onChanged: (value) {
-                                          //     setState(() {
-                                          //       _selectedPaymentMode =
-                                          //           value!;
-                                          //       Logger.success(
-                                          //           "Selected payment Mode: $_selectedPaymentMode");
-                                          //     });
-                                          //   },
-                                          // ),
-                                          RadioGroup<String>(
-                                              groupValue: _selectedPaymentMode,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  _selectedPaymentMode = value!;
-                                                  Logger.success(
-                                                      'Selected payment Mode: $_selectedPaymentMode');
-                                                });
-                                              },
-                                              child: Radio<String>(
-                                                value: package,
-                                              )),
-                                          Text(
-                                            package,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors
-                                                  .white, // Gray out text if disabled
+                                onTap: () async {
+                                  final DateTime? pickedDate =
+                                      await showDatePicker(
+                                    context: context,
+                                    initialDate: _dateController.text.isNotEmpty
+                                        ? DateFormat('dd-MM-yyyy')
+                                            .parse(_dateController.text)
+                                        : DateTime.now(),
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime(2100),
+                                  );
+                                  if (pickedDate != null) {
+                                    setState(() {
+                                      _dateController.text =
+                                          DateFormat('dd-MM-yyyy')
+                                              .format(pickedDate);
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _buildDropdown(
+                              'Country *',
+                              _countryNames,
+                              _selectedCountry,
+                              (value) => setState(
+                                () {
+                                  _selectedCountry = value!;
+                                  final selectedCountryObject =
+                                      _countries.firstWhere(
+                                          (country) =>
+                                              country['country_name'] == value,
+                                          orElse: () => null);
+                                  if (selectedCountryObject != null) {
+                                    _selectedCountryId =
+                                        selectedCountryObject['id'].toString();
+                                    Logger.success(
+                                        'selected country is $_selectedCountry ID : $_selectedCountryId');
+                                  }
+                                  _loadStates(_selectedCountryId);
+                                },
+                              ),
+                              fieldKey: _countryKey,
+                            ),
+                            const SizedBox(height: 10),
+                            _buildDropdown(
+                              'State *',
+                              _stateNames,
+                              _selectedState,
+                              (value) => setState(
+                                () {
+                                  _selectedState = value!;
+
+                                  final selectedStateObject =
+                                      _states.firstWhere(
+                                          (state) =>
+                                              state['state_name'] == value,
+                                          orElse: () => null);
+                                  if (selectedStateObject != null) {
+                                    _selectedStateId =
+                                        selectedStateObject['id'].toString();
+                                    Logger.success(
+                                        'selected state is $_selectedState ID : $_selectedStateId');
+                                    _loadCities(_selectedStateId);
+                                  }
+                                },
+                              ),
+                              emptyMessage: 'Please select a country first.',
+                              fieldKey: _stateKey,
+                            ),
+                            const SizedBox(height: 10),
+                            _buildDropdown(
+                              'City *',
+                              _cityNames,
+                              _selectedCity,
+                              (value) => setState(
+                                () {
+                                  _selectedCity = value!;
+                                  final selectedCityObject = _cities.firstWhere(
+                                      (city) => city['city_name'] == value,
+                                      orElse: () => null);
+                                  if (selectedCityObject != null) {
+                                    _selectedCityId =
+                                        selectedCityObject['id'].toString();
+                                    Logger.success(
+                                        'selected city is $_selectedCity ID : $_selectedCityId');
+                                  }
+                                  getPincode(_selectedCityId);
+                                },
+                              ),
+                              emptyMessage: 'Please select a state first',
+                              fieldKey: _cityKey,
+                            ),
+                            const SizedBox(height: 10),
+                            _buildTextField(
+                              'Pincode *',
+                              _pincodeController,
+                              fieldKey: _pincodeKey,
+                              forceReadOnly: true,
+                            ),
+                            const SizedBox(height: 15),
+                            _buildTextField(
+                              'Address *',
+                              _addressController,
+                              fieldKey: _addressKey,
+                            ),
+                            const SizedBox(height: 20),
+                            _buildDropdown(
+                              'Payment Fee *',
+                              AppData.paymentFeeFranchiseOptions,
+                              _selectedPaymentFee,
+                              (value) => setState(() {
+                                _selectedPaymentFee = value!;
+                              }),
+                              fieldKey: _paymentFeeKey,
+                            ),
+                            const SizedBox(height: 10),
+                            if (_selectedPaymentFee != 'Free')
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 2),
+                                  FormField<String>(
+                                    key: _paymentModeKey,
+                                    validator: (value) {
+                                      if (_selectedPaymentMode.isEmpty) {
+                                        return 'Please select a payment mode';
+                                      }
+                                      return null;
+                                    },
+                                    builder: (fieldState) => Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        RichText(
+                                          text: const TextSpan(
+                                            text: 'Payment Mode * ',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: Colors.white
+                                                  .withValues(alpha: 0.2),
                                             ),
                                           ),
-                                          const SizedBox(
-                                              width:
-                                                  10), // Spacing between radio buttons
-                                        ],
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                              if (fieldState.hasError)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 5),
-                                  child: Text(
-                                    fieldState.errorText ?? '',
-                                    style: const TextStyle(
-                                        color: Colors.redAccent, fontSize: 13),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  const SizedBox(height: 20),
-                  if (_selectedPaymentMode == 'Cheque') ...[
-                    _buildTextField(
-                      'Cheque No. *', _chequeNoController,
-                      // fieldKey: _chequeNoKey,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Cheque No. is required';
-                        }
-                        return null;
-                      },
-                      fieldKey: _chequeNoKey,
-                    ),
-                    const SizedBox(height: 10),
-                    _buildTextField(
-                      'Cheque  Date *', _chequeDateController,
-                      // fieldKey: _chequeDateKey,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Cheque Date is required';
-                        }
-                        return null;
-                      },
-                      fieldKey: _chequeDateKey,
-                    ),
-                    const SizedBox(height: 10),
-                    _buildTextField(
-                      'Bank Name *',
-                      _bankNameController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Bank Date is required';
-                        }
-                        return null;
-                      },
-                      fieldKey: _bankNameKey,
-                    ),
-                    const SizedBox(height: 10),
-                  ] else if (_selectedPaymentMode == 'UPI/NEFT') ...[
-                    _buildTextField(
-                      'Transaction No. *',
-                      _transactionIDController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Transaction No. is required';
-                        }
-                        return null;
-                      },
-                      fieldKey: _transactionNoKey,
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-                  const SizedBox(height: 20),
-                  Text(
-                    'Attachments',
-                    style: Appwidget.normalSubTitle(),
-                  ),
-                  const SizedBox(height: 10),
-                  _buildUploadButton(
-                    'Profile Picture',
-                    showError: _showImageValidationErrors,
-                    uploadKey: _profilePicKey,
-                  ),
-                  _buildUploadButton(
-                    'Aadhar Card',
-                    showError: _showImageValidationErrors,
-                    uploadKey: _aadharCardKey,
-                  ),
-                  _buildUploadButton(
-                    'Pan Card',
-                    showError: _showImageValidationErrors,
-                    uploadKey: _panCardKey,
-                  ),
-                  _buildUploadButton(
-                    'Bank Passbook',
-                    showError: _showImageValidationErrors,
-                    uploadKey: _bankPassbookKey,
-                  ),
-                  _buildUploadButton(
-                    'Voting Card',
-                    showError: _showImageValidationErrors,
-                    uploadKey: _votingCardKey,
-                  ),
-                  if (_selectedPaymentFee != 'Free')
-                    _buildUploadButton(
-                      'Payment Proof',
-                      showError: _showImageValidationErrors,
-                      uploadKey: _paymentProofKey,
-                    ),
-                  const SizedBox(height: 20),
-                  if (widget.isEditMode) ...[
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                        ),
-                        child: const Text(
-                          'Save Changes',
-                          style:
-                              TextStyle(color: Colors.blueAccent, fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ] else if (!widget.isViewMode) ...[
-                    Center(
-                      child: Consumer<FranchiseeTcController>(
-                        builder: (context, controller, child) {
-                          return ElevatedButton(
-                            onPressed: _submitForm, // disable while loading
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                            child: controller.state == ViewState.loading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.blueAccent,
+                                          child: Row(
+                                            children: [
+                                              'Cash',
+                                              'Cheque',
+                                              'UPI/NEFT'
+                                            ].map((package) {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _selectedPaymentMode =
+                                                        package;
+                                                  });
+                                                },
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    // Radio<String>(
+                                                    //   value: package,
+                                                    //   groupValue:
+                                                    //       _selectedPaymentMode,
+                                                    //   activeColor: Colors
+                                                    //       .white, // Change radio button color
+                                                    //   onChanged: (value) {
+                                                    //     setState(() {
+                                                    //       _selectedPaymentMode =
+                                                    //           value!;
+                                                    //       Logger.success(
+                                                    //           "Selected payment Mode: $_selectedPaymentMode");
+                                                    //     });
+                                                    //   },
+                                                    // ),
+                                                    RadioGroup<String>(
+                                                        groupValue:
+                                                            _selectedPaymentMode,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            _selectedPaymentMode =
+                                                                value!;
+                                                            Logger.success(
+                                                                'Selected payment Mode: $_selectedPaymentMode');
+                                                          });
+                                                        },
+                                                        child: Radio<String>(
+                                                          value: package,
+                                                        )),
+                                                    Text(
+                                                      package,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: Colors
+                                                            .white, // Gray out text if disabled
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                        width:
+                                                            10), // Spacing between radio buttons
+                                                  ],
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ),
+                                        if (fieldState.hasError)
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 5),
+                                            child: Text(
+                                              fieldState.errorText ?? '',
+                                              style: const TextStyle(
+                                                  color: Colors.redAccent,
+                                                  fontSize: 13),
+                                            ),
+                                          ),
+                                      ],
                                     ),
-                                  )
-                                : const Text(
-                                    'Submit',
+                                  ),
+                                ],
+                              ),
+                            const SizedBox(height: 20),
+                            if (_selectedPaymentMode == 'Cheque') ...[
+                              _buildTextField(
+                                'Cheque No. *', _chequeNoController,
+                                // fieldKey: _chequeNoKey,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Cheque No. is required';
+                                  }
+                                  return null;
+                                },
+                                fieldKey: _chequeNoKey,
+                              ),
+                              const SizedBox(height: 10),
+                              _buildTextField(
+                                'Cheque  Date *', _chequeDateController,
+                                // fieldKey: _chequeDateKey,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Cheque Date is required';
+                                  }
+                                  return null;
+                                },
+                                fieldKey: _chequeDateKey,
+                              ),
+                              const SizedBox(height: 10),
+                              _buildTextField(
+                                'Bank Name *',
+                                _bankNameController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Bank Date is required';
+                                  }
+                                  return null;
+                                },
+                                fieldKey: _bankNameKey,
+                              ),
+                              const SizedBox(height: 10),
+                            ] else if (_selectedPaymentMode == 'UPI/NEFT') ...[
+                              _buildTextField(
+                                'Transaction No. *',
+                                _transactionIDController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Transaction No. is required';
+                                  }
+                                  return null;
+                                },
+                                fieldKey: _transactionNoKey,
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                            const SizedBox(height: 20),
+                            Text(
+                              'Attachments',
+                              style: Appwidget.normalSubTitle(),
+                            ),
+                            const SizedBox(height: 10),
+                            _buildUploadButton(
+                              'Profile Picture',
+                              showError: _showImageValidationErrors,
+                              uploadKey: _profilePicKey,
+                            ),
+                            _buildUploadButton(
+                              'Aadhar Card',
+                              showError: _showImageValidationErrors,
+                              uploadKey: _aadharCardKey,
+                            ),
+                            _buildUploadButton(
+                              'Pan Card',
+                              showError: _showImageValidationErrors,
+                              uploadKey: _panCardKey,
+                            ),
+                            _buildUploadButton(
+                              'Bank Passbook',
+                              showError: _showImageValidationErrors,
+                              uploadKey: _bankPassbookKey,
+                            ),
+                            _buildUploadButton(
+                              'Voting Card',
+                              showError: _showImageValidationErrors,
+                              uploadKey: _votingCardKey,
+                            ),
+                            if (_selectedPaymentFee != 'Free')
+                              _buildUploadButton(
+                                'Payment Proof',
+                                showError: _showImageValidationErrors,
+                                uploadKey: _paymentProofKey,
+                              ),
+                            const SizedBox(height: 20),
+                            if (widget.isEditMode) ...[
+                              Center(
+                                child: ElevatedButton(
+                                  onPressed: updateRegisteredTc,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(
+                                        255, 204, 197, 197),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Save Changes',
                                     style: TextStyle(
                                         color: Colors.blueAccent, fontSize: 16),
                                   ),
-                          );
-                        },
-                      ),
+                                ),
+                              ),
+                            ] else if (!widget.isViewMode) ...[
+                              Center(
+                                child: Consumer<FranchiseeTcController>(
+                                  builder: (context, controller, child) {
+                                    return ElevatedButton(
+                                      onPressed:
+                                          _submitForm, // disable while loading
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 12),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                        ),
+                                      ),
+                                      child: controller.state ==
+                                              ViewState.loading
+                                          ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: Colors.blueAccent,
+                                              ),
+                                            )
+                                          : const Text(
+                                              'Submit',
+                                              style: TextStyle(
+                                                  color: Colors.blueAccent,
+                                                  fontSize: 16),
+                                            ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ]
+                          ],
+                        );
+                      },
                     ),
-                  ]
-                ],
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 

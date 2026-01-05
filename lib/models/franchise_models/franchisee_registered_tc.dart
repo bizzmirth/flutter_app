@@ -41,6 +41,12 @@ class FranchiseeRegisteredTc {
   String? transactionNo;
   String? address;
   String? pincode;
+  String? editFor;
+  String? registerBy;
+  String? userType;
+  String? userId;
+  String? userIdName;
+  String? id; // local use only, not in toJson/fromJson
 
   FranchiseeRegisteredTc({
     this.tcId,
@@ -82,6 +88,11 @@ class FranchiseeRegisteredTc {
     this.transactionNo,
     this.address,
     this.pincode,
+    this.editFor,
+    this.registerBy,
+    this.userType,
+    this.userIdName,
+    this.id,
   });
 
   FranchiseeRegisteredTc.fromJson(Map<String, dynamic> json) {
@@ -127,6 +138,12 @@ class FranchiseeRegisteredTc {
     transactionNo = json['transaction_no'];
     address = json['address'];
     pincode = json['pincode'];
+    editFor = json['editfor'];
+    registerBy = json['register_by'];
+    userType = json['userType'];
+    userIdName = json['user_id_name'];
+    id = json['id'];
+  
   }
 
   Map<String, dynamic> toJson() {
@@ -174,6 +191,11 @@ class FranchiseeRegisteredTc {
     data['transaction_no'] = transactionNo;
     data['address'] = address;
     data['pincode'] = pincode;
+    data['editfor'] = editFor;
+    data['register_by'] = registerBy;
+    data['userType'] = userType;
+    data['user_id_name'] = userIdName;
+    data['id'] = id;
 
     return data;
   }

@@ -65,7 +65,6 @@ class FranchiseeTcController extends ChangeNotifier {
           data.map((item) => FranchiseePendingTc.fromJson(item)).toList();
       _state = ViewState.success;
     } catch (e) {
-
       Logger.error('Error in fetchPendingTcs: ${e.toString()}');
       _failure = e is Failure ? e : Failure('Something went wrong');
       Logger.error('FranchiseeTcController.fetchPendingTcs: ${e.toString()}');
@@ -173,7 +172,7 @@ class FranchiseeTcController extends ChangeNotifier {
     }
   }
 
-   Future<void> uploadImage(String folder, String savedImagePath) async {
+  Future<void> uploadImage(String folder, String savedImagePath) async {
     try {
       final fullUrl = AppUrls.uploadImage;
       final request = http.MultipartRequest('POST', Uri.parse(fullUrl));
@@ -205,6 +204,67 @@ class FranchiseeTcController extends ChangeNotifier {
       // }
     } catch (e) {
       Logger.error('Error uploading image: $e');
+    }
+  }
+
+  Future<void> apiUpdateRegisteredTc(
+      FranchiseeRegisteredTc registeredTc) async {
+    _state = ViewState.loading;
+    _failure = null;
+    notifyListeners();
+    try {
+      if (registeredTc.dob != null && registeredTc.dob!.isNotEmpty) {
+        try {
+          final oldDob = registeredTc.dob!;
+          final DateTime parsedDate = DateFormat('dd-MM-yyyy').parse(oldDob);
+          registeredTc.dob = DateFormat('yyyy-MM-dd').format(parsedDate);
+        } catch (e) {
+          Logger.warning('Invalid DOB format: ${registeredTc.dob}');
+        }
+        if (registeredTc.profilePic != null) {
+          registeredTc.profilePic =
+              extractPathSegment(registeredTc.profilePic!, 'profile_pic/');
+        }
+        if (registeredTc.aadharCard != null) {
+          registeredTc.aadharCard =
+              extractPathSegment(registeredTc.aadharCard!, 'aadhar_card/');
+        }
+        if (registeredTc.panCard != null) {
+          registeredTc.panCard =
+              extractPathSegment(registeredTc.panCard!, 'pan_card/');
+        }
+        if (registeredTc.passbook != null) {
+          registeredTc.passbook =
+              extractPathSegment(registeredTc.passbook!, 'passbook/');
+        }
+        if (registeredTc.votingCard != null) {
+          registeredTc.votingCard =
+              extractPathSegment(registeredTc.votingCard!, 'voting_card/');
+        }
+        if (registeredTc.paymentProof != null) {
+          registeredTc.paymentProof =
+              extractPathSegment(registeredTc.paymentProof!, 'payment_proof/');
+        }
+        final Map<String, dynamic> body = registeredTc.toJson();
+        Logger.info(
+            'Final FranchiseeTcController.apiUpdateRegisteredTc Body: $body');
+        final response = await _apiService.post(AppUrls.franchiseeEditTc, body);
+        if (response['success'] != true) {
+          throw Failure(
+              response['message'] ?? 'Failed to load top travel consultants');
+        }
+        Logger.info('Franchisee Registered TCs: $response');
+        ToastHelper.showSuccessToast(title: '${response['message']}');
+        Logger.info('Franchisee Registered TCs: $response');
+        await fetchRegisteredTcs();
+        _state = ViewState.success;
+      }
+    } catch (e, s) {
+      Logger.error('Error updating registered TC: $e, Stacktrace: $s');
+      _failure = e is Failure ? e : Failure('Something went wrong');
+      _state = ViewState.error;
+    } finally {
+      notifyListeners();
     }
   }
 }

@@ -863,31 +863,33 @@ class _AddCustomerTc extends State<AddCustomerTc> {
         return filePath;
       }
 
-      selectedFiles.forEach((key, value) {
-        if (value != null) {
-          final String relativePath = getRelativePath(value);
+      selectedFiles.forEach(
+        (key, value) {
+          if (value != null) {
+            final String relativePath = getRelativePath(value);
 
-          switch (key) {
-            case 'Profile Picture':
-              documentPaths['profilePicture'] = relativePath;
-              break;
-            case 'Aadhar Card':
-              documentPaths['adharCard'] = relativePath;
-              break;
-            case 'Pan Card':
-              documentPaths['panCard'] = relativePath;
-              break;
-            case 'Bank Passbook':
-              documentPaths['bankPassbook'] = relativePath;
-              break;
-            case 'Voting Card':
-              documentPaths['votingCard'] = relativePath;
-              break;
-            case 'Payment Proof':
-              documentPaths['paymentProof'] = relativePath;
+            switch (key) {
+              case 'Profile Picture':
+                documentPaths['profilePicture'] = relativePath;
+                break;
+              case 'Aadhar Card':
+                documentPaths['adharCard'] = relativePath;
+                break;
+              case 'Pan Card':
+                documentPaths['panCard'] = relativePath;
+                break;
+              case 'Bank Passbook':
+                documentPaths['bankPassbook'] = relativePath;
+                break;
+              case 'Voting Card':
+                documentPaths['votingCard'] = relativePath;
+                break;
+              case 'Payment Proof':
+                documentPaths['paymentProof'] = relativePath;
+            }
           }
-        }
-      });
+        },
+      );
 
       if (selectedFiles['Profile Picture'] != null &&
           selectedFiles['Profile Picture'] is File) {
