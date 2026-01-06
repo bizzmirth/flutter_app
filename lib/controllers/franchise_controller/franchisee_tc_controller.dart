@@ -213,11 +213,13 @@ class FranchiseeTcController extends ChangeNotifier {
     _failure = null;
     notifyListeners();
     try {
-      if (registeredTc.dateOfBirth != null && registeredTc.dateOfBirth!.isNotEmpty) {
+      if (registeredTc.dateOfBirth != null &&
+          registeredTc.dateOfBirth!.isNotEmpty) {
         try {
           final oldDob = registeredTc.dateOfBirth!;
           final DateTime parsedDate = DateFormat('dd-MM-yyyy').parse(oldDob);
-          registeredTc.dateOfBirth = DateFormat('yyyy-MM-dd').format(parsedDate);
+          registeredTc.dateOfBirth =
+              DateFormat('yyyy-MM-dd').format(parsedDate);
         } catch (e) {
           Logger.warning('Invalid DOB format: ${registeredTc.dateOfBirth}');
         }
@@ -269,23 +271,29 @@ class FranchiseeTcController extends ChangeNotifier {
   }
 
   Future<void> apiDeleteRegisteredTc(
-      FranchiseeRegisteredTc registeredTc) async {
+      FranchiseeRegisteredTc registeredTc, String action) async {
     _state = ViewState.loading;
     _failure = null;
     notifyListeners();
     try {
       final Map<String, dynamic> body = {
-       
-        'refid': '',
-        'fid': '',
-        'action': 'deleted',
-        'userId': '',
+        'id': registeredTc.id,
+        'refid': registeredTc.referenceNo,
+        'fid': registeredTc.caTravelagencyId,
+        'action': action,
+        'userId': registeredTc.referenceNo,
         'userType': AppData.franchiseeUserType
       };
       Logger.info(
           'Final FranchiseeTcController.apiDeleteRegisteredTc Body: $body');
-          // final response = await _apiService.post(AppUrls.deleteFranchiseeTc, body);
-    
+      final response = await _apiService.post(AppUrls.deleteFranchiseeTc, body);
+      Logger.info('Delete TC Response: $response');
+      if (response['success'] != true) {
+        Logger.info('Franchisee Registered TCs: $response');
+        throw Failure(response['message'] ??
+            'Failed to delete registered travel consultant');
+      }
+      ToastHelper.showSuccessToast(title: '${response['message']}');
     } catch (e, s) {
       Logger.error('Error deleting TC registered TC: $e, Stacktrace: $s');
       _failure = e is Failure ? e : Failure('Something went wrong');
@@ -294,4 +302,6 @@ class FranchiseeTcController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  
 }

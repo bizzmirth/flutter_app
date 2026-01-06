@@ -1,5 +1,6 @@
 import 'package:bizzmirth_app/models/franchise_models/franchisee_pending_tc.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/status_badge.dart';
 import 'package:flutter/material.dart';
 
 class FranchisePendingTcDataSource extends DataTableSource {
@@ -20,53 +21,10 @@ class FranchisePendingTcDataSource extends DataTableSource {
         DataCell(Text(order.contactNo ?? 'N/A')),
         DataCell(Text(formatDate(order.addedOn))),
         DataCell(
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: getStatusColor(order.status!).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: getStatusColor(order.status!).withValues(alpha: 0.3),
-              ),
-            ),
-            child: Text(
-              getStatusText(order.status!),
-              style: TextStyle(
-                color: getStatusColor(order.status!),
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
-            ),
-          ),
+          StatusBadge(status: order.status!),
         ),
       ],
     );
-  }
-
-  Color getStatusColor(String status) {
-    switch (status) {
-      case '1':
-        return Colors.green;
-      case '2':
-        return Colors.orange;
-      case '3':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String getStatusText(String status) {
-    switch (status) {
-      case '1':
-        return 'Active';
-      case '2':
-        return 'Pending';
-      case '3':
-        return 'Inactive';
-      default:
-        return 'Unknown';
-    }
   }
 
   @override
