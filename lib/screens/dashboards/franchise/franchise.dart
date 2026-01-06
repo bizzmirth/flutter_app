@@ -185,7 +185,6 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                       );
                     },
                   ),
-                  // TODO: packages shall be added later
                   ListTile(
                     leading: const Icon(Icons.support_agent),
                     title: const Text('Travel Consultant'),
