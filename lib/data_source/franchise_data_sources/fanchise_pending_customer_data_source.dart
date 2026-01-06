@@ -1,7 +1,9 @@
+import 'package:bizzmirth_app/models/franchise_models/franchisee_pending_customer.dart';
+import 'package:bizzmirth_app/utils/status_badge.dart';
 import 'package:flutter/material.dart';
 
 class FanchisePendingCustomerDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
+  final List<FranchiseePendingCustomer> data;
   FanchisePendingCustomerDataSource(this.data, this.context);
   final BuildContext context;
 
@@ -12,45 +14,20 @@ class FanchisePendingCustomerDataSource extends DataTableSource {
 
     return DataRow(
       cells: [
-        DataCell(Text(order['srNo']?.toString() ?? 'N/A')),
-        DataCell(Text(order['name']?.toString() ?? 'N/A')),
-        DataCell(Text(order['refId']?.toString() ?? 'N/A')),
-        DataCell(Text(order['refName']?.toString() ?? 'N/A')),
-        DataCell(Text(order['phone']?.toString() ?? 'N/A')),
-        DataCell(Text(order['jd']?.toString() ?? 'N/A')),
+        DataCell(Text(order.id ?? 'N/A')),
+        DataCell(Text('${order.firstname} ${order.lastname}')),
+        DataCell(Text(order.referenceNo ?? 'N/A')),
+        DataCell(Text(order.registerBy ?? 'N/A')),
+        DataCell(Text(order.contactNo ?? 'N/A')),
+        DataCell(Text(order.addedOn ?? 'N/A')),
         DataCell(
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order['status']?.toString() ?? ''),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order['status']?.toString() ?? 'Unknown',
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
+          StatusBadge(status: order.status!)
         ),
       ],
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'approved':
-        return Colors.blue;
-      case 'processing':
-        return Colors.purple;
-      case 'pending':
-        return Colors.orange;
-      case 'completed':
-        return Colors.green;
-      case 'cancelled':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
+ 
 
   @override
   int get rowCount => data.length;

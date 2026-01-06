@@ -203,7 +203,7 @@ class _FranchiseDashboardPageState extends State<FranchiseDashboardPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const FranchiseCustomer()),
+                            builder: (context) => const FranchiseCustomerPage()),
                       );
                     },
                   ),
