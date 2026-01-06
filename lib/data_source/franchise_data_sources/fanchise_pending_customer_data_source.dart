@@ -1,4 +1,5 @@
 import 'package:bizzmirth_app/models/franchise_models/franchisee_pending_customer.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/status_badge.dart';
 import 'package:flutter/material.dart';
 
@@ -16,10 +17,10 @@ class FanchisePendingCustomerDataSource extends DataTableSource {
       cells: [
         DataCell(Text(order.id ?? 'N/A')),
         DataCell(Text('${order.firstname} ${order.lastname}')),
-        DataCell(Text(order.referenceNo ?? 'N/A')),
-        DataCell(Text(order.registerBy ?? 'N/A')),
+        DataCell(Text(order.taReferenceNo ?? 'N/A')),
+        DataCell(Text(order.taReferenceName ?? 'N/A')),
         DataCell(Text(order.contactNo ?? 'N/A')),
-        DataCell(Text(order.addedOn ?? 'N/A')),
+        DataCell(Text(formatDate(order.addedOn))),
         DataCell(
           StatusBadge(status: order.status!)
         ),

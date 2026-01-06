@@ -49,12 +49,13 @@ class FranchiseeCustomerController extends ChangeNotifier {
       if (response['status'] != true) {
         _failure = Failure(response['message'] ?? 'Something went wrong');
         _state = ViewState.error;
-      } else {
+      } 
         final List<dynamic> data = response['data'] ?? [];
         _pendingCustomers =
             data.map((e) => FranchiseePendingCustomer.fromJson(e)).toList();
+            Logger.success('Fetched ${_pendingCustomers.length} pending customers');
         _state = ViewState.success;
-      }
+      
     } catch (e) {
       Logger.error('Error fetching franchisee pending customers: $e');
       _failure = Failure(e.toString());
