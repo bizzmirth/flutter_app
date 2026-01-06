@@ -156,7 +156,7 @@ class _FranchiseTcState extends State<FranchiseTc> {
                           DataColumn(label: Text('Status')),
                           DataColumn(label: Text('Action')),
                         ],
-                        source: FranchiseRegisteredTcDataSource(
+                        source: FranchiseRegisteredTcDataSource(context,
                             controller.registeredTcs),
                         rowsPerPage: _rowsPerPage1,
                         availableRowsPerPage: AppData.availableRowsPerPage,

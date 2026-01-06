@@ -246,4 +246,7 @@ class AppUrls {
 
   static String get franchiseeEditTc =>
       '$_franchisee/travel_consultants/edit_travel_consultants.php';
+
+  static String get deleteFranchiseeTc =>
+      '$_franchisee/travel_consultants/delete_travel_consultants.php';
 }

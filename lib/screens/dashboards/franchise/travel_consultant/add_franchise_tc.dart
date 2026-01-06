@@ -762,9 +762,9 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
       } else {
         _selectedCountryCode = '+91';
       }
-      _phoneController.text = franchiseeRegisteredTc.phone ?? '';
+      _phoneController.text = franchiseeRegisteredTc.contactNo ?? '';
       _emailController.text = franchiseeRegisteredTc.email ?? '';
-      _dateController.text = franchiseeRegisteredTc.dob ?? '';
+      _dateController.text = franchiseeRegisteredTc.dateOfBirth ?? '';
       _selectedGender = normalizeGender(franchiseeRegisteredTc.gender!);
       _addressController.text = franchiseeRegisteredTc.address ?? '';
       _pincodeController.text = franchiseeRegisteredTc.pincode ?? '';
@@ -947,22 +947,22 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
       } else if (_selectedPaymentMode == 'UPI/NEFT') {
         transactionId = _transactionIDController.text;
       }
-      final String id = widget.franchiseeRegisteredTc!.tcId!;
+      final String id = widget.franchiseeRegisteredTc!.id!;
       Logger.success('Updating registered TC with ID: $id');
 
       final updatedTc = FranchiseeRegisteredTc()
         ..editFor = 'registered'
-        ..refId = _taReferenceIdController.text
-        ..tcId = id
+        ..referenceNo = _taReferenceIdController.text
+        ..id = id
         ..firstname = _fNameController.text
         ..lastname = _lNameController.text
         ..nomineeName = _nomineeNameController.text
         ..nomineeRelation = _nomineeRelationController.text
         ..email = _emailController.text
-        ..dob = _dateController.text
+        ..dateOfBirth = _dateController.text
         ..gender = formatGender(_selectedGender)
         ..countryCode = sanitizeCountryCode(_selectedCountryId)
-        ..phone = _phoneController.text
+        ..contactNo = _phoneController.text
         ..country = _selectedCountryId
         ..state = _selectedStateId
         ..city = _selectedCityId
@@ -981,7 +981,7 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
         ..transactionNo = transactionId
         ..registerBy = AppData.franchiseeUserType
         ..userType = '29'
-        ..userIdName = id
+        
         ..id = id;
       await controller.apiUpdateRegisteredTc(updatedTc);
       clearFormFields();

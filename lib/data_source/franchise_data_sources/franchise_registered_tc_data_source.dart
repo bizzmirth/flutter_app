@@ -1,11 +1,14 @@
+import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_tc_controller.dart';
 import 'package:bizzmirth_app/models/franchise_models/franchisee_registered_tc.dart';
 import 'package:bizzmirth_app/screens/dashboards/franchise/travel_consultant/add_franchise_tc.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FranchiseRegisteredTcDataSource extends DataTableSource {
+  final BuildContext context;
   final List<FranchiseeRegisteredTc> data;
-  FranchiseRegisteredTcDataSource(this.data);
+  FranchiseRegisteredTcDataSource(this.context, this.data);
 
   @override
   DataRow? getRow(int index) {
@@ -14,47 +17,63 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
 
     return DataRow(
       cells: [
-        DataCell(Text('${order.tcId} - ${order.firstname} ${order.lastname}')),
-        DataCell(Text('${order.refId} - ${order.refName}')),
-        DataCell(Text(order.phone ?? 'N/A')),
-        DataCell(Text(order.joiningDate ?? 'N/A')),
+        DataCell(Text(
+            '${order.caTravelagencyId} - ${order.firstname} ${order.lastname}')),
+        DataCell(Text('${order.referenceNo} - ${order.registrant}')),
+        DataCell(Text(order.contactNo ?? 'N/A')),
+        DataCell(Text(order.registerDate ?? 'N/A')),
         DataCell(
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: _getStatusColor(order.status ?? ''),
-              borderRadius: BorderRadius.circular(4),
+              color: getStatusColor(order.status!).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: getStatusColor(order.status!).withValues(alpha: 0.3),
+              ),
             ),
             child: Text(
-              order.status ?? 'Unknown',
-              style: const TextStyle(color: Colors.white),
+              getStatusText(order.status!),
+              style: TextStyle(
+                color: getStatusColor(order.status!),
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
             ),
           ),
         ),
-        DataCell(_buildActionMenu(order)),
+        DataCell(_buildActionMenu(context, order)),
       ],
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'approved':
-        return Colors.blue;
-      case 'processing':
-        return Colors.purple;
-      case 'pending':
-        return Colors.orange;
-      case 'active':
+  Color getStatusColor(String status) {
+    switch (status) {
+      case '1':
         return Colors.green;
-      case 'cancelled':
+      case '3':
         return Colors.red;
       default:
         return Colors.grey;
     }
   }
 
+  String getStatusText(String status) {
+    switch (status) {
+      case '1':
+        return 'Active';
+      case '3':
+        return 'Inactive';
+      default:
+        return 'Unknown';
+    }
+  }
+
 // Action Menu Widget
-  Widget _buildActionMenu(FranchiseeRegisteredTc registeredTc) {
+  Widget _buildActionMenu(
+      BuildContext context, FranchiseeRegisteredTc registeredTc) {
+    final controller =
+        Provider.of<FranchiseeTcController>(context, listen: false);
     return PopupMenuButton<String>(
       onSelected: (value) {
         // Handle menu actions
@@ -67,7 +86,7 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
             title: const Text('View'),
             onTap: () {
               Logger.info(
-                  'View action for TC ID: ${registeredTc.tcId} and Name: ${registeredTc.tcName}');
+                  'View action for TC ID: ${registeredTc.caTravelagencyId} and Name: ${registeredTc.firstname}');
               Navigator.pop(context);
               // Navigate to view details page
               Navigator.push(
@@ -103,11 +122,16 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
             },
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'delete',
           child: ListTile(
-            leading: Icon(Icons.delete, color: Colors.red),
-            title: Text('Delete'),
+            leading: const Icon(Icons.delete, color: Colors.red),
+            title: const Text('Delete'),
+            onTap: () {
+              Logger.info(
+                  'Delete action for TC ID: ${registeredTc.caTravelagencyId} and Name: ${registeredTc.firstname} and Id : ${registeredTc.id}');
+              Navigator.pop(context);
+            },
           ),
         ),
       ],

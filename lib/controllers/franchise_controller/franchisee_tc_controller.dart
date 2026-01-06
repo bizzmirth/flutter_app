@@ -213,13 +213,13 @@ class FranchiseeTcController extends ChangeNotifier {
     _failure = null;
     notifyListeners();
     try {
-      if (registeredTc.dob != null && registeredTc.dob!.isNotEmpty) {
+      if (registeredTc.dateOfBirth != null && registeredTc.dateOfBirth!.isNotEmpty) {
         try {
-          final oldDob = registeredTc.dob!;
+          final oldDob = registeredTc.dateOfBirth!;
           final DateTime parsedDate = DateFormat('dd-MM-yyyy').parse(oldDob);
-          registeredTc.dob = DateFormat('yyyy-MM-dd').format(parsedDate);
+          registeredTc.dateOfBirth = DateFormat('yyyy-MM-dd').format(parsedDate);
         } catch (e) {
-          Logger.warning('Invalid DOB format: ${registeredTc.dob}');
+          Logger.warning('Invalid DOB format: ${registeredTc.dateOfBirth}');
         }
         if (registeredTc.profilePic != null) {
           registeredTc.profilePic =
@@ -261,6 +261,33 @@ class FranchiseeTcController extends ChangeNotifier {
       }
     } catch (e, s) {
       Logger.error('Error updating registered TC: $e, Stacktrace: $s');
+      _failure = e is Failure ? e : Failure('Something went wrong');
+      _state = ViewState.error;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<void> apiDeleteRegisteredTc(
+      FranchiseeRegisteredTc registeredTc) async {
+    _state = ViewState.loading;
+    _failure = null;
+    notifyListeners();
+    try {
+      final Map<String, dynamic> body = {
+       
+        'refid': '',
+        'fid': '',
+        'action': 'deleted',
+        'userId': '',
+        'userType': AppData.franchiseeUserType
+      };
+      Logger.info(
+          'Final FranchiseeTcController.apiDeleteRegisteredTc Body: $body');
+          // final response = await _apiService.post(AppUrls.deleteFranchiseeTc, body);
+    
+    } catch (e, s) {
+      Logger.error('Error deleting TC registered TC: $e, Stacktrace: $s');
       _failure = e is Failure ? e : Failure('Something went wrong');
       _state = ViewState.error;
     } finally {
