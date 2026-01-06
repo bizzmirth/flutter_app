@@ -1,6 +1,7 @@
 import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_tc_controller.dart';
 import 'package:bizzmirth_app/models/franchise_models/franchisee_registered_tc.dart';
 import 'package:bizzmirth_app/screens/dashboards/franchise/travel_consultant/add_franchise_tc.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,7 @@ class FranchiseRegisteredTcDataSource extends DataTableSource {
             '${order.caTravelagencyId} - ${order.firstname} ${order.lastname}')),
         DataCell(Text('${order.referenceNo} - ${order.registrant}')),
         DataCell(Text(order.contactNo ?? 'N/A')),
-        DataCell(Text(order.registerDate ?? 'N/A')),
+        DataCell(Text(formatDate(order.registerDate))),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

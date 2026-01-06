@@ -1,4 +1,5 @@
 import 'package:bizzmirth_app/models/franchise_models/franchisee_pending_tc.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class FranchisePendingTcDataSource extends DataTableSource {
@@ -13,20 +14,28 @@ class FranchisePendingTcDataSource extends DataTableSource {
     return DataRow(
       cells: [
         DataCell(Text(order.id ?? 'N/A')),
-        DataCell(Text(order.name ?? 'N/A')),
-        DataCell(Text('${order.refId ?? 'N/A'} - ${order.refName ?? 'N/A'}')),
-        DataCell(Text(order.phone ?? 'N/A')),
-        DataCell(Text(order.joiningDate ?? 'N/A')),
+        DataCell(Text('${order.firstname} ${order.lastname}')),
+        DataCell(Text(
+            '${order.referenceNo ?? 'N/A'} - ${order.registrant ?? 'N/A'}')),
+        DataCell(Text(order.contactNo ?? 'N/A')),
+        DataCell(Text(formatDate(order.addedOn))),
         DataCell(
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: _getStatusColor(order.statusBadge ?? ''),
-              borderRadius: BorderRadius.circular(4),
+              color: getStatusColor(order.status!).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: getStatusColor(order.status!).withValues(alpha: 0.3),
+              ),
             ),
             child: Text(
-              order.status ?? 'Unknown',
-              style: const TextStyle(color: Colors.white),
+              getStatusText(order.status!),
+              style: TextStyle(
+                color: getStatusColor(order.status!),
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
             ),
           ),
         ),
@@ -34,20 +43,29 @@ class FranchisePendingTcDataSource extends DataTableSource {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'approved':
-        return Colors.blue;
-      case 'processing':
-        return Colors.purple;
-      case 'pending':
-        return Colors.orange;
-      case 'completed':
+  Color getStatusColor(String status) {
+    switch (status) {
+      case '1':
         return Colors.green;
-      case 'warning':
+      case '2':
         return Colors.orange;
+      case '3':
+        return Colors.red;
       default:
         return Colors.grey;
+    }
+  }
+
+  String getStatusText(String status) {
+    switch (status) {
+      case '1':
+        return 'Active';
+      case '2':
+        return 'Pending';
+      case '3':
+        return 'Inactive';
+      default:
+        return 'Unknown';
     }
   }
 

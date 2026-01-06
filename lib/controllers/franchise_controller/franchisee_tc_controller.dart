@@ -110,13 +110,13 @@ class FranchiseeTcController extends ChangeNotifier {
     _failure = null;
     notifyListeners();
     try {
-      if (pendingTc.dob != null && pendingTc.dob!.isNotEmpty) {
+      if (pendingTc.dateOfBirth != null && pendingTc.dateOfBirth!.isNotEmpty) {
         try {
-          final oldDob = pendingTc.dob!;
+          final oldDob = pendingTc.dateOfBirth!;
           final DateTime parsedDate = DateFormat('dd-MM-yyyy').parse(oldDob);
-          pendingTc.dob = DateFormat('yyyy-MM-dd').format(parsedDate);
+          pendingTc.dateOfBirth = DateFormat('yyyy-MM-dd').format(parsedDate);
         } catch (e) {
-          Logger.warning('Invalid DOB format: ${pendingTc.dob}');
+          Logger.warning('Invalid DOB format: ${pendingTc.dateOfBirth}');
         }
       }
 
