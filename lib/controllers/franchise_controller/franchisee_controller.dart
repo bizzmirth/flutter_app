@@ -117,7 +117,7 @@ class FranchiseeController extends ChangeNotifier {
         AppUrls.getFranchiseLineChartData,
         {
           'year': selectedYear,
-          'current_year': 2025,
+          'current_year': 2026,
           'user_id': userId,
           'user_type': AppData.franchiseeUserType,
         },

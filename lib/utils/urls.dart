@@ -17,6 +17,13 @@ class AppUrls {
   static String get _travelConsultant => '$_users/travel_consultant';
   static String get _franchisee => '$_users/franchise';
 
+  // ===================== COMMON ENDPOINTS =====================
+  static String get getCountries => '$baseUrl/country.php';
+
+  static String get getStates => '$baseUrl/state_city.php';
+
+  static String get getPincode => '$baseUrl/pincode.php';
+
   // ==================== HOMEPAGE TOUR PACKAGE DETAILS ====================
   static String get getTourPackages =>
       '$_homepage/packages/best_destinations.php';
@@ -222,11 +229,24 @@ class AppUrls {
   static String get getFranchiseLineChartData =>
       '$_franchisee/dashboard/chartData.php';
 
-  static String get getFranchiseeTopTravelConsultants => '$_franchisee/dashboard/top_travel_consultants_referral.php';
+  static String get getFranchiseeTopTravelConsultants =>
+      '$_franchisee/dashboard/top_travel_consultants_referral.php';
 
-  static String get getFranchiseeCandidates => '$_franchisee/dashboard/candidate_count.php';
+  static String get getFranchiseeCandidates =>
+      '$_franchisee/dashboard/candidate_count.php';
 
-  static String get getFranchiseePendingTc => '$_franchisee/travel_consultants/travel_consultants_pending.php';
+  static String get getFranchiseePendingTc =>
+      '$_franchisee/travel_consultants/travel_consultants_pending.php';
 
-  static String get getFranchiseeRegisteredTc => '$_franchisee/travel_consultants/travel_consultants_registered.php';
+  static String get getFranchiseeRegisteredTc =>
+      '$_franchisee/travel_consultants/travel_consultants_registered.php';
+
+  static String get franchiseeAddTc =>
+      '$_franchisee/travel_consultants/add_travel_consultants.php';
+
+  static String get franchiseeEditTc =>
+      '$_franchisee/travel_consultants/edit_travel_consultants.php';
+
+  static String get deleteFranchiseeTc =>
+      '$_franchisee/travel_consultants/delete_travel_consultants.php';
 }

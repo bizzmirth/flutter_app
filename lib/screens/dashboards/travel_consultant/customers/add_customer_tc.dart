@@ -475,31 +475,33 @@ class _AddCustomerTc extends State<AddCustomerTc> {
         return;
       }
 
-      selectedFiles.forEach((key, value) {
-        if (value != null) {
-          final String filePath = value.path;
+      selectedFiles.forEach(
+        (key, value) {
+          if (value != null) {
+            final String filePath = value.path;
 
-          switch (key) {
-            case 'Profile Picture':
-              documentPaths['profilePicture'] = filePath;
-              break;
-            case 'Aadhar Card':
-              documentPaths['adharCard'] = filePath;
-              break;
-            case 'Pan Card':
-              documentPaths['panCard'] = filePath;
-              break;
-            case 'Bank Passbook':
-              documentPaths['bankPassbook'] = filePath;
-              break;
-            case 'Voting Card':
-              documentPaths['votingCard'] = filePath;
-              break;
-            case 'Payment Proof':
-              documentPaths['paymentProof'] = filePath;
+            switch (key) {
+              case 'Profile Picture':
+                documentPaths['profilePicture'] = filePath;
+                break;
+              case 'Aadhar Card':
+                documentPaths['adharCard'] = filePath;
+                break;
+              case 'Pan Card':
+                documentPaths['panCard'] = filePath;
+                break;
+              case 'Bank Passbook':
+                documentPaths['bankPassbook'] = filePath;
+                break;
+              case 'Voting Card':
+                documentPaths['votingCard'] = filePath;
+                break;
+              case 'Payment Proof':
+                documentPaths['paymentProof'] = filePath;
+            }
           }
-        }
-      });
+        },
+      );
 
 // -------------------------------- upload the selected image ------------------------------------
       if (selectedFiles['Profile Picture'] != null) {
@@ -861,31 +863,33 @@ class _AddCustomerTc extends State<AddCustomerTc> {
         return filePath;
       }
 
-      selectedFiles.forEach((key, value) {
-        if (value != null) {
-          final String relativePath = getRelativePath(value);
+      selectedFiles.forEach(
+        (key, value) {
+          if (value != null) {
+            final String relativePath = getRelativePath(value);
 
-          switch (key) {
-            case 'Profile Picture':
-              documentPaths['profilePicture'] = relativePath;
-              break;
-            case 'Aadhar Card':
-              documentPaths['adharCard'] = relativePath;
-              break;
-            case 'Pan Card':
-              documentPaths['panCard'] = relativePath;
-              break;
-            case 'Bank Passbook':
-              documentPaths['bankPassbook'] = relativePath;
-              break;
-            case 'Voting Card':
-              documentPaths['votingCard'] = relativePath;
-              break;
-            case 'Payment Proof':
-              documentPaths['paymentProof'] = relativePath;
+            switch (key) {
+              case 'Profile Picture':
+                documentPaths['profilePicture'] = relativePath;
+                break;
+              case 'Aadhar Card':
+                documentPaths['adharCard'] = relativePath;
+                break;
+              case 'Pan Card':
+                documentPaths['panCard'] = relativePath;
+                break;
+              case 'Bank Passbook':
+                documentPaths['bankPassbook'] = relativePath;
+                break;
+              case 'Voting Card':
+                documentPaths['votingCard'] = relativePath;
+                break;
+              case 'Payment Proof':
+                documentPaths['paymentProof'] = relativePath;
+            }
           }
-        }
-      });
+        },
+      );
 
       if (selectedFiles['Profile Picture'] != null &&
           selectedFiles['Profile Picture'] is File) {
@@ -1459,9 +1463,11 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                     uploadKey: _votingCardKey,
                   ),
                   if (_selectedPaymentFee != 'Free')
-                    _buildUploadButton('Payment Proof',
-                        showError: _showImageValidationErrors,
-                        uploadKey: _paymentProofKey),
+                    _buildUploadButton(
+                      'Payment Proof',
+                      showError: _showImageValidationErrors,
+                      uploadKey: _paymentProofKey,
+                    ),
                   const SizedBox(height: 20),
                   if (widget.isEditMode) ...[
                     Center(
