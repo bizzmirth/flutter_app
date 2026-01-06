@@ -1,4 +1,6 @@
 import 'package:bizzmirth_app/models/franchise_models/franchisee_pending_tc.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/status_badge.dart';
 import 'package:flutter/material.dart';
 
 class FranchisePendingTcDataSource extends DataTableSource {
@@ -13,42 +15,16 @@ class FranchisePendingTcDataSource extends DataTableSource {
     return DataRow(
       cells: [
         DataCell(Text(order.id ?? 'N/A')),
-        DataCell(Text(order.name ?? 'N/A')),
-        DataCell(Text('${order.refId ?? 'N/A'} - ${order.refName ?? 'N/A'}')),
-        DataCell(Text(order.phone ?? 'N/A')),
-        DataCell(Text(order.joiningDate ?? 'N/A')),
+        DataCell(Text('${order.firstname} ${order.lastname}')),
+        DataCell(Text(
+            '${order.referenceNo ?? 'N/A'} - ${order.registrant ?? 'N/A'}')),
+        DataCell(Text(order.contactNo ?? 'N/A')),
+        DataCell(Text(formatDate(order.addedOn))),
         DataCell(
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order.statusBadge ?? ''),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              order.status ?? 'Unknown',
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
+          StatusBadge(status: order.status!),
         ),
       ],
     );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'approved':
-        return Colors.blue;
-      case 'processing':
-        return Colors.purple;
-      case 'pending':
-        return Colors.orange;
-      case 'completed':
-        return Colors.green;
-      case 'warning':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
   }
 
   @override
