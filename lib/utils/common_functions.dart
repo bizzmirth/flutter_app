@@ -193,3 +193,16 @@ Color convertColor(String? color) {
       return Colors.grey; // fallback
   }
 }
+
+// takes `compcheck` as input and returns Complimentary/Non-Complimentary/N/A
+String isComplimentary(String? compcheck){
+  switch(compcheck){
+    case '1':
+      return 'Complimentary';
+    case '2':
+      return 'Non-Complimentary';
+    default:
+      return 'N/A';
+  }
+
+}
