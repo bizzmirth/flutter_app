@@ -1,9 +1,10 @@
 import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_customer_controller.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/fanchise_pending_customer_data_source.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_registered_customer_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,7 @@ class _FranchiseCustomerPageState extends State<FranchiseCustomerPage> {
     final controller =
         Provider.of<FranchiseeCustomerController>(context, listen: false);
     await controller.fetchFranchiseePendingCustomers();
+    await controller.fetchFranchiseeRegisteredCustomers();
   }
 
   @override
@@ -50,6 +52,23 @@ class _FranchiseCustomerPageState extends State<FranchiseCustomerPage> {
       ),
       body: Consumer<FranchiseeCustomerController>(
         builder: (context, controller, _) {
+            final isLoading = controller.state == ViewState.loading;
+          if (isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          // 2️⃣ Error
+          if (controller.state == ViewState.error) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+                ToastHelper.showErrorToast(
+                    title:
+                        controller.failure?.message ?? 'Something went wrong');
+              },
+            );
+          }
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -147,8 +166,8 @@ class _FranchiseCustomerPageState extends State<FranchiseCustomerPage> {
                           DataColumn(label: Text('Joining Date')),
                           DataColumn(label: Text('Status')),
                         ],
-                        source: FranchiseRegisteredCustomerDataSource(
-                          orders1,
+                        source: FranchiseRegisteredCustomerDataSource( // TODO: complete this module 
+                          controller.registeredCustomers,
                           this.context,
                         ),
                         rowsPerPage: _rowsPerPage1,
