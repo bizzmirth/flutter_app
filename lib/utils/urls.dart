@@ -235,6 +235,8 @@ class AppUrls {
   static String get getFranchiseeCandidates =>
       '$_franchisee/dashboard/candidate_count.php';
 
+  // ==================== FRANCHISEE TRAVEL CONSULTANT ENDPOINTS ====================
+
   static String get getFranchiseePendingTc =>
       '$_franchisee/travel_consultants/travel_consultants_pending.php';
 
@@ -249,4 +251,11 @@ class AppUrls {
 
   static String get deleteFranchiseeTc =>
       '$_franchisee/travel_consultants/delete_travel_consultants.php';
+
+  // ==================== FRANCHISEE CUSTOMER ENDPOINTS ====================
+  static String get getFranchiseePendingCustomers =>
+      '$_franchisee/customers/customers_pending.php';
+
+  static String get getFranchiseeRegisteredCustomers =>
+      '$_franchisee/customers/customers_registered.php';
 }

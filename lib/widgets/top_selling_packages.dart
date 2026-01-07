@@ -40,6 +40,8 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
       // Precache images when they become available
       if (bestDeals.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+
           for (final trip in bestDeals) {
             final imageUrl = '${AppUrls.getImageBaseUrl}${trip.image}';
             precacheImage(NetworkImage(imageUrl), context);

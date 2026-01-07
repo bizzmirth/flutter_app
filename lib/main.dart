@@ -15,6 +15,7 @@ import 'package:bizzmirth_app/controllers/customer_controller/cust_referral_payo
 import 'package:bizzmirth_app/controllers/customer_controller/cust_wallet_controller.dart';
 import 'package:bizzmirth_app/controllers/customer_controller/customer_controller.dart';
 import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_controller.dart';
+import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_customer_controller.dart';
 import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_tc_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_controller.dart';
 import 'package:bizzmirth_app/controllers/tc_controller/tc_cu_payout_controller.dart';
@@ -161,6 +162,12 @@ class _MyAppState extends State<MyApp> {
           create: (context) {
             final apiService = context.read<ApiService>();
             return FranchiseeTcController(apiService: apiService);
+          },
+        ),
+         ChangeNotifierProvider(
+          create: (context) {
+            final apiService = context.read<ApiService>();
+            return FranchiseeCustomerController(apiService: apiService);
           },
         ),
       ],
