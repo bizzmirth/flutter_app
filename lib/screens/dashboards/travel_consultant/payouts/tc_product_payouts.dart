@@ -68,19 +68,22 @@ class _TCProductPayoutsPageState extends State<TCProductPayoutsPage> {
     super.initState();
     selectedDate = DateFormat('MMMM, yyyy').format(DateTime.now());
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getData();
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        getData();
+      },
+    );
   }
 
   void showPayoutDialog(
-      BuildContext context,
-      String payoutType,
-      String date,
-      String amount,
-      String userId,
-      String userName,
-      TcProductPayoutController controller) {
+    BuildContext context,
+    String payoutType,
+    String date,
+    String amount,
+    String userId,
+    String userName,
+    TcProductPayoutController controller,
+  ) {
     List<TcProductPayoutModel> getPayoutList() {
       switch (payoutType.toLowerCase()) {
         case 'previous payouts':
