@@ -1,7 +1,9 @@
+import 'package:bizzmirth_app/models/franchise_models/product_all_payout_model.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class FranchiseAllProductPayoutDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> data;
+  final List<ProductAllPayoutModel> data;
   FranchiseAllProductPayoutDataSource(this.data);
 
   @override
@@ -12,32 +14,32 @@ class FranchiseAllProductPayoutDataSource extends DataTableSource {
     return DataRow(
       cells: [
         // Date
-        DataCell(Text(payout['date']?.toString() ?? 'N/A')),
+        DataCell(Text(formatDate(payout.date))),
 
         DataCell(
           SizedBox(
             width: 200,
             child: Text(
-              payout['payoutDetails']?.toString() ?? 'N/A',
+              payout.message,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
             ),
           ),
         ),
 
-        DataCell(Text('₹${payout['amount']?.toString() ?? 'N/A'}')),
+        DataCell(Text('₹${payout.amount}')),
 
-        DataCell(Text('₹${payout['tds']?.toString() ?? 'N/A'}')),
-        DataCell(Text('₹${payout['totalPayable']?.toString() ?? 'N/A'}')),
+        DataCell(Text('₹${payout.tds}')),
+        DataCell(Text('₹${payout.totalPayable}')),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: _getStatusColor(payout['status']?.toString() ?? ''),
+              color: _getStatusColor(payout.status),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              payout['status']?.toString() ?? 'Unknown',
+              payout.status,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
