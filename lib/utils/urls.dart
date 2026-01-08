@@ -258,4 +258,14 @@ class AppUrls {
 
   static String get getFranchiseeRegisteredCustomers =>
       '$_franchisee/customers/customers_registered.php';
+
+  // ==================== FRANCHISEE PRODUCT PAYOUTS ENDPOINTS ====================
+  static String get getFranchiseeProductPayouts =>
+      '$_franchisee/payouts/product_payouts/product_payouts.php';
+
+  static String get getFranchiseeProductAllPayouts =>
+      '$_franchisee/payouts/product_payouts/product_all_payouts.php';
+
+  static String get getFranchiseeProductTotalPayouts =>
+      '$_franchisee/payouts/product_payouts/product_total_payouts.php';
 }
