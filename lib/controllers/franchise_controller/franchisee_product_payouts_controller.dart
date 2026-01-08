@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/models/franchise_models/product_total_payout_model
 import 'package:bizzmirth_app/services/api_service.dart';
 import 'package:bizzmirth_app/utils/failure.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:flutter/material.dart';
 
@@ -25,21 +26,16 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
   // ─────────────────────────────────────
   // Data (Separate Sources of Truth)
   // ─────────────────────────────────────
-  double _totalPayoutAmount = 0.0;
   ProductPayoutModel? _previousProductPayout;
   ProductPayoutModel? _nextProductPayout;
 
   ProductTotalPayoutModel? _totalProductPayout;
   List<ProductAllPayoutModel> _allProductPayouts = [];
-double get totalPayoutAmount => _totalPayoutAmount;
   ProductPayoutModel? get previousProductPayout => _previousProductPayout;
 
   ProductPayoutModel? get nextProductPayout => _nextProductPayout;
   ProductTotalPayoutModel? get totalProductPayout => _totalProductPayout;
   List<ProductAllPayoutModel> get allProductPayouts => _allProductPayouts;
-
-  static const String _url =
-      'https://testca.uniqbizz.com/bizzmirth_apis/users/franchise/payouts/product_payouts/product_payouts.php';
 
   // ─────────────────────────────────────
   // PREVIOUS PAYOUT
@@ -51,7 +47,7 @@ double get totalPayoutAmount => _totalPayoutAmount;
 
     try {
       final response = await _apiService.post(
-        _url,
+        AppUrls.getFranchiseeProductPayouts,
         {
           'userId': 'FGA2500004',
           'userType': '29',
@@ -90,7 +86,7 @@ double get totalPayoutAmount => _totalPayoutAmount;
 
     try {
       final response = await _apiService.post(
-        _url,
+        AppUrls.getFranchiseeProductPayouts,
         {
           'userId': 'FGA2500004',
           'userType': '29',
@@ -126,7 +122,7 @@ double get totalPayoutAmount => _totalPayoutAmount;
 
     try {
       final response = await _apiService.post(
-        'https://testca.uniqbizz.com/bizzmirth_apis/users/franchise/payouts/product_payouts/product_total_payouts.php',
+        AppUrls.getFranchiseeProductTotalPayouts,
         {
           'userId': 'FGA2500004',
           'userType': '29',
@@ -161,7 +157,7 @@ double get totalPayoutAmount => _totalPayoutAmount;
 
     try {
       final response = await _apiService.post(
-        'https://testca.uniqbizz.com/bizzmirth_apis/users/franchise/payouts/product_payouts/product_all_payouts.php',
+        AppUrls.getFranchiseeProductAllPayouts,
         {
           'userId': 'FGA2500004',
           'userType': '29',

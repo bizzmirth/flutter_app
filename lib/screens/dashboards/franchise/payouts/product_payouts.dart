@@ -1,7 +1,6 @@
 import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_product_payouts_controller.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_all_product_payout_data_source.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchisee_payout_common_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/franchise_models/product_payout_transaction.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
