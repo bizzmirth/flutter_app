@@ -5,12 +5,14 @@ import 'package:bizzmirth_app/models/franchise_models/product_payout_transaction
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ProductPayouts extends StatefulWidget {
@@ -31,16 +33,21 @@ class _ProductPayoutsState extends State<ProductPayouts> {
   DateTime? _selectedDateTime;
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final controller = Provider.of<FranchiseeProductPayoutsController>(context, listen: false);
+    final DateTime now = DateTime.now();
+    final DateTime? picked = await showMonthPicker(
       context: context,
-      initialDate: DateTime.now(),
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      lastDate: now,
+      initialDate: _selectedDateTime ?? now,
     );
     if (picked != null) {
       setState(() {
+        _selectedDateTime = picked;
         selectedDate = DateFormat('MMMM, yyyy').format(picked);
       });
+      await controller.fetchTotalProductPayouts(picked.month.toString(), picked.year.toString());
+      Logger.warning('Selected month: ${picked.month}, year: ${picked.year}');
     }
   }
 
@@ -55,7 +62,7 @@ class _ProductPayoutsState extends State<ProductPayouts> {
         await controller.initializeDateInfo();
     await controller.fetchPreviousProductPayouts();
     await controller.fetchNextProductPayouts();
-    await controller.fetchTotalProductPayouts();
+    await controller.fetchTotalProductPayouts(null, null);
     await controller.fetchAllProductPayouts();
   }
 

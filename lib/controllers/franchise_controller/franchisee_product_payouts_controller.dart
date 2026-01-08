@@ -30,7 +30,6 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
   // ─────────────────────────────────────
   ProductPayoutModel? _previousProductPayout;
   ProductPayoutModel? _nextProductPayout;
-  DateTime _currentPayoutDate = DateTime.now();
 
   ProductTotalPayoutModel? _totalProductPayout;
   List<ProductAllPayoutModel> _allProductPayouts = [];
@@ -38,7 +37,6 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
 
   ProductPayoutModel? get nextProductPayout => _nextProductPayout;
   ProductTotalPayoutModel? get totalProductPayout => _totalProductPayout;
-  DateTime get currentPayoutDate => _currentPayoutDate;
   List<ProductAllPayoutModel> get allProductPayouts => _allProductPayouts;
 
   // ===== Commonly Used Date Info =====
@@ -47,8 +45,8 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
   late final String nextDateMonth;
   late final String nextDateYear;
 
-  Future<void> initializeDateInfo() async{
-    final now =DateTime.now();
+  Future<void> initializeDateInfo() async {
+    final now = DateTime.now();
 
     // --- Previous month logic ---
     int prevMonth = now.month - 1;
@@ -75,7 +73,7 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
         'Initialized payout date info → prev: $prevDateMonth/$prevDateYear | next: $nextDateMonth/$nextDateYear');
   }
 
-   Future<String> _getUserId() async {
+  Future<String> _getUserId() async {
     final loginRes = await SharedPrefHelper().getLoginResponse();
     return loginRes?.userId ?? '';
   }
@@ -83,8 +81,6 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
   // ─────────────────────────────────────
   // PREVIOUS PAYOUT
   // ─────────────────────────────────────
-
- 
 
   Future<void> fetchPreviousProductPayouts() async {
     _state = ViewState.loading;
@@ -165,21 +161,27 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchTotalProductPayouts() async {
+  Future<void> fetchTotalProductPayouts(
+      String? selectedMonth, String? selectedYear) async {
     _state = ViewState.loading;
     _failure = null;
     notifyListeners();
 
     try {
+          final now = DateTime.now();
+      final month = selectedMonth ?? now.month.toString().padLeft(2, '0');
+      final year = selectedYear ?? now.year.toString();
+      final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+        'userType': AppData.franchiseeUserType,
+        'month': month,
+        'year': year,
+      };
       final response = await _apiService.post(
         AppUrls.getFranchiseeProductTotalPayouts,
-        {
-          'userId': await _getUserId(),
-          'userType': AppData.franchiseeUserType,
-          'month': '12',
-          'year': '2025',
-        },
+        body,
       );
+      Logger.warning('fetchTotalProductPayouts called with body: $body');
       Logger.info('Total Payout Response: $response');
 
       if (response['status'] == 'success') {
