@@ -1,7 +1,9 @@
 import 'package:bizzmirth_app/models/franchise_models/product_all_payout_model.dart';
 import 'package:bizzmirth_app/models/franchise_models/product_payout_model.dart';
 import 'package:bizzmirth_app/models/franchise_models/product_total_payout_model.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/api_service.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/failure.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -28,6 +30,7 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
   // ─────────────────────────────────────
   ProductPayoutModel? _previousProductPayout;
   ProductPayoutModel? _nextProductPayout;
+  DateTime _currentPayoutDate = DateTime.now();
 
   ProductTotalPayoutModel? _totalProductPayout;
   List<ProductAllPayoutModel> _allProductPayouts = [];
@@ -35,27 +38,72 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
 
   ProductPayoutModel? get nextProductPayout => _nextProductPayout;
   ProductTotalPayoutModel? get totalProductPayout => _totalProductPayout;
+  DateTime get currentPayoutDate => _currentPayoutDate;
   List<ProductAllPayoutModel> get allProductPayouts => _allProductPayouts;
+
+  // ===== Commonly Used Date Info =====
+  late final String prevDateMonth;
+  late final String prevDateYear;
+  late final String nextDateMonth;
+  late final String nextDateYear;
+
+  Future<void> initializeDateInfo() async{
+    final now =DateTime.now();
+
+    // --- Previous month logic ---
+    int prevMonth = now.month - 1;
+    int prevYear = now.year;
+    if (prevMonth == 0) {
+      prevMonth = 12;
+      prevYear = now.year - 1;
+    }
+
+    // --- Next month logic ---
+    int nextMonth = now.month + 1;
+    int nextYear = now.year;
+    if (nextMonth > 12) {
+      nextMonth = 1;
+      nextYear = now.year + 1;
+    }
+
+    prevDateMonth = prevMonth.toString().padLeft(2, '0');
+    prevDateYear = prevYear.toString();
+    nextDateMonth = nextMonth.toString().padLeft(2, '0');
+    nextDateYear = nextYear.toString();
+
+    Logger.success(
+        'Initialized payout date info → prev: $prevDateMonth/$prevDateYear | next: $nextDateMonth/$nextDateYear');
+  }
+
+   Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
 
   // ─────────────────────────────────────
   // PREVIOUS PAYOUT
   // ─────────────────────────────────────
+
+ 
+
   Future<void> fetchPreviousProductPayouts() async {
     _state = ViewState.loading;
     _failure = null;
     notifyListeners();
 
     try {
+      final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+        'userType': AppData.franchiseeUserType,
+        'month': prevDateMonth,
+        'year': prevDateYear,
+        'action': 'previous',
+      };
       final response = await _apiService.post(
         AppUrls.getFranchiseeProductPayouts,
-        {
-          'userId': 'FGA2500004',
-          'userType': '29',
-          'month': '01',
-          'year': '2026',
-          'action': 'previous',
-        },
+        body,
       );
+      Logger.info('fetchPreviousProductPayouts called with body: $body');
       Logger.info('Previous Payout Response: $response');
 
       if (response['status'] == 'success') {
@@ -85,16 +133,18 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+        'userType': AppData.franchiseeUserType,
+        'month': nextDateMonth,
+        'year': nextDateYear,
+        'action': 'next',
+      };
       final response = await _apiService.post(
         AppUrls.getFranchiseeProductPayouts,
-        {
-          'userId': 'FGA2500004',
-          'userType': '29',
-          'month': '12',
-          'year': '2025',
-          'action': 'next',
-        },
+        body,
       );
+      Logger.warning('fetchNextProductPayouts called with body: $body');
       Logger.info('Next Payout Response: $response');
 
       if (response['status'] == 'success') {
@@ -124,8 +174,8 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
       final response = await _apiService.post(
         AppUrls.getFranchiseeProductTotalPayouts,
         {
-          'userId': 'FGA2500004',
-          'userType': '29',
+          'userId': await _getUserId(),
+          'userType': AppData.franchiseeUserType,
           'month': '12',
           'year': '2025',
         },
@@ -159,8 +209,8 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
       final response = await _apiService.post(
         AppUrls.getFranchiseeProductAllPayouts,
         {
-          'userId': 'FGA2500004',
-          'userType': '29',
+          'userId': await _getUserId(),
+          'userType': AppData.franchiseeUserType,
         },
       );
       Logger.info('All Payouts Response: $response');

@@ -5,7 +5,6 @@ import 'package:bizzmirth_app/models/franchise_models/product_payout_transaction
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
-import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
@@ -53,6 +52,7 @@ class _ProductPayoutsState extends State<ProductPayouts> {
     userId = userDetails?.userId;
     username =
         "${userDetails?.userFname ?? ''} ${userDetails?.userLname ?? ''}";
+        await controller.initializeDateInfo();
     await controller.fetchPreviousProductPayouts();
     await controller.fetchNextProductPayouts();
     await controller.fetchTotalProductPayouts();
@@ -646,7 +646,7 @@ class _ProductPayoutsState extends State<ProductPayouts> {
                     ),
                   ),
                   const Divider(thickness: 1, color: Colors.black26),
-                  const FilterBar2(),
+                  const FilterBar(),
                   Card(
                     elevation: 5,
                     shape: RoundedRectangleBorder(
