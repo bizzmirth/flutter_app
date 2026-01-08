@@ -9,31 +9,33 @@ class TcPayoutCommmonDataSource extends DataTableSource {
   DataRow? getRow(int index) {
     if (index >= payoutList.length) return null;
     final payout = payoutList[index];
-    return DataRow(cells: [
-      DataCell(Text(formatDate(payout.date))),
-      DataCell(Text(payout.message ?? 'N/A')),
-      DataCell(Text(payout.markup ?? 'N/A')),
-      DataCell(Text('₹${payout.amount}')),
-      DataCell(Text(payout.tds == null ? 'N/A' : '₹${payout.tds}')),
-      DataCell(Text('₹${payout.totalPayable}')),
-      DataCell(
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: _getStatusColor(payout.status ?? ''),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            payout.status ?? '',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+    return DataRow(
+      cells: [
+        DataCell(Text(formatDate(payout.date))),
+        DataCell(Text(payout.message ?? 'N/A')),
+        DataCell(Text(payout.markup ?? 'N/A')),
+        DataCell(Text('₹${payout.amount}')),
+        DataCell(Text(payout.tds == null ? 'N/A' : '₹${payout.tds}')),
+        DataCell(Text('₹${payout.totalPayable}')),
+        DataCell(
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: _getStatusColor(payout.status ?? ''),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              payout.status ?? '',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 
   Color _getStatusColor(String status) {

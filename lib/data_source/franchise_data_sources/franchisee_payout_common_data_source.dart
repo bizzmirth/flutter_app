@@ -1,34 +1,19 @@
-import 'package:bizzmirth_app/models/franchise_models/product_all_payout_model.dart';
+import 'package:bizzmirth_app/models/franchise_models/product_payout_transaction.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 
-class FranchiseAllProductPayoutDataSource extends DataTableSource {
-  final List<ProductAllPayoutModel> data;
-  FranchiseAllProductPayoutDataSource(this.data);
-
+class FranchiseePayoutCommonDataSource extends DataTableSource {
+  List<ProductPayoutTransaction> payoutList;
+  FranchiseePayoutCommonDataSource({required this.payoutList});
   @override
   DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final payout = data[index];
-
+    if (index >= payoutList.length) return null;
+    final payout = payoutList[index];
     return DataRow(
       cells: [
-        // Date
         DataCell(Text(formatDate(payout.date))),
-
-        DataCell(
-          SizedBox(
-            width: 200,
-            child: Text(
-              payout.message,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-            ),
-          ),
-        ),
-
-        DataCell(Text('₹${payout.amount}')),
-
+        DataCell(Text(payout.message)),
+        DataCell(Text(payout.amount.toString())),
         DataCell(Text('₹${payout.tds}')),
         DataCell(Text('₹${payout.totalPayable}')),
         DataCell(
@@ -73,7 +58,7 @@ class FranchiseAllProductPayoutDataSource extends DataTableSource {
   }
 
   @override
-  int get rowCount => data.length;
+  int get rowCount => payoutList.length;
 
   @override
   bool get isRowCountApproximate => false;
