@@ -172,7 +172,7 @@ class _MyAppState extends State<MyApp> {
           },
         ),
         ChangeNotifierProvider(
-          create: (context) { // TODO: use this controller in the frontend
+          create: (context) { 
             final apiService = context.read<ApiService>();
             return FranchiseeProductPayoutsController(apiService: apiService);
           },
