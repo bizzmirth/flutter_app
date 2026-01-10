@@ -273,4 +273,7 @@ class AppUrls {
 
   static String get getFranchiseeCUMembershipPayouts =>
       '$_franchisee/payouts/cu_membership_payouts/cu_membership_payouts.php';
+
+  static String get getFranchiseeCUTotalPayouts =>
+      '$_franchisee/payouts/cu_membership_payouts/cu_membership_total_payouts.php';
 }

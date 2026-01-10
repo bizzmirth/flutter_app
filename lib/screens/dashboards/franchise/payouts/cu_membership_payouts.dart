@@ -1,9 +1,12 @@
+import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_cu_payouts_controller.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_all_cu_membership_payouts.dart';
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class CuMembershipPayouts extends StatefulWidget {
   const CuMembershipPayouts({super.key});
@@ -18,6 +21,9 @@ class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+  String? username;
+  String? userId;
+  DateTime? _selectedDateTime;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -33,103 +39,133 @@ class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
     }
   }
 
+  Future<void> getData() async {
+    final controller =
+        Provider.of<FranchiseeCuPayoutsController>(context, listen: false);
+    final userDetails = await SharedPrefHelper().getLoginResponse();
+    userId = userDetails?.userId;
+    username =
+        "${userDetails?.userFname ?? ''} ${userDetails?.userLname ?? ''}";
+    await controller.initializeDateInfo();
+    await controller.fetchNextPayouts();
+    await controller.fetchTotalCuPayouts();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = DateFormat('MMMM, yyyy').format(DateTime.now());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        getData();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'CU Membership Payouts',
-            style: Appwidget.poppinsAppBarTitle(),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.blueAccent,
-          elevation: 0,
+      appBar: AppBar(
+        title: Text(
+          'CU Membership Payouts',
+          style: Appwidget.poppinsAppBarTitle(),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Divider(thickness: 1, color: Colors.black26),
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'Payouts:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        elevation: 0,
+      ),
+      body: Consumer<FranchiseeCuPayoutsController>(
+        builder: (context, controller, _) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        'Payouts:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                const Divider(thickness: 1, color: Colors.black26),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                        child: payoutCard('Previous Payout', 'January, 2025',
-                            'Rs. 0/-', 'Paid', Colors.green.shade100)),
-                    const SizedBox(width: 16),
-                    Expanded(
-                        child: payoutCard('Next Payout', 'February, 2025',
-                            'Rs. 0/-', 'Pending', Colors.orange.shade100)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                totalPayoutCard(),
-                const SizedBox(height: 50),
-                const Divider(thickness: 1, color: Colors.black26),
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'All Payouts:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                          child: payoutCard('Previous Payout', 'January, 2025',
+                              'Rs. 0/-', 'Paid', Colors.green.shade100)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                          child: payoutCard('Next Payout', 'February, 2025',
+                              'Rs. 0/-', 'Pending', Colors.orange.shade100)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  totalPayoutCard(),
+                  const SizedBox(height: 50),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        'All Payouts:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                const Divider(thickness: 1, color: Colors.black26),
-                const FilterBar2(),
-                Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: SizedBox(
-                    height: (_rowsPerPage * dataRowHeight) +
-                        headerHeight +
-                        paginationHeight,
-                    child: PaginatedDataTable(
-                      columnSpacing: 50,
-                      dataRowMinHeight: 40,
-                      columns: const [
-                        DataColumn(label: Text('Date')),
-                        DataColumn(label: Text('Payout Details')),
-                        DataColumn(label: Text('Total')),
-                        DataColumn(label: Text('TDS')),
-                        DataColumn(label: Text('Total Payable')),
-                        DataColumn(label: Text('Remarks')),
-                      ],
-                      source: FranchiseAllCuMembershipPayouts(orders1BM),
-                      rowsPerPage: _rowsPerPage,
-                      availableRowsPerPage: const [5, 10, 15, 20, 25],
-                      onRowsPerPageChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _rowsPerPage = value;
-                          });
-                        }
-                      },
-                      arrowHeadColor: Colors.blue,
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const FilterBar2(),
+                  Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: SizedBox(
+                      height: (_rowsPerPage * dataRowHeight) +
+                          headerHeight +
+                          paginationHeight,
+                      child: PaginatedDataTable(
+                        columnSpacing: 50,
+                        dataRowMinHeight: 40,
+                        columns: const [
+                          DataColumn(label: Text('Date')),
+                          DataColumn(label: Text('Payout Details')),
+                          DataColumn(label: Text('Total')),
+                          DataColumn(label: Text('TDS')),
+                          DataColumn(label: Text('Total Payable')),
+                          DataColumn(label: Text('Remarks')),
+                        ],
+                        source: FranchiseAllCuMembershipPayouts(
+                          controller.totalCuPayouts,
+                        ),
+                        rowsPerPage: _rowsPerPage,
+                        availableRowsPerPage: const [5, 10, 15, 20, 25],
+                        onRowsPerPageChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _rowsPerPage = value;
+                            });
+                          }
+                        },
+                        arrowHeadColor: Colors.blue,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ));
+          );
+        },
+      ),
+    );
   }
 
   Widget payoutCard(String title, String date, String amount, String status,
