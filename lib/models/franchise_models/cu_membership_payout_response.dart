@@ -66,6 +66,19 @@ class PayoutSummary {
   }
 }
 
+double _parseDouble(dynamic value) {
+  if (value == null) return 0.0;
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  if (value is String) return double.tryParse(value) ?? 0.0;
+  return 0.0;
+}
+
+String _parseString(dynamic value) {
+  if (value == null) return '';
+  return value.toString();
+}
+
 class PayoutItem {
   final String id;
   final String date;
@@ -87,13 +100,17 @@ class PayoutItem {
 
   factory PayoutItem.fromJson(Map<String, dynamic> json) {
     return PayoutItem(
-      id: json['id'] ?? '',
-      date: json['date'] ?? '',
-      payoutDetails: json['payout_details'] ?? '',
-      amount: (json['amount'] ?? 0).toDouble(),
-      tds: (json['tds'] ?? 0).toDouble(),
-      totalPayable: (json['total_payable'] ?? 0).toDouble(),
-      status: json['status'] ?? '',
+      id: _parseString(json['id']),
+      date: _parseString(json['date']),
+      payoutDetails: _parseString(
+        json['payout_details'] ?? json['payoutDetails'],
+      ),
+      amount: _parseDouble(json['amount']),
+      tds: _parseDouble(json['tds']),
+      totalPayable: _parseDouble(
+        json['total_payable'] ?? json['totalPayable'],
+      ),
+      status: _parseString(json['status']),
     );
   }
 }

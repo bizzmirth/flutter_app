@@ -28,6 +28,7 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
 
   List<FranchiseeAllCuPayouts> _totalCuPayout = [];
   String _totalPayoutAmount = '';
+  List<PayoutItem> _totalPayoutDataList = [];
 
   // ─────────── PREVIOUS SUMMARY GETTERS ───────────
   double get previousTotalPayout =>
@@ -81,7 +82,7 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
 
   int get totalPayoutCount => _totalPayoutData?.count ?? 0;
 
-  List<PayoutItem> get totalPayoutList => _totalPayoutData?.payouts ?? [];
+  List<PayoutItem> get totalPayoutList => _totalPayoutDataList;
 
   // ----------------------- TOTAL PAYOUTS GETTERS ----------------------------------
   List<FranchiseeAllCuPayouts> get totalCuPayouts => _totalCuPayout;
@@ -220,19 +221,22 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchTotalPayouts() async {
+  Future<void> fetchTotalPayouts(String? selectedMonth, String? selectedYear) async {
     try {
       _state = ViewState.loading;
       _failure = null;
       notifyListeners();
 
       final userId = await _getUserId();
+        final now = DateTime.now();
+      final month = selectedMonth ?? now.month.toString().padLeft(2, '0');
+      final year = selectedYear ?? now.year.toString();
+    
 
       final Map<String, dynamic> body = {
         'userId': 'FGA2500004',
-        'year': '2025',
-        'month': '09',
-        'type': 'next'
+        'year': year,
+        'month': month,
       };
 
       final response = await _apiService.post(
@@ -244,7 +248,10 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
       if (response['success'] != true) {
         throw Failure('Failed to fetch total payout data');
       }
+      final List payout = response['payoutRecords'];
       _totalPayoutAmount = response['totalPayout'];
+      _totalPayoutDataList = payout.map((item) => PayoutItem.fromJson(item)).toList();
+      Logger.info('total ${_totalCuPayout.length} data fetched');
 
       _totalPayoutData = parsedData.data;
       _state = ViewState.success;

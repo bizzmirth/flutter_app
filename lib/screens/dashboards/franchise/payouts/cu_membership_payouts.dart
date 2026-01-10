@@ -1,7 +1,6 @@
 import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_cu_payouts_controller.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_all_cu_membership_payouts.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchisee_total_cu_common_data_source.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/models/franchise_models/cu_membership_payout_response.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
@@ -15,6 +14,7 @@ import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:provider/provider.dart';
 
 class CuMembershipPayouts extends StatefulWidget {
@@ -35,16 +35,22 @@ class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
   DateTime? _selectedDateTime;
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final controller =
+        Provider.of<FranchiseeCuPayoutsController>(context, listen: false);
+    final DateTime now = DateTime.now();
+    final DateTime? picked = await showMonthPicker(
       context: context,
-      initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
+      initialDate: _selectedDateTime ?? now,
     );
     if (picked != null) {
       setState(() {
         selectedDate = DateFormat('MMMM, yyyy').format(picked);
       });
+      await controller.fetchTotalPayouts(
+          picked.month.toString(), picked.year.toString());
+      Logger.warning('Selected month: ${picked.month}, year: ${picked.year}');
     }
   }
 
@@ -58,7 +64,7 @@ class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
     await controller.initializeDateInfo();
     await controller.fetchPreviousPayouts();
     await controller.fetchNextPayouts();
-    await controller.fetchTotalPayouts();
+    await controller.fetchTotalPayouts(null, null);
     await controller.fetchAllCuPayouts();
   }
 
@@ -83,7 +89,7 @@ class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
     FranchiseeCuPayoutsController controller,
   ) {
     List<PayoutItem> getPayoutList() {
-        Logger.warning('payout type: $payoutType');
+      Logger.warning('payout type: $payoutType');
       switch (payoutType.toLowerCase()) {
         case 'previous payout':
         case 'previous payouts':
@@ -95,7 +101,7 @@ class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
 
         case 'total payout':
         case 'total payouts':
-          return controller.totalPayoutList; 
+          return controller.totalPayoutList;
 
         default:
           return [];
