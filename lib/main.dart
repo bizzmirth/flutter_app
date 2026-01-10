@@ -123,7 +123,7 @@ class _MyAppState extends State<MyApp> {
     _sessionSubscription?.cancel();
     sessionStateStream.close();
     super.dispose();
-  }
+  } 
 
   @override
   Widget build(BuildContext context) {
