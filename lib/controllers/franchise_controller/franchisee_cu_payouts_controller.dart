@@ -140,7 +140,7 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
       final userId = await _getUserId();
 
       final Map<String, dynamic> body = {
-        'userId': 'FGA2500004',
+        'userId': userId,
         'year': '2025',
         'month': '09',
         'type': 'previous'
@@ -186,7 +186,7 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
       final userId = await _getUserId();
 
       final Map<String, dynamic> body = {
-        'userId': 'FGA2500004',
+        'userId': userId,
         'year': '2025',
         'month': '09',
         'type': 'next'
@@ -234,10 +234,11 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
     
 
       final Map<String, dynamic> body = {
-        'userId': 'FGA2500004',
+        'userId': userId,
         'year': year,
         'month': month,
       };
+      Logger.warning('api call made with the body: $body');
 
       final response = await _apiService.post(
           AppUrls.getFranchiseeCUMembershipTotalPayouts, body);
@@ -249,7 +250,7 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
         throw Failure('Failed to fetch total payout data');
       }
       final List payout = response['payoutRecords'];
-      _totalPayoutAmount = response['totalPayout'];
+      _totalPayoutAmount = response['totalPayout'].toString();
       _totalPayoutDataList = payout.map((item) => PayoutItem.fromJson(item)).toList();
       Logger.info('total ${_totalCuPayout.length} data fetched');
 
