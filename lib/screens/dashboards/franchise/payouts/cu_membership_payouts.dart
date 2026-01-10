@@ -4,6 +4,8 @@ import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -76,6 +78,23 @@ class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
       ),
       body: Consumer<FranchiseeCuPayoutsController>(
         builder: (context, controller, _) {
+          final isLoading = controller.state == ViewState.loading;
+          if (isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          
+          if (controller.state == ViewState.error) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+                ToastHelper.showErrorToast(
+                    title:
+                        controller.failure?.message ?? 'Something went wrong');
+              },
+            );
+          }
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
