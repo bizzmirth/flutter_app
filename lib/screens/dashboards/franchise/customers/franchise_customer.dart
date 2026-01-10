@@ -166,7 +166,7 @@ class _FranchiseCustomerPageState extends State<FranchiseCustomerPage> {
                           DataColumn(label: Text('Joining Date')),
                           DataColumn(label: Text('Status')),
                         ],
-                        source: FranchiseRegisteredCustomerDataSource( // TODO: complete this module 
+                        source: FranchiseRegisteredCustomerDataSource(
                           controller.registeredCustomers,
                           this.context,
                         ),

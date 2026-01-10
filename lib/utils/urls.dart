@@ -268,4 +268,15 @@ class AppUrls {
 
   static String get getFranchiseeProductTotalPayouts =>
       '$_franchisee/payouts/product_payouts/product_total_payouts.php';
+
+  // ==================== FRANCHISEE CU MEMBERSHIP PAYOUTS ENDPOINTS ====================
+
+  static String get getFranchiseeCUMembershipPayouts =>
+      '$_franchisee/payouts/cu_membership_payouts/cu_membership_payouts.php';
+
+  static String get getFranchiseeCUMembershipTotalPayouts =>
+      '$_franchisee/payouts/cu_membership_payouts/cu_membership_total_payouts.php';
+
+  static String get getFranchiseeCUAllPayouts =>
+      '$_franchisee/payouts/cu_membership_payouts/cu_membership_all_payouts.php';
 }

@@ -486,7 +486,7 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
       final controller =
           Provider.of<FranchiseeTcController>(context, listen: false);
       final formState = _formKey.currentState;
-      final String customerType;
+      // final String customerType;
       final String paidAmount;
       final Map<String, String> documentPaths = {};
       final bool isFormValid = formState != null && formState.validate();
@@ -568,17 +568,18 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
       }
 
       if (_selectedPaymentFee == 'Free') {
-        customerType = 'Free';
+        // handle this later
+        // customerType = 'Free';
         paidAmount = 'Free';
-      } else if (_selectedPaymentFee == 'Prime: ₹ 10,000') {
-        customerType = 'Prime';
-        paidAmount = '10,000';
-      } else if (_selectedPaymentFee == 'Premium: ₹ 30,000') {
-        customerType = 'Premium';
-        paidAmount = '30,000';
+      } else if (_selectedPaymentFee == '₹ 3,000') {
+        // customerType = 'Prime';
+        paidAmount = '3000';
+      } else if (_selectedPaymentFee == 'Premium: ₹ 10,000') {
+        // customerType = 'Premium';
+        paidAmount = '10000';
       } else {
-        customerType = 'Premium Plus';
-        paidAmount = '35,000';
+        // customerType = '';
+        paidAmount = '';
       }
 
       final newTc = FranchiseePendingTc()
@@ -601,7 +602,7 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
         ..passbook = documentPaths['bankPassbook']
         ..votingCard = documentPaths['votingCard']
         ..paymentProof = documentPaths['paymentProof']
-        // ..paymentFee = _selectedPaymentFee
+        ..paymentFee = paidAmount
         ..paymentMode = _selectedPaymentMode
         ..chequeNo = chequeNo
         ..chequeDate = chequeDate
@@ -979,7 +980,6 @@ class _AddFranchiseTcState extends State<AddFranchiseTc> {
         ..transactionNo = transactionId
         ..registerBy = AppData.franchiseeUserType
         ..userType = '29'
-        
         ..id = id;
       await controller.apiUpdateRegisteredTc(updatedTc);
       clearFormFields();
