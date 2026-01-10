@@ -89,10 +89,10 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
   String get totalPayoutAmount => _totalPayoutAmount;
 
   // ===== Commonly Used Date Info =====
-  late final String prevDateMonth;
-  late final String prevDateYear;
-  late final String nextDateMonth;
-  late final String nextDateYear;
+  late String prevDateMonth;
+  late String prevDateYear;
+  late String nextDateMonth;
+  late String nextDateYear;
 
   Future<void> initializeDateInfo() async {
     final now = DateTime.now();
@@ -141,8 +141,8 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
 
       final Map<String, dynamic> body = {
         'userId': userId,
-        'year': '2025',
-        'month': '09',
+        'year': prevDateYear,
+        'month': prevDateMonth,
         'type': 'previous'
       };
 
@@ -187,8 +187,8 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
 
       final Map<String, dynamic> body = {
         'userId': userId,
-        'year': '2025',
-        'month': '09',
+        'year': nextDateYear,
+        'month': nextDateMonth,
         'type': 'next'
       };
 
@@ -221,17 +221,17 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchTotalPayouts(String? selectedMonth, String? selectedYear) async {
+  Future<void> fetchTotalPayouts(
+      String? selectedMonth, String? selectedYear) async {
     try {
       _state = ViewState.loading;
       _failure = null;
       notifyListeners();
 
       final userId = await _getUserId();
-        final now = DateTime.now();
+      final now = DateTime.now();
       final month = selectedMonth ?? now.month.toString().padLeft(2, '0');
       final year = selectedYear ?? now.year.toString();
-    
 
       final Map<String, dynamic> body = {
         'userId': userId,
@@ -251,7 +251,8 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
       }
       final List payout = response['payoutRecords'];
       _totalPayoutAmount = response['totalPayout'].toString();
-      _totalPayoutDataList = payout.map((item) => PayoutItem.fromJson(item)).toList();
+      _totalPayoutDataList =
+          payout.map((item) => PayoutItem.fromJson(item)).toList();
       Logger.info('total ${_totalCuPayout.length} data fetched');
 
       _totalPayoutData = parsedData.data;
@@ -271,54 +272,51 @@ class FranchiseeCuPayoutsController extends ChangeNotifier {
   }
 
   Future<void> fetchAllCuPayouts() async {
-  _state = ViewState.loading;
-  _failure = null;
-  notifyListeners();
-
-  try {
-    final Map<String, dynamic> body = {
-      'userId': 'FGA2500004',
-      'year': '2025',
-      'month': '09',
-    };
-
-    final response =
-        await _apiService.post(AppUrls.getFranchiseeCUAllPayouts, body);
-
-    Logger.info('fetchAllCuPayouts body: $body');
-    Logger.info('CU payouts response: $response');
-
-    if (response['status'] == 'success') {
-      final List payouts = response['payouts'] ?? [];
-
-      _totalCuPayout = payouts
-          .map((item) => FranchiseeAllCuPayouts.fromJson(item))
-          .toList();
-
-      // OPTIONAL: calculate total payout amount
-      // _totalPayoutAmount = _totalCuPayout.fold<double>(
-      //   0,
-      //   (sum, item) => sum + item.totalPayable,
-      // );
-
-      Logger.success(
-        'Successfully fetched ${_totalCuPayout.length} CU payouts',
-      );
-
-      _state = ViewState.success;
-    } else {
-      _failure = Failure(
-        response['message'] ?? 'Failed to fetch CU payouts',
-      );
-      _state = ViewState.error;
-    }
-  } catch (e, s) {
-    Logger.error('Error fetching CU payouts: $e\n$s');
-    _failure = Failure(e.toString());
-    _state = ViewState.error;
-  } finally {
+    _state = ViewState.loading;
+    _failure = null;
     notifyListeners();
-  }
-}
 
+    try {
+      final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+      };
+
+      final response =
+          await _apiService.post(AppUrls.getFranchiseeCUAllPayouts, body);
+
+      Logger.info('fetchAllCuPayouts body: $body');
+      Logger.info('CU payouts response: $response');
+
+      if (response['status'] == 'success') {
+        final List payouts = response['payouts'] ?? [];
+
+        _totalCuPayout = payouts
+            .map((item) => FranchiseeAllCuPayouts.fromJson(item))
+            .toList();
+
+        // OPTIONAL: calculate total payout amount
+        // _totalPayoutAmount = _totalCuPayout.fold<double>(
+        //   0,
+        //   (sum, item) => sum + item.totalPayable,
+        // );
+
+        Logger.success(
+          'Successfully fetched ${_totalCuPayout.length} CU payouts',
+        );
+
+        _state = ViewState.success;
+      } else {
+        _failure = Failure(
+          response['message'] ?? 'Failed to fetch CU payouts',
+        );
+        _state = ViewState.error;
+      }
+    } catch (e, s) {
+      Logger.error('Error fetching CU payouts: $e\n$s');
+      _failure = Failure(e.toString());
+      _state = ViewState.error;
+    } finally {
+      notifyListeners();
+    }
+  }
 }
