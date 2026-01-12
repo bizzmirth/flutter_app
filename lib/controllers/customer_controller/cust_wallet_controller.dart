@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bizzmirth_app/models/cust_booking_wallet_history_model.dart';
-import 'package:bizzmirth_app/models/cust_redeemable_wallet_history_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_booking_wallet_history_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_redeemable_wallet_history_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -36,7 +36,9 @@ class CustWalletController extends ChangeNotifier {
 
     try {
       final String fullUrl = AppUrls.getWalletDetails;
-      final String? userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
 
       final Map<String, dynamic> body = {'userId': userId};
       final encodeBody = json.encode(body);

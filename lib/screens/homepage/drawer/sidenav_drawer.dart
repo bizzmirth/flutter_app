@@ -3,10 +3,12 @@ import 'package:bizzmirth_app/screens/dashboards/business_channel_head/business_
 import 'package:bizzmirth_app/screens/dashboards/business_development_manager/business_development_manager.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_mentor/business_mentor.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/franchise/franchise.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/login_page/login.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,11 +32,11 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
   }
 
   Future<void> getUserType() async {
-    final getUserType = await SharedPrefHelper().getUserType();
-    Logger.info('User Type from Shared Preferences: $getUserType');
+    final getUserType = await SharedPrefHelper().getLoginResponse();
+    Logger.info('User Type from Shared Preferences: $userType');
 
     setState(() {
-      userType = getUserType;
+      userType = getUserType?.userType ?? '';
       isLoading = false;
     });
   }
@@ -83,6 +85,13 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
           MaterialPageRoute(builder: (context) => const BMDashboardPage()),
         );
         break;
+      case 'Franchisee':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const FranchiseDashboardPage()),
+        );
+        break;
     }
   }
 
@@ -102,6 +111,9 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
         return 'My Business Development Manager Dashboard';
       case 'Business Mentor':
         return 'My Business Mentor Dashboard';
+      case 'Franchisee':
+        return 'My Franchisee Dashboard';
+
       default:
         return 'My Dashboard';
     }
@@ -183,12 +195,14 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
                   title: Text((userType != null && userType!.isNotEmpty)
                       ? 'Log out'
                       : 'Log in'),
-                  onTap: () {
+                  onTap: () async {
                     if (userType != null && userType!.isNotEmpty) {
-                      _handleLogout();
+                      await performLogout(context);
+                      userType = '';
+                      setState(() {});
                     } else {
                       // Handle login
-                      Navigator.pushReplacement(
+                      await Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const LoginPage()),
@@ -209,13 +223,5 @@ class _SideNavDrawerState extends State<SideNavDrawer> {
         ],
       ),
     );
-  }
-
-  Future<void> _handleLogout() async {
-    await SharedPrefHelper().removeDetails();
-    setState(() {
-      userType = '';
-    });
-    Logger.info('User logged out successfully');
   }
 }

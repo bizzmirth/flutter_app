@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -64,6 +65,9 @@ class _FilterBarState extends State<FilterBar> {
           } else {
             fromDate = pickedDate;
             fromDateError = null;
+
+            Logger.info('From Date Selected: $fromDate');
+            Logger.info('To Date Currently: $toDate');
             // Call the callback with updated date range
             if (widget.onDateRangeChanged != null) {
               widget.onDateRangeChanged!(fromDate, toDate);

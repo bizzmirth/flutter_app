@@ -18,7 +18,7 @@ class HomePageController extends ChangeNotifier {
 
   HomePageController() {
     loadUserTypes();
-    Logger.warning('home page controller constructor called');
+    // Logger.warning('home page controller constructor called');
   }
 
   Future<void> loadUserTypes() async {
@@ -27,7 +27,7 @@ class HomePageController extends ChangeNotifier {
           await _sharedPrefHelper.getUserDataType('user_data_type');
 
       if (storedData != null && storedData.isNotEmpty) {
-        Logger.info('Loading user types from SharedPreferences');
+        // Logger.info('Loading user types from SharedPreferences');
         final jsonData = json.decode(storedData);
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 

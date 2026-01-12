@@ -5,6 +5,8 @@ import 'package:bizzmirth_app/models/travel_counsaltant_userId_name.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -127,7 +129,7 @@ class AdminCustomerController extends ChangeNotifier {
 
   Future<List<dynamic>> apiGetCountry() async {
     try {
-      final fullUrl = 'https://testca.uniqbizz.com/api/country.php';
+      final fullUrl = AppUrls.getCountries;
 
       final response = await http.get(Uri.parse(fullUrl));
       Logger.success('message');
@@ -154,7 +156,7 @@ class AdminCustomerController extends ChangeNotifier {
 
   Future<List<dynamic>> apiGetStates(String countryId) async {
     try {
-      final fullUrl = 'http://testca.uniqbizz.com/api/state_city.php';
+      final fullUrl = AppUrls.getStates;
       final requestBody = {'country_id': countryId};
       final encodeBody = json.encode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
@@ -184,7 +186,7 @@ class AdminCustomerController extends ChangeNotifier {
 
   Future<List<dynamic>> apiGetCity(String stateId) async {
     try {
-      final fullUrl = 'http://testca.uniqbizz.com/api/state_city.php';
+      final fullUrl = AppUrls.getStates;
       final requestBody = {'state_id': stateId};
       final encodeBody = json.encode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
@@ -247,7 +249,7 @@ class AdminCustomerController extends ChangeNotifier {
 
   Future<String> apiGetPincode(String cityId) async {
     try {
-      final fullUrl = 'https://testca.uniqbizz.com/api/pincode.php';
+      final fullUrl = AppUrls.getPincode;
       final requestBody = {'city_id': cityId};
       final encodedBody = json.encode(requestBody);
 
@@ -308,7 +310,7 @@ class AdminCustomerController extends ChangeNotifier {
   }
 
   Future<void> uploadImage(
-      context, String folder, String savedImagePath) async {
+      BuildContext context, String folder, String savedImagePath) async {
     try {
       final fullUrl = 'http://testca.uniqbizz.com/api/upload_mobile.php';
       final request = http.MultipartRequest('POST', Uri.parse(fullUrl));
@@ -323,20 +325,17 @@ class AdminCustomerController extends ChangeNotifier {
       Logger.info('this is reuest $request');
 
       if (responseBody == '1') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Upload Failed  $responseBody')));
+        ToastHelper.showErrorToast(title: 'Upload Failed $responseBody');
       } else if (responseBody == '2') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Invalid File Extension  $responseBody')));
+        ToastHelper.showInfoToast(
+            title: 'Invalid File Extension  $responseBody');
       } else if (responseBody == '3') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('No File Selected  $responseBody')));
+        ToastHelper.showInfoToast(title: 'No file selected  $responseBody');
       } else if (responseBody == '4') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('File Size Exceeds 2MB  $responseBody')));
+        ToastHelper.showInfoToast(
+            title: 'File Size Exceeds 2MB  $responseBody');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Upload Successful: $responseBody')));
+        ToastHelper.showSuccessToast(title: 'Upload Successful  $responseBody');
       }
     } catch (e) {
       Logger.error('Error uploading image: $e');

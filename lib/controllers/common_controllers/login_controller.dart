@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bizzmirth_app/models/login_models/login_response_model.dart';
 import 'package:bizzmirth_app/models/user_type_mode.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -65,9 +66,6 @@ class LoginController extends ChangeNotifier {
       await _sharedPrefHelper.saveRememberMe(true);
       await _sharedPrefHelper.saveEmail(emailController.text);
       await _sharedPrefHelper.savePassword(passwordController.text);
-      if (selectedUserTypeId != null) {
-        await _sharedPrefHelper.saveUserTypeId(selectedUserTypeId!);
-      }
     } else {
       // Clear saved credentials if "Remember Me" is disabled
       await _sharedPrefHelper.saveRememberMe(false);
@@ -76,7 +74,7 @@ class LoginController extends ChangeNotifier {
   }
 
   // Toggle password visibility
-  togglePasswordVisibility() {
+  void togglePasswordVisibility() {
     obscurePassword = !obscurePassword;
     notifyListeners();
   }
@@ -115,7 +113,16 @@ class LoginController extends ChangeNotifier {
           await _sharedPrefHelper.getUserDataType('user_data_type');
 
       // List of IDs you want to display
-      final List<String> allowedIds = ['1', '10', '11', '16', '24', '25', '26'];
+      final List<String> allowedIds = [
+        '1',
+        '10',
+        '11',
+        '16',
+        '24',
+        '25',
+        '26',
+        '29',
+      ];
 
       if (storedData != null) {
         final jsonData = json.decode(storedData);
@@ -170,12 +177,13 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>> loginUser(context) async {
+  Future<Map<String, dynamic>> loginUser(BuildContext context) async {
     try {
       errorMessage = null;
       isLoading = true;
       notifyListeners();
 
+      // --- Validate inputs ---
       if (selectedUserTypeId == null || selectedUserTypeId!.isEmpty) {
         errorMessage = 'Please select a user type';
         isLoading = false;
@@ -187,75 +195,70 @@ class LoginController extends ChangeNotifier {
         return {'success': false, 'message': errorMessage};
       }
 
-      if (emailController.text.isEmpty) {
-        errorMessage = 'Please enter your email';
+      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+        errorMessage = 'Please enter all the fields.';
         isLoading = false;
         notifyListeners();
         ToastHelper.showInfoToast(
           title: 'Login Failed',
-          description: 'Please enter all the fields.',
+          description: errorMessage,
         );
         return {'success': false, 'message': errorMessage};
       }
 
-      if (passwordController.text.isEmpty) {
-        errorMessage = 'Please enter your password';
-        isLoading = false;
-        notifyListeners();
-        ToastHelper.showInfoToast(
-          title: 'Login Failed',
-          description: 'Please enter all the fields.',
-        );
-        return {'success': false, 'message': errorMessage};
-      }
-
-      // API call
+      // --- API Call ---
       final url = Uri.parse(AppUrls.login);
-      final email = emailController.text;
-      final password = passwordController.text;
-
       final headers = {'Content-Type': 'application/json'};
-
       final body = jsonEncode({
         'user_type_id': selectedUserTypeId,
-        'username': email,
-        'password': password,
+        'username': emailController.text,
+        'password': passwordController.text,
       });
-      final response = await http.post(url, headers: headers, body: body);
-      Logger.success('Login URL: $url');
-      Logger.success('Login response: ${response.body}');
+
+      Logger.warning('Login Request URL: $url');
       Logger.warning('Login Request Body: $body');
 
+      final response = await http.post(url, headers: headers, body: body);
+      Logger.success('Login Response: ${response.body}');
+
+      // --- Parse Response ---
       if (response.statusCode == 200) {
-        final Map responseData = json.decode(response.body);
-        Logger.success('Response Data: $responseData');
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final loginResponse = LoginResponseModel.fromJson(
+          responseData,
+          fallbackEmail: emailController.text,
+          userTypeId: selectedUserTypeId,
+        );
 
-        if (responseData['status'] == 1) {
-          // success
-          final String userType = responseData['user_type'];
-          final String userId = responseData['user_id'];
+        if (loginResponse.status == 1) {
+          // --- Save Data in Shared Pref ---
+          await _sharedPrefHelper.saveLoginResponse(loginResponse.toJson());
+          await _sharedPrefHelper.saveUserTypeId(selectedUserTypeId!);
 
-          await _sharedPrefHelper.saveUserType(userType);
-          await _sharedPrefHelper.saveUserEmail(email);
-          await _sharedPrefHelper.saveCurrentUserCustId(userId);
-
-          // Save credentials if "Remember Me" is checked
+          // Save credentials if rememberMe is enabled
           await _saveCredentials();
 
           isLoading = false;
-          // Don't clear form fields if remember me is enabled
+
           if (!rememberMe) {
             clearFormFields();
           } else {
             notifyListeners();
           }
 
-          return {'status': true, 'user_type': userType, 'data': responseData};
+          return {
+            'status': true,
+            'user_type': loginResponse.userType,
+            'data': loginResponse.toJson(),
+          };
         } else {
-          // failure from API
-          errorMessage = responseData['message'] ?? 'Login failed';
+          errorMessage = loginResponse.message ?? 'Login failed';
           isLoading = false;
           notifyListeners();
+          ToastHelper.showErrorToast(
+            title: 'Login Failed',
+            description: errorMessage,
+          );
           return {'success': false, 'message': errorMessage};
         }
       } else {
@@ -266,14 +269,13 @@ class LoginController extends ChangeNotifier {
           title: 'Login Failed',
           description: errorMessage,
         );
-        return {
-          'success': false,
-          'message': errorMessage
-        }; // 👈 now always returns
+        return {'success': false, 'message': errorMessage};
       }
-    } catch (e) {
-      Logger.error('Error: ${e.toString()}');
-      errorMessage = 'An error occurred: ${e.toString()}';
+    } catch (e, s) {
+      Logger.error('Error during login: $e');
+      Logger.error('Stacktrace: $s');
+
+      errorMessage = 'An error occurred: $e';
       isLoading = false;
       notifyListeners();
       ToastHelper.showErrorToast(

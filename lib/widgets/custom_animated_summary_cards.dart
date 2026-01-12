@@ -128,8 +128,6 @@ class _AnimatedSummaryCardsState extends State<CustomAnimatedSummaryCards> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                // ignore: avoid_redundant_argument_values
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Icon(data.icon, size: 35, color: Colors.white),
                   // SizedBox(width: 8),

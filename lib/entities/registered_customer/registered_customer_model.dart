@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 // part 'registered_customer_model.g.dart';
 
@@ -39,6 +39,7 @@ class RegisteredCustomer {
   String? userType;
   String? registrant;
   String? referenceNo;
+  String? taReference;
   String? taReferenceNo;
   String? taReferenceName;
   String? registerBy;
@@ -49,6 +50,7 @@ class RegisteredCustomer {
   String? registerDate;
   String? deletedDate;
   String? status;
+  String? statusCode;
 
   RegisteredCustomer();
 
@@ -58,11 +60,9 @@ class RegisteredCustomer {
       ..id = int.tryParse(json['id']?.toString() ?? '') ?? Isar.autoIncrement
       ..caCustomerId = json['ca_customer_id']
       ..caCustomerName = json['ca_customer_name']
-      ..firstName = json['firstname']
-      ..lastName = json['lastname']
-      ..name = "${json['firstname'] ?? ''} ${json['lastname'] ?? ''}".trim()
+    ..name = json['name']
       ..nomineeName = json['nominee_name']
-      ..nomineeRelation = json['nominee_relation']
+      ..nomineeRelation = json['nominee_relation'] 
       ..email = json['email']
       ..countryCd = json['country_code']
       ..phoneNumber = json['contact_no']
@@ -88,6 +88,7 @@ class RegisteredCustomer {
       ..transactionNo = json['transaction_no']
       ..userType = json['user_type']
       ..registrant = json['registrant']
+      ..taReference = json['ta_reference']
       ..referenceNo = json['reference_no']
       ..taReferenceNo = json['ta_reference_no']
       ..taReferenceName = json['ta_reference_name']
@@ -98,7 +99,9 @@ class RegisteredCustomer {
       ..addedOn = json['added_on']
       ..registerDate = json['register_date']
       ..deletedDate = json['deleted_date']
-      ..status = json['status'];
+      ..status = json['status']
+      ..statusCode = json['status_code'];
+      
   }
 
   // ✅ toJson

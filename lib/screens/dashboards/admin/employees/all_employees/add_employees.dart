@@ -12,6 +12,7 @@ import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -504,7 +505,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         Logger.success(
             'Images Path: $profilePicturePath :: $idProofPath :: $bankDetailsPath');
 
-        final int? id = widget.pendingEmployee!.id;
+        final Id? id = widget.pendingEmployee!.id;
         final PendingEmployeeModel updatePendingEmployee =
             PendingEmployeeModel()
               ..id = id
@@ -569,7 +570,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               'passbook', selectedFiles['Bank Details']!.path);
           bankDetailsPath = selectedFiles['Bank Details']!.path;
         }
-        final int? id = widget.registerEmployee!.id;
+        final Id? id = widget.registerEmployee!.id;
         Logger.success(
             'Date of joining and date of birth $dobForApi $dojForApi');
         final RegisteredEmployeeModel updateRegisteredEmployee =
@@ -826,11 +827,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        // ignore: deprecated_member_use
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         filled: true,
-        // ignore: deprecated_member_use
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white.withValues(alpha: 0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -884,7 +883,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: selectedValue, // Use the provided selected value
+        initialValue: selectedValue, // Use the provided selected value
         items: [
           DropdownMenuItem(
             enabled: widget.isViewMode,

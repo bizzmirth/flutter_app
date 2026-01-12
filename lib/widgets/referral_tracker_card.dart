@@ -23,7 +23,7 @@ class ReferralTrackerCard extends StatelessWidget {
       return "Awesome! You're halfway there, keep going!";
     } else if (currentStep >= 7 && currentStep <= 9) {
       return 'Almost there! Just a few more to go.';
-    } else if (currentStep == 10) {
+    } else if (currentStep >= 10) {
       return "Congratulations! You've completed your referral journey and unlocked the Europe Trip!";
     }
     return '';

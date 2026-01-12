@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:bizzmirth_app/models/cust_referral_payout_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_referral_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -40,7 +39,7 @@ class CustReferralPayoutController extends ChangeNotifier {
   final List<CustReferralPayoutModel> _totalAllPayouts = [];
   List<CustReferralPayoutModel> get totalAllPayouts => _totalAllPayouts;
 
-  Future<void> getAllPayouts(userId) async {
+  Future<void> getAllPayouts(String? userId) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -102,7 +101,8 @@ class CustReferralPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getPreviousPayoutsReference;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final now = DateTime.now();
       final prevMonth =
           (now.month == 1 ? 12 : now.month - 1).toString().padLeft(2, '0');
@@ -159,7 +159,8 @@ class CustReferralPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getNextPayoutReference;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final now = DateTime.now();
       final nextMonth = (now.month % 12).toString().padLeft(2, '0');
       final currentYear = now.year.toString();
@@ -215,7 +216,8 @@ class CustReferralPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getTotalPayoutsReference;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
 
       // Create base body with userId
       final Map<String, dynamic> body = {

@@ -1,3 +1,4 @@
+import 'package:bizzmirth_app/data_source/bch_data_sources/bch_bm_data_source.dart/bm_data_source.dart';
 import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_development_manager/business_mentor/add_business_mentor.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
@@ -70,7 +71,7 @@ class _ViewBusinessMentorPageState extends State<ViewBusinessMentorPage> {
                       DataColumn(label: Text('Status')),
                       DataColumn(label: Text('Action'))
                     ],
-                    source: ViewMyBMDataSource(ordersBM),
+                    source: BCHBMDataSource(ordersBM),
                     rowsPerPage: _rowsPerPage,
                     availableRowsPerPage: const [5, 10, 15, 20, 25],
                     onRowsPerPageChanged: (value) {

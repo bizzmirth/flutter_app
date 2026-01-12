@@ -14,6 +14,7 @@ import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -22,12 +23,13 @@ class AddReferralCustomer extends StatefulWidget {
   final RegisteredCustomer? registeredCustomer;
   final bool isViewMode;
   final bool isEditMode;
-  const AddReferralCustomer(
-      {super.key,
-      this.pendingCustomer,
-      this.registeredCustomer,
-      this.isViewMode = false,
-      this.isEditMode = false});
+  const AddReferralCustomer({
+    super.key,
+    this.pendingCustomer,
+    this.registeredCustomer,
+    this.isViewMode = false,
+    this.isEditMode = false,
+  });
 
   @override
   State<AddReferralCustomer> createState() => _AddAddReferralCustomerState();
@@ -151,13 +153,13 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     }
   }
 
-  Future<void> _loadStates(selectedCountryId) async {
+  Future<void> _loadStates(String? selectedCountryId) async {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
 
       final List<dynamic> states =
-          await controller.apiGetStates(selectedCountryId);
+          await controller.apiGetStates(selectedCountryId!);
       _states = states;
 
       final List<String> stateNames = states
@@ -173,11 +175,12 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     }
   }
 
-  Future<void> _loadCities(selectedStateId) async {
+  Future<void> _loadCities(String? selectedStateId) async {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
-      final List<dynamic> cities = await controller.apiGetCity(selectedStateId);
+      final List<dynamic> cities =
+          await controller.apiGetCity(selectedStateId!);
       _cities = cities;
 
       final List<String> citiesNames = cities
@@ -193,11 +196,11 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     }
   }
 
-  Future<void> getPincode(selectedCity) async {
+  Future<void> getPincode(String? selectedCity) async {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
-      final pincode = await controller.apiGetPincode(selectedCity);
+      final pincode = await controller.apiGetPincode(selectedCity!);
       setState(() {
         _pincodeController.text = pincode;
       });
@@ -499,7 +502,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         paidAmount = '35,000';
       }
 
-      final int id = widget.pendingCustomer!.id!;
+      final Id id = widget.pendingCustomer!.id!;
       final updatedCustomer = PendingCustomer()
         ..id = id
         ..taReferenceNo = _taRefrenceIdController.text
@@ -690,6 +693,7 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
         ..customerType = customerType;
 
       await controller.apiUpdateRegisteredCustomer(updatedCustomer);
+      clearFormFields();
       MyNavigator.pop(true);
     } catch (e, s) {
       Logger.error('Error updating form: $e, Stacktrace: $s');
@@ -1281,11 +1285,9 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        // ignore: deprecated_member_use
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         filled: true,
-        // ignore: deprecated_member_use
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white.withValues(alpha: 0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -1307,27 +1309,24 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
 
     // Handle empty items list with emptyMessage
     if (items.isEmpty && emptyMessage != null) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label,
-                style: TextStyle(
-                    color: const Color.fromARGB(255, 255, 255, 255)
-                        .withValues(alpha: 0.8))),
-            Container(
-              padding: const EdgeInsets.all(15),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child:
-                  Text(emptyMessage, style: const TextStyle(color: Colors.red)),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label,
+              style: TextStyle(
+                  color: const Color.fromARGB(255, 255, 255, 255)
+                      .withValues(alpha: 0.8))),
+          Container(
+            padding: const EdgeInsets.all(15),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
             ),
-          ],
-        ),
+            child:
+                Text(emptyMessage, style: const TextStyle(color: Colors.red)),
+          ),
+        ],
       );
     }
 
@@ -1338,11 +1337,11 @@ class _AddAddReferralCustomerState extends State<AddReferralCustomer> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: selectedValue,
+        initialValue: selectedValue,
+        key: fieldKey,
         items: [
           DropdownMenuItem(
             enabled: widget.isViewMode,
-            key: fieldKey,
             value: defaultOption, // Placeholder value
             child: Text(defaultOption,
                 style: const TextStyle(color: Colors.white)),

@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/controllers/admin_controller/admin_busniess_mentor
 import 'package:bizzmirth_app/entities/pending_business_mentor/pending_business_mentor_model.dart';
 import 'package:bizzmirth_app/entities/registered_employee/registered_employee_model.dart';
 import 'package:bizzmirth_app/services/isar_servies.dart';
+import 'package:bizzmirth_app/services/my_navigator.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -183,12 +184,12 @@ class _AddbmState extends State<AddbmPage> {
     }
   }
 
-  Future<void> _loadStates(selectedCountryId) async {
+  Future<void> _loadStates(String? selectedCountryId) async {
     try {
       final controller =
           Provider.of<AdminBusniessMentorController>(context, listen: false);
       final List<dynamic> states =
-          await controller.apiGetStates(selectedCountryId);
+          await controller.apiGetStates(selectedCountryId!);
       _states = states;
 
       final List<String> stateNames = states
@@ -204,11 +205,12 @@ class _AddbmState extends State<AddbmPage> {
     }
   }
 
-  Future<void> _loadCities(selectedStateId) async {
+  Future<void> _loadCities(String? selectedStateId) async {
     try {
       final controller =
           Provider.of<AdminBusniessMentorController>(context, listen: false);
-      final List<dynamic> cities = await controller.apiGetCity(selectedStateId);
+      final List<dynamic> cities =
+          await controller.apiGetCity(selectedStateId!);
       _cities = cities;
 
       final List<String> citiesNames = cities
@@ -287,11 +289,11 @@ class _AddbmState extends State<AddbmPage> {
     }
   }
 
-  Future<void> getPincode(selectedCity) async {
+  Future<void> getPincode(String? selectedCity) async {
     try {
       final controller =
           Provider.of<AdminBusniessMentorController>(context, listen: false);
-      final pincode = await controller.apiGetPincode(selectedCity);
+      final pincode = await controller.apiGetPincode(selectedCity!);
       setState(() {
         _pincodeController.text = pincode;
       });
@@ -386,11 +388,9 @@ class _AddbmState extends State<AddbmPage> {
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        // ignore: deprecated_member_use
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         filled: true,
-        // ignore: deprecated_member_use
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white.withValues(alpha: 0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -444,7 +444,7 @@ class _AddbmState extends State<AddbmPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: selectedValue, // Use the provided selected value
+        initialValue: selectedValue, // Use the provided selected value
         items: [
           DropdownMenuItem(
             enabled: widget.isViewMode,
@@ -602,7 +602,7 @@ class _AddbmState extends State<AddbmPage> {
     }
   }
 
-  Future<void> submitForm(context) async {
+  Future<void> submitForm(BuildContext context) async {
     final controller =
         Provider.of<AdminBusniessMentorController>(context, listen: false);
 
@@ -661,26 +661,32 @@ class _AddbmState extends State<AddbmPage> {
             }
           }
         });
+        if (!context.mounted) return;
         if (selectedFiles['Profile Picture'] != null) {
           await controller.uploadImage(
               context, 'profile_pic', selectedFiles['Profile Picture']!.path);
         }
+        if (!context.mounted) return;
         if (selectedFiles['Aadhar Card'] != null) {
           await controller.uploadImage(
               context, 'aadhar_card', selectedFiles['Aadhar Card']!.path);
         }
+        if (!context.mounted) return;
         if (selectedFiles['Pan Card'] != null) {
           await controller.uploadImage(
               context, 'pan_card', selectedFiles['Pan Card']!.path);
         }
+        if (!context.mounted) return;
         if (selectedFiles['Voting Card'] != null) {
           await controller.uploadImage(
               context, 'voting_card', selectedFiles['Voting Card']!.path);
         }
+        if (!context.mounted) return;
         if (selectedFiles['Bank Passbook'] != null) {
           await controller.uploadImage(
               context, 'passbook', selectedFiles['Bank Passbook']!.path);
         }
+        if (!context.mounted) return;
         if (selectedFiles['Payment Proof'] != null) {
           await controller.uploadImage(
               context, 'payment_proof', selectedFiles['Payment Proof']!.path);
@@ -730,7 +736,8 @@ class _AddbmState extends State<AddbmPage> {
         await _isarService.save<PendingBusinessMentorModel>(newBusinessMentor);
         await controller.apiAddBusinessMentor(newBusinessMentor);
         clearFormFields();
-        Navigator.pop(context);
+        // Navigator.pop(context);
+        MyNavigator.pop();
       }
     } catch (e) {
       Logger.error('Error submitting form: $e');

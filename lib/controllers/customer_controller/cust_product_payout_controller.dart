@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bizzmirth_app/models/cust_product_payout_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_product_payout_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -40,7 +40,7 @@ class CustProductPayoutController extends ChangeNotifier {
   final List<CustProductPayoutModel> _totalAllPayouts = [];
   List<CustProductPayoutModel> get totalAllPayouts => _totalAllPayouts;
 
-  Future<void> getAllPayouts(userId) async {
+  Future<void> getAllPayouts(String userId) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -104,7 +104,9 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getPayoutsProduct;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'action': 'previous',
         'userId': userId,
@@ -185,7 +187,8 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getPayoutsProduct;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'action': 'next',
         'userId': userId,
@@ -272,7 +275,9 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getTotalPayoutsProduct;
-      final userId = await SharedPrefHelper().getCurrentUserCustId();
+
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      final userId = loginRes?.userId ?? '';
 
       final now = DateTime.now();
       final selectedMonth = month ?? now.month;

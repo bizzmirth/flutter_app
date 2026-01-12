@@ -68,7 +68,7 @@ class _ViewCustomersPageState1 extends State<ViewCustomersPage1> {
                       DataColumn(label: Text('Ref. Name')),
                       DataColumn(label: Text('Joining Date')),
                       DataColumn(label: Text('Status')),
-                      DataColumn(label: Text('Action'))
+                      DataColumn(label: Text('Action')),
                     ],
                     source: MyBMCustPendingDataSource(orders, this.context),
                     rowsPerPage: _rowsPerPage,

@@ -120,7 +120,7 @@ const PendingEmployeeModelSchema = CollectionSchema(
   getId: _pendingEmployeeModelGetId,
   getLinks: _pendingEmployeeModelGetLinks,
   attach: _pendingEmployeeModelAttach,
-  version: '3.1.0+1',
+  version: '3.3.0',
 );
 
 int _pendingEmployeeModelEstimateSize(

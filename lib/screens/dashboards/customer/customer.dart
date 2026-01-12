@@ -3,7 +3,9 @@ import 'package:bizzmirth_app/controllers/customer_controller/customer_controlle
 import 'package:bizzmirth_app/data_source/customer_data_sources/cust_top_referral_customers.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
 import 'package:bizzmirth_app/models/summarycard.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/screens/contact_us/contact_us.dart';
+import 'package:bizzmirth_app/screens/dashboards/customer/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/payouts/customer_referral_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/referral_customers/referral_customers.dart';
@@ -11,6 +13,7 @@ import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/widgets/coupons_tracker.dart';
@@ -24,6 +27,7 @@ import 'package:bizzmirth_app/widgets/user_type_widget.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:confetti/confetti.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -47,7 +51,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
   int eligibleCouponsCount = 0;
   late ConfettiController _confettiController;
 
-  bool _isDashboardInitialized = false;
+  // bool _isDashboardInitialized = false;
   bool _isInitializing = false;
   String? _cachedRegDate;
 
@@ -59,11 +63,70 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
   List<TopCustomerRefereralModel> filteredCustomers = [];
 
+// charts data send from dashboard
+  String selectedYear = DateTime.now().year.toString();
+  List<String> availableYears = [];
+  bool isLoading = true;
+  bool hasError = false;
+  String? errorMessage;
+  List<FlSpot> chartData = [];
+
+  Future<void> _initData() async {
+    try {
+      // final customerController =
+      //     Provider.of<CustomerController>(context, listen: false);
+
+      // load available years
+      final regDate = await SharedPrefHelper().getCurrentUserRegDate();
+      final years = _generateYearList(regDate);
+      setState(() {
+        availableYears = years;
+        selectedYear = years.last;
+      });
+
+      // load chart data
+      await _loadChartData(selectedYear);
+    } catch (e) {
+      setState(() {
+        hasError = true;
+        errorMessage = e.toString();
+      });
+    }
+  }
+
+  Future<void> _loadChartData(String year) async {
+    final customerController =
+        Provider.of<CustomerController>(context, listen: false);
+    setState(() => isLoading = true);
+
+    await customerController.apiGetChartData(year);
+    final data = customerController.getChartSpots();
+
+    setState(() {
+      chartData = data;
+      isLoading = false;
+    });
+  }
+
+  List<String> _generateYearList(String? regDate) {
+    final currentYear = DateTime.now().year;
+    int startYear = currentYear;
+    if (regDate != null && regDate.isNotEmpty) {
+      final parts = regDate.split('-');
+      if (parts.length == 3) {
+        startYear =
+            parts[0].length == 4 ? int.parse(parts[0]) : int.parse(parts[2]);
+      }
+    }
+    return [for (int y = startYear; y <= currentYear; y++) y.toString()];
+  }
+
   @override
   void initState() {
     super.initState();
     _initializeDashboardData();
     _initializeTopFilteredCustomers();
+    _initData();
     _confettiController =
         ConfettiController(duration: const Duration(seconds: 3));
   }
@@ -216,18 +279,15 @@ class _CDashboardPageState extends State<CDashboardPage> {
         eligibleCouponsCount = 4;
       }
 
-      if (profileController.customerType != null &&
-          profileController.customerType!.isNotEmpty) {
-        // Use the fresh customer_type from API instead of SharedPreferences
-        custtype = profileController.customerType!;
-        // Save it to SharedPreferences for future use
-        await SharedPrefHelper().saveCustomerType(custtype);
-        Logger.success('Using customer_type from API: $custtype');
-      }
+      final loginRes = await SharedPrefHelper().getLoginResponse();
+      custtype = loginRes?.custType ?? '';
+      Logger.info('Customer type at initialization: $custtype');
+
+
 
       if (mounted) {
         setState(() {
-          _isDashboardInitialized = true;
+          // _isDashboardInitialized = true;
           _isInitializing = false;
         });
       }
@@ -235,7 +295,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
       Logger.error('Error initializing dashboard: $e');
       if (mounted) {
         setState(() {
-          _isDashboardInitialized = true;
+          // _isDashboardInitialized = true;
           _isInitializing = false;
         });
       }
@@ -330,26 +390,33 @@ class _CDashboardPageState extends State<CDashboardPage> {
       // SizedBox(height: 16),
       buildTripOrRefundNote(userType: type, context: context),
       const SizedBox(height: 20),
-      if (_isDashboardInitialized)
-        ImprovedLineChart(
-          initialYear: _cachedRegDate ?? customerController.userRegDate,
-          key: ValueKey(
-              'chart_${_cachedRegDate ?? customerController.userRegDate}'),
-        )
-      else
-        const SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading chart data...'),
-              ],
-            ),
+      // if (_isDashboardInitialized)
+      //   ImprovedLineChart(
+      //     chartData: chartData,
+      //     availableYears: availableYears,
+      //     selectedYear: selectedYear,
+      //     isLoading: isLoading,
+      //     hasError: hasError,
+      //     errorMessage: errorMessage,
+      //     onYearChanged: (year) async {
+      //       setState(() => selectedYear = year ?? '');
+      //       await _loadChartData(year ?? '');
+      //     },
+      //   )
+      // else
+      const SizedBox(
+        height: 300,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Loading chart data...'),
+            ],
           ),
         ),
+      ),
       const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
@@ -400,13 +467,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       customers: customerController
                                           .topCustomerRefererals),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
+                                  availableRowsPerPage:
+                                      AppData.availableRowsPerPage,
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -1557,26 +1619,33 @@ class _CDashboardPageState extends State<CDashboardPage> {
       ),
       buildTripOrRefundNote(userType: type, context: context),
       const SizedBox(height: 20),
-      if (_isDashboardInitialized)
-        ImprovedLineChart(
-          initialYear: _cachedRegDate ?? customerController.userRegDate,
-          key: ValueKey(
-              'chart_${_cachedRegDate ?? customerController.userRegDate}'),
-        )
-      else
-        const SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading chart data...'),
-              ],
-            ),
+      // if (_isDashboardInitialized)
+      //   ImprovedLineChart(
+      //     chartData: chartData,
+      //     availableYears: availableYears,
+      //     selectedYear: selectedYear,
+      //     isLoading: isLoading,
+      //     hasError: hasError,
+      //     errorMessage: errorMessage,
+      //     onYearChanged: (year) async {
+      //       setState(() => selectedYear = year ?? '');
+      //       await _loadChartData(year ?? '');
+      //     },
+      //   )
+      // else
+      const SizedBox(
+        height: 300,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Loading chart data...'),
+            ],
           ),
         ),
+      ),
       const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
@@ -1626,13 +1695,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                   source: CustTopReferralCustomers(
                                       customers: filteredCustomers),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
+                                  availableRowsPerPage:
+                                      AppData.availableRowsPerPage,
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -1885,26 +1949,33 @@ class _CDashboardPageState extends State<CDashboardPage> {
       const SizedBox(height: 16),
       buildTripOrRefundNote(userType: type, context: context),
       const SizedBox(height: 20),
-      if (_isDashboardInitialized)
-        ImprovedLineChart(
-          initialYear: _cachedRegDate ?? customerController.userRegDate,
-          key: ValueKey(
-              'chart_${_cachedRegDate ?? customerController.userRegDate}'),
-        )
-      else
-        const SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading chart data...'),
-              ],
-            ),
+      // if (_isDashboardInitialized)
+      //   ImprovedLineChart(
+      //     chartData: chartData,
+      //     availableYears: availableYears,
+      //     selectedYear: selectedYear,
+      //     isLoading: isLoading,
+      //     hasError: hasError,
+      //     errorMessage: errorMessage,
+      //     onYearChanged: (year) async {
+      //       setState(() => selectedYear = year ?? '');
+      //       await _loadChartData(year ?? '');
+      //     },
+      //   )
+      // else
+      const SizedBox(
+        height: 300,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Loading chart data...'),
+            ],
           ),
         ),
+      ),
       const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
@@ -1955,13 +2026,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       customers: customerController
                                           .topCustomerRefererals),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
+                                  availableRowsPerPage:
+                                      AppData.availableRowsPerPage,
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -2216,26 +2282,21 @@ class _CDashboardPageState extends State<CDashboardPage> {
       const SizedBox(height: 16),
       buildTripOrRefundNote(userType: type, context: context),
       const SizedBox(height: 20),
-      if (_isDashboardInitialized)
+
         ImprovedLineChart(
-          initialYear: _cachedRegDate ?? customerController.userRegDate,
-          key: ValueKey(
-              'chart_${_cachedRegDate ?? customerController.userRegDate}'),
-        )
-      else
-        const SizedBox(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading chart data...'),
-              ],
-            ),
-          ),
+          chartData: chartData,
+          availableYears: availableYears,
+          selectedYear: selectedYear,
+          isLoading: isLoading,
+          hasError: hasError,
+          errorMessage: errorMessage,
+          onYearChanged: (year) async {
+            setState(() => selectedYear = year ?? '');
+            await _loadChartData(year ?? '');
+          },
         ),
+     
+   
       const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(16),
@@ -2286,13 +2347,8 @@ class _CDashboardPageState extends State<CDashboardPage> {
                                       customers: customerController
                                           .topCustomerRefererals),
                                   rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [
-                                    5,
-                                    10,
-                                    15,
-                                    20,
-                                    25
-                                  ],
+                                  availableRowsPerPage:
+                                      AppData.availableRowsPerPage,
                                   onRowsPerPageChanged: (value) {
                                     if (value != null) {
                                       setState(() {
@@ -2869,17 +2925,17 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
                     //commented order history since in v1 we wont be including it.
 
-                    // ListTile(
-                    //   leading: Icon(Icons.history),
-                    //   title: Text('Order History'),
-                    //   onTap: () {
-                    //     Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //           builder: (context) => OrderDetails()),
-                    //     );
-                    //   },
-                    // ),
+                    ListTile(
+                      leading: const Icon(Icons.history),
+                      title: const Text('Order History'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const OrderHistory()),
+                        );
+                      },
+                    ),
                     const Divider(),
                     Padding(
                       padding: EdgeInsets.zero,
@@ -2906,18 +2962,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
                         ),
                         title: const Text('Log Out'),
                         onTap: () async {
-                          await SharedPrefHelper().removeDetails();
-
-                          if (!context.mounted) {
-                            return; // 👈 use context.mounted instead of just mounted
-                          }
-
-                          await Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const HomePage()),
-                            (route) => false,
-                          );
+                          await performLogout(context);
                         },
                       ),
                     ),

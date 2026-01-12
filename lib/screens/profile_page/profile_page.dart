@@ -1,5 +1,5 @@
 import 'package:bizzmirth_app/controllers/common_controllers/profile_controller.dart';
-import 'package:bizzmirth_app/models/coupons_data_model.dart';
+import 'package:bizzmirth_app/models/profile_models/coupons_data_model.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
@@ -16,20 +16,31 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  TabController? _tabController;
+
+  String? currUserTypeId;
   String custtype = '';
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getPersonalDetails();
+      _getSharedPrefData();
     });
 
     // Run async work separately
     _initializeData();
+  }
+
+  Future<void> _getSharedPrefData() async {
+    final userTypeId = await SharedPrefHelper().getSavedUserTypeId();
+    if (!mounted) return;
+    setState(() {
+      currUserTypeId = userTypeId;
+    });
+    _setupTabController(); // ✅ setup tab controller after loading
   }
 
   Future<void> _initializeData() async {
@@ -68,55 +79,31 @@ class _ProfilePageState extends State<ProfilePage>
     await controller.getCouponDetails();
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _tabController.dispose();
+  //   super.dispose();
+  // }
 
-  List<CouponData> sampleCoupons = [
-    CouponData(
-      id: '94',
-      userId: 'CU250044',
-      paymentId: 'PAID20250620110449',
-      code: '20250311BA7790E',
-      couponAmt: '3000',
-      usageStatus: '1',
-      confirmStatus: '1',
-      createdDate: '2025-06-20 16:34:49',
-      expiryDate: '2035-06-20 16:34:49',
-    ),
-    CouponData(
-      id: '95',
-      userId: 'CU250045',
-      paymentId: 'PAID20250721125530',
-      code: '20250412CD8891F',
-      couponAmt: '1500',
-      usageStatus: '0',
-      confirmStatus: '1',
-      createdDate: '2025-07-21 18:25:30',
-      usedDate: '2025-07-25 14:20:15',
-      expiryDate: '2025-12-21 18:25:30',
-    ),
-    CouponData(
-      id: '96',
-      userId: 'CU250046',
-      paymentId: 'PAID20250815093025',
-      code: '20250513EF9902G',
-      couponAmt: '5000',
-      usageStatus: '1',
-      confirmStatus: '1',
-      createdDate: '2025-08-15 14:50:25',
-      expiryDate: '2026-02-15 14:50:25',
-    ),
-  ];
+  void _setupTabController() {
+    final int tabCount = currUserTypeId == '10' ? 2 : 1;
+
+    // Dispose old controller to avoid leaks
+    _tabController?.dispose();
+
+    _tabController = TabController(length: tabCount, vsync: this);
+    setState(() {}); // rebuild widgets depending on it
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<ProfileController>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
     final isMobile = !isTablet;
+    Logger.warning('');
+    if (_tabController == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -129,48 +116,51 @@ class _ProfilePageState extends State<ProfilePage>
         elevation: 0,
       ),
       backgroundColor: Colors.grey[100],
-      body: controller.isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : SafeArea(
-              child: Padding(
-                padding: EdgeInsets.all(isTablet ? 24.0 : 12.0),
-                child: isTablet
-                    ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Left Sidebar (Tablet only)
-                          SizedBox(
-                            width: 180,
-                            child: _buildSidebar(isTablet, controller),
-                          ),
-                          const SizedBox(width: 32),
-                          // Main Content Area (Tablet only)
-                          Expanded(
-                            child: _buildMainContent(
-                                isTablet, isMobile, controller),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        // Mobile layout - single column
-                        children: [
-                          // Profile Section (Mobile)
-                          _buildMobileProfileSection(controller),
-                          const SizedBox(height: 16),
-                          // Document Cards (Mobile - horizontal scroll)
-                          _buildMobileDocumentsSection(controller),
-                          const SizedBox(height: 16),
-                          // Main Content (Mobile)
-                          Expanded(
-                            child: _buildMainContent(
-                                isTablet, isMobile, controller),
-                          ),
-                        ],
-                      ),
-              ),
+      body: Consumer<ProfileController>(
+        builder: (context, controller, _) {
+          if (controller.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(isTablet ? 24.0 : 12.0),
+              child: isTablet
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left Sidebar (Tablet only)
+                        SizedBox(
+                          width: 180,
+                          child: _buildSidebar(isTablet, controller),
+                        ),
+                        const SizedBox(width: 32),
+                        // Main Content Area (Tablet only)
+                        Expanded(
+                          child:
+                              _buildMainContent(isTablet, isMobile, controller),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      // Mobile layout - single column
+                      children: [
+                        // Profile Section (Mobile)
+                        _buildMobileProfileSection(controller),
+                        const SizedBox(height: 16),
+                        // Document Cards (Mobile - horizontal scroll)
+                        _buildMobileDocumentsSection(controller),
+                        const SizedBox(height: 16),
+                        // Main Content (Mobile)
+                        Expanded(
+                          child:
+                              _buildMainContent(isTablet, isMobile, controller),
+                        ),
+                      ],
+                    ),
             ),
+          );
+        },
+      ),
     );
   }
 
@@ -279,6 +269,8 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _buildSidebar(bool isTablet, ProfileController controller) {
+    Logger.warning(
+        'profile picccccc: ${controller.profilePic}, Pan card: ${controller.panCard}');
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -451,6 +443,8 @@ class _ProfilePageState extends State<ProfilePage>
 
   Widget _buildMainContent(
       bool isTablet, bool isMobile, ProfileController controller) {
+    final bool showCoupons = currUserTypeId == '10';
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -487,11 +481,12 @@ class _ProfilePageState extends State<ProfilePage>
                   icon: Icon(Icons.home_outlined, size: isTablet ? 24 : 20),
                   text: isTablet ? 'Personal Details' : 'Personal',
                 ),
-                Tab(
-                  icon: Icon(Icons.local_offer_outlined,
-                      size: isTablet ? 24 : 20),
-                  text: 'Coupons',
-                ),
+                if (showCoupons)
+                  Tab(
+                    icon: Icon(Icons.local_offer_outlined,
+                        size: isTablet ? 24 : 20),
+                    text: 'Coupons',
+                  ),
               ],
             ),
           ),
@@ -501,7 +496,7 @@ class _ProfilePageState extends State<ProfilePage>
               controller: _tabController,
               children: [
                 _buildPersonalDetailsTab(isTablet, isMobile, controller),
-                _buildCouponsTab(isTablet, controller),
+                if (showCoupons) _buildCouponsTab(isTablet, controller),
               ],
             ),
           ),

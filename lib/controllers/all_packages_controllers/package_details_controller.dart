@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:bizzmirth_app/models/package_details_model.dart';
-import 'package:bizzmirth_app/models/package_images_model.dart';
-import 'package:bizzmirth_app/models/package_itinerary_model.dart';
-import 'package:bizzmirth_app/models/package_price_model.dart';
-import 'package:bizzmirth_app/models/package_response_model.dart';
-import 'package:bizzmirth_app/models/package_tour_plan_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_details_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_images_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_itinerary_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_price_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_response_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/package_tour_plan_model.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';

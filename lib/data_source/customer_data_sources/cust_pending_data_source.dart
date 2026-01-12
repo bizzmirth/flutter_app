@@ -1,6 +1,5 @@
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
-import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +12,7 @@ class MyrefCustPendingDataSource extends DataTableSource {
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
     final pendingCustomer = data[index];
+    final parts = (pendingCustomer.taReference ?? '').split(' ');
 
     Widget getProfileImage(String? profilePicture) {
       const double imageSize = 40;
@@ -42,7 +42,7 @@ class MyrefCustPendingDataSource extends DataTableSource {
         imageUrl = 'https://testca.uniqbizz.com/uploading/$newpath';
       }
 
-      Logger.success('Final image URL: $imageUrl');
+      // Logger.success('Final image URL: $imageUrl');
 
       return Center(
         child: Container(
@@ -100,9 +100,9 @@ class MyrefCustPendingDataSource extends DataTableSource {
         ),
         DataCell(Text(pendingCustomer.id.toString())),
         DataCell(Text(pendingCustomer.name ?? 'N/A')),
-        DataCell(Text(pendingCustomer.taReferenceNo ?? 'N/A')),
-        DataCell(Text(pendingCustomer.taReferenceName ?? 'N/A')),
-        DataCell(Text(formatDate(pendingCustomer.addedOn))),
+        DataCell(Text(parts.isNotEmpty ? parts[0] : 'N/A')),
+        DataCell(Text(parts.length > 1 ? parts.sublist(1).join(' ') : 'N/A')),
+        DataCell(Text(pendingCustomer.registerDate ?? 'N/A')),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

@@ -1,8 +1,6 @@
 import 'package:bizzmirth_app/controllers/all_packages_controllers/tour_packages_controller.dart';
-import 'package:bizzmirth_app/models/travel_plan_top_selling_packages.dart';
 import 'package:bizzmirth_app/screens/more_top_selling_packages/more_top_selling_packages.dart';
 import 'package:bizzmirth_app/screens/package_details_page/package_details_page.dart';
-import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -18,44 +16,6 @@ class TopSellingPackages extends StatefulWidget {
 
 class _TopSellingPackagesState extends State<TopSellingPackages> {
   int visibleTripsCount = 2;
-
-  final List<TravelPlanTopSellingPackages> myTrips = [
-    TravelPlanTopSellingPackages(
-      destination: 'Paris, France',
-      image: 'assets/paris.jpg',
-      description:
-          'Join us on an unforgettable trip to Paris! Experience the best of French culture, food, and history.',
-      price: '40,000',
-    ),
-    TravelPlanTopSellingPackages(
-      destination: 'Bali, Indonesia',
-      image: 'assets/bali.jpg',
-      description:
-          'Discover the serene beaches and rich culture of Bali, Indonesia.',
-      price: '20,000',
-    ),
-    TravelPlanTopSellingPackages(
-      destination: 'New York, USA',
-      image: 'assets/newyork.jpg',
-      description:
-          'Explore the vibrant city of New York, from Times Square to Central Park.',
-      price: '1,00,000',
-    ),
-    TravelPlanTopSellingPackages(
-      destination: 'Tokyo, Japan',
-      image: 'assets/tokyo.jpg',
-      description:
-          'Experience the perfect blend of traditional and modern culture in Tokyo.',
-      price: '2,00,000',
-    ),
-    TravelPlanTopSellingPackages(
-      destination: 'Santorini, Greece',
-      image: 'assets/santorini.jpg',
-      description:
-          'Enjoy the beautiful sunset views and whitewashed buildings of Santorini.',
-      price: '1,50,000',
-    ),
-  ];
 
   @override
   void initState() {
@@ -80,6 +40,8 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
       // Precache images when they become available
       if (bestDeals.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+
           for (final trip in bestDeals) {
             final imageUrl = '${AppUrls.getImageBaseUrl}${trip.image}';
             precacheImage(NetworkImage(imageUrl), context);
@@ -114,7 +76,7 @@ class _TopSellingPackagesState extends State<TopSellingPackages> {
             else
               ...bestDeals.map((trip) {
                 final imageUrl = '${AppUrls.getImageBaseUrl}${trip.image}';
-                Logger.success('Top selling package image URL: $imageUrl');
+                // Logger.success('Top selling package image URL: $imageUrl');
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(

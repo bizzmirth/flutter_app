@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:bizzmirth_app/models/best_deals_model.dart';
-import 'package:bizzmirth_app/models/tour_package_model.dart';
-import 'package:bizzmirth_app/models/travel_plan.dart';
+import 'package:bizzmirth_app/models/homepage_models/best_deals_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/tour_package_model.dart';
+import 'package:bizzmirth_app/models/homepage_models/travel_plan.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +59,7 @@ class TourPackagesController extends ChangeNotifier {
       final response = await http.get(Uri.parse(fullUrl));
 
       if (response.statusCode == 200) {
-        Logger.success('Response from tour details ${response.body}');
+        // Logger.success('Response from tour details ${response.body}');
 
         final Map<String, dynamic> decoded =
             jsonDecode(response.body) as Map<String, dynamic>;
@@ -160,7 +160,7 @@ class TourPackagesController extends ChangeNotifier {
           headers: {'Content-Type': 'application/json'});
       if (response.statusCode == 200) {
         Logger.success('best details full URL: $fullUrl');
-        Logger.success('Raw response from best deals api : ${response.body}');
+        // Logger.success('Raw response from best deals api : ${response.body}');
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
         if (jsonData['status'] == 'success' && jsonData['packages'] != null) {
           final List<dynamic> bestDeals = jsonData['packages'];

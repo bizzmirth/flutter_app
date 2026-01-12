@@ -1,4 +1,9 @@
 // function to convert [3 star, 4 star, 5 star] to [3,4,5]
+import 'package:bizzmirth_app/screens/login_page/login.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:flutter/material.dart';
+
 List<String> convertStarsToNumbers(List<String> selectedStars) {
   return selectedStars.map((star) {
     switch (star) {
@@ -92,4 +97,112 @@ List<String> formatItineraryText(String? text) {
       .where((e) => e.isNotEmpty)
       .map((e) => '- $e.') // add `-` at start & keep period
       .toList();
+}
+
+// logs out user clearing all the data from the shared pref
+Future<void> performLogout(BuildContext context) async {
+  final sharedPrefHelper = SharedPrefHelper();
+  await sharedPrefHelper.removeDetails();
+
+  // Navigate to LoginPage and remove all previous routes
+  if (!context.mounted) return;
+  await Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => const LoginPage()),
+    (route) => false,
+  );
+}
+
+/// handleFile(selectedFiles, 'Profile Picture', customer.profilePic);
+/// takes the required input and generates the required url for the key
+void handleFile(
+    Map<String, dynamic> selectedFiles, String key, String? fileUrl) {
+  if (fileUrl == null) return;
+
+  const baseUrl = 'https://testca.uniqbizz.com/uploading/';
+
+  if (fileUrl.startsWith(baseUrl)) {
+    selectedFiles[key] = fileUrl;
+  } else {
+    selectedFiles[key] = '$baseUrl$fileUrl';
+  }
+
+  Logger.success('$key: ${selectedFiles[key]}');
+}
+
+// takes the selected gender string and return a api ready gender string
+String formatGender(String gender) {
+  switch (gender.toLowerCase().trim()) {
+    case 'male':
+      return 'male';
+    case 'female':
+      return 'female';
+    case 'other':
+      return 'other';
+    default:
+      return '---- Select Gender ----';
+  }
+}
+
+// helper function that takes the selected country code with the leading +91 and return 91
+String? sanitizeCountryCode(String? countryCode) {
+  if (countryCode == null || countryCode.isEmpty) return null;
+
+  // Remove any leading '+' and trim whitespace
+  return countryCode.replaceAll('+', '').trim();
+}
+
+// takes the month number as a input and return the months name
+String getMonthName(String? monthNumber) {
+  if (monthNumber == null) return '';
+
+  const monthNames = {
+    '01': 'January',
+    '02': 'February',
+    '03': 'March',
+    '04': 'April',
+    '05': 'May',
+    '06': 'June',
+    '07': 'July',
+    '08': 'August',
+    '09': 'September',
+    '10': 'October',
+    '11': 'November',
+    '12': 'December',
+  };
+
+  return monthNames[monthNumber] ?? '';
+}
+
+// takes the input as color as return it to use in the style
+Color convertColor(String? color) {
+  switch (color?.toLowerCase()) {
+    case 'green':
+      return Colors.green;
+    case 'red':
+      return Colors.red;
+    case 'blue':
+      return Colors.blue;
+    case 'orange':
+      return Colors.orange;
+    case 'yellow':
+      return Colors.yellow;
+    case 'purple':
+      return Colors.purple;
+    default:
+      return Colors.grey; // fallback
+  }
+}
+
+// takes `compcheck` as input and returns Complimentary/Non-Complimentary/N/A
+String isComplimentary(String? compcheck){
+  switch(compcheck){
+    case '1':
+      return 'Complimentary';
+    case '2':
+      return 'Non-Complimentary';
+    default:
+      return 'N/A';
+  }
+
 }

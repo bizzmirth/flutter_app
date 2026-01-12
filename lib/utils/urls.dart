@@ -1,88 +1,293 @@
 enum Environment { testing, live }
 
 class AppUrls {
-//  Change this to switch environments
   static const Environment _currentEnvironment = Environment.testing;
 
   static const Map<Environment, String> _baseUrls = {
-    Environment.testing: 'https://testca.uniqbizz.com/api',
-    Environment.live: 'https://ca.uniqbizz.com/api'
+    Environment.testing: 'https://testca.uniqbizz.com/bizzmirth_apis',
+    Environment.live: 'https://ca.uniqbizz.com/bizzmirth_apis'
   };
 
   static String get baseUrl => _baseUrls[_currentEnvironment]!;
 
+  // Base paths
+  static String get _homepage => '$baseUrl/homepage';
+  static String get _users => '$baseUrl/users';
+  static String get _customers => '$_users/customers';
+  static String get _travelConsultant => '$_users/travel_consultant';
+  static String get _franchisee => '$_users/franchise';
+
+  // ===================== COMMON ENDPOINTS =====================
+  static String get getCountries => '$baseUrl/country.php';
+
+  static String get getStates => '$baseUrl/state_city.php';
+
+  static String get getPincode => '$baseUrl/pincode.php';
+
   // ==================== HOMEPAGE TOUR PACKAGE DETAILS ====================
   static String get getTourPackages =>
-      '$baseUrl/packages/best_destinations.php';
+      '$_homepage/packages/best_destinations.php';
 
   static String get getFilteredTourPackages =>
-      '$baseUrl/packages/filtered_package.php';
+      '$_homepage/packages/filtered_package.php';
 
-  static String get getBestDeals => '$baseUrl/packages/best_deals.php';
+  static String get getBestDeals => '$_homepage/packages/best_deals.php';
 
   static String get getTourPackageDetails =>
-      '$baseUrl/packages/view_package_details/package_details.php';
+      '$_homepage/packages/view_package_details/package_details.php';
 
   // ==================== BASE URL TO GET IMAGES ====================
   static String get getImageBaseUrl => 'https://testca.uniqbizz.com/';
 
   // ==================== AUTHENTICATION ENDPOINTS ====================
-  static String get login => '$baseUrl/login.php';
-  static String get getAllUserTypes => '$baseUrl/user_type';
-
-  // ==================== PROFILE PAGE ENDPOINTS ====================
-  static String get getPersonalDetails => '$baseUrl/customers/profile_page.php';
+  static String get login => '$baseUrl/login/login.php';
+  static String get getAllUserTypes => '$_homepage/user_type.php';
 
   // ==================== CONTACT US ENDPOINTS ====================
   static String get contactUs => '$baseUrl/contact_us.php';
 
+  // ==================== CUSTOMER PROFILE PAGE ENDPOINTS ====================
+  static String get getPersonalDetails => '$baseUrl/profile.php';
+
+  static String get getCouponDetails =>
+      '$_customers/profile_page/coupons/coupons.php';
+
   // ==================== CUSTOMER DASHBOARD ENDPOINTS ====================
   static String get registeredCustomers =>
-      '$baseUrl/customers/customers.php?action=registered_cust'; // to get the registered customers
+      '$_customers/referral_customers/customer_registered.php';
+
   static String get pendingCustomers =>
-      '$baseUrl/customers/customers.php?action=pending_cust';
+      '$_customers/referral_customers/customer_pending.php';
+
   static String get dashboardCounts =>
-      '$baseUrl/customers/dashboard_counts.php';
-  static String get dashboardChartsData => '$baseUrl/dashboard/chartData.php';
+      '$_customers/dashboard/dashboard_counts.php';
+
+  static String get dashboardChartsData =>
+      '$_customers/dashboard/chartData.php';
+
   static String get topCustomerReferrals =>
-      '$baseUrl/dashboard/top_customer_refereral.php';
-  static String get uploadImage => '$baseUrl/upload_mobile.php';
-  static String get addCustomer => '$baseUrl/customers/add_customers_data.php';
-  static String get validateEmail => '$baseUrl/customers/valid_email.php';
+      '$_customers/dashboard/top_customer_referral.php';
+
+  static String get uploadImage => '$baseUrl/uploading/upload_mobile.php';
+
+  static String get addCustomer =>
+      '$_customers/referral_customers/add_customers.php';
+
+  static String get validateEmail => '$_customers/dashboard/valid_email.php';
+
   static String get editCustomers =>
-      '$baseUrl/customers/edit_customers_data.php';
+      '$_customers/referral_customers/edit_customers.php';
+
   static String get deleteCustomers =>
-      '$baseUrl/customers/delete_customers_data.php';
+      '$_customers/referral_customers/delete_customers.php';
 
   // ==================== CUSTOMER WALLET ENDPOINTS ====================
-  static String get getWalletDetails =>
-      '$baseUrl/customers/wallets/wallets_api.php';
+  static String get getWalletDetails => '$_customers/wallets/wallets_api.php';
 
   // ==================== CUSTOMER PRODUCT PAYOUTS ENDPOINTS ====================
   static String get getAllPayoutsProduct =>
-      '$baseUrl/payouts/product_payouts/customer_all_payouts.php';
+      '$_customers/payouts/product_payouts/customer_all_payouts.php';
 
   static String get getTotalPayoutsProduct =>
-      '$baseUrl/payouts/product_payouts/customer_total_payout.php';
+      '$_customers/payouts/product_payouts/customer_total_payout.php';
 
   static String get getPayoutsProduct =>
-      '$baseUrl/payouts/product_payouts/customer_payouts.php'; // this is used to call all previous,next and all
+      '$_customers/payouts/product_payouts/customer_payouts.php';
 
   // ==================== CUSTOMER REFERRAL PAYOUTS ENDPOINTS ====================
-
   static String get getAllPayoutsReference =>
-      '$baseUrl/payouts/reference_payouts/customer_all_payouts.php';
+      '$_customers/payouts/reference_payouts/customer_all_payouts.php';
 
   static String get getPreviousPayoutsReference =>
-      '$baseUrl/payouts/reference_payouts/customer_prev_payouts.php';
+      '$_customers/payouts/reference_payouts/customer_prev_payouts.php';
 
   static String get getNextPayoutReference =>
-      '$baseUrl/payouts/reference_payouts/customer_next_payouts.php';
+      '$_customers/payouts/reference_payouts/customer_next_payouts.php';
 
   static String get getTotalPayoutsReference =>
-      '$baseUrl/payouts/reference_payouts/customer_total_payouts.php';
+      '$_customers/payouts/reference_payouts/customer_total_payouts.php';
 
   // ==================== CUSTOMER ORDER HISTORY ENDPOINTS ====================
   static String get getOrderHistoryStatCounts =>
-      '$baseUrl/orders/get_counts.php';
+      '$_customers/orders/get_counts.php';
+
+  static String get getRecentBookings => '$_customers/orders/fetch_events.php';
+
+  static String get getAllTableData => '$_customers/orders/all_table_data.php';
+
+  static String get getPendingTableData =>
+      '$_customers/orders/pending_table_data.php';
+
+  static String get getBookedTableData =>
+      '$_customers/orders/booked_table_data.php';
+
+  static String get getCancelledTableData =>
+      '$_customers/orders/cancelled_table_data.php';
+
+  static String get getRefundTableData =>
+      '$_customers/orders/refunded_table_data.php';
+
+  // ==================== TRAVEL CONSULTANT DASHBOARD ENDPOINTS ====================
+  static String get getTravelConsultantDashboardCounts =>
+      '$_travelConsultant/dashboard/dashboard_count.php';
+
+  static String get getTravelConsultantLineChartData =>
+      '$_travelConsultant/dashboard/line_chart.php';
+
+  static String get getTravelConsultantTopReferralCustomers =>
+      '$_travelConsultant/dashboard/top_referrals.php';
+
+  static String get getTravelConsultantCurrentBookings =>
+      '$_travelConsultant/dashboard/top_bookings.php';
+
+  // ==================== TRAVEL CONSULTANT CUSTOMER ENDPOINTS ====================
+  static String get getTcPendingCustomers =>
+      '$_travelConsultant/referral_customers/customer_pending.php';
+
+  static String get getTcRegisteredCustomers =>
+      '$_travelConsultant/referral_customers/customer_registered.php';
+
+  static String get addTcCustomer =>
+      '$_travelConsultant/referral_customers/add_customers.php';
+
+  static String get deleteTcCustomer =>
+      '$_travelConsultant/referral_customers/delete_customers.php';
+
+  static String get updateTcCustomer =>
+      '$_travelConsultant/referral_customers/edit_customers.php';
+
+  // ==================== TRAVEL CONSULTANT MARKUP ENDPOINTS ====================
+  static String get getTcMarkupDetails =>
+      '$_travelConsultant/markup/markup.php';
+
+  static String get getTcUpdateMarkup =>
+      '$_travelConsultant/markup/update_markup.php';
+
+  // ==================== TRAVEL CONSULTANT PRODUCT PAYOUT ENDPOINTS ====================
+  static String get getTcProductAllPayouts =>
+      '$_travelConsultant/payouts/product_payout/travel_consultant_all_payouts.php';
+
+  static String get getTcProductPayouts =>
+      '$_travelConsultant/payouts/product_payout/travel_consultant_payouts.php';
+
+  static String get getTcTotalProductPayouts =>
+      '$_travelConsultant/payouts/product_payout/travel_consultant_total_payouts.php';
+
+  // ==================== TRAVEL CONSULTANT CU MEMBERSHIP PAYOUT ENDPOINTS ====================
+  static String get getTcCuAllPayouts =>
+      '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_all_payouts.php';
+
+  static String get getTcCuNextPayouts =>
+      '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_next_payouts.php';
+
+  static String get getTcCuTotalPayouts =>
+      '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_total_payouts.php';
+
+  static String get getTcCuPreviousPayouts =>
+      '$_travelConsultant/payouts/cu_membership_payout/travel_consultant_previous_payouts.php';
+
+  // ==================== TRAVEL CONSULTANT TOPUP WALLET ENDPOINTS ====================
+
+  static String get getTcTopupWalletDetails =>
+      '$_travelConsultant/wallets/tc_wallet_balance.php';
+
+  static String get addTcTopupWalletAmount =>
+      '$_travelConsultant/wallets/add_tc_topup.php';
+
+  static String get getTcTopupRequestList =>
+      '$_travelConsultant/wallets/tc_request_list.php';
+
+  // ==================== TRAVEL CONSULTANT ORDER HISTORY ENDPOINTS ====================
+  static String get getTcOrderHistoryStatCount =>
+      '$_travelConsultant/orders/get_counts.php';
+
+  static String get getTcRecentBookings =>
+      '$_travelConsultant/orders/fetch_events.php';
+
+  static String get getTcAllTableData =>
+      '$_travelConsultant/orders/all_table_data.php';
+
+  static String get getTcPendingTableData =>
+      '$_travelConsultant/orders/pending_table_data.php';
+
+  static String get getTcBookingTableData =>
+      '$_travelConsultant/orders/booked_table_data.php';
+
+  static String get getTcCancelledTableData =>
+      '$_travelConsultant/orders/cancelled_table_data.php';
+
+  static String get getTcRefundTableData =>
+      '$_travelConsultant/orders/refunded_table_data.php';
+
+  static String get getTcOrderDetailsData =>
+      '$_travelConsultant/orders/order_details.php';
+
+  // ==================== Franchisee DASHBOARD ENDPOINTS ====================
+  static String get getFranchiseeDashboardCounts =>
+      '$_franchisee/dashboard/dashboard_counts.php';
+
+  static String get getFranchiseLineChartData =>
+      '$_franchisee/dashboard/chartData.php';
+
+  static String get getFranchiseeTopTravelConsultants =>
+      '$_franchisee/dashboard/top_travel_consultants_referral.php';
+
+  static String get getFranchiseeCandidates =>
+      '$_franchisee/dashboard/candidate_count.php';
+
+  // ==================== FRANCHISEE TRAVEL CONSULTANT ENDPOINTS ====================
+
+  static String get getFranchiseePendingTc =>
+      '$_franchisee/travel_consultants/travel_consultants_pending.php';
+
+  static String get getFranchiseeRegisteredTc =>
+      '$_franchisee/travel_consultants/travel_consultants_registered.php';
+
+  static String get franchiseeAddTc =>
+      '$_franchisee/travel_consultants/add_travel_consultants.php';
+
+  static String get franchiseeEditTc =>
+      '$_franchisee/travel_consultants/edit_travel_consultants.php';
+
+  static String get deleteFranchiseeTc =>
+      '$_franchisee/travel_consultants/delete_travel_consultants.php';
+
+  // ==================== FRANCHISEE CUSTOMER ENDPOINTS ====================
+  static String get getFranchiseePendingCustomers =>
+      '$_franchisee/customers/customers_pending.php';
+
+  static String get getFranchiseeRegisteredCustomers =>
+      '$_franchisee/customers/customers_registered.php';
+
+  // ==================== FRANCHISEE PRODUCT PAYOUTS ENDPOINTS ====================
+  static String get getFranchiseeProductPayouts =>
+      '$_franchisee/payouts/product_payouts/product_payouts.php';
+
+  static String get getFranchiseeProductAllPayouts =>
+      '$_franchisee/payouts/product_payouts/product_all_payouts.php';
+
+  static String get getFranchiseeProductTotalPayouts =>
+      '$_franchisee/payouts/product_payouts/product_total_payouts.php';
+
+  // ==================== FRANCHISEE CU MEMBERSHIP PAYOUTS ENDPOINTS ====================
+
+  static String get getFranchiseeCUMembershipPayouts =>
+      '$_franchisee/payouts/cu_membership_payouts/cu_membership_payouts.php';
+
+  static String get getFranchiseeCUMembershipTotalPayouts =>
+      '$_franchisee/payouts/cu_membership_payouts/cu_membership_total_payouts.php';
+
+  static String get getFranchiseeCUAllPayouts =>
+      '$_franchisee/payouts/cu_membership_payouts/cu_membership_all_payouts.php';
+
+  // ==================== TC RECRUITMENT PAYOUTS ENDPOINTS ====================
+
+  static String get getFranchiseeTcRecruitmentPayouts =>
+      '$_franchisee/payouts/tc_recruitment_payouts/tc_recruitment_payouts.php';
+
+  static String get getFranchiseeTotalTCRecruitmentPayouts =>
+      '$_franchisee/payouts/tc_recruitment_payouts/tc_recruitment_total_payouts.php';
+
+  static String get getFranchiseeAllTCRecruitmentPayouts =>
+      '$_franchisee/payouts/tc_recruitment_payouts/tc_recruitment_all_payouts.php';
 }

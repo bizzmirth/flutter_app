@@ -1,4 +1,4 @@
-import 'package:bizzmirth_app/models/cust_redeemable_wallet_history_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_redeemable_wallet_history_model.dart';
 import 'package:flutter/material.dart';
 
 class CustRedeemableTableDataSource extends DataTableSource {

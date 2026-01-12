@@ -54,11 +54,9 @@ class _AddbmState1 extends State<AddbmPage1> {
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        // ignore: deprecated_member_use
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         filled: true,
-        // ignore: deprecated_member_use
-        fillColor: Colors.white.withOpacity(0.2),
+        fillColor: Colors.white.withValues(alpha: 0.2),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -74,7 +72,7 @@ class _AddbmState1 extends State<AddbmPage1> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: defaultOption, // Set default selection
+        initialValue: defaultOption, // Set default selection
         items: [
           DropdownMenuItem(
             value: defaultOption, // Placeholder value

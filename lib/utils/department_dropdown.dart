@@ -37,12 +37,12 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
       final prefs = await SharedPreferences.getInstance();
       final departmentDataString = prefs.getString('departmentData');
 
-      Logger.info('Raw Department Data: $departmentDataString'); // Debug print
+      Logger.info('Raw Department Data: $departmentDataString');
 
       if (departmentDataString != null) {
         final List<dynamic> departmentData = json.decode(departmentDataString);
 
-        Logger.info('Parsed Department Data: $departmentData'); // Debug print
+        Logger.info('Parsed Department Data: $departmentData');
 
         setState(() {
           departments = departmentData
@@ -55,8 +55,7 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
           Logger.info('Processed Departments: $departments');
           if (widget.initialDepartment != null) {
             selectedDepartment = widget.initialDepartment;
-            Logger.info(
-                'Initial Department: ${widget.initialDepartment}'); // Debug print
+            Logger.info('Initial Department: ${widget.initialDepartment}');
           }
 
           isLoading = false;
@@ -84,7 +83,7 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: selectedDepartment ?? '  Select Department    ',
+        initialValue: selectedDepartment ?? '  Select Department    ',
         items: [
           const DropdownMenuItem(
             value: '  Select Department    ',

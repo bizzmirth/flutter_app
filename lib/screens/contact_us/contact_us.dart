@@ -5,7 +5,6 @@ import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 
 class ContactUsPage extends StatefulWidget {
@@ -16,7 +15,6 @@ class ContactUsPage extends StatefulWidget {
 }
 
 class _ContactUsPageState extends State<ContactUsPage> {
-  late final WebViewController _controller;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController messageController = TextEditingController();
@@ -26,9 +24,6 @@ class _ContactUsPageState extends State<ContactUsPage> {
   @override
   void initState() {
     super.initState();
-    _controller = WebViewController();
-    _controller.loadRequest(Uri.parse(
-        'https://www.openstreetmap.org/export/embed.html?bbox=144.95000000000002%2C-37.82000000000001%2C144.96000000000004%2C-37.81000000000001&layer=mapnik'));
   }
 
   Future<void> submitMessageForm(BuildContext context) async {

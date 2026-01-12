@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:bizzmirth_app/controllers/customer_controller/cust_wallet_controller.dart';
 import 'package:bizzmirth_app/data_source/customer_data_sources/cust_booking_points_data_source.dart';
 import 'package:bizzmirth_app/data_source/customer_data_sources/cust_redeemable_table_data_source.dart';
-import 'package:bizzmirth_app/models/cust_booking_wallet_history_model.dart';
-import 'package:bizzmirth_app/models/cust_redeemable_wallet_history_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_booking_wallet_history_model.dart';
+import 'package:bizzmirth_app/models/customer_models/cust_redeemable_wallet_history_model.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
@@ -82,7 +82,10 @@ class _WalletDetailsPageState extends State<WalletDetailsPage> {
   Future<void> getCustomerWalletDetails() async {
     final controller =
         Provider.of<CustWalletController>(context, listen: false);
-    _customerType = await SharedPrefHelper().getCurrentUserCustId();
+
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+
+    _customerType = loginRes?.userId ?? '';
     await controller.apiGetWalletDetails().then((_) {
       _initializeFilterRedeemableHistory();
       _initializeFilterBookingHistory();
