@@ -33,7 +33,8 @@ class _ProductPayoutsState extends State<ProductPayouts> {
   DateTime? _selectedDateTime;
 
   Future<void> _selectDate(BuildContext context) async {
-    final controller = Provider.of<FranchiseeProductPayoutsController>(context, listen: false);
+    final controller =
+        Provider.of<FranchiseeProductPayoutsController>(context, listen: false);
     final DateTime now = DateTime.now();
     final DateTime? picked = await showMonthPicker(
       context: context,
@@ -46,7 +47,8 @@ class _ProductPayoutsState extends State<ProductPayouts> {
         _selectedDateTime = picked;
         selectedDate = DateFormat('MMMM, yyyy').format(picked);
       });
-      await controller.fetchTotalProductPayouts(picked.month.toString(), picked.year.toString());
+      await controller.fetchTotalProductPayouts(
+          picked.month.toString(), picked.year.toString());
       Logger.warning('Selected month: ${picked.month}, year: ${picked.year}');
     }
   }
@@ -59,7 +61,7 @@ class _ProductPayoutsState extends State<ProductPayouts> {
     userId = userDetails?.userId;
     username =
         "${userDetails?.userFname ?? ''} ${userDetails?.userLname ?? ''}";
-        await controller.initializeDateInfo();
+    await controller.initializeDateInfo();
     await controller.fetchPreviousProductPayouts();
     await controller.fetchNextProductPayouts();
     await controller.fetchTotalProductPayouts(null, null);
@@ -574,14 +576,14 @@ class _ProductPayoutsState extends State<ProductPayouts> {
       ),
       body: Consumer<FranchiseeProductPayoutsController>(
         builder: (context, controller, _) {
-           final isLoading = controller.state == ViewState.loading;
+          final isLoading = controller.state == ViewState.loading;
           if (isLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          // 2️⃣ Error
+          
           if (controller.state == ViewState.error) {
             WidgetsBinding.instance.addPostFrameCallback(
               (_) {

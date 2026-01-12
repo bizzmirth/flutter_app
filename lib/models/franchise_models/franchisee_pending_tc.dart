@@ -40,6 +40,7 @@ class FranchiseePendingTc {
   String? status;
   String? userId;
   String? referenceName;
+  String? paymentFee;
 
   FranchiseePendingTc({
     this.id,
@@ -83,6 +84,8 @@ class FranchiseePendingTc {
     this.status,
     this.userId,
     this.referenceName,
+    this.paymentFee,
+    
   });
 
   FranchiseePendingTc.fromJson(Map<String, dynamic> json) {
@@ -127,6 +130,7 @@ class FranchiseePendingTc {
     status = json['status'];
     userId = json['userId'];
     referenceName = json['reference_name'];
+    paymentFee = json['payment_fee'];
   }
 
   Map<String, dynamic> toJson() {
@@ -172,6 +176,7 @@ class FranchiseePendingTc {
     data['status'] = status;
     data['userId'] = userId;
     data['reference_name'] = referenceName;
+    data['payment_fee'] = paymentFee;
     return data;
   }
 }
