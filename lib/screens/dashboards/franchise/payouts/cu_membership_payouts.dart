@@ -61,7 +61,7 @@ class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
     userId = userDetails?.userId;
     username =
         "${userDetails?.userFname ?? ''} ${userDetails?.userLname ?? ''}";
-    await controller.initializeDateInfo();
+
     await controller.fetchPreviousPayouts();
     await controller.fetchNextPayouts();
     await controller.fetchTotalPayouts(null, null);
@@ -618,7 +618,7 @@ class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
                       Expanded(
                         child: payoutCard(
                           'Previous Payout',
-                          '${getMonthName(controller.prevDateMonth)} ${controller.prevDateYear}',
+                          '${getMonthName(controller.previousPayoutMonth)} ${controller.previousPayoutYear}',
                           'Rs. ${controller.previousTotalPayout}',
                           'Paid',
                           Colors.green.shade100,
@@ -629,7 +629,7 @@ class _CuMembershipPayoutsState extends State<CuMembershipPayouts> {
                       Expanded(
                         child: payoutCard(
                           'Next Payout',
-                          '${getMonthName(controller.nextDateMonth)} ${controller.nextDateYear}',
+                          '${getMonthName(controller.nextPayoutMonth)} ${controller.nextPayoutYear}',
                           'Rs. ${controller.nextTotalPayout}',
                           'Pending',
                           Colors.orange.shade100,

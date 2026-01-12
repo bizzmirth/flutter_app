@@ -61,7 +61,6 @@ class _ProductPayoutsState extends State<ProductPayouts> {
     userId = userDetails?.userId;
     username =
         "${userDetails?.userFname ?? ''} ${userDetails?.userLname ?? ''}";
-    await controller.initializeDateInfo();
     await controller.fetchPreviousProductPayouts();
     await controller.fetchNextProductPayouts();
     await controller.fetchTotalProductPayouts(null, null);
