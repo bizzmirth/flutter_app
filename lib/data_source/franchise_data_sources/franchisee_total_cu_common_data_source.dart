@@ -1,45 +1,30 @@
-import 'package:bizzmirth_app/models/franchise_models/franchisee_all_tc_recruitment_model.dart';
+import 'package:bizzmirth_app/models/franchise_models/cu_membership_payout_response.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 
-class FranchiseAllTcRecruimentPayouts extends DataTableSource {
-  final List<FranchiseeAllTcRecruitmentModel> data;
-  FranchiseAllTcRecruimentPayouts(this.data);
-
+class FranchiseeTotalCuCommonDataSource extends DataTableSource {
+  List<PayoutItem> payoutList;
+  FranchiseeTotalCuCommonDataSource({required this.payoutList});
   @override
   DataRow? getRow(int index) {
-    if (index >= data.length) return null;
-    final payout = data[index];
-
+    if (index >= payoutList.length) return null;
+    final payout = payoutList[index];
     return DataRow(
       cells: [
-        // Date
         DataCell(Text(formatDate(payout.date))),
-
-        DataCell(
-          SizedBox(
-            width: 200,
-            child: Text(
-              payout.payoutDetails ?? 'N/A',
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-            ),
-          ),
-        ),
-
-        DataCell(Text('₹${payout.amount ?? 'N/A'}')),
-
-        DataCell(Text('₹${payout.tds ?? 'N/A'}')),
-        DataCell(Text('₹${payout.totalPayable ?? 'N/A'}')),
+        DataCell(Text(payout.payoutDetails)),
+        DataCell(Text(payout.amount.toString())),
+        DataCell(Text('₹${payout.tds}')),
+        DataCell(Text('₹${payout.totalPayable}')),
         DataCell(
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: _getStatusColor(payout.status ?? ''),
+              color: _getStatusColor(payout.status),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              payout.status ?? 'Unknown',
+              payout.status,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
@@ -73,7 +58,7 @@ class FranchiseAllTcRecruimentPayouts extends DataTableSource {
   }
 
   @override
-  int get rowCount => data.length;
+  int get rowCount => payoutList.length;
 
   @override
   bool get isRowCountApproximate => false;

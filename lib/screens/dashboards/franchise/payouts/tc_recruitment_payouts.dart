@@ -1,9 +1,21 @@
+import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_tc_recruitment_controller.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_all_tc_recruiment_payouts.dart';
-import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/data_source/franchise_data_sources/franchisee_tc_common_payout_data_source.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_payouts.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
+import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/utils/view_state.dart';
+import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:provider/provider.dart';
 
 class TcRecruitmentPayouts extends StatefulWidget {
   const TcRecruitmentPayouts({super.key});
@@ -18,122 +30,674 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
   static const double dataRowHeight = 50.0;
   static const double headerHeight = 56.0;
   static const double paginationHeight = 60.0;
+  String? username;
+  String? userId;
+  DateTime? _selectedDateTime;
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final controller =
+        Provider.of<FranchiseeTcRecruitmentController>(context, listen: false);
+    final DateTime now = DateTime.now();
+    final DateTime? picked = await showMonthPicker(
       context: context,
-      initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
+      initialDate: _selectedDateTime ?? now,
     );
     if (picked != null) {
       setState(() {
         selectedDate = DateFormat('MMMM, yyyy').format(picked);
       });
+      await controller.fetchTotalRecruitmentPayouts(
+          picked.month.toString(), picked.year.toString());
+      Logger.warning('Selected month ${picked.month}, year: ${picked.year}');
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = DateFormat('MMMM, yyyy').format(DateTime.now());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getData();
+    });
+  }
+
+  Future<void> getData() async {
+    final controller =
+        Provider.of<FranchiseeTcRecruitmentController>(context, listen: false);
+    final userDetails = await SharedPrefHelper().getLoginResponse();
+    userId = userDetails?.userId;
+    username =
+        "${userDetails?.userFname ?? ''} ${userDetails?.userLname ?? ''}";
+    await controller.fetchPreviousTcRecruitmentPayouts();
+    await controller.fetchNextTcRecruitmentPayouts();
+    await controller.fetchTotalRecruitmentPayouts(null, null);
+    await controller.fetchAllTCRecruitmentPayouts();
+  }
+
+  void showPayoutDialog(
+    BuildContext context,
+    String payoutType,
+    String date,
+    String amount,
+    String userId,
+    String userName,
+    FranchiseeTcRecruitmentController controller,
+  ) {
+    List<CuPayoutItem> getPayoutList() {
+      switch (payoutType.toLowerCase()) {
+        case 'previous payout':
+        case 'previous payouts':
+          return controller.previousPayouts;
+
+        case 'next payout':
+        case 'next payouts':
+          return controller.nextPayouts;
+
+        case 'total payout':
+        case 'total payouts':
+          return controller.totalTcRecruitmentPayouts;
+
+        default:
+          return [];
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        final payoutList = getPayoutList();
+        final isMobile = MediaQuery.of(context).size.width < 600;
+
+        return Dialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 10.0 : 40.0,
+            vertical: 24.0,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: SingleChildScrollView(
+            child: Container(
+              width: isMobile
+                  ? MediaQuery.of(context).size.width * 0.95
+                  : MediaQuery.of(context).size.width * 0.9,
+              height:
+                  isMobile ? null : MediaQuery.of(context).size.height * 0.8,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header with close button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          payoutType,
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.close),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Payout summary cards
+                  if (isMobile)
+                    Column(
+                      children: [
+                        _buildPayoutCard(payoutType, amount, date),
+                        const SizedBox(height: 12),
+                        _buildUserCard(userId, userName, amount),
+                      ],
+                    )
+                  else
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                            child: _buildPayoutCard(payoutType, amount, date)),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'ID: $userId',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Name: $userName',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(),
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Name: $userName',
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Rs.',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey.shade600),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            amount.replaceAll('Rs', ''),
+                                            style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+
+                  const SizedBox(height: 16),
+
+                  const Divider(thickness: 1, color: Colors.black26),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Center(
+                      child: Text(
+                        '$payoutType Details',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const FilterBar(),
+                  const SizedBox(height: 8),
+
+                  // Payout list
+                  if (payoutList.isEmpty) ...[
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: Text(
+                          'No payout data available',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  ] else if (isMobile) ...[
+                    Column(
+                      children: [
+                        for (int i = 0; i < payoutList.length; i++)
+                          _buildPayoutItem(
+                              payoutList[i], i == payoutList.length - 1),
+                      ],
+                    ),
+                  ] else ...[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(thickness: 1, color: Colors.black26),
+                          Card(
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: SizedBox(
+                              height: (_rowsPerPage * dataRowHeight) +
+                                  headerHeight +
+                                  paginationHeight,
+                              child: payoutList.isEmpty
+                                  ? Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Text(
+                                          'No payout data available',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : PaginatedDataTable(
+                                      columnSpacing: 50,
+                                      dataRowMinHeight: 40,
+                                      columns: const [
+                                        DataColumn(label: Text('Date')),
+                                        DataColumn(
+                                            label: Text('Payout Details')),
+                                        DataColumn(label: Text('Total')),
+                                        DataColumn(label: Text('TDS')),
+                                        DataColumn(
+                                            label: Text('Total Payable')),
+                                        DataColumn(label: Text('Remarks')),
+                                      ],
+                                      source:
+                                          FranchiseeTcCommonPayoutDataSource(
+                                        payoutList: payoutList,
+                                      ),
+                                      rowsPerPage: _rowsPerPage,
+                                      availableRowsPerPage:
+                                          AppData.availableRowsPerPage,
+                                      onRowsPerPageChanged: (value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            _rowsPerPage = value;
+                                          });
+                                        }
+                                      },
+                                      arrowHeadColor: Colors.blue,
+                                    ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  // Close button
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 10,
+                        ),
+                      ),
+                      child: const Text('Close'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildUserCard(String userId, String userName, String amount) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              'ID: $userId',
+              style: const TextStyle(fontSize: 11),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              'Name: $userName',
+              style: const TextStyle(fontSize: 11),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Name: $userName',
+                  style: const TextStyle(fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Text(
+                      'Rs.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        amount.replaceAll('Rs. ', ''),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPayoutItem(CuPayoutItem payout, bool isLast) {
+    return Container(
+      margin: EdgeInsets.only(bottom: isLast ? 0 : 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey.shade50,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Date: ${payout.date}',
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text('Payout Details: ${payout.payoutDetails}'),
+          const SizedBox(height: 4),
+          Text('Amount: Rs. ${payout.amount}'),
+          const SizedBox(height: 4),
+          Text('TDS: Rs. ${payout.tds}'),
+          const SizedBox(height: 4),
+          Text('Total Payable: Rs. ${payout.totalPayable}'),
+          const SizedBox(height: 4),
+          Text('Remarks: ${payout.status}'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPayoutCard(String payoutType, String amount, String date) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            payoutType,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  amount,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade100,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  'Paid',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            date,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'TC Recruiment Payouts',
-            style: Appwidget.poppinsAppBarTitle(),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.blueAccent,
-          elevation: 0,
+      appBar: AppBar(
+        title: Text(
+          'TC Recruiment Payouts',
+          style: Appwidget.poppinsAppBarTitle(),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Divider(thickness: 1, color: Colors.black26),
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'Payouts:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        elevation: 0,
+      ),
+      body: Consumer<FranchiseeTcRecruitmentController>(
+        builder: (context, controller, _) {
+          final isLoading = controller.state == ViewState.loading;
+          if (isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (controller.state == ViewState.error) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+                ToastHelper.showErrorToast(
+                    title:
+                        controller.failure?.message ?? 'Something went wrong');
+              },
+            );
+          }
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        'Payouts:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                const Divider(thickness: 1, color: Colors.black26),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                        child: payoutCard('Previous Payout', 'January, 2025',
-                            'Rs. 0/-', 'Paid', Colors.green.shade100)),
-                    const SizedBox(width: 16),
-                    Expanded(
-                        child: payoutCard('Next Payout', 'February, 2025',
-                            'Rs. 0/-', 'Pending', Colors.orange.shade100)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                totalPayoutCard(),
-                const SizedBox(height: 50),
-                const Divider(thickness: 1, color: Colors.black26),
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'All Payouts:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: payoutCard(
+                          'Previous Payout',
+                          '${getMonthName(controller.previousSummary?.month ?? '')}, ${controller.previousSummary?.year ?? ''}',
+                          'Rs. ${controller.previousSummary?.totalPayout ?? ''}/-',
+                          'Paid',
+                          Colors.green.shade100,
+                          controller,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: payoutCard(
+                          'Next Payout',
+                          '${getMonthName(controller.nextSummary?.month ?? '')}, ${controller.nextSummary?.year ?? ''}',
+                          'Rs. ${controller.nextSummary?.totalPayout ?? ''}/-',
+                          'Pending',
+                          Colors.orange.shade100,
+                          controller,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  totalPayoutCard(
+                      controller.totalTcRecruitmentAmount, controller),
+                  const SizedBox(height: 50),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        'All Payouts:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                const Divider(thickness: 1, color: Colors.black26),
-                const FilterBar2(),
-                Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: SizedBox(
-                    height: (_rowsPerPage * dataRowHeight) +
-                        headerHeight +
-                        paginationHeight,
-                    child: PaginatedDataTable(
-                      columnSpacing: 50,
-                      dataRowMinHeight: 40,
-                      columns: const [
-                        DataColumn(label: Text('Date')),
-                        DataColumn(label: Text('Payout Details')),
-                        DataColumn(label: Text('Total')),
-                        DataColumn(label: Text('TDS')),
-                        DataColumn(label: Text('Total Payable')),
-                        DataColumn(label: Text('Remarks')),
-                      ],
-                      source: FranchiseAllTcRecruimentPayouts(orders1BM),
-                      rowsPerPage: _rowsPerPage,
-                      availableRowsPerPage: const [5, 10, 15, 20, 25],
-                      onRowsPerPageChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _rowsPerPage = value;
-                          });
-                        }
-                      },
-                      arrowHeadColor: Colors.blue,
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const FilterBar2(),
+                  Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: SizedBox(
+                      height: (_rowsPerPage * dataRowHeight) +
+                          headerHeight +
+                          paginationHeight,
+                      child: PaginatedDataTable(
+                        columnSpacing: 50,
+                        dataRowMinHeight: 40,
+                        columns: const [
+                          DataColumn(label: Text('Date')),
+                          DataColumn(label: Text('Payout Details')),
+                          DataColumn(label: Text('Total')),
+                          DataColumn(label: Text('TDS')),
+                          DataColumn(label: Text('Total Payable')),
+                          DataColumn(label: Text('Remarks')),
+                        ],
+                        source: FranchiseAllTcRecruimentPayouts(
+                            controller.allTcRecruitmentPayouts),
+                        rowsPerPage: _rowsPerPage,
+                        availableRowsPerPage: const [5, 10, 15, 20, 25],
+                        onRowsPerPageChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _rowsPerPage = value;
+                            });
+                          }
+                        },
+                        arrowHeadColor: Colors.blue,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ));
+          );
+        },
+      ),
+    );
   }
 
   Widget payoutCard(String title, String date, String amount, String status,
-      Color statusColor) {
+      Color statusColor, FranchiseeTcRecruitmentController controller) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -167,9 +731,19 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('View Payout Clicked!')),
-                ),
+                onTap: () {
+                  // if (controller.state != ViewState.success) return;
+
+                  showPayoutDialog(
+                    context,
+                    title,
+                    date,
+                    amount,
+                    userId ?? '',
+                    username ?? '',
+                    controller,
+                  );
+                },
                 child: const Text(
                   'View Payout',
                   style: TextStyle(
@@ -178,12 +752,7 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
                       decoration: TextDecoration.underline),
                 ),
               ),
-              GestureDetector(
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Downloading Payout...')),
-                ),
-                child: const Icon(Icons.download, color: Colors.black54),
-              ),
+              const Icon(Icons.download, color: Colors.black54),
             ],
           ),
         ],
@@ -191,7 +760,8 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
     );
   }
 
-  Widget totalPayoutCard() {
+  Widget totalPayoutCard(
+      String? totalPayout, FranchiseeTcRecruitmentController controller) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -203,22 +773,30 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
               const Text('Total Payout',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
-              const Text('Rs. 0/-',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text('Rs. $totalPayout/-',
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('View Payout Clicked!')),
+                    onTap: () => showPayoutDialog(
+                      context,
+                      'Total Payout',
+                      selectedDate,
+                      'Rs. $totalPayout/-',
+                      userId ?? '',
+                      username ?? '',
+                      controller,
                     ),
                     child: const Text(
                       'View Payout',
                       style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline),
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -248,16 +826,11 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
                     Text(
                       selectedDate,
                       style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                          fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(width: 5),
-                    const Icon(
-                      Icons.calendar_today,
-                      size: 18,
-                      color: Colors.black54,
-                    ),
+                    const Icon(Icons.calendar_today,
+                        size: 18, color: Colors.black54),
                   ],
                 ),
               ),
