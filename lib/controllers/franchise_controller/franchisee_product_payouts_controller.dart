@@ -3,6 +3,7 @@ import 'package:bizzmirth_app/models/franchise_models/product_payout_model.dart'
 import 'package:bizzmirth_app/models/franchise_models/product_total_payout_model.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/api_service.dart';
+import 'package:bizzmirth_app/services/month_year_helper.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/failure.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -39,40 +40,6 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
   ProductTotalPayoutModel? get totalProductPayout => _totalProductPayout;
   List<ProductAllPayoutModel> get allProductPayouts => _allProductPayouts;
 
-  // ===== Commonly Used Date Info =====
-  late final String prevDateMonth;
-  late final String prevDateYear;
-  late final String nextDateMonth;
-  late final String nextDateYear;
-
-  Future<void> initializeDateInfo() async {
-    final now = DateTime.now();
-
-    // --- Previous month logic ---
-    int prevMonth = now.month - 1;
-    int prevYear = now.year;
-    if (prevMonth == 0) {
-      prevMonth = 12;
-      prevYear = now.year - 1;
-    }
-
-    // --- Next month logic ---
-    int nextMonth = now.month + 1;
-    int nextYear = now.year;
-    if (nextMonth > 12) {
-      nextMonth = 1;
-      nextYear = now.year + 1;
-    }
-
-    prevDateMonth = prevMonth.toString().padLeft(2, '0');
-    prevDateYear = prevYear.toString();
-    nextDateMonth = nextMonth.toString().padLeft(2, '0');
-    nextDateYear = nextYear.toString();
-
-    Logger.success(
-        'Initialized payout date info → prev: $prevDateMonth/$prevDateYear | next: $nextDateMonth/$nextDateYear');
-  }
-
   Future<String> _getUserId() async {
     final loginRes = await SharedPrefHelper().getLoginResponse();
     return loginRes?.userId ?? '';
@@ -88,11 +55,13 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final dateInfo = resolveMonthYear(type: 'previous');
+
       final Map<String, dynamic> body = {
         'userId': await _getUserId(),
         'userType': AppData.franchiseeUserType,
-        'month': prevDateMonth,
-        'year': prevDateYear,
+        'year': dateInfo['year'],
+        'month': dateInfo['month'],
         'action': 'previous',
       };
       final response = await _apiService.post(
@@ -129,11 +98,13 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final dateInfo = resolveMonthYear(type: 'next');
+
       final Map<String, dynamic> body = {
         'userId': await _getUserId(),
         'userType': AppData.franchiseeUserType,
-        'month': nextDateMonth,
-        'year': nextDateYear,
+        'year': dateInfo['year'],
+        'month': dateInfo['month'],
         'action': 'next',
       };
       final response = await _apiService.post(
@@ -168,7 +139,7 @@ class FranchiseeProductPayoutsController extends ChangeNotifier {
     notifyListeners();
 
     try {
-          final now = DateTime.now();
+      final now = DateTime.now();
       final month = selectedMonth ?? now.month.toString().padLeft(2, '0');
       final year = selectedYear ?? now.year.toString();
       final Map<String, dynamic> body = {
