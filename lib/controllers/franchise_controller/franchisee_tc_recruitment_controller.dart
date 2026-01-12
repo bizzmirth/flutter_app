@@ -86,7 +86,7 @@ class FranchiseeTcRecruitmentController extends ChangeNotifier {
     try {
       final dateInfo = resolveMonthYear(type: 'previous');
       final Map<String, dynamic> body = {
-        'userId': 'FGA2500004',
+        'userId': await _getUserId(),
         'type': 'previous',
         'year': dateInfo['year'],
         'month': dateInfo['month'],
@@ -128,7 +128,7 @@ class FranchiseeTcRecruitmentController extends ChangeNotifier {
     try {
       final dateInfo = resolveMonthYear(type: 'next');
       final Map<String, dynamic> body = {
-        'userId': 'FGA2500004',
+        'userId': _getUserId(),
         'type': 'next',
         'year': dateInfo['year'],
         'month': dateInfo['month'],
@@ -219,7 +219,7 @@ class FranchiseeTcRecruitmentController extends ChangeNotifier {
 
     try {
       final Map<String, dynamic> body = {
-        'userId': 'FGA2500004',
+        'userId': await _getUserId(),
       };
 
       final response = await _apiService.post(
