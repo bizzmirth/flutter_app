@@ -2,7 +2,9 @@ import 'package:bizzmirth_app/models/franchise_models/franchisee_all_tc_recruitm
 import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_payout.dart';
 import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_payout_response.dart';
 import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_payouts.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_total_payout.dart';
 import 'package:bizzmirth_app/services/api_service.dart';
+import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/failure.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -49,11 +51,28 @@ class FranchiseeTcRecruitmentController extends ChangeNotifier {
   TcRecruitmentData? _nextTcRecruitmentData;
   TcRecruitmentData? get nextTcRecruitmentData => _nextTcRecruitmentData;
 
-  List<CuPayoutItem> get nextPayouts =>
-      _nextTcRecruitmentData?.payouts ?? [];
+  List<CuPayoutItem> get nextPayouts => _nextTcRecruitmentData?.payouts ?? [];
 
-  TcRecruitmentSummary? get nextSummary =>
-      _nextTcRecruitmentData?.summary;
+  TcRecruitmentSummary? get nextSummary => _nextTcRecruitmentData?.summary;
+
+// ─────────────────────────────────────
+// TOTAL TC RECRUITMENT PAYOUT
+// ─────────────────────────────────────
+  TcRecruitmentTotalResponse? _totalTcRecruitmentResponse;
+
+  TcRecruitmentTotalResponse? get totalTcRecruitmentResponse =>
+      _totalTcRecruitmentResponse;
+
+  String get totalTcRecruitmentAmount =>
+      _totalTcRecruitmentResponse?.amount ?? '';
+
+  List<CuPayoutItem> get totalTcRecruitmentPayouts =>
+      _totalTcRecruitmentResponse?.payoutRecords ?? [];
+
+  Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
 
   // ─────────────────────────────────────
   // PREVIOUS TC RECRUITMENT PAYOUT
@@ -130,6 +149,52 @@ class FranchiseeTcRecruitmentController extends ChangeNotifier {
       _state = ViewState.success;
     } catch (e, s) {
       Logger.error('Next TC recruitment payout error: $e\n$s');
+      _failure = e is Failure ? e : Failure('Something went wrong');
+      _state = ViewState.error;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  // ─────────────────────────────────────
+  // TOTAL TC RECRUITMENT PAYOUTS (LIST)
+  // ─────────────────────────────────────
+  Future<void> fetchTotalRecruitmentPayouts() async {
+    _state = ViewState.loading;
+    _failure = null;
+    notifyListeners();
+
+    try {
+      final Map<String, dynamic> body = {
+        'userId': 'FGA2500004',
+        'year': '2025',
+        'month': '07'
+      };
+
+      final response = await _apiService.post(
+        AppUrls.getFranchiseeTotalTCRecruitmentPayouts,
+        body,
+      );
+
+      Logger.info('Total tc recruitment payout body: $body');
+      Logger.info('total tc recruitment payout response: $response');
+
+      if (response['success'] == true) {
+        _failure = null;
+
+        _totalTcRecruitmentResponse =
+            TcRecruitmentTotalResponse.fromJson(response);
+
+        _state = ViewState.success;
+      } else {
+        _failure = Failure(
+          response['message']?.toString() ??
+              'Failed to fetch total payout data',
+        );
+        _state = ViewState.error;
+      }
+    } catch (e, s) {
+      Logger.error('Total TC recruitment payout error: $e\n$s');
       _failure = e is Failure ? e : Failure('Something went wrong');
       _state = ViewState.error;
     } finally {

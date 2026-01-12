@@ -49,6 +49,7 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
         Provider.of<FranchiseeTcRecruitmentController>(context, listen: false);
     await controller.fetchPreviousTcRecruitmentPayouts();
     await controller.fetchNextTcRecruitmentPayouts();
+    await controller.fetchTotalRecruitmentPayouts();
     await controller.fetchAllTCRecruitmentPayouts();
   }
 
