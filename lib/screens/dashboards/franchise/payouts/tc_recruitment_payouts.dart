@@ -1,9 +1,10 @@
+import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_tc_recruitment_controller.dart';
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_all_tc_recruiment_payouts.dart';
-import 'package:bizzmirth_app/main.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class TcRecruitmentPayouts extends StatefulWidget {
   const TcRecruitmentPayouts({super.key});
@@ -34,102 +35,121 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getData();
+    });
+  }
+
+  Future<void> getData() async {
+    final controller =
+        Provider.of<FranchiseeTcRecruitmentController>(context, listen: false);
+    await controller.fetchAllTCRecruitmentPayouts();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'TC Recruiment Payouts',
-            style: Appwidget.poppinsAppBarTitle(),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.blueAccent,
-          elevation: 0,
+      appBar: AppBar(
+        title: Text(
+          'TC Recruiment Payouts',
+          style: Appwidget.poppinsAppBarTitle(),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Divider(thickness: 1, color: Colors.black26),
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'Payouts:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        elevation: 0,
+      ),
+      body: Consumer<FranchiseeTcRecruitmentController>(
+        builder: (context, controller, _) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        'Payouts:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                const Divider(thickness: 1, color: Colors.black26),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                        child: payoutCard('Previous Payout', 'January, 2025',
-                            'Rs. 0/-', 'Paid', Colors.green.shade100)),
-                    const SizedBox(width: 16),
-                    Expanded(
-                        child: payoutCard('Next Payout', 'February, 2025',
-                            'Rs. 0/-', 'Pending', Colors.orange.shade100)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                totalPayoutCard(),
-                const SizedBox(height: 50),
-                const Divider(thickness: 1, color: Colors.black26),
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'All Payouts:',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                          child: payoutCard('Previous Payout', 'January, 2025',
+                              'Rs. 0/-', 'Paid', Colors.green.shade100)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                          child: payoutCard('Next Payout', 'February, 2025',
+                              'Rs. 0/-', 'Pending', Colors.orange.shade100)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  totalPayoutCard(),
+                  const SizedBox(height: 50),
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        'All Payouts:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                const Divider(thickness: 1, color: Colors.black26),
-                const FilterBar2(),
-                Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: SizedBox(
-                    height: (_rowsPerPage * dataRowHeight) +
-                        headerHeight +
-                        paginationHeight,
-                    child: PaginatedDataTable(
-                      columnSpacing: 50,
-                      dataRowMinHeight: 40,
-                      columns: const [
-                        DataColumn(label: Text('Date')),
-                        DataColumn(label: Text('Payout Details')),
-                        DataColumn(label: Text('Total')),
-                        DataColumn(label: Text('TDS')),
-                        DataColumn(label: Text('Total Payable')),
-                        DataColumn(label: Text('Remarks')),
-                      ],
-                      source: FranchiseAllTcRecruimentPayouts(orders1BM),
-                      rowsPerPage: _rowsPerPage,
-                      availableRowsPerPage: const [5, 10, 15, 20, 25],
-                      onRowsPerPageChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _rowsPerPage = value;
-                          });
-                        }
-                      },
-                      arrowHeadColor: Colors.blue,
+                  const Divider(thickness: 1, color: Colors.black26),
+                  const FilterBar2(),
+                  Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: SizedBox(
+                      height: (_rowsPerPage * dataRowHeight) +
+                          headerHeight +
+                          paginationHeight,
+                      child: PaginatedDataTable(
+                        columnSpacing: 50,
+                        dataRowMinHeight: 40,
+                        columns: const [
+                          DataColumn(label: Text('Date')),
+                          DataColumn(label: Text('Payout Details')),
+                          DataColumn(label: Text('Total')),
+                          DataColumn(label: Text('TDS')),
+                          DataColumn(label: Text('Total Payable')),
+                          DataColumn(label: Text('Remarks')),
+                        ],
+                        source: FranchiseAllTcRecruimentPayouts(controller.allTcRecruitmentPayouts),
+                        rowsPerPage: _rowsPerPage,
+                        availableRowsPerPage: const [5, 10, 15, 20, 25],
+                        onRowsPerPageChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _rowsPerPage = value;
+                            });
+                          }
+                        },
+                        arrowHeadColor: Colors.blue,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ));
+          );
+        },
+      ),
+    );
   }
 
   Widget payoutCard(String title, String date, String amount, String status,
