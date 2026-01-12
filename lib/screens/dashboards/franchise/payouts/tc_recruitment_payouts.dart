@@ -2,6 +2,8 @@ import 'package:bizzmirth_app/controllers/franchise_controller/franchisee_tc_rec
 import 'package:bizzmirth_app/data_source/franchise_data_sources/franchise_all_tc_recruiment_payouts.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +47,8 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
   Future<void> getData() async {
     final controller =
         Provider.of<FranchiseeTcRecruitmentController>(context, listen: false);
+    await controller.fetchPreviousTcRecruitmentPayouts();
+    await controller.fetchNextTcRecruitmentPayouts();
     await controller.fetchAllTCRecruitmentPayouts();
   }
 
@@ -62,6 +66,22 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
       ),
       body: Consumer<FranchiseeTcRecruitmentController>(
         builder: (context, controller, _) {
+          final isLoading = controller.state == ViewState.loading;
+          if (isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (controller.state == ViewState.error) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+                ToastHelper.showErrorToast(
+                    title:
+                        controller.failure?.message ?? 'Something went wrong');
+              },
+            );
+          }
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -129,7 +149,8 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
                           DataColumn(label: Text('Total Payable')),
                           DataColumn(label: Text('Remarks')),
                         ],
-                        source: FranchiseAllTcRecruimentPayouts(controller.allTcRecruitmentPayouts),
+                        source: FranchiseAllTcRecruimentPayouts(
+                            controller.allTcRecruitmentPayouts),
                         rowsPerPage: _rowsPerPage,
                         availableRowsPerPage: const [5, 10, 15, 20, 25],
                         onRowsPerPageChanged: (value) {

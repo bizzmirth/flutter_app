@@ -1,4 +1,7 @@
 import 'package:bizzmirth_app/models/franchise_models/franchisee_all_tc_recruitment_model.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_payout.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_payout_response.dart';
+import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_payouts.dart';
 import 'package:bizzmirth_app/services/api_service.dart';
 import 'package:bizzmirth_app/utils/failure.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -21,44 +24,156 @@ class FranchiseeTcRecruitmentController extends ChangeNotifier {
   Failure? get failure => _failure;
 
   // ─────────────────────────────────────
-  // Data (Separate Sources of Truth)
+  // ALL PAYOUTS (TABLE)
   // ─────────────────────────────────────
   List<FranchiseeAllTcRecruitmentModel> _allTcRecruitmentPayouts = [];
-
   List<FranchiseeAllTcRecruitmentModel> get allTcRecruitmentPayouts =>
       _allTcRecruitmentPayouts;
 
+  // ─────────────────────────────────────
+  // PREVIOUS PAYOUT
+  // ─────────────────────────────────────
+  TcRecruitmentData? _previousTcRecruitmentData;
+  TcRecruitmentData? get previousTcRecruitmentData =>
+      _previousTcRecruitmentData;
+
+  List<CuPayoutItem> get previousPayouts =>
+      _previousTcRecruitmentData?.payouts ?? [];
+
+  TcRecruitmentSummary? get previousSummary =>
+      _previousTcRecruitmentData?.summary;
+
+  // ─────────────────────────────────────
+  // NEXT PAYOUT
+  // ─────────────────────────────────────
+  TcRecruitmentData? _nextTcRecruitmentData;
+  TcRecruitmentData? get nextTcRecruitmentData => _nextTcRecruitmentData;
+
+  List<CuPayoutItem> get nextPayouts =>
+      _nextTcRecruitmentData?.payouts ?? [];
+
+  TcRecruitmentSummary? get nextSummary =>
+      _nextTcRecruitmentData?.summary;
+
+  // ─────────────────────────────────────
+  // PREVIOUS TC RECRUITMENT PAYOUT
+  // ─────────────────────────────────────
+  Future<void> fetchPreviousTcRecruitmentPayouts() async {
+    _state = ViewState.loading;
+    _failure = null;
+    notifyListeners();
+
+    try {
+      final Map<String, dynamic> body = {
+        'userId': 'FGA2500004',
+        'type': 'previous',
+        'year': '2025',
+        'month': '07',
+      };
+
+      final response = await _apiService.post(
+        AppUrls.getFranchiseeTcRecruitmentPayouts,
+        body,
+      );
+
+      Logger.info('Previous TC recruitment payout body: $body');
+      Logger.info('Previous TC recruitment payout response: $response');
+
+      final parsedResponse = TcRecruitmentResponse.fromJson(response);
+
+      if (parsedResponse.status.toLowerCase() != 'success') {
+        throw Failure('Failed to fetch previous TC recruitment payouts');
+      }
+
+      _previousTcRecruitmentData = parsedResponse.data;
+      _state = ViewState.success;
+    } catch (e, s) {
+      Logger.error('Previous TC recruitment payout error: $e\n$s');
+      _failure = e is Failure ? e : Failure('Something went wrong');
+      _state = ViewState.error;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  // ─────────────────────────────────────
+  // NEXT TC RECRUITMENT PAYOUT
+  // ─────────────────────────────────────
+  Future<void> fetchNextTcRecruitmentPayouts() async {
+    _state = ViewState.loading;
+    _failure = null;
+    notifyListeners();
+
+    try {
+      final Map<String, dynamic> body = {
+        'userId': 'FGA2500004',
+        'type': 'next',
+        'year': '2025',
+        'month': '07',
+      };
+
+      final response = await _apiService.post(
+        AppUrls.getFranchiseeTcRecruitmentPayouts,
+        body,
+      );
+
+      Logger.info('Next TC recruitment payout body: $body');
+      Logger.info('Next TC recruitment payout response: $response');
+
+      final parsedResponse = TcRecruitmentResponse.fromJson(response);
+
+      if (parsedResponse.status.toLowerCase() != 'success') {
+        throw Failure('Failed to fetch next TC recruitment payouts');
+      }
+
+      _nextTcRecruitmentData = parsedResponse.data;
+      _state = ViewState.success;
+    } catch (e, s) {
+      Logger.error('Next TC recruitment payout error: $e\n$s');
+      _failure = e is Failure ? e : Failure('Something went wrong');
+      _state = ViewState.error;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  // ─────────────────────────────────────
+  // ALL TC RECRUITMENT PAYOUTS (LIST)
+  // ─────────────────────────────────────
   Future<void> fetchAllTCRecruitmentPayouts() async {
     _state = ViewState.loading;
     _failure = null;
     notifyListeners();
+
     try {
-      final Map<String, dynamic> body = {'userId': 'FGA2500004'};
+      final Map<String, dynamic> body = {
+        'userId': 'FGA2500004',
+      };
 
       final response = await _apiService.post(
         AppUrls.getFranchiseeAllTCRecruitmentPayouts,
         body,
       );
-      Logger.info('tc recruitment payouts call made with: $body');
-      Logger.info('all tc payout recruitment response: $response');
+
+      Logger.info('All TC recruitment payout body: $body');
+      Logger.info('All TC recruitment payout response: $response');
 
       if (response['status'] == 'success') {
-        final List payouts = response['payouts'];
+        final List payouts = response['payouts'] ?? [];
+
         _allTcRecruitmentPayouts = payouts
-            .map((item) => FranchiseeAllTcRecruitmentModel.fromJson(item))
+            .map((e) => FranchiseeAllTcRecruitmentModel.fromJson(e))
             .toList();
 
-        Logger.warning(
-            'total payout fetched ${_allTcRecruitmentPayouts.length}');
         _state = ViewState.success;
       } else {
-        _failure = Failure(
-          response['message'] ?? 'Failed to fetch all tc recruitment payouts',
+        throw Failure(
+          response['message'] ?? 'Failed to fetch all TC recruitment payouts',
         );
-        _state = ViewState.error;
       }
-    } catch (e) {
-      _failure = Failure(e.toString());
+    } catch (e, s) {
+      Logger.error('All TC recruitment payout error: $e\n$s');
+      _failure = e is Failure ? e : Failure('Something went wrong');
       _state = ViewState.error;
     } finally {
       notifyListeners();
