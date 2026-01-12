@@ -280,14 +280,14 @@ class AppUrls {
   static String get getFranchiseeCUAllPayouts =>
       '$_franchisee/payouts/cu_membership_payouts/cu_membership_all_payouts.php';
 
-  // ==================== TC RECRUIMENT PAYOUTS ENDPOINTS ====================
+  // ==================== TC RECRUITMENT PAYOUTS ENDPOINTS ====================
 
-  static String get getFranchiseeTcRecruimentPayouts =>
+  static String get getFranchiseeTcRecruitmentPayouts =>
       '$_franchisee/payouts/tc_recruitment_payouts/tc_recruitment_payouts.php';
 
-  static String get getFranchiseeTotalTCRecruimentPayouts =>
+  static String get getFranchiseeTotalTCRecruitmentPayouts =>
       '$_franchisee/payouts/tc_recruitment_payouts/tc_recruitment_total_payouts.php';
 
-  static String get getFranchiseeAllTCRecruimentPayouts =>
+  static String get getFranchiseeAllTCRecruitmentPayouts =>
       '$_franchisee/payouts/tc_recruitment_payouts/tc_recruitment_all_payouts.php';
 }
