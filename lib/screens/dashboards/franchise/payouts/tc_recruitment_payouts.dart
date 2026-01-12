@@ -7,12 +7,14 @@ import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/utils/view_state.dart';
 import 'package:bizzmirth_app/widgets/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:provider/provider.dart';
 
 class TcRecruitmentPayouts extends StatefulWidget {
@@ -33,16 +35,22 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
   DateTime? _selectedDateTime;
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final controller =
+        Provider.of<FranchiseeTcRecruitmentController>(context, listen: false);
+    final DateTime now = DateTime.now();
+    final DateTime? picked = await showMonthPicker(
       context: context,
-      initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
+      initialDate: _selectedDateTime ?? now,
     );
     if (picked != null) {
       setState(() {
         selectedDate = DateFormat('MMMM, yyyy').format(picked);
       });
+      await controller.fetchTotalRecruitmentPayouts(
+          picked.month.toString(), picked.year.toString());
+      Logger.warning('Selected month ${picked.month}, year: ${picked.year}');
     }
   }
 
@@ -64,7 +72,7 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
         "${userDetails?.userFname ?? ''} ${userDetails?.userLname ?? ''}";
     await controller.fetchPreviousTcRecruitmentPayouts();
     await controller.fetchNextTcRecruitmentPayouts();
-    await controller.fetchTotalRecruitmentPayouts();
+    await controller.fetchTotalRecruitmentPayouts(null, null);
     await controller.fetchAllTCRecruitmentPayouts();
   }
 

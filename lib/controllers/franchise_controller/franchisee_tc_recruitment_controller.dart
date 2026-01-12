@@ -159,16 +159,19 @@ class FranchiseeTcRecruitmentController extends ChangeNotifier {
   // ─────────────────────────────────────
   // TOTAL TC RECRUITMENT PAYOUTS (LIST)
   // ─────────────────────────────────────
-  Future<void> fetchTotalRecruitmentPayouts() async {
+  Future<void> fetchTotalRecruitmentPayouts(String? selectedMonth, String? selectedYear) async {
     _state = ViewState.loading;
     _failure = null;
     notifyListeners();
 
     try {
+       final now = DateTime.now();
+      final month = selectedMonth ?? now.month.toString().padLeft(2, '0');
+      final year = selectedYear ?? now.year.toString();
       final Map<String, dynamic> body = {
-        'userId': 'FGA2500004',
-        'year': '2025',
-        'month': '07'
+        'userId':await _getUserId(),
+        'year': year,
+        'month': month
       };
 
       final response = await _apiService.post(
