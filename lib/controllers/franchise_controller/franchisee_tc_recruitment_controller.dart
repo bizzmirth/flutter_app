@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_
 import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_payouts.dart';
 import 'package:bizzmirth_app/models/franchise_models/franchisee_tc_recruitment_total_payout.dart';
 import 'package:bizzmirth_app/services/api_service.dart';
+import 'package:bizzmirth_app/services/month_year_helper.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/failure.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -83,11 +84,12 @@ class FranchiseeTcRecruitmentController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final dateInfo = resolveMonthYear(type: 'previous');
       final Map<String, dynamic> body = {
         'userId': 'FGA2500004',
         'type': 'previous',
-        'year': '2025',
-        'month': '07',
+        'year': dateInfo['year'],
+        'month': dateInfo['month'],
       };
 
       final response = await _apiService.post(
@@ -124,11 +126,12 @@ class FranchiseeTcRecruitmentController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final dateInfo = resolveMonthYear(type: 'next');
       final Map<String, dynamic> body = {
         'userId': 'FGA2500004',
         'type': 'next',
-        'year': '2025',
-        'month': '07',
+        'year': dateInfo['year'],
+        'month': dateInfo['month'],
       };
 
       final response = await _apiService.post(
@@ -159,17 +162,18 @@ class FranchiseeTcRecruitmentController extends ChangeNotifier {
   // ─────────────────────────────────────
   // TOTAL TC RECRUITMENT PAYOUTS (LIST)
   // ─────────────────────────────────────
-  Future<void> fetchTotalRecruitmentPayouts(String? selectedMonth, String? selectedYear) async {
+  Future<void> fetchTotalRecruitmentPayouts(
+      String? selectedMonth, String? selectedYear) async {
     _state = ViewState.loading;
     _failure = null;
     notifyListeners();
 
     try {
-       final now = DateTime.now();
+      final now = DateTime.now();
       final month = selectedMonth ?? now.month.toString().padLeft(2, '0');
       final year = selectedYear ?? now.year.toString();
       final Map<String, dynamic> body = {
-        'userId':await _getUserId(),
+        'userId': await _getUserId(),
         'year': year,
         'month': month
       };

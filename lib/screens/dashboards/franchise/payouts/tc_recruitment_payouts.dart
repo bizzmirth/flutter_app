@@ -615,8 +615,8 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
                       Expanded(
                         child: payoutCard(
                           'Previous Payout',
-                          '${getMonthName(controller.previousSummary!.month)}, ${controller.previousSummary!.year}',
-                          'Rs. ${controller.previousSummary!.totalPayout}/-',
+                          '${getMonthName(controller.previousSummary?.month ?? '')}, ${controller.previousSummary?.year ?? ''}',
+                          'Rs. ${controller.previousSummary?.totalPayout ?? ''}/-',
                           'Paid',
                           Colors.green.shade100,
                           controller,
@@ -626,8 +626,8 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
                       Expanded(
                         child: payoutCard(
                           'Next Payout',
-                          '${getMonthName(controller.nextSummary!.month)}, ${controller.nextSummary!.year}',
-                          'Rs. ${controller.nextSummary!.totalPayout}/-',
+                          '${getMonthName(controller.nextSummary?.month ?? '')}, ${controller.nextSummary?.year ?? ''}',
+                          'Rs. ${controller.nextSummary?.totalPayout ?? ''}/-',
                           'Pending',
                           Colors.orange.shade100,
                           controller,
@@ -786,7 +786,7 @@ class _TcRecruitmentPayoutsState extends State<TcRecruitmentPayouts> {
                       'Total Payout',
                       selectedDate,
                       'Rs. $totalPayout/-',
-                      userId!,
+                      userId ?? '',
                       username ?? '',
                       controller,
                     ),
