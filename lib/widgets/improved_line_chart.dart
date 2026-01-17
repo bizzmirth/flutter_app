@@ -161,7 +161,7 @@ class ImprovedLineChart extends StatelessWidget {
                 child: LineChart(
                   LineChartData(
                     minX: 1,
-                    maxX: 12, // 🔥 ALWAYS SHOW JAN–DEC
+                    maxX: 12, 
                     minY: 0,
                     maxY: isAllZeroData
                         ? 8
@@ -241,7 +241,7 @@ class ImprovedLineChart extends StatelessWidget {
                     // -----------------------------
                     lineBarsData: [
                       LineChartBarData(
-                        spots: normalizedChartData, // 🔥 IMPORTANT
+                        spots: normalizedChartData,
                         color: Colors.blueAccent,
                         barWidth: 4,
                         isStrokeCapRound: true,
