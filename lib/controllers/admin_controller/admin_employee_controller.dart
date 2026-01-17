@@ -80,7 +80,7 @@ class AdminEmployeeController extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         Logger.warning('API response $jsonResponse');
         Logger.success('Full URL: $fullUrl');
 
@@ -152,7 +152,7 @@ class AdminEmployeeController extends ChangeNotifier {
         },
       );
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         Logger.success('API response from register $jsonResponse');
         Logger.success('Full URL: $fullUrl');
 
@@ -261,15 +261,15 @@ class AdminEmployeeController extends ChangeNotifier {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: json.encode(requestBody),
+        body: jsonEncode(requestBody),
       );
       Logger.info(
-          'Add employee API response status: ${json.encode(requestBody)}');
+          'Add employee API response status: ${jsonEncode(requestBody)}');
       Logger.info('Add employee API response body: ${response.body}');
 
       if (response.statusCode == 200) {
         Logger.error('Full Url : $fullUrl');
-        final responseData = json.decode(response.body);
+        final responseData = jsonDecode(response.body);
         if (responseData is Map<String, dynamic> &&
             responseData['status'] == 'success') {
           Logger.success('Employee added successfully');
@@ -326,7 +326,7 @@ class AdminEmployeeController extends ChangeNotifier {
       Logger.info('Raw API response body: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        // final Map<String, dynamic> responseData = json.decode(response.body);
+        // final Map<String, dynamic> responseData = jsonDecode(response.body);
         Logger.warning('Delete API response: ${response.body}');
         Logger.success('Full URL: $fullUrl');
       } else {
@@ -399,10 +399,10 @@ class AdminEmployeeController extends ChangeNotifier {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: json.encode(requestBody));
+          body: jsonEncode(requestBody));
 
       Logger.info(
-          'Edit employee API request body: ${json.encode(requestBody)}');
+          'Edit employee API request body: ${jsonEncode(requestBody)}');
       Logger.info('Edit employee API response body: ${response.body}');
       Logger.info('Edit employee API response body: ${response.statusCode}');
 
@@ -455,10 +455,10 @@ class AdminEmployeeController extends ChangeNotifier {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: json.encode(requestBody));
+          body: jsonEncode(requestBody));
 
       Logger.info(
-          'Edit employee API request body: ${json.encode(requestBody)}');
+          'Edit employee API request body: ${jsonEncode(requestBody)}');
       Logger.info('Edit employee API response body: ${response.body}');
       Logger.info('Edit employee API response body: ${response.statusCode}');
 
@@ -525,11 +525,11 @@ class AdminEmployeeController extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         // Parse the JSON response
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           // Convert the zones array to a string for storage
-          final zonesData = json.encode(jsonData['zones']);
+          final zonesData = jsonEncode(jsonData['zones']);
 
           // Save zones data to SharedPreferences
           await prefs.setString('zones', zonesData);
@@ -549,16 +549,16 @@ class AdminEmployeeController extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final fullUrl = '$baseUrl/add_employees_branch.php';
       final requestBody = {'zone_id': zoneId};
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success(
           'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
-          final branchesData = json.encode(jsonData['branches']);
+          final branchesData = jsonEncode(jsonData['branches']);
           await prefs.setString('branches_$zoneId', branchesData);
           Logger.success(
               'Branches data saved to SharedPreferences for zone $zoneId');

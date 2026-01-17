@@ -369,7 +369,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
       final departmentDataString = prefs.getString('departmentData');
 
       if (departmentDataString != null) {
-        final List<dynamic> departmentData = json.decode(departmentDataString);
+        final List<dynamic> departmentData = jsonDecode(departmentDataString);
         final departmentInfo = departmentData.firstWhere(
           (dept) => dept['id'].toString() == departmentId,
           orElse: () => {'id': departmentId, 'dept_name': null},

@@ -73,6 +73,11 @@ class ProfileController extends ChangeNotifier {
     initiazeProfile();
   }
 
+  Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
+
   Future<void> initiazeProfile() async {
     await apiGetPersonalDetails();
     await apiGetUserDetails();
@@ -127,11 +132,10 @@ class ProfileController extends ChangeNotifier {
     try {
       final String fullUrl = AppUrls.getPersonalDetails;
       final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final userTypeId = loginRes?.userTypeId ?? '';
 
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'userType': userTypeId,
       };
 
@@ -204,11 +208,10 @@ class ProfileController extends ChangeNotifier {
       final String fullUrl = AppUrls.getPersonalDetails;
 
       final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final userTypeId = loginRes?.userTypeId ?? '';
 
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'userType': userTypeId,
       };
 
@@ -261,9 +264,7 @@ class ProfileController extends ChangeNotifier {
     try {
       final fullUrl = 'https://testca.uniqbizz.com/api/customers/coupons.php';
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
-      final body = {'userId': userId};
+      final body = {'userId': await _getUserId()};
       final encodeBody = jsonEncode(body);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
 
