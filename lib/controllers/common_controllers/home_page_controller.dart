@@ -28,7 +28,7 @@ class HomePageController extends ChangeNotifier {
 
       if (storedData != null && storedData.isNotEmpty) {
         // Logger.info('Loading user types from SharedPreferences');
-        final jsonData = json.decode(storedData);
+        final jsonData = jsonDecode(storedData);
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
         _userTypes = userTypeResponse.data;
@@ -58,7 +58,7 @@ class HomePageController extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         Logger.info('Response from user type API: ${response.body}');
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
         await _sharedPrefHelper.saveUserDataType(response.body);
@@ -106,7 +106,7 @@ class HomePageController extends ChangeNotifier {
           await _sharedPrefHelper.getUserDataType('user_data_type');
 
       if (storedData != null) {
-        final jsonData = json.decode(storedData);
+        final jsonData = jsonDecode(storedData);
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
         Logger.success('Saved User Types:');

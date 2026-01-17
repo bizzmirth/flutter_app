@@ -31,7 +31,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
       Logger.success('Department API response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
 
         if (responseData['status'] == 'success') {
           // Clear existing departments
@@ -45,7 +45,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
           final departmentsJson =
               _departments.map((dept) => dept.toJson()).toList();
           final isSaved = await prefs.setString(
-              'departmentData', json.encode(departmentsJson));
+              'departmentData', jsonEncode(departmentsJson));
           Logger.success('Departments saved in SharedPreferences $isSaved');
         }
       }
@@ -67,7 +67,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
           await http.get(Uri.parse('$baseUrl/designation/designation.php'));
       Logger.success('Designation API response: ${response.body}');
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
 
         if (responseData['status'] == 'success') {
           _designation = (responseData['data'] as List)
@@ -77,7 +77,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
           final designationJson =
               _designation.map((desg) => desg.toJson()).toList();
           final isSaved = await prefs.setString(
-              'designationData', json.encode(designationJson));
+              'designationData', jsonEncode(designationJson));
           Logger.success('Designations saved in SharedPreferences $isSaved');
         } else {
           _errorMessage = 'Failed to load departments';
@@ -107,7 +107,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
         'status': status,
         'message': 'edit'
       };
-      final encodeBody = json.encode(data);
+      final encodeBody = jsonEncode(data);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('request body $encodeBody');
       Logger.success('API response: ${response.body}');
@@ -130,7 +130,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
     try {
       final fullurl = '$baseUrl/department/add_department_data.php';
       final Map<String, dynamic> data = {'name': name};
-      final encodeBody = json.encode(data);
+      final encodeBody = jsonEncode(data);
       final response = await http.post(
         Uri.parse(fullurl),
         body: encodeBody,
@@ -168,7 +168,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
         'message': 'edit',
         'status': status
       };
-      final encodeBody = json.encode(data);
+      final encodeBody = jsonEncode(data);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('request body $encodeBody');
       Logger.success('API response: ${response.body}');
@@ -197,7 +197,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
       final fullUrl = '$baseUrl/designation/add_designation_data.php';
       final Map<String, dynamic> data = {'desig_name': desgname, 'dept_id': id};
       final response =
-          await http.post(Uri.parse(fullUrl), body: json.encode(data));
+          await http.post(Uri.parse(fullUrl), body: jsonEncode(data));
       Logger.success('Add designation Request body: $data');
       Logger.success('API response: ${response.body}');
       Logger.warning('Status Code ${response.statusCode}');
@@ -228,7 +228,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
         'name': department.deptName,
         'status': 2
       };
-      final encodeBody = json.encode(data);
+      final encodeBody = jsonEncode(data);
       final response = await http.post(
         Uri.parse(fullUrl),
         body: encodeBody,
@@ -262,7 +262,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
         'name': department.deptName,
         'status': 1
       };
-      final encodeBody = json.encode(data);
+      final encodeBody = jsonEncode(data);
       final response = await http.post(
         Uri.parse(fullUrl),
         body: encodeBody,
@@ -296,7 +296,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
         'name': designation.desgName,
         'status': 2
       };
-      final encodeBody = json.encode(data);
+      final encodeBody = jsonEncode(data);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('API response: ${response.body}');
       Logger.warning('Status Code: ${response.statusCode}');
@@ -327,7 +327,7 @@ class AdminDesignationDepartmentController extends ChangeNotifier {
         'name': designation.desgName,
         'status': 1
       };
-      final encodeBody = json.encode(data);
+      final encodeBody = jsonEncode(data);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('API response: ${response.body}');
       Logger.warning('Status Code: ${response.statusCode}');

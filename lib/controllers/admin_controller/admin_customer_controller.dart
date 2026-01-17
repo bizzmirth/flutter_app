@@ -47,7 +47,7 @@ class AdminCustomerController extends ChangeNotifier {
 
       Logger.success('Fetched Pending customer ${response.body}');
 
-      final Map<String, dynamic> jsonData = json.decode(response.body);
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
 
       if (jsonData['status'] == 'success' && jsonData['data'] is List) {
         customers = (jsonData['data'] as List)
@@ -81,7 +81,7 @@ class AdminCustomerController extends ChangeNotifier {
       );
       Logger.success('Fetched Registered Customer: ${response.body}');
 
-      final Map<String, dynamic> jsonData = json.decode(response.body);
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
 
       if (jsonData['status'] == 'success' && jsonData['data'] is List) {
         customers = (jsonData['data'] as List)
@@ -114,7 +114,7 @@ class AdminCustomerController extends ChangeNotifier {
 
     try {
       final response = await http.get(url);
-      final data = json.decode(response.body);
+      final data = jsonDecode(response.body);
 
       if (data['status'] == 'success') {
         _consultants = (data['data'] as List)
@@ -135,7 +135,7 @@ class AdminCustomerController extends ChangeNotifier {
       Logger.success('message');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           return jsonData['data'];
@@ -158,14 +158,14 @@ class AdminCustomerController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getStates;
       final requestBody = {'country_id': countryId};
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('State Response ${response.body}');
       Logger.success('State request body $encodeBody');
       Logger.success('State response code ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           return jsonData['data'];
@@ -188,13 +188,13 @@ class AdminCustomerController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getStates;
       final requestBody = {'state_id': stateId};
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('City Response : ${response.body}');
       Logger.success('City Request Body : $encodeBody');
       Logger.success('City Full Url : $fullUrl');
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           return jsonData['data'];
@@ -223,12 +223,12 @@ class AdminCustomerController extends ChangeNotifier {
           'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           final zonesList = jsonData['zones'];
 
-          final zonesData = json.encode(zonesList);
+          final zonesData = jsonEncode(zonesList);
           await prefs.setString('zones', zonesData);
           Logger.success('Zones data saved to SharedPreferences');
 
@@ -251,7 +251,7 @@ class AdminCustomerController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getPincode;
       final requestBody = {'city_id': cityId};
-      final encodedBody = json.encode(requestBody);
+      final encodedBody = jsonEncode(requestBody);
 
       final response = await http.post(
         Uri.parse(fullUrl),
@@ -262,7 +262,7 @@ class AdminCustomerController extends ChangeNotifier {
           'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success' && jsonData['data'] != null) {
           return jsonData['data']['pincode'] ?? '';
@@ -285,13 +285,13 @@ class AdminCustomerController extends ChangeNotifier {
       final fullUrl =
           'https://testca.uniqbizz.com/api/employees/all_employees/add_employees_branch.php';
       final requestBody = {'zone_id': zoneId};
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success(
           'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           // Return the branches list directly
@@ -403,7 +403,7 @@ class AdminCustomerController extends ChangeNotifier {
         'reference_no': null,
         'register_by': ''
       };
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
 
       Logger.warning('The request body is $encodeBody');
 

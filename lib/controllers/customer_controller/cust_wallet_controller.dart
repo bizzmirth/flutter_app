@@ -41,14 +41,14 @@ class CustWalletController extends ChangeNotifier {
       final userId = loginRes?.userId ?? '';
 
       final Map<String, dynamic> body = {'userId': userId};
-      final encodeBody = json.encode(body);
+      final encodeBody = jsonEncode(body);
 
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
 
       Logger.success('Response from wallet details: ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = jsonDecode(response.body);
 
         if (data['status'] == true) {
           final walletData = data['data'];

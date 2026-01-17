@@ -44,9 +44,9 @@ class TcCuPreviousPayoutModel {
   }
 
   static TcCuPreviousPayoutModel fromRawJson(String str) =>
-      TcCuPreviousPayoutModel.fromJson(json.decode(str));
+      TcCuPreviousPayoutModel.fromJson(jsonDecode(str));
 
-  String toRawJson() => json.encode(toJson());
+  String toRawJson() => jsonEncode(toJson());
 
   // --- Utility safe type parsers ---
   static double _toDouble(dynamic value) {

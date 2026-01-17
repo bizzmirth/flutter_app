@@ -148,7 +148,7 @@ class CustomerController extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           final List<dynamic> customers = jsonData['data'];
@@ -225,7 +225,7 @@ class CustomerController extends ChangeNotifier {
       final Map<String, dynamic> body = {
         'userId': userId,
       };
-      final encodeBody = json.encode(body);
+      final encodeBody = jsonEncode(body);
 
       Logger.warning('Request body for dashboard counts: $body');
       final response = await http.post(Uri.parse(fullUrl),
@@ -291,7 +291,7 @@ class CustomerController extends ChangeNotifier {
       };
 
       Logger.warning('Request body: $body');
-      final encodeBody = json.encode(body);
+      final encodeBody = jsonEncode(body);
       Logger.warning('Encoded body: $encodeBody');
 
       final response = await http.post(
@@ -303,7 +303,7 @@ class CustomerController extends ChangeNotifier {
       Logger.success('Raw response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData is List && jsonData.isNotEmpty && jsonData[0] is List) {
           // We got [[0,0,0,...]]

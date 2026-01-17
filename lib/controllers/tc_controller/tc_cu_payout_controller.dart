@@ -108,7 +108,7 @@ class TcCuPayoutController extends ChangeNotifier {
       Logger.success('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         _previousPayout = TcCuPreviousPayoutModel.fromJson(jsonResponse);
         Logger.success('Successfully parsed previous payout data');
       } else {
@@ -155,7 +155,7 @@ class TcCuPayoutController extends ChangeNotifier {
       Logger.success('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         _nextPayout = TcCuNextPayoutModel.fromJson(jsonResponse);
         Logger.success('Successfully parsed next payout data');
       } else {

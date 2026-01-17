@@ -125,7 +125,7 @@ class LoginController extends ChangeNotifier {
       ];
 
       if (storedData != null) {
-        final jsonData = json.decode(storedData);
+        final jsonData = jsonDecode(storedData);
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
         userTypeNames = userTypeResponse.data
@@ -223,7 +223,7 @@ class LoginController extends ChangeNotifier {
 
       // --- Parse Response ---
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
         final loginResponse = LoginResponseModel.fromJson(
           responseData,
           fallbackEmail: emailController.text,
