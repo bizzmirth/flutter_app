@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bizzmirth_app/models/customer_models/cust_product_payout_model.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -48,7 +49,7 @@ class CustProductPayoutController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getAllPayoutsProduct;
 
-      final Map body = {'userId': userId, 'userType': '10'};
+      final Map body = {'userId': userId, 'userType': AppData.customerUserType};
       Logger.warning('Fetching all payouts for userId: $userId');
 
       final response = await http.post(
@@ -110,7 +111,7 @@ class CustProductPayoutController extends ChangeNotifier {
       final Map<String, dynamic> body = {
         'action': 'previous',
         'userId': userId,
-        'userType': '10'
+        'userType': AppData.customerUserType
       };
       final encodeBody = jsonEncode(body);
       Logger.warning('Previous Payout Request Body: $encodeBody');
@@ -192,7 +193,7 @@ class CustProductPayoutController extends ChangeNotifier {
       final Map<String, dynamic> body = {
         'action': 'next',
         'userId': userId,
-        'userType': '10',
+        'userType': AppData.customerUserType,
       };
       final encodeBody = jsonEncode(body);
       Logger.warning('Next Month Payout Request Body: $encodeBody');
