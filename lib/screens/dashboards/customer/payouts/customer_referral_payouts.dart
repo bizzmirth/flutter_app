@@ -1,7 +1,6 @@
 import 'package:bizzmirth_app/controllers/customer_controller/cust_referral_payout_controller.dart';
 import 'package:bizzmirth_app/data_source/customer_data_sources/cust_all_payout_data_source.dart';
 import 'package:bizzmirth_app/models/customer_models/cust_referral_payout_model.dart';
-import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -66,9 +65,9 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
     final controller =
         Provider.of<CustReferralPayoutController>(context, listen: false);
 
-    final loginRes = await SharedPrefHelper().getLoginResponse();
-    userId = loginRes?.userId ?? '';
-    await controller.getAllPayouts(userId);
+    // final loginRes = await SharedPrefHelper().getLoginResponse();
+    // userId = loginRes?.userId ?? '';
+    await controller.getAllPayouts();
     await controller.apiGetPreviousMonthPayouts();
     await controller.apiGetNextMonthPayouts();
     await controller.apiGetTotalPayouts();

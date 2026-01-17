@@ -86,6 +86,11 @@ class CustomerController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
+
   Future<void> checkEmail(String email) async {
     if (email.isEmpty) {
       _emailError = 'Please enter your email';
@@ -219,11 +224,8 @@ class CustomerController extends ChangeNotifier {
     notifyListeners();
     try {
       final String fullUrl = AppUrls.dashboardCounts;
-
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
       };
       final encodeBody = jsonEncode(body);
 
@@ -276,9 +278,6 @@ class CustomerController extends ChangeNotifier {
       _isLoading = true;
       _error = null;
       notifyListeners();
-
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.dashboardChartsData;
       _selectedYear = selectedYear;
 
@@ -286,7 +285,7 @@ class CustomerController extends ChangeNotifier {
         'year': selectedYear,
         'current_year': 2025,
         'current_month': 12,
-        'user_id': userId,
+        'user_id': await _getUserId(),
         'user_type': '10',
       };
 
@@ -353,14 +352,12 @@ class CustomerController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
-
       final String url = AppUrls.topCustomerReferrals;
 
-      final Map<String, dynamic> body = {'userId': _userCustomerId ?? userId};
-      Logger.warning(
-          'user id from setter : $_userCustomerId and userId from shared prefs: $userId');
+      final Map<String, dynamic> body = {
+        'userId': _userCustomerId ?? await _getUserId()
+      };
+      Logger.warning('user id from setter : $_userCustomerId ');
       final response = await http.post(Uri.parse(url), body: jsonEncode(body));
 
       if (response.statusCode == 200) {
@@ -401,13 +398,10 @@ class CustomerController extends ChangeNotifier {
       _isLoading = true;
       _error = null;
       notifyListeners();
-
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.registeredCustomers;
 
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'userType': AppData.customerUserType,
       };
 
@@ -422,10 +416,9 @@ class CustomerController extends ChangeNotifier {
           final List<dynamic> dataList = jsonData['data'];
           final List<RegisteredCustomer> allCustomers =
               dataList.map((e) => RegisteredCustomer.fromJson(e)).toList();
-    
+
           _registeredCustomers.addAll(allCustomers);
 
-       
           Logger.success('Registered customer URL: $url');
         } else {
           _error = 'No data found';
@@ -449,14 +442,10 @@ class CustomerController extends ChangeNotifier {
       _isLoading = true;
       _error = null;
       notifyListeners();
-
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.pendingCustomers;
 
-      
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'userType': AppData.customerUserType,
       };
 
@@ -472,11 +461,9 @@ class CustomerController extends ChangeNotifier {
           final List<dynamic> dataList = jsonData['data'];
           final List<PendingCustomer> allCustomers =
               dataList.map((e) => PendingCustomer.fromJson(e)).toList();
-          
 
           _pendingCustomers.addAll(allCustomers);
 
-         
           Logger.success('Pending Customer URL: $url');
         } else {
           _error = 'No data found';

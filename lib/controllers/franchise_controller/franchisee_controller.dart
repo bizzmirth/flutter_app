@@ -110,15 +110,14 @@ class FranchiseeController extends ChangeNotifier {
       _failure = null;
       notifyListeners();
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
+     
 
       final response = await _apiService.postRaw(
         AppUrls.getFranchiseLineChartData,
         {
           'year': selectedYear,
           'current_year': 2026,
-          'user_id': userId,
+          'user_id': await _getUserId(),
           'user_type': AppData.franchiseeUserType,
         },
       );
