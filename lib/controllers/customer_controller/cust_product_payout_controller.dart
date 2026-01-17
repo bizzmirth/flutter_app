@@ -41,6 +41,11 @@ class CustProductPayoutController extends ChangeNotifier {
   final List<CustProductPayoutModel> _totalAllPayouts = [];
   List<CustProductPayoutModel> get totalAllPayouts => _totalAllPayouts;
 
+   Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
+
   Future<void> getAllPayouts(String userId) async {
     _isLoading = true;
     _error = null;
@@ -106,11 +111,10 @@ class CustProductPayoutController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getPayoutsProduct;
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
+   
       final Map<String, dynamic> body = {
         'action': 'previous',
-        'userId': userId,
+        'userId': await _getUserId(),
         'userType': AppData.customerUserType
       };
       final encodeBody = jsonEncode(body);
@@ -188,11 +192,9 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getPayoutsProduct;
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'action': 'next',
-        'userId': userId,
+        'userId': await _getUserId(),
         'userType': AppData.customerUserType,
       };
       final encodeBody = jsonEncode(body);
@@ -277,15 +279,14 @@ class CustProductPayoutController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getTotalPayoutsProduct;
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
+      
 
       final now = DateTime.now();
       final selectedMonth = month ?? now.month;
       final selectedYear = year ?? now.year;
 
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'month': selectedMonth.toString().padLeft(2, '0'),
         'year': selectedYear.toString()
       };

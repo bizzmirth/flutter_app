@@ -647,20 +647,22 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                 return Column(
                                   children: [
                                     payoutCard(
-                                        'Previous Payout',
-                                        '${getMonthName(controller.prevMonth)}, ${controller.year}',
-                                        'Rs. ${controller.previousMonthPayout}/-',
-                                        'Paid',
-                                        Colors.green.shade100,
-                                        controller),
+                                      'Previous Payout',
+                                      '${getMonthName(controller.prevMonth)}, ${controller.year}',
+                                      'Rs. ${controller.previousMonthPayout}/-',
+                                      'Paid',
+                                      Colors.green.shade100,
+                                      controller,
+                                    ),
                                     const SizedBox(height: 16),
                                     payoutCard(
-                                        'Next Payout',
-                                        '${getMonthName(controller.nextMonth)}, ${controller.year}',
-                                        'Rs. ${controller.nextMonthPayout}/-',
-                                        'Pending',
-                                        Colors.orange.shade100,
-                                        controller),
+                                      'Next Payout',
+                                      '${getMonthName(controller.nextMonth)}, ${controller.year}',
+                                      'Rs. ${controller.nextMonthPayout}/-',
+                                      'Pending',
+                                      Colors.orange.shade100,
+                                      controller,
+                                    ),
                                   ],
                                 );
                               } else {
@@ -670,22 +672,24 @@ class _CustomerReferralPayoutsState extends State<CustomerReferralPayouts> {
                                   children: [
                                     Expanded(
                                       child: payoutCard(
-                                          'Previous Payout',
-                                          '${getMonthName(controller.prevMonth)}, ${controller.year}',
-                                          'Rs. ${controller.previousMonthPayout}/-',
-                                          'Paid',
-                                          Colors.green.shade100,
-                                          controller),
+                                        'Previous Payout',
+                                        '${getMonthName(controller.prevMonth)}, ${controller.year}',
+                                        'Rs. ${controller.previousMonthPayout}/-',
+                                        'Paid',
+                                        Colors.green.shade100,
+                                        controller,
+                                      ),
                                     ),
                                     const SizedBox(width: 16),
                                     Expanded(
                                       child: payoutCard(
-                                          'Next Payout',
-                                          '${getMonthName(controller.nextMonth)}, ${controller.year}',
-                                          'Rs. ${controller.nextMonthPayout}/-',
-                                          'Pending',
-                                          Colors.orange.shade100,
-                                          controller),
+                                        'Next Payout',
+                                        '${getMonthName(controller.nextMonth)}, ${controller.year}',
+                                        'Rs. ${controller.nextMonthPayout}/-',
+                                        'Pending',
+                                        Colors.orange.shade100,
+                                        controller,
+                                      ),
                                     ),
                                   ],
                                 );
