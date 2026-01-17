@@ -8,6 +8,7 @@ import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:isar_community/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminPendingEmployeeDataSource extends DataTableSource {
@@ -24,7 +25,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
 
   void getRefNameByID(String refId) {}
 
-  Future<void> deleteEmployee(idToDelete, {bool showToast = true}) async {
+  Future<void> deleteEmployee(Id idToDelete, {bool showToast = true}) async {
     try {
       // await isarService.delete<PendingEmployeeModel>(idToDelete);
       await isarService.updateStatus<PendingEmployeeModel>(idToDelete, 0);
@@ -60,7 +61,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
   }
 
   Future<void> registerEmployee(
-      context, PendingEmployeeModel empRegister) async {
+      BuildContext context, PendingEmployeeModel empRegister) async {
     // showLoadingDialog(context, message: "Registering employee...");
     try {
       isLoading = true;
@@ -88,7 +89,8 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
 
       await isarService.save<RegisteredEmployeeModel>(registerEmployee);
 
-      await removeEmployeeFromTable(empRegister.id, showToast: false);
+      await removeEmployeeFromTable(empRegister.id!, showToast: false);
+      if (!context.mounted) return;
       await employeeController.apiUpdateEmployeeStatus(
           context, empRegister.id, empRegister.email);
 
@@ -102,7 +104,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
     }
   }
 
-  Future<void> removeEmployeeFromTable(idToRemove,
+  Future<void> removeEmployeeFromTable(Id idToRemove,
       {bool showToast = true}) async {
     try {
       Logger.warning('Delete process started $idToRemove ------');
@@ -121,7 +123,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
   }
 
   Future<void> restoreEmployee(
-    idToRestore,
+    Id idToRestore,
   ) async {
     try {
       await isarService.updateStatus<PendingEmployeeModel>(idToRestore, 2);
@@ -134,7 +136,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
     }
   }
 
-  Widget _buildActionMenu(context, PendingEmployeeModel employee) {
+  Widget _buildActionMenu(BuildContext context, PendingEmployeeModel employee) {
     return PopupMenuButton<String>(
       onSelected: (value) {
         // Handle menu actions
@@ -192,7 +194,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
                   Logger.warning(
                       '------------ Delete ${employee.name}------------');
 
-                  deleteEmployee(employee.id);
+                  deleteEmployee(employee.id!);
                   // Navigator.pop(context);
                 },
               ),
@@ -224,7 +226,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
                 onTap: () {
                   Logger.warning(
                       '------------ Restore ${employee.name}------------');
-                  restoreEmployee(employee.id);
+                  restoreEmployee(employee.id!);
                   // Implement your restore logic here
                   // You can change the employee's status back to 1 or another status value
                   // restoreEmployee(employee);
@@ -367,7 +369,7 @@ class AdminPendingEmployeeDataSource extends DataTableSource {
       final departmentDataString = prefs.getString('departmentData');
 
       if (departmentDataString != null) {
-        final List<dynamic> departmentData = json.decode(departmentDataString);
+        final List<dynamic> departmentData = jsonDecode(departmentDataString);
         final departmentInfo = departmentData.firstWhere(
           (dept) => dept['id'].toString() == departmentId,
           orElse: () => {'id': departmentId, 'dept_name': null},

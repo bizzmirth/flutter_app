@@ -13,11 +13,11 @@ class CarouselSection extends StatefulWidget {
 
 class _CarouselSectionState extends State<CarouselSection> {
   final List<String> imageUrls = [
-    'https://testca.uniqbizz.com/api/assets/app_images/paris.jpg',
-    'https://testca.uniqbizz.com/api/assets/app_images/bali.jpg',
-    'https://testca.uniqbizz.com/api/assets/app_images/newyork.jpg',
-    'https://testca.uniqbizz.com/api/assets/app_images/tokyo.jpg',
-    'https://testca.uniqbizz.com/api/assets/app_images/santorini.jpg',
+    'https://testca.uniqbizz.com/bizzmirth_apis/assets/app_images/paris.jpg',
+    'https://testca.uniqbizz.com/bizzmirth_apis/assets/app_images/bali.jpg',
+    'https://testca.uniqbizz.com/bizzmirth_apis/assets/app_images/newyork.jpg',
+    'https://testca.uniqbizz.com/bizzmirth_apis/assets/app_images/tokyo.jpg',
+    'https://testca.uniqbizz.com/bizzmirth_apis/assets/app_images/santorini.jpg',
   ];
 
   @override

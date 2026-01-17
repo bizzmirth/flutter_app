@@ -141,7 +141,7 @@ class MyAdminCustRegDataSource extends DataTableSource {
   }
 
 // Action Menu Widget
-  Widget _buildActionMenu(context, RegisteredCustomer customer) {
+  Widget _buildActionMenu(BuildContext context, RegisteredCustomer customer) {
     return PopupMenuButton<String>(
       onSelected: (value) {
         // Handle menu actions

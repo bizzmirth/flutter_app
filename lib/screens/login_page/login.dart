@@ -4,10 +4,12 @@ import 'package:bizzmirth_app/screens/dashboards/business_channel_head/business_
 import 'package:bizzmirth_app/screens/dashboards/business_development_manager/business_development_manager.dart';
 import 'package:bizzmirth_app/screens/dashboards/business_mentor/business_mentor.dart';
 import 'package:bizzmirth_app/screens/dashboards/customer/customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/franchise/franchise.dart';
 import 'package:bizzmirth_app/screens/dashboards/techno_enterprise/techno_enterprise.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/travel_consultant.dart';
 import 'package:bizzmirth_app/screens/homepage/homepage.dart';
 import 'package:bizzmirth_app/services/my_navigator.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/loader_widget.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +42,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         }
       }).catchError((error) {
         // Handle initialization errors
-        debugPrint('Video initialization error: $error');
+        Logger.error('Video initialization error: $error');
       });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -123,6 +125,13 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           MaterialPageRoute(builder: (context) => const BMDashboardPage()),
         );
         break;
+      case 'Franchisee':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const FranchiseDashboardPage()),
+        );
+        break;
     }
   }
 
@@ -139,10 +148,11 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       if (!context.mounted) return;
       _navigateToDashboard(context, result['user_type']);
     } else {
-      ToastHelper.showErrorToast(
-        title: 'Login Failed',
-        description: result['message'] ?? 'An error occurred during login.',
-      );
+      // ToastHelper.showErrorToast(
+      //   title: 'Login Failed',
+      //   description: result['message'] ?? 'An error occurred during login.',
+      // );
+      Logger.error('login failed: ${result['message']}');
     }
   }
 
@@ -253,14 +263,14 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                 controller.userTypeNames,
                               ),
                               const SizedBox(height: 10),
-                              if (controller.errorMessage != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  child: Text(
-                                    controller.errorMessage!,
-                                    style: const TextStyle(color: Colors.red),
-                                  ),
-                                ),
+                              // if (controller.errorMessage != null)
+                              //   Padding(
+                              //     padding: const EdgeInsets.only(bottom: 10),
+                              //     child: Text(
+                              //       controller.errorMessage!,
+                              //       style: const TextStyle(color: Colors.red),
+                              //     ),
+                              //   ),
                               // Email Input
                               TextFormField(
                                 controller: controller.emailController,

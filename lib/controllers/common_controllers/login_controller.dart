@@ -74,7 +74,7 @@ class LoginController extends ChangeNotifier {
   }
 
   // Toggle password visibility
-  togglePasswordVisibility() {
+  void togglePasswordVisibility() {
     obscurePassword = !obscurePassword;
     notifyListeners();
   }
@@ -113,10 +113,19 @@ class LoginController extends ChangeNotifier {
           await _sharedPrefHelper.getUserDataType('user_data_type');
 
       // List of IDs you want to display
-      final List<String> allowedIds = ['1', '10', '11', '16', '24', '25', '26'];
+      final List<String> allowedIds = [
+        '1',
+        '10',
+        '11',
+        '16',
+        '24',
+        '25',
+        '26',
+        '29',
+      ];
 
       if (storedData != null) {
-        final jsonData = json.decode(storedData);
+        final jsonData = jsonDecode(storedData);
         final userTypeResponse = UserTypeResponse.fromJson(jsonData);
 
         userTypeNames = userTypeResponse.data
@@ -214,7 +223,7 @@ class LoginController extends ChangeNotifier {
 
       // --- Parse Response ---
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
         final loginResponse = LoginResponseModel.fromJson(
           responseData,
           fallbackEmail: emailController.text,

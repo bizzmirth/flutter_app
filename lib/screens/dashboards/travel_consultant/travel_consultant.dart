@@ -4,6 +4,7 @@ import 'package:bizzmirth_app/data_source/tc_data_sources/tc_top_customers_data_
 import 'package:bizzmirth_app/models/summarycard.dart';
 import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/customers/customer.dart';
+import 'package:bizzmirth_app/screens/dashboards/travel_consultant/order_history/order_history.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_cu_membership_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/payouts/tc_product_payouts.dart';
 import 'package:bizzmirth_app/screens/dashboards/travel_consultant/wallet_topup/topup_wallet.dart';
@@ -13,6 +14,7 @@ import 'package:bizzmirth_app/screens/profile_page/profile_page.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/services/widgets_support.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
+import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:bizzmirth_app/widgets/booking_tracker.dart';
 import 'package:bizzmirth_app/widgets/custom_animated_summary_cards.dart';
@@ -40,7 +42,7 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
   // charts data send from dashboard
   String selectedYear = DateTime.now().year.toString();
   List<String> availableYears = [];
-  bool isLoading = true;
+
   bool hasError = false;
   String? errorMessage;
   List<FlSpot> chartData = [];
@@ -71,14 +73,14 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
   Future<void> _loadChartData(String year) async {
     final customerController =
         Provider.of<TcController>(context, listen: false);
-    setState(() => isLoading = true);
+    setState(() {});
 
     await customerController.apiGetChartData(year);
     final data = customerController.getChartSpots();
 
     setState(() {
       chartData = data;
-      isLoading = false;
+      // isLoading = false;
     });
   }
 
@@ -224,13 +226,34 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                     title: const Text('Payouts'),
                     leading: const Icon(Icons.payment),
                     children: [
-                      _drawerItem(context, Icons.payment, 'Product Payouts',
-                          const TCProductPayoutsPage(),
-                          padding: true),
-                      _drawerItem(context, Icons.inventory_2,
-                          'CU Membership Payout', const TcCuMembershipPayouts(),
-                          padding: true),
+                      drawerItem(
+                        context,
+                        Icons.payment,
+                        'Product Payouts',
+                        const TCProductPayoutsPage(),
+                        padding: true,
+                      ),
+                      drawerItem(
+                        context,
+                        Icons.inventory_2,
+                        'CU Membership Payout',
+                        const TcCuMembershipPayouts(),
+                        padding: true,
+                      ),
                     ],
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.history,
+                    ),
+                    title: const Text('Order History'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const OrderHistory()),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(
@@ -368,16 +391,17 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
                   //   progressColor: Colors.purpleAccent,
                   // ),
                   BookingTrackerCard(
-                      title: 'Booking tracker',
-                      bookingCount: int.tryParse(
-                              tcController.totalCompletedTours ?? '0') ??
-                          0),
+                    title: 'Booking tracker',
+                    bookingCount:
+                        int.tryParse(tcController.totalCompletedTours ?? '0') ??
+                            0,
+                  ),
                   const SizedBox(height: 20),
                   ImprovedLineChart(
                     chartData: chartData,
                     availableYears: availableYears,
                     selectedYear: selectedYear,
-                    isLoading: isLoading,
+                    // isLoading: isLoading,
                     hasError: hasError,
                     errorMessage: errorMessage,
                     onYearChanged: (year) async {
@@ -642,22 +666,6 @@ class _TCDashboardPageState extends State<TCDashboardPage> {
           ),
         );
       },
-    );
-  }
-
-  Widget _drawerItem(
-      BuildContext context, IconData icon, String text, Widget page,
-      {bool padding = false}) {
-    return Padding(
-      padding: padding ? const EdgeInsets.only(left: 16.0) : EdgeInsets.zero,
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(text),
-        onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => page));
-        },
-      ),
     );
   }
 }

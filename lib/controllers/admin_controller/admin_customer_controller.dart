@@ -5,6 +5,8 @@ import 'package:bizzmirth_app/models/travel_counsaltant_userId_name.dart';
 import 'package:bizzmirth_app/utils/common_functions.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
+import 'package:bizzmirth_app/utils/toast_helper.dart';
+import 'package:bizzmirth_app/utils/urls.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -45,7 +47,7 @@ class AdminCustomerController extends ChangeNotifier {
 
       Logger.success('Fetched Pending customer ${response.body}');
 
-      final Map<String, dynamic> jsonData = json.decode(response.body);
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
 
       if (jsonData['status'] == 'success' && jsonData['data'] is List) {
         customers = (jsonData['data'] as List)
@@ -79,7 +81,7 @@ class AdminCustomerController extends ChangeNotifier {
       );
       Logger.success('Fetched Registered Customer: ${response.body}');
 
-      final Map<String, dynamic> jsonData = json.decode(response.body);
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
 
       if (jsonData['status'] == 'success' && jsonData['data'] is List) {
         customers = (jsonData['data'] as List)
@@ -112,7 +114,7 @@ class AdminCustomerController extends ChangeNotifier {
 
     try {
       final response = await http.get(url);
-      final data = json.decode(response.body);
+      final data = jsonDecode(response.body);
 
       if (data['status'] == 'success') {
         _consultants = (data['data'] as List)
@@ -127,13 +129,13 @@ class AdminCustomerController extends ChangeNotifier {
 
   Future<List<dynamic>> apiGetCountry() async {
     try {
-      final fullUrl = 'https://testca.uniqbizz.com/api/country.php';
+      final fullUrl = AppUrls.getCountries;
 
       final response = await http.get(Uri.parse(fullUrl));
       Logger.success('message');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           return jsonData['data'];
@@ -154,16 +156,16 @@ class AdminCustomerController extends ChangeNotifier {
 
   Future<List<dynamic>> apiGetStates(String countryId) async {
     try {
-      final fullUrl = 'http://testca.uniqbizz.com/api/state_city.php';
+      final fullUrl = AppUrls.getStates;
       final requestBody = {'country_id': countryId};
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('State Response ${response.body}');
       Logger.success('State request body $encodeBody');
       Logger.success('State response code ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           return jsonData['data'];
@@ -184,15 +186,15 @@ class AdminCustomerController extends ChangeNotifier {
 
   Future<List<dynamic>> apiGetCity(String stateId) async {
     try {
-      final fullUrl = 'http://testca.uniqbizz.com/api/state_city.php';
+      final fullUrl = AppUrls.getStates;
       final requestBody = {'state_id': stateId};
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('City Response : ${response.body}');
       Logger.success('City Request Body : $encodeBody');
       Logger.success('City Full Url : $fullUrl');
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           return jsonData['data'];
@@ -221,12 +223,12 @@ class AdminCustomerController extends ChangeNotifier {
           'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           final zonesList = jsonData['zones'];
 
-          final zonesData = json.encode(zonesList);
+          final zonesData = jsonEncode(zonesList);
           await prefs.setString('zones', zonesData);
           Logger.success('Zones data saved to SharedPreferences');
 
@@ -247,9 +249,9 @@ class AdminCustomerController extends ChangeNotifier {
 
   Future<String> apiGetPincode(String cityId) async {
     try {
-      final fullUrl = 'https://testca.uniqbizz.com/api/pincode.php';
+      final fullUrl = AppUrls.getPincode;
       final requestBody = {'city_id': cityId};
-      final encodedBody = json.encode(requestBody);
+      final encodedBody = jsonEncode(requestBody);
 
       final response = await http.post(
         Uri.parse(fullUrl),
@@ -260,7 +262,7 @@ class AdminCustomerController extends ChangeNotifier {
           'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success' && jsonData['data'] != null) {
           return jsonData['data']['pincode'] ?? '';
@@ -283,13 +285,13 @@ class AdminCustomerController extends ChangeNotifier {
       final fullUrl =
           'https://testca.uniqbizz.com/api/employees/all_employees/add_employees_branch.php';
       final requestBody = {'zone_id': zoneId};
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success(
           'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           // Return the branches list directly
@@ -308,7 +310,7 @@ class AdminCustomerController extends ChangeNotifier {
   }
 
   Future<void> uploadImage(
-      context, String folder, String savedImagePath) async {
+      BuildContext context, String folder, String savedImagePath) async {
     try {
       final fullUrl = 'http://testca.uniqbizz.com/api/upload_mobile.php';
       final request = http.MultipartRequest('POST', Uri.parse(fullUrl));
@@ -323,20 +325,17 @@ class AdminCustomerController extends ChangeNotifier {
       Logger.info('this is reuest $request');
 
       if (responseBody == '1') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Upload Failed  $responseBody')));
+        ToastHelper.showErrorToast(title: 'Upload Failed $responseBody');
       } else if (responseBody == '2') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Invalid File Extension  $responseBody')));
+        ToastHelper.showInfoToast(
+            title: 'Invalid File Extension  $responseBody');
       } else if (responseBody == '3') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('No File Selected  $responseBody')));
+        ToastHelper.showInfoToast(title: 'No file selected  $responseBody');
       } else if (responseBody == '4') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('File Size Exceeds 2MB  $responseBody')));
+        ToastHelper.showInfoToast(
+            title: 'File Size Exceeds 2MB  $responseBody');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Upload Successful: $responseBody')));
+        ToastHelper.showSuccessToast(title: 'Upload Successful  $responseBody');
       }
     } catch (e) {
       Logger.error('Error uploading image: $e');
@@ -404,7 +403,7 @@ class AdminCustomerController extends ChangeNotifier {
         'reference_no': null,
         'register_by': ''
       };
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
 
       Logger.warning('The request body is $encodeBody');
 

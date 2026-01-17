@@ -12,6 +12,7 @@ import 'package:bizzmirth_app/utils/toast_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -84,7 +85,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       final departmentDataString = prefs.getString('departmentData');
 
       if (departmentDataString != null) {
-        final List<dynamic> departmentData = json.decode(departmentDataString);
+        final List<dynamic> departmentData = jsonDecode(departmentDataString);
 
         setState(() {
           departments = departmentData
@@ -107,7 +108,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       final designationDataString = prefs.getString('designationData');
 
       if (designationDataString != null) {
-        final List<dynamic> designationData = json.decode(
+        final List<dynamic> designationData = jsonDecode(
           designationDataString,
         );
 
@@ -159,7 +160,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       final zoneDataString = prefs.getString('zones');
 
       if (zoneDataString != null) {
-        final List<dynamic> zoneData = json.decode(zoneDataString);
+        final List<dynamic> zoneData = jsonDecode(zoneDataString);
         setState(() {
           zones = zoneData
               .map<Map<String, dynamic>>((zone) => {
@@ -191,7 +192,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       final branchDataString = prefs.getString('branches_$zoneId');
 
       if (branchDataString != '---- Select Branch * ----') {
-        final List<dynamic> branchData = json.decode(branchDataString!);
+        final List<dynamic> branchData = jsonDecode(branchDataString!);
         setState(() {
           branches = branchData
               .map<Map<String, dynamic>>((branch) => {
@@ -504,7 +505,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         Logger.success(
             'Images Path: $profilePicturePath :: $idProofPath :: $bankDetailsPath');
 
-        final int? id = widget.pendingEmployee!.id;
+        final Id? id = widget.pendingEmployee!.id;
         final PendingEmployeeModel updatePendingEmployee =
             PendingEmployeeModel()
               ..id = id
@@ -569,7 +570,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               'passbook', selectedFiles['Bank Details']!.path);
           bankDetailsPath = selectedFiles['Bank Details']!.path;
         }
-        final int? id = widget.registerEmployee!.id;
+        final Id? id = widget.registerEmployee!.id;
         Logger.success(
             'Date of joining and date of birth $dobForApi $dojForApi');
         final RegisteredEmployeeModel updateRegisteredEmployee =

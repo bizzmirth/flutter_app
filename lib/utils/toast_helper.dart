@@ -1,4 +1,5 @@
 import 'package:bizzmirth_app/main.dart';
+import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 
@@ -17,8 +18,7 @@ class ToastHelper {
   }) {
     final context = _context;
     if (context == null) {
-      // Optional: Add debug print to know if context is null
-      debugPrint('ToastHelper: Context is null, cannot show toast');
+      Logger.error('ToastHelper: Context is null, cannot show toast');
       return;
     }
 

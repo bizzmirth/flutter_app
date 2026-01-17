@@ -206,13 +206,13 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     }
   }
 
-  Future<void> _loadStates(selectedCountryId) async {
+  Future<void> _loadStates(String? selectedCountryId) async {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
 
       final List<dynamic> states =
-          await controller.apiGetStates(selectedCountryId);
+          await controller.apiGetStates(selectedCountryId!);
       _states = states;
 
       final List<String> stateNames = states
@@ -228,11 +228,12 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     }
   }
 
-  Future<void> _loadCities(selectedStateId) async {
+  Future<void> _loadCities(String? selectedStateId) async {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
-      final List<dynamic> cities = await controller.apiGetCity(selectedStateId);
+      final List<dynamic> cities =
+          await controller.apiGetCity(selectedStateId!);
       _cities = cities;
 
       final List<String> citiesNames = cities
@@ -248,11 +249,11 @@ class _AddCustomerTc extends State<AddCustomerTc> {
     }
   }
 
-  Future<void> getPincode(selectedCity) async {
+  Future<void> getPincode(String? selectedCity) async {
     try {
       final controller =
           Provider.of<AdminCustomerController>(context, listen: false);
-      final pincode = await controller.apiGetPincode(selectedCity);
+      final pincode = await controller.apiGetPincode(selectedCity!);
       setState(() {
         _pincodeController.text = pincode;
       });
@@ -474,31 +475,33 @@ class _AddCustomerTc extends State<AddCustomerTc> {
         return;
       }
 
-      selectedFiles.forEach((key, value) {
-        if (value != null) {
-          final String filePath = value.path;
+      selectedFiles.forEach(
+        (key, value) {
+          if (value != null) {
+            final String filePath = value.path;
 
-          switch (key) {
-            case 'Profile Picture':
-              documentPaths['profilePicture'] = filePath;
-              break;
-            case 'Aadhar Card':
-              documentPaths['adharCard'] = filePath;
-              break;
-            case 'Pan Card':
-              documentPaths['panCard'] = filePath;
-              break;
-            case 'Bank Passbook':
-              documentPaths['bankPassbook'] = filePath;
-              break;
-            case 'Voting Card':
-              documentPaths['votingCard'] = filePath;
-              break;
-            case 'Payment Proof':
-              documentPaths['paymentProof'] = filePath;
+            switch (key) {
+              case 'Profile Picture':
+                documentPaths['profilePicture'] = filePath;
+                break;
+              case 'Aadhar Card':
+                documentPaths['adharCard'] = filePath;
+                break;
+              case 'Pan Card':
+                documentPaths['panCard'] = filePath;
+                break;
+              case 'Bank Passbook':
+                documentPaths['bankPassbook'] = filePath;
+                break;
+              case 'Voting Card':
+                documentPaths['votingCard'] = filePath;
+                break;
+              case 'Payment Proof':
+                documentPaths['paymentProof'] = filePath;
+            }
           }
-        }
-      });
+        },
+      );
 
 // -------------------------------- upload the selected image ------------------------------------
       if (selectedFiles['Profile Picture'] != null) {
@@ -860,31 +863,33 @@ class _AddCustomerTc extends State<AddCustomerTc> {
         return filePath;
       }
 
-      selectedFiles.forEach((key, value) {
-        if (value != null) {
-          final String relativePath = getRelativePath(value);
+      selectedFiles.forEach(
+        (key, value) {
+          if (value != null) {
+            final String relativePath = getRelativePath(value);
 
-          switch (key) {
-            case 'Profile Picture':
-              documentPaths['profilePicture'] = relativePath;
-              break;
-            case 'Aadhar Card':
-              documentPaths['adharCard'] = relativePath;
-              break;
-            case 'Pan Card':
-              documentPaths['panCard'] = relativePath;
-              break;
-            case 'Bank Passbook':
-              documentPaths['bankPassbook'] = relativePath;
-              break;
-            case 'Voting Card':
-              documentPaths['votingCard'] = relativePath;
-              break;
-            case 'Payment Proof':
-              documentPaths['paymentProof'] = relativePath;
+            switch (key) {
+              case 'Profile Picture':
+                documentPaths['profilePicture'] = relativePath;
+                break;
+              case 'Aadhar Card':
+                documentPaths['adharCard'] = relativePath;
+                break;
+              case 'Pan Card':
+                documentPaths['panCard'] = relativePath;
+                break;
+              case 'Bank Passbook':
+                documentPaths['bankPassbook'] = relativePath;
+                break;
+              case 'Voting Card':
+                documentPaths['votingCard'] = relativePath;
+                break;
+              case 'Payment Proof':
+                documentPaths['paymentProof'] = relativePath;
+            }
           }
-        }
-      });
+        },
+      );
 
       if (selectedFiles['Profile Picture'] != null &&
           selectedFiles['Profile Picture'] is File) {
@@ -1300,36 +1305,60 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                                   ),
                                 ),
                                 child: Row(
-                                  children: ['Cash', 'Cheque', 'UPI/NEFT'].map(
-                                    (mode) {
-                                      return Row(
+                                  children: ['Cash', 'Cheque', 'UPI/NEFT']
+                                      .map((package) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedPaymentMode = package;
+                                        });
+                                      },
+                                      child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Radio<String>(
-                                            value: mode,
-                                            groupValue: _selectedPaymentMode,
-                                            activeColor: Colors.white,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                _selectedPaymentMode = value!;
-                                              });
-                                              // Update validation state
-                                              fieldState.didChange(value);
-                                            },
-                                          ),
+                                          // Radio<String>(
+                                          //   value: package,
+                                          //   groupValue:
+                                          //       _selectedPaymentMode,
+                                          //   activeColor: Colors
+                                          //       .white, // Change radio button color
+                                          //   onChanged: (value) {
+                                          //     setState(() {
+                                          //       _selectedPaymentMode =
+                                          //           value!;
+                                          //       Logger.success(
+                                          //           "Selected payment Mode: $_selectedPaymentMode");
+                                          //     });
+                                          //   },
+                                          // ),
+                                          RadioGroup<String>(
+                                              groupValue: _selectedPaymentMode,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _selectedPaymentMode = value!;
+                                                  Logger.success(
+                                                      'Selected payment Mode: $_selectedPaymentMode');
+                                                });
+                                              },
+                                              child: Radio<String>(
+                                                value: package,
+                                              )),
                                           Text(
-                                            mode,
+                                            package,
                                             style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
-                                              color: Colors.white,
+                                              color: Colors
+                                                  .white, // Gray out text if disabled
                                             ),
                                           ),
-                                          const SizedBox(width: 12),
+                                          const SizedBox(
+                                              width:
+                                                  10), // Spacing between radio buttons
                                         ],
-                                      );
-                                    },
-                                  ).toList(),
+                                      ),
+                                    );
+                                  }).toList(),
                                 ),
                               ),
                               if (fieldState.hasError)
@@ -1434,9 +1463,11 @@ class _AddCustomerTc extends State<AddCustomerTc> {
                     uploadKey: _votingCardKey,
                   ),
                   if (_selectedPaymentFee != 'Free')
-                    _buildUploadButton('Payment Proof',
-                        showError: _showImageValidationErrors,
-                        uploadKey: _paymentProofKey),
+                    _buildUploadButton(
+                      'Payment Proof',
+                      showError: _showImageValidationErrors,
+                      uploadKey: _paymentProofKey,
+                    ),
                   const SizedBox(height: 20),
                   if (widget.isEditMode) ...[
                     Center(

@@ -2,6 +2,7 @@
 import 'package:bizzmirth_app/entities/pending_customer/pending_customer_model.dart';
 import 'package:bizzmirth_app/entities/registered_customer/registered_customer_model.dart';
 import 'package:bizzmirth_app/entities/top_customer_refereral/top_customer_refereral_model.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/constants.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
@@ -85,6 +86,11 @@ class CustomerController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
+
   Future<void> checkEmail(String email) async {
     if (email.isEmpty) {
       _emailError = 'Please enter your email';
@@ -147,7 +153,7 @@ class CustomerController extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           final List<dynamic> customers = jsonData['data'];
@@ -218,13 +224,10 @@ class CustomerController extends ChangeNotifier {
     notifyListeners();
     try {
       final String fullUrl = AppUrls.dashboardCounts;
-
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
       };
-      final encodeBody = json.encode(body);
+      final encodeBody = jsonEncode(body);
 
       Logger.warning('Request body for dashboard counts: $body');
       final response = await http.post(Uri.parse(fullUrl),
@@ -275,9 +278,6 @@ class CustomerController extends ChangeNotifier {
       _isLoading = true;
       _error = null;
       notifyListeners();
-
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.dashboardChartsData;
       _selectedYear = selectedYear;
 
@@ -285,12 +285,12 @@ class CustomerController extends ChangeNotifier {
         'year': selectedYear,
         'current_year': 2025,
         'current_month': 12,
-        'user_id': userId,
+        'user_id': await _getUserId(),
         'user_type': '10',
       };
 
       Logger.warning('Request body: $body');
-      final encodeBody = json.encode(body);
+      final encodeBody = jsonEncode(body);
       Logger.warning('Encoded body: $encodeBody');
 
       final response = await http.post(
@@ -302,7 +302,7 @@ class CustomerController extends ChangeNotifier {
       Logger.success('Raw response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData is List && jsonData.isNotEmpty && jsonData[0] is List) {
           // We got [[0,0,0,...]]
@@ -352,14 +352,12 @@ class CustomerController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
-
       final String url = AppUrls.topCustomerReferrals;
 
-      final Map<String, dynamic> body = {'userId': _userCustomerId ?? userId};
-      Logger.warning(
-          'user id from setter : $_userCustomerId and userId from shared prefs: $userId');
+      final Map<String, dynamic> body = {
+        'userId': _userCustomerId ?? await _getUserId()
+      };
+      Logger.warning('user id from setter : $_userCustomerId ');
       final response = await http.post(Uri.parse(url), body: jsonEncode(body));
 
       if (response.statusCode == 200) {
@@ -400,12 +398,14 @@ class CustomerController extends ChangeNotifier {
       _isLoading = true;
       _error = null;
       notifyListeners();
-
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.registeredCustomers;
 
-      final response = await http.get(Uri.parse(url));
+      final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+        'userType': AppData.customerUserType,
+      };
+
+      final response = await http.post(Uri.parse(url), body: jsonEncode(body));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -416,16 +416,9 @@ class CustomerController extends ChangeNotifier {
           final List<dynamic> dataList = jsonData['data'];
           final List<RegisteredCustomer> allCustomers =
               dataList.map((e) => RegisteredCustomer.fromJson(e)).toList();
-          final List<RegisteredCustomer> filteredCustomers = allCustomers
-              .where((customer) => customer.referenceNo == userId)
-              .toList();
 
-          _registeredCustomers.addAll(filteredCustomers);
+          _registeredCustomers.addAll(allCustomers);
 
-          for (var x in _registeredCustomers) {
-            Logger.success(
-                'Customer: ${x.name}, Reference No: ${x.referenceNo}');
-          }
           Logger.success('Registered customer URL: $url');
         } else {
           _error = 'No data found';
@@ -449,12 +442,14 @@ class CustomerController extends ChangeNotifier {
       _isLoading = true;
       _error = null;
       notifyListeners();
-
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final String url = AppUrls.pendingCustomers;
 
-      final response = await http.get(Uri.parse(url));
+      final Map<String, dynamic> body = {
+        'userId': await _getUserId(),
+        'userType': AppData.customerUserType,
+      };
+
+      final response = await http.post(Uri.parse(url), body: jsonEncode(body));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -466,16 +461,9 @@ class CustomerController extends ChangeNotifier {
           final List<dynamic> dataList = jsonData['data'];
           final List<PendingCustomer> allCustomers =
               dataList.map((e) => PendingCustomer.fromJson(e)).toList();
-          final List<PendingCustomer> filteredCustomers = allCustomers
-              .where((customer) => customer.referenceNo == userId)
-              .toList();
 
-          _pendingCustomers.addAll(filteredCustomers);
+          _pendingCustomers.addAll(allCustomers);
 
-          for (var x in _pendingCustomers) {
-            Logger.success(
-                'Pending Customer: ${x.name}, Reference No: ${x.referenceNo}');
-          }
           Logger.success('Pending Customer URL: $url');
         } else {
           _error = 'No data found';
@@ -909,7 +897,8 @@ class CustomerController extends ChangeNotifier {
     }
   }
 
-  Future<void> apiRestoreCustomer(context, RegisteredCustomer customer) async {
+  Future<void> apiRestoreCustomer(
+      BuildContext context, RegisteredCustomer customer) async {
     try {
       _isLoading = true;
       _error = null;
