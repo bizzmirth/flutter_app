@@ -95,7 +95,7 @@ class AdminBusniessMentorController extends ChangeNotifier {
         'paymentMode': businessMentor.paymentMode,
         'payment_fee': 12000
       };
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       _isLoading = true;
       notifyListeners();
 
@@ -182,7 +182,7 @@ class AdminBusniessMentorController extends ChangeNotifier {
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         Logger.info('Api Response : $jsonResponse');
         Logger.success('Full Url : $fullUrl');
         if (jsonResponse.containsKey('status') &&
@@ -222,12 +222,12 @@ class AdminBusniessMentorController extends ChangeNotifier {
           'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           final zonesList = jsonData['zones'];
 
-          final zonesData = json.encode(zonesList);
+          final zonesData = jsonEncode(zonesList);
           await prefs.setString('zones', zonesData);
           Logger.success('Zones data saved to SharedPreferences');
 
@@ -251,13 +251,13 @@ class AdminBusniessMentorController extends ChangeNotifier {
       final fullUrl =
           'https://testca.uniqbizz.com/api/employees/all_employees/add_employees_branch.php';
       final requestBody = {'zone_id': zoneId};
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success(
           'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           // Return the branches list directly
@@ -283,7 +283,7 @@ class AdminBusniessMentorController extends ChangeNotifier {
       Logger.success('message');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           return jsonData['data'];
@@ -306,14 +306,14 @@ class AdminBusniessMentorController extends ChangeNotifier {
     try {
       final fullUrl = 'http://testca.uniqbizz.com/api/state_city.php';
       final requestBody = {'country_id': countryId};
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('State Response ${response.body}');
       Logger.success('State request body $encodeBody');
       Logger.success('State response code ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           return jsonData['data'];
@@ -336,13 +336,13 @@ class AdminBusniessMentorController extends ChangeNotifier {
     try {
       final fullUrl = 'http://testca.uniqbizz.com/api/state_city.php';
       final requestBody = {'state_id': stateId};
-      final encodeBody = json.encode(requestBody);
+      final encodeBody = jsonEncode(requestBody);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('City Response : ${response.body}');
       Logger.success('City Request Body : $encodeBody');
       Logger.success('City Full Url : $fullUrl');
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success') {
           return jsonData['data'];
@@ -365,7 +365,7 @@ class AdminBusniessMentorController extends ChangeNotifier {
     try {
       final fullUrl = 'https://testca.uniqbizz.com/api/pincode.php';
       final requestBody = {'city_id': cityId};
-      final encodedBody = json.encode(requestBody);
+      final encodedBody = jsonEncode(requestBody);
 
       final response = await http.post(
         Uri.parse(fullUrl),
@@ -376,7 +376,7 @@ class AdminBusniessMentorController extends ChangeNotifier {
           'Response Code: ${response.statusCode} Api Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 'success' && jsonData['data'] != null) {
           return jsonData['data']['pincode'] ?? '';

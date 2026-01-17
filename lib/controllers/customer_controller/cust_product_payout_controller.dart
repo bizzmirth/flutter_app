@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bizzmirth_app/models/customer_models/cust_product_payout_model.dart';
+import 'package:bizzmirth_app/resources/app_data.dart';
 import 'package:bizzmirth_app/services/shared_pref.dart';
 import 'package:bizzmirth_app/utils/logger.dart';
 import 'package:bizzmirth_app/utils/urls.dart';
@@ -40,6 +41,11 @@ class CustProductPayoutController extends ChangeNotifier {
   final List<CustProductPayoutModel> _totalAllPayouts = [];
   List<CustProductPayoutModel> get totalAllPayouts => _totalAllPayouts;
 
+   Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
+
   Future<void> getAllPayouts(String userId) async {
     _isLoading = true;
     _error = null;
@@ -48,7 +54,7 @@ class CustProductPayoutController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getAllPayoutsProduct;
 
-      final Map body = {'userId': userId, 'userType': '10'};
+      final Map body = {'userId': userId, 'userType': AppData.customerUserType};
       Logger.warning('Fetching all payouts for userId: $userId');
 
       final response = await http.post(
@@ -105,12 +111,11 @@ class CustProductPayoutController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getPayoutsProduct;
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
+   
       final Map<String, dynamic> body = {
         'action': 'previous',
-        'userId': userId,
-        'userType': '10'
+        'userId': await _getUserId(),
+        'userType': AppData.customerUserType
       };
       final encodeBody = jsonEncode(body);
       Logger.warning('Previous Payout Request Body: $encodeBody');
@@ -187,12 +192,10 @@ class CustProductPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getPayoutsProduct;
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final Map<String, dynamic> body = {
         'action': 'next',
-        'userId': userId,
-        'userType': '10',
+        'userId': await _getUserId(),
+        'userType': AppData.customerUserType,
       };
       final encodeBody = jsonEncode(body);
       Logger.warning('Next Month Payout Request Body: $encodeBody');
@@ -276,15 +279,14 @@ class CustProductPayoutController extends ChangeNotifier {
     try {
       final fullUrl = AppUrls.getTotalPayoutsProduct;
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
+      
 
       final now = DateTime.now();
       final selectedMonth = month ?? now.month;
       final selectedYear = year ?? now.year;
 
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'month': selectedMonth.toString().padLeft(2, '0'),
         'year': selectedYear.toString()
       };

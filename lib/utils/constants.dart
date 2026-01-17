@@ -916,7 +916,7 @@ Future<String?> getDepartmentNameById(String departmentId) async {
     final departmentDataString = prefs.getString('departmentData');
 
     if (departmentDataString != null) {
-      final List<dynamic> departmentData = json.decode(departmentDataString);
+      final List<dynamic> departmentData = jsonDecode(departmentDataString);
       final departmentInfo = departmentData.firstWhere(
         (dept) => dept['id'].toString() == departmentId,
         orElse: () => {'id': departmentId, 'dept_name': null},
@@ -936,7 +936,7 @@ Future<String?> getDesignationById(String designationId) async {
     final designationDataString = prefs.getString('designationData');
 
     if (designationDataString != null) {
-      final List<dynamic> designationData = json.decode(designationDataString);
+      final List<dynamic> designationData = jsonDecode(designationDataString);
       final designationInfo = designationData.firstWhere(
         (desg) => desg['id'].toString() == designationId,
         orElse: () => {'id': designationId, 'desg_name': null},
@@ -995,7 +995,7 @@ Future<String?> getZoneById(String zoneId) async {
     final zoneDataString = prefs.getString('zones');
 
     if (zoneDataString != null) {
-      final List<dynamic> zoneData = json.decode(zoneDataString);
+      final List<dynamic> zoneData = jsonDecode(zoneDataString);
       final zoneInfo = zoneData.firstWhere(
         (zone) => zone['id'].toString() == zoneId,
         orElse: () => {'id': zoneId, 'zone_name': null},

@@ -40,7 +40,7 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
       Logger.info('Raw Department Data: $departmentDataString');
 
       if (departmentDataString != null) {
-        final List<dynamic> departmentData = json.decode(departmentDataString);
+        final List<dynamic> departmentData = jsonDecode(departmentDataString);
 
         Logger.info('Parsed Department Data: $departmentData');
 

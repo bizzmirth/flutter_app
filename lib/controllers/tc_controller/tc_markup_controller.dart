@@ -48,7 +48,7 @@ class TcMarkupController extends ChangeNotifier {
           'Markup details, URL: $url  \n Body: $encodeBody \n Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == true && jsonData['data'] != null) {
           final List<dynamic> data = jsonData['data'];

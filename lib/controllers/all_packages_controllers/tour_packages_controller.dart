@@ -121,7 +121,7 @@ class TourPackagesController extends ChangeNotifier {
         'ratings': selectedStars,
         'destination': ''
       };
-      final encodeBody = json.encode(body);
+      final encodeBody = jsonEncode(body);
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
       Logger.success('Encoded body of filtered $encodeBody');
       Logger.success('get filtered packages full URL: $fullUrl');

@@ -29,6 +29,11 @@ class CustWalletController extends ChangeNotifier {
   List<CustBookingWalletHistory> get custBookingWalletHistory =>
       _custBookingWalletHistory;
 
+  Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
+
   Future<void> apiGetWalletDetails() async {
     _isLoading = true;
     _error = null;
@@ -37,18 +42,16 @@ class CustWalletController extends ChangeNotifier {
     try {
       final String fullUrl = AppUrls.getWalletDetails;
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
 
-      final Map<String, dynamic> body = {'userId': userId};
-      final encodeBody = json.encode(body);
+      final Map<String, dynamic> body = {'userId': await _getUserId()};
+      final encodeBody = jsonEncode(body);
 
       final response = await http.post(Uri.parse(fullUrl), body: encodeBody);
 
       Logger.success('Response from wallet details: ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = jsonDecode(response.body);
 
         if (data['status'] == true) {
           final walletData = data['data'];

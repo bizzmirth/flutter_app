@@ -74,6 +74,11 @@ class TcCuPayoutController extends ChangeNotifier {
     await apiGetTcCuTotalPayouts(null, null);
   }
 
+   Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
+
   // ================= Previous Payout API =================
   Future<void> apiGetTcCuPreviousPayouts() async {
     try {
@@ -84,11 +89,9 @@ class TcCuPayoutController extends ChangeNotifier {
       final url = AppUrls.getTcCuPreviousPayouts;
       Logger.info('Fetching TC CU Previous Payouts from $url');
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
 
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'prevDateMonth': prevDateMonth,
         'prevDateYear': prevDateYear,
       };
@@ -105,7 +108,7 @@ class TcCuPayoutController extends ChangeNotifier {
       Logger.success('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         _previousPayout = TcCuPreviousPayoutModel.fromJson(jsonResponse);
         Logger.success('Successfully parsed previous payout data');
       } else {
@@ -122,6 +125,8 @@ class TcCuPayoutController extends ChangeNotifier {
     }
   }
 
+ 
+
   // ================= Next Payout API =================
   Future<void> apiGetTcCuNextPayouts() async {
     try {
@@ -132,11 +137,8 @@ class TcCuPayoutController extends ChangeNotifier {
       final url = AppUrls.getTcCuNextPayouts;
       Logger.info('Fetching TC CU Next Payouts from $url');
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
-
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'nextDateMonth': nextDateMonth,
         'nextDateYear': nextDateYear,
       };
@@ -153,7 +155,7 @@ class TcCuPayoutController extends ChangeNotifier {
       Logger.success('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         _nextPayout = TcCuNextPayoutModel.fromJson(jsonResponse);
         Logger.success('Successfully parsed next payout data');
       } else {
@@ -180,16 +182,13 @@ class TcCuPayoutController extends ChangeNotifier {
       final url = AppUrls.getTcCuTotalPayouts;
       Logger.info('Fetching TC CU Total Payouts from $url');
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
-
       final now = DateTime.now();
       final month = selectedMonth ?? now.month.toString().padLeft(2, '0');
       final year = selectedYeara ?? now.year.toString();
 
       // ✅ Prepare body
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'totalDateMonth': month,
         'totalDateYear': year,
       };
@@ -241,9 +240,7 @@ class TcCuPayoutController extends ChangeNotifier {
 
       final url = AppUrls.getTcCuAllPayouts;
 
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
-      final Map<String, dynamic> body = {'userId': userId};
+      final Map<String, dynamic> body = {'userId': await _getUserId()};
       Logger.success('fetching tc cu all payouts from $url');
       Logger.success('response body for fetching tc cu all payouts: $body');
 

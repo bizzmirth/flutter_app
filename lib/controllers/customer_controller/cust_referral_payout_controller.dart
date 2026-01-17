@@ -39,7 +39,12 @@ class CustReferralPayoutController extends ChangeNotifier {
   final List<CustReferralPayoutModel> _totalAllPayouts = [];
   List<CustReferralPayoutModel> get totalAllPayouts => _totalAllPayouts;
 
-  Future<void> getAllPayouts(String? userId) async {
+  Future<String> _getUserId() async {
+    final loginRes = await SharedPrefHelper().getLoginResponse();
+    return loginRes?.userId ?? '';
+  }
+
+  Future<void> getAllPayouts() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -48,9 +53,9 @@ class CustReferralPayoutController extends ChangeNotifier {
       final fullUrl = AppUrls.getAllPayoutsReference;
 
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
       };
-      Logger.warning('Fetching all payouts for userId: $userId');
+      // Logger.warning('Fetching all payouts for userId: $userId');
       final response = await http.post(Uri.parse(fullUrl),
           headers: {
             'Content-Type': 'application/json',
@@ -101,14 +106,12 @@ class CustReferralPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getPreviousPayoutsReference;
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final now = DateTime.now();
       final prevMonth =
           (now.month == 1 ? 12 : now.month - 1).toString().padLeft(2, '0');
       final currentYear = now.year.toString();
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'month': prevMonth,
         'year': currentYear
       };
@@ -159,13 +162,11 @@ class CustReferralPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getNextPayoutReference;
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
       final now = DateTime.now();
       final nextMonth = (now.month % 12).toString().padLeft(2, '0');
       final currentYear = now.year.toString();
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
         'month': nextMonth,
         'year': currentYear
       };
@@ -216,12 +217,10 @@ class CustReferralPayoutController extends ChangeNotifier {
 
     try {
       final fullUrl = AppUrls.getTotalPayoutsReference;
-      final loginRes = await SharedPrefHelper().getLoginResponse();
-      final userId = loginRes?.userId ?? '';
 
       // Create base body with userId
       final Map<String, dynamic> body = {
-        'userId': userId,
+        'userId': await _getUserId(),
       };
 
       if (month != null && year != null) {

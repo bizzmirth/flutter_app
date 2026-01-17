@@ -75,12 +75,12 @@ class TcController extends ChangeNotifier {
         'userId': userId,
       };
 
-      final encodeBody = json.encode(body);
+      final encodeBody = jsonEncode(body);
       final response = await http.post(Uri.parse(url), body: encodeBody);
       Logger.info('Fetching dashboard counts from $url with body: $body');
 
       if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
+        final jsonResponse = jsonDecode(response.body);
         Logger.info('Dashboard counts response: $jsonResponse');
 
         _dashboardStats = DashboardStatsModel.fromJson(jsonResponse);
@@ -120,12 +120,12 @@ class TcController extends ChangeNotifier {
         'userId': userId,
         'user_type': AppData.tcUserType,
       };
-      final encodeBody = json.encode(body);
+      final encodeBody = jsonEncode(body);
       final response = await http.post(Uri.parse(url), body: encodeBody);
       Logger.info('Fetching line chart data from $url with body: $body');
       Logger.info('Raw response body: ${response.body}');
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = jsonDecode(response.body);
         Logger.info('Line chart data response: $jsonData');
         if (jsonData is List && jsonData.isNotEmpty && jsonData[0] is List) {
           // response looks like [[0,0,0,0,0,0,0,0,0,0,0,0]]
@@ -178,7 +178,7 @@ class TcController extends ChangeNotifier {
       final Map<String, dynamic> body = {
         'userId': userId,
       };
-      final encodeBody = json.encode(body);
+      final encodeBody = jsonEncode(body);
 
       Logger.info('Fetching top customer referrals from $url with body: $body');
 
@@ -187,7 +187,7 @@ class TcController extends ChangeNotifier {
       Logger.info('Raw response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
+        final jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse['status'] == 'success') {
           _tcTopCustomerReferrals = [];

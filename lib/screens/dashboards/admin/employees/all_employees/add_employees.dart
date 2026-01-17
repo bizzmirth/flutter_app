@@ -85,7 +85,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       final departmentDataString = prefs.getString('departmentData');
 
       if (departmentDataString != null) {
-        final List<dynamic> departmentData = json.decode(departmentDataString);
+        final List<dynamic> departmentData = jsonDecode(departmentDataString);
 
         setState(() {
           departments = departmentData
@@ -108,7 +108,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       final designationDataString = prefs.getString('designationData');
 
       if (designationDataString != null) {
-        final List<dynamic> designationData = json.decode(
+        final List<dynamic> designationData = jsonDecode(
           designationDataString,
         );
 
@@ -160,7 +160,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       final zoneDataString = prefs.getString('zones');
 
       if (zoneDataString != null) {
-        final List<dynamic> zoneData = json.decode(zoneDataString);
+        final List<dynamic> zoneData = jsonDecode(zoneDataString);
         setState(() {
           zones = zoneData
               .map<Map<String, dynamic>>((zone) => {
@@ -192,7 +192,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       final branchDataString = prefs.getString('branches_$zoneId');
 
       if (branchDataString != '---- Select Branch * ----') {
-        final List<dynamic> branchData = json.decode(branchDataString!);
+        final List<dynamic> branchData = jsonDecode(branchDataString!);
         setState(() {
           branches = branchData
               .map<Map<String, dynamic>>((branch) => {
