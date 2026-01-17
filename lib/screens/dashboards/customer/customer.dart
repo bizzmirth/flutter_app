@@ -27,7 +27,6 @@ import 'package:bizzmirth_app/widgets/user_type_widget.dart';
 import 'package:bizzmirth_app/widgets/wallet_details_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:confetti/confetti.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -69,7 +68,6 @@ class _CDashboardPageState extends State<CDashboardPage> {
   bool isLoading = true;
   bool hasError = false;
   String? errorMessage;
-  List<FlSpot> chartData = [];
 
   Future<void> _initData() async {
     try {
@@ -100,10 +98,10 @@ class _CDashboardPageState extends State<CDashboardPage> {
     setState(() => isLoading = true);
 
     await customerController.apiGetChartData(year);
-    final data = customerController.getChartSpots();
+    // final data = customerController.getChartSpots();
 
     setState(() {
-      chartData = data;
+      // chartData = data;
       isLoading = false;
     });
   }
@@ -2233,6 +2231,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
 
   Widget neoSelectWidget(String type) {
     final isTablet = MediaQuery.of(context).size.width > 600;
+    final controller = Provider.of<CustomerController>(context, listen: false);
     final customerController = context.read<CustomerController>();
     final String userCount = filteredCustomers.isEmpty &&
             (searchController.text.isEmpty &&
@@ -2284,7 +2283,7 @@ class _CDashboardPageState extends State<CDashboardPage> {
       const SizedBox(height: 20),
 
         ImprovedLineChart(
-          chartData: chartData,
+          chartData: controller.getChartSpots(),
           availableYears: availableYears,
           selectedYear: selectedYear,
           isLoading: isLoading,

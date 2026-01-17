@@ -21,6 +21,9 @@ class ImprovedLineChart extends StatelessWidget {
     this.onYearChanged,
   });
 
+  // -----------------------------
+  // Month labels
+  // -----------------------------
   String getMonthName(int month) {
     const months = [
       'Jan',
@@ -39,26 +42,47 @@ class ImprovedLineChart extends StatelessWidget {
     return months[month - 1];
   }
 
-  int getMaxMonth() {
-    final int currentYear = DateTime.now().year;
-    final int currentMonth = DateTime.now().month;
-    final int selectedYearInt = int.parse(selectedYear);
-    return selectedYearInt == currentYear ? currentMonth : 12;
+  // -----------------------------
+  // Detect all-zero data
+  // -----------------------------
+  bool get isAllZeroData {
+    if (chartData.isEmpty) return true;
+    return chartData.every((spot) => spot.y == 0);
+  }
+
+  // -----------------------------
+  // Normalize data to ALWAYS 12 months
+  // -----------------------------
+  List<FlSpot> get normalizedChartData {
+    final Map<int, double> dataMap = {
+      for (final spot in chartData) spot.x.toInt(): spot.y,
+    };
+
+    return List.generate(
+      12,
+      (index) {
+        final month = index + 1;
+        return FlSpot(
+          month.toDouble(),
+          dataMap[month] ?? 0,
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final maxMonth = getMaxMonth();
-
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Row
+            // =============================
+            // HEADER
+            // =============================
             Row(
               children: [
                 const Text(
@@ -66,13 +90,6 @@ class ImprovedLineChart extends StatelessWidget {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
-                // if (isLoading)
-                //   const SizedBox(
-                //     width: 20,
-                //     height: 20,
-                //     child: CircularProgressIndicator(strokeWidth: 2),
-                //   )
-                // else if (availableYears.isNotEmpty)
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -84,7 +101,6 @@ class ImprovedLineChart extends StatelessWidget {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: selectedYear,
-                      hint: const Text('Select Year'),
                       items: availableYears.map((year) {
                         return DropdownMenuItem<String>(
                           value: year,
@@ -94,15 +110,17 @@ class ImprovedLineChart extends StatelessWidget {
                       onChanged: onYearChanged,
                       icon:
                           const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                      style: const TextStyle(color: Colors.black, fontSize: 14),
                     ),
                   ),
                 ),
               ],
             ),
+
             const SizedBox(height: 10),
 
-            // Error Message
+            // =============================
+            // ERROR MESSAGE
+            // =============================
             if (hasError && errorMessage != null)
               Container(
                 padding: const EdgeInsets.all(12),
@@ -127,16 +145,14 @@ class ImprovedLineChart extends StatelessWidget {
                 ),
               ),
 
-            // Chart
+            // =============================
+            // LOADER / CHART
+            // =============================
             if (isLoading)
               const SizedBox(
-                width: double.infinity,
-                height: 400,
+                height: 300,
                 child: Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.blueAccent,
-                  ),
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
               )
             else
@@ -145,32 +161,49 @@ class ImprovedLineChart extends StatelessWidget {
                 child: LineChart(
                   LineChartData(
                     minX: 1,
-                    maxX: maxMonth.toDouble(),
+                    maxX: 12, // 🔥 ALWAYS SHOW JAN–DEC
                     minY: 0,
-                    maxY: chartData.isNotEmpty
-                        ? chartData
+                    maxY: isAllZeroData
+                        ? 8
+                        : normalizedChartData
                                 .map((e) => e.y)
                                 .reduce((a, b) => a > b ? a : b) +
-                            2
-                        : 10,
+                            2,
+
+                    // -----------------------------
+                    // GRID
+                    // -----------------------------
                     gridData: const FlGridData(
                       verticalInterval: 1,
                       horizontalInterval: 2,
                     ),
+
+                    // -----------------------------
+                    // AXES
+                    // -----------------------------
                     titlesData: FlTitlesData(
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
                           reservedSize: 40,
                           interval: 2,
-                          getTitlesWidget: (value, _) => Padding(
-                            padding: const EdgeInsets.only(right: 18.0),
-                            child: Text(
-                              value.toInt().toString(),
-                              style: const TextStyle(fontSize: 12),
-                              textAlign: TextAlign.right,
-                            ),
-                          ),
+                          getTitlesWidget: (value, _) {
+                            if (isAllZeroData &&
+                                !(value == 2 ||
+                                    value == 4 ||
+                                    value == 6 ||
+                                    value == 8)) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 18.0),
+                              child: Text(
+                                value.toInt().toString(),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            );
+                          },
                         ),
                       ),
                       bottomTitles: AxisTitles(
@@ -178,13 +211,12 @@ class ImprovedLineChart extends StatelessWidget {
                           showTitles: true,
                           interval: 1,
                           getTitlesWidget: (value, _) {
-                            if (value.toInt() <= maxMonth) {
+                            if (value >= 1 && value <= 12) {
                               return Padding(
                                 padding: const EdgeInsets.only(top: 6.0),
                                 child: Text(
                                   getMonthName(value.toInt()),
                                   style: const TextStyle(fontSize: 12),
-                                  textAlign: TextAlign.center,
                                 ),
                               );
                             }
@@ -195,13 +227,21 @@ class ImprovedLineChart extends StatelessWidget {
                       rightTitles: const AxisTitles(),
                       topTitles: const AxisTitles(),
                     ),
+
+                    // -----------------------------
+                    // BORDER
+                    // -----------------------------
                     borderData: FlBorderData(
                       show: true,
                       border: Border.all(color: Colors.grey, width: 0.5),
                     ),
+
+                    // -----------------------------
+                    // LINE
+                    // -----------------------------
                     lineBarsData: [
                       LineChartBarData(
-                        spots: chartData,
+                        spots: normalizedChartData, // 🔥 IMPORTANT
                         color: Colors.blueAccent,
                         barWidth: 4,
                         isStrokeCapRound: true,
@@ -230,6 +270,18 @@ class ImprovedLineChart extends StatelessWidget {
                   ),
                 ),
               ),
+
+            // =============================
+            // EMPTY DATA TEXT
+            // =============================
+            // if (!isLoading && isAllZeroData)
+            //   const Padding(
+            //     padding: EdgeInsets.only(top: 8),
+            //     child: Text(
+            //       'No data available for this year',
+            //       style: TextStyle(fontSize: 12, color: Colors.grey),
+            //     ),
+            //   ),
           ],
         ),
       ),

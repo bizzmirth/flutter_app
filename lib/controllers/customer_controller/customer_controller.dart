@@ -306,6 +306,7 @@ class CustomerController extends ChangeNotifier {
 
         if (jsonData is List && jsonData.isNotEmpty && jsonData[0] is List) {
           // We got [[0,0,0,...]]
+          // final List<dynamic> dataArray = [4, 4, 8, 6, 0, 0, 0, 0, 0, 0, 0,0];
           final List<dynamic> dataArray = jsonData[0];
 
           _chartData = dataArray
@@ -329,6 +330,18 @@ class CustomerController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+//   List<FlSpot> getChartSpots() { // in this function the limit is removed 
+//   // Always trust API data length
+//   return List.generate(
+//     _chartData.length,
+//     (index) => FlSpot(
+//       (index + 1).toDouble(),
+//       _chartData[index],
+//     ),
+//   );
+// }
+
 
   List<FlSpot> getChartSpots() {
     final int currentYear = DateTime.now().year;
